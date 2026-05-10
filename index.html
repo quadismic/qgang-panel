@@ -169,8 +169,8 @@ svg.org{display:inline-block}
   <div class="spinner"></div>
 </div>
 
-<!-- ANA PANEL (giriş sonrası görünür) -->
-<div class="panel" id="mainPanel" style="display:none">
+<!-- ANA PANEL -->
+<div class="panel" id="mainPanel">
 
 <div class="top-bar">
   <div>
@@ -181,6 +181,7 @@ svg.org{display:inline-block}
     <span id="userRolBadge"></span>
     <span id="userRumuz" style="font-size:13px;color:#888"></span>
     <button class="btn btn-primary" onclick="reqAddMember()" id="btnUyeEkle" style="display:none"><i class="ti ti-plus"></i> Üye Ekle</button>
+    <button class="btn" onclick="yoneticiGirisModal()" id="btnYoneticiGiris" style="border-color:#854f0b;color:#fac775"><i class="ti ti-lock"></i> Yönetici Girişi</button>
   </div>
 </div>
 
@@ -297,20 +298,72 @@ svg.org{display:inline-block}
 // ══════════════════════════════════════════
 // ROL TANIMI VE İZİN MATRİSİ
 // ══════════════════════════════════════════
-const ROL_SIRASI = ['Lider','Yönetici','Yetkili','Yardımcı','Üye'];
+const ROL_SIRASI = ['Lider','Yönetici','Yetkili','Yardımcı','Üye','Görüntüleyici'];
 
 const IZINLER = {
-  Lider:    {dashboard:1,uyeGor:1,uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanGor:1,puanDuzenle:1,gorevAta:1,etkinlikGor:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,orgGor:1},
-  Yönetici: {dashboard:1,uyeGor:1,uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanGor:1,puanDuzenle:1,gorevAta:1,etkinlikGor:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:0,orgGor:1},
-  Yetkili:  {dashboard:1,uyeGor:1,uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanGor:1,puanDuzenle:1,gorevAta:1,etkinlikGor:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,orgGor:1},
-  Yardımcı: {dashboard:1,uyeGor:1,uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanGor:1,puanDuzenle:0,gorevAta:0,etkinlikGor:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,orgGor:1},
-  Üye:      {dashboard:1,uyeGor:1,uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanGor:1,puanDuzenle:0,gorevAta:0,etkinlikGor:1,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,orgGor:1}
+  Lider:         {dashboard:1,uyeGor:1,uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanGor:1,puanDuzenle:1,gorevAta:1,etkinlikGor:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,orgGor:1},
+  Yönetici:      {dashboard:1,uyeGor:1,uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanGor:1,puanDuzenle:1,gorevAta:1,etkinlikGor:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:0,orgGor:1},
+  Yetkili:       {dashboard:1,uyeGor:1,uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanGor:1,puanDuzenle:1,gorevAta:1,etkinlikGor:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,orgGor:1},
+  Yardımcı:      {dashboard:1,uyeGor:1,uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanGor:1,puanDuzenle:0,gorevAta:0,etkinlikGor:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,orgGor:1},
+  Üye:           {dashboard:1,uyeGor:1,uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanGor:1,puanDuzenle:0,gorevAta:0,etkinlikGor:1,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,orgGor:1},
+  Görüntüleyici: {dashboard:1,uyeGor:1,uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanGor:1,puanDuzenle:0,gorevAta:0,etkinlikGor:1,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,orgGor:1}
 };
 
-// Oturum bilgisi
-let SESSION = {rumuz:'', rol:'Üye', girisZamani: null};
+// Yönetici şifresi — hash olarak sakla
+// SHA-256('qgang2026') → değiştirmek istersen buraya yeni hash gir
+const YONETICI_SIFRE_HASH = 'a8f5f167f44f4964e6c998dee827110c2e6cc6c3439cbb6d2c99a49ba0e9978e';
 
-function izin(key){return !!(IZINLER[SESSION.rol]||IZINLER['Üye'])[key]}
+async function hashSifre(sifre){
+  const enc = new TextEncoder().encode(sifre);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function yoneticiGirisModal(){
+  const mc = document.getElementById('modalContainer');
+  mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="confirm-box" style="max-width:320px">
+      <h3><i class="ti ti-lock"></i> Yönetici Girişi</h3>
+      <div class="form-group" style="margin-bottom:12px">
+        <label>Şifre</label>
+        <input type="password" id="yoneticiSifre" placeholder="••••••••" onkeydown="if(event.key==='Enter')yoneticiGirisKontrol()" autofocus>
+      </div>
+      <div id="sifreHata" style="font-size:12px;color:#e24b4a;margin-bottom:8px;display:none">Yanlış şifre</div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn" onclick="closeModal()">İptal</button>
+        <button class="btn btn-warn" onclick="yoneticiGirisKontrol()">Giriş</button>
+      </div>
+    </div>
+  </div>`;
+  setTimeout(()=>document.getElementById('yoneticiSifre')?.focus(), 100);
+}
+
+async function yoneticiGirisKontrol(){
+  const sifre = document.getElementById('yoneticiSifre').value;
+  const hash = await hashSifre(sifre);
+  if(hash === YONETICI_SIFRE_HASH){
+    closeModal();
+    SESSION.rol = 'Lider';
+    SESSION.rumuz = 'Yönetici';
+    const rolClass = {Lider:'lider',Yönetici:'yonetici',Yetkili:'yetkili',Yardımcı:'yardimci',Üye:'uye'};
+    document.getElementById('userRolBadge').innerHTML=`<span class="rol-badge rol-lider">Lider</span>`;
+    document.getElementById('userRumuz').textContent='Yönetici';
+    document.getElementById('btnYoneticiGiris').style.display='none';
+    uiAyarla();
+    addLog('Yönetici girişi','Şifre ile tam erişim açıldı');
+    save();
+    renderDashboard();
+  } else {
+    document.getElementById('sifreHata').style.display='block';
+    document.getElementById('yoneticiSifre').value='';
+    document.getElementById('yoneticiSifre').focus();
+  }
+}
+
+// Oturum bilgisi — varsayılan Görüntüleyici
+let SESSION = {rumuz:'Ziyaretçi', rol:'Görüntüleyici', girisZamani: new Date().toISOString()};
+
+function izin(key){return !!(IZINLER[SESSION.rol]||IZINLER['Görüntüleyici'])[key]}
 
 // ══════════════════════════════════════════
 // CMS KÖPRÜSÜ — HTTP API ile haberleşme
@@ -367,16 +420,16 @@ async function cmsYaz(action, data){
   }
 }
 
-// Wix'ten postMessage ile auth al
+// Wix'ten postMessage ile auth al — gelirse rolü güncelle
 window.addEventListener('message', function(event){
   const data = event.data;
   if(!data) return;
   if(data.type === 'QGANG_AUTH'){
-    girisYap(data.rumuz || 'Üye', data.rol || 'Üye');
+    girisYap(data.rumuz || 'Üye', data.rol || 'Görüntüleyici');
   }
 });
 
-// Panel yüklenince: Wix'e mesaj gönder + HTTP API'den veri çek
+// Panel yüklenince: veri çek + Görüntüleyici olarak aç
 window.addEventListener('load', async function(){
   // Wix iframe'ine hazır mesajı gönder
   if(window.parent !== window){
@@ -388,8 +441,7 @@ window.addEventListener('load', async function(){
   if(cmsVeri){
     if(cmsVeri.members && cmsVeri.members.length > 0){
       members = cmsVeri.members.map(m => ({
-        ...m,
-        id: m._id || m.id,
+        ...m, id: m._id || m.id,
         katilimcilar: typeof m.katilimcilar==='string'
           ? m.katilimcilar.split(',').map(s=>s.trim())
           : (m.katilimcilar||[])
@@ -397,8 +449,7 @@ window.addEventListener('load', async function(){
     }
     if(cmsVeri.events && cmsVeri.events.length > 0){
       events = cmsVeri.events.map(e => ({
-        ...e,
-        id: e._id || e.id,
+        ...e, id: e._id || e.id,
         katilimcilar: typeof e.katilimcilar==='string'
           ? e.katilimcilar.split(',').map(s=>s.trim())
           : (e.katilimcilar||[])
@@ -409,33 +460,34 @@ window.addEventListener('load', async function(){
     }
   }
 
-  // Wix'ten auth bekliyoruz — timeout YOK
-  // Auth gelmezse login ekranı açık kalır
+  // Görüntüleyici olarak aç — Wix'ten auth gelirse güncellenir
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainPanel').style.display = 'block';
+  renderDashboard();
+
+  // Yönetici butonu varsayılan göster
+  document.getElementById('btnYoneticiGiris').style.display = '';
 });
 
 function girisYap(rumuz, rol){
-  if(SESSION.girisZamani) return; // Zaten giriş yapılmış
-  SESSION.rumuz = rumuz;
-  SESSION.rol = ROL_SIRASI.includes(rol) ? rol : 'Üye';
+  SESSION.rumuz = rumuz || 'Ziyaretçi';
+  SESSION.rol = ROL_SIRASI.includes(rol) ? rol : 'Görüntüleyici';
   SESSION.girisZamani = new Date().toISOString();
 
-  // Login ekranını gizle, paneli göster
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('mainPanel').style.display = 'block';
+  const rolClass = {Lider:'lider',Yönetici:'yonetici',Yetkili:'yetkili',Yardımcı:'yardimci',Üye:'uye',Görüntüleyici:'uye'};
+  document.getElementById('userRolBadge').innerHTML=`<span class="rol-badge rol-${rolClass[SESSION.rol]||'uye'}">${SESSION.rol}</span>`;
+  document.getElementById('userRumuz').textContent=SESSION.rumuz;
 
-  // Kullanıcı bilgisini göster
-  const rolClass = {Lider:'lider',Yönetici:'yonetici',Yetkili:'yetkili',Yardımcı:'yardimci',Üye:'uye'};
-  document.getElementById('userRolBadge').innerHTML = `<span class="rol-badge rol-${rolClass[SESSION.rol]||'uye'}">${SESSION.rol}</span>`;
-  document.getElementById('userRumuz').textContent = SESSION.rumuz;
+  // Yönetici butonu sadece görüntüleyicilere göster
+  if(SESSION.rol==='Görüntüleyici'||SESSION.rol==='Üye'){
+    document.getElementById('btnYoneticiGiris').style.display='';
+  } else {
+    document.getElementById('btnYoneticiGiris').style.display='none';
+  }
 
-  // İzinlere göre UI'ı ayarla
   uiAyarla();
-
-  // Log kaydı
-  addLog('Giriş', `${SESSION.rumuz} — ${SESSION.rol} olarak giriş yaptı`);
+  addLog('Giriş',`${SESSION.rumuz} — ${SESSION.rol} olarak giriş yaptı`);
   save();
-
-  // Dashboard'u render et
   renderDashboard();
 }
 
