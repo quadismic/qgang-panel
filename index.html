@@ -9,10 +9,34 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#111;color:#d3d1c7;padding:12px}
 .panel{max-width:900px;margin:0 auto}
+
+/* GİRİŞ EKRANI */
+#loginScreen{position:fixed;top:0;left:0;right:0;bottom:0;background:#111;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:1rem}
+#loginScreen .logo{font-size:28px;font-weight:700;color:#d3d1c7;letter-spacing:2px;margin-bottom:.5rem}
+#loginScreen .sub{font-size:13px;color:#555;margin-bottom:1.5rem}
+#loginScreen .spinner{width:32px;height:32px;border:2px solid #333;border-top-color:#fac775;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.login-box{background:#1a1a1a;border:0.5px solid #333;border-radius:12px;padding:1.5rem;width:100%;max-width:360px}
+.login-box h2{font-size:16px;font-weight:500;margin-bottom:1rem;color:#d3d1c7}
+.login-form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.login-form-group label{font-size:11px;color:#888}
+.login-form-group input{padding:8px 10px;border-radius:8px;border:0.5px solid #444;background:#111;color:#d3d1c7;font-size:13px}
+.login-error{font-size:12px;color:#e24b4a;margin-bottom:8px;display:none}
+.login-lockout{font-size:12px;color:#e24b4a;padding:8px;background:#3a1010;border-radius:6px;margin-bottom:8px;display:none}
+.rol-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+
+/* ROL RENKLERİ */
+.rol-lider{background:#2c2c2a;color:#d3d1c7}
+.rol-yonetici{background:#3a1010;color:#e24b4a}
+.rol-yetkili{background:#042c53;color:#b5d4f4}
+.rol-yardimci{background:#04342c;color:#9fe1cb}
+.rol-uye{background:#412402;color:#fac775}
+
 .nav{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1.2rem;border-bottom:0.5px solid #333;padding-bottom:.8rem}
 .nav button{padding:6px 12px;border-radius:8px;border:0.5px solid #444;background:transparent;color:#888;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
 .nav button.active{background:#1e1e1e;color:#d3d1c7;border-color:#666}
 .nav button:hover{background:#1a1a1a}
+.nav button:disabled{opacity:.3;cursor:not-allowed}
 .tab{display:none}.tab.active{display:block}
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:1.2rem}
 .stat-card{background:#1a1a1a;border-radius:8px;padding:12px}
@@ -89,12 +113,12 @@ tr:hover td{background:#1a1a1a}
 .log-item{padding:8px 10px;border-bottom:0.5px solid #222;font-size:11px;line-height:1.5}
 .log-item:last-child{border-bottom:none}
 .log-time{color:#555;font-size:10px;margin-bottom:2px}
+.log-who{color:#fac775;font-size:10px;font-weight:600}
 .log-action{color:#d3d1c7}
 .log-detail{color:#888;font-size:10px}
 /* ORG */
 .org-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:.5rem 0;text-align:center}
 svg.org{display:inline-block}
-/* Org animasyonu */
 @keyframes orgFadeIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
 .org-node-anim{opacity:0;animation:orgFadeIn .4s ease forwards}
 .org-lider rect{fill:#2c2c2a;stroke:#888780;stroke-width:0.5}
@@ -117,7 +141,11 @@ svg.org{display:inline-block}
 .top-bar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.9rem;gap:8px;flex-wrap:wrap}
 .top-bar h1{font-size:17px;font-weight:500;color:#d3d1c7}
 .top-bar .sub{font-size:11px;color:#555;margin-top:2px}
+.user-info{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+/* ERİŞİM ENGELİ */
+.erisim-engel{background:#1a1a1a;border:0.5px solid #3a1010;border-radius:10px;padding:2rem;text-align:center;color:#e24b4a;font-size:13px;margin:1rem 0}
+.erisim-engel i{font-size:28px;display:block;margin-bottom:.5rem;opacity:.6}
 @media(max-width:600px){
   body{padding:8px}
   .dash-grid{grid-template-columns:1fr}
@@ -133,25 +161,38 @@ svg.org{display:inline-block}
 </style>
 </head>
 <body>
-<div class="panel">
+
+<!-- GİRİŞ BEKLENİYOR EKRANI -->
+<div id="loginScreen">
+  <div class="logo">Q-GANG</div>
+  <div class="sub">Kimlik doğrulanıyor...</div>
+  <div class="spinner"></div>
+</div>
+
+<!-- ANA PANEL (giriş sonrası görünür) -->
+<div class="panel" id="mainPanel" style="display:none">
 
 <div class="top-bar">
   <div>
     <h1>Q-GANG Paneli</h1>
     <div class="sub" id="lastSaved">Hazır</div>
   </div>
-  <button class="btn btn-primary" onclick="reqAddMember()"><i class="ti ti-plus"></i> Üye Ekle</button>
+  <div class="user-info">
+    <span id="userRolBadge"></span>
+    <span id="userRumuz" style="font-size:13px;color:#888"></span>
+    <button class="btn btn-primary" onclick="reqAddMember()" id="btnUyeEkle" style="display:none"><i class="ti ti-plus"></i> Üye Ekle</button>
+  </div>
 </div>
 
-<nav class="nav">
+<nav class="nav" id="mainNav">
   <button class="active" onclick="showTab('dashboard',this)"><i class="ti ti-chart-bar"></i> Dashboard</button>
-  <button onclick="showTab('members',this)"><i class="ti ti-users"></i> Üyeler</button>
-  <button onclick="showTab('puan',this)"><i class="ti ti-star"></i> Puan</button>
-  <button onclick="showTab('gorev',this)"><i class="ti ti-check"></i> Görevler</button>
-  <button onclick="showTab('etkinlik',this)"><i class="ti ti-calendar"></i> Etkinlikler</button>
-  <button onclick="showTab('butce',this)"><i class="ti ti-currency-lira"></i> Bütçe</button>
+  <button onclick="showTab('members',this)" id="navMembers"><i class="ti ti-users"></i> Üyeler</button>
+  <button onclick="showTab('puan',this)" id="navPuan"><i class="ti ti-star"></i> Puan</button>
+  <button onclick="showTab('gorev',this)" id="navGorev"><i class="ti ti-check"></i> Görevler</button>
+  <button onclick="showTab('etkinlik',this)" id="navEtkinlik"><i class="ti ti-calendar"></i> Etkinlikler</button>
+  <button onclick="showTab('butce',this)" id="navButce"><i class="ti ti-currency-lira"></i> Bütçe</button>
   <button onclick="showTab('org',this)"><i class="ti ti-hierarchy"></i> Organizasyon</button>
-  <button onclick="showTab('log',this)"><i class="ti ti-history"></i> Log</button>
+  <button onclick="showTab('log',this)" id="navLog"><i class="ti ti-history"></i> Log</button>
 </nav>
 
 <!-- DASHBOARD -->
@@ -205,35 +246,12 @@ svg.org{display:inline-block}
 <div id="tab-puan" class="tab">
   <div class="section-title">Puan tablosu</div>
   <div id="puanList"></div>
-  <hr class="sep">
-  <div class="section-title">Puan ekle / çıkar</div>
-  <div class="card">
-    <div class="form-row">
-      <div class="form-group"><label>Üye</label><select id="puanUye"></select></div>
-      <div class="form-group"><label>Miktar</label><input type="number" id="puanMiktar" value="10" step="1"></div>
-      <div class="form-group"><label>Sebep</label><input type="text" id="puanSebep" placeholder="Sebep..."></div>
-    </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap">
-      <button class="btn btn-success" onclick="reqPuan()"><i class="ti ti-plus"></i> Uygula</button>
-      <button class="btn btn-primary" onclick="document.getElementById('puanMiktar').value=10;reqPuan()">+10 Etkinlik</button>
-      <button class="btn btn-primary" onclick="document.getElementById('puanMiktar').value=15;reqPuan()">+15 İçerik</button>
-      <button class="btn btn-danger" onclick="document.getElementById('puanMiktar').value=-20;reqPuan()">-20 Pasiflik</button>
-    </div>
-  </div>
+  <div id="puanEditor"></div>
 </div>
 
 <!-- GÖREVLER -->
 <div id="tab-gorev" class="tab">
-  <div class="section-title">Görev ata</div>
-  <div class="card">
-    <div class="form-row">
-      <div class="form-group"><label>Üye</label><select id="gorevUye"></select></div>
-      <div class="form-group"><label>Görev</label>
-        <select id="gorevTip"><option>Klan</option><option>Sosyal Medya</option><option>Yönetim</option><option>Özel</option><option>Yok</option></select>
-      </div>
-    </div>
-    <button class="btn btn-primary" onclick="reqGorev()"><i class="ti ti-check"></i> Ata</button>
-  </div>
+  <div id="gorevEditor"></div>
   <div class="section-title">Görev dağılımı</div>
   <div id="gorevList"></div>
 </div>
@@ -242,68 +260,21 @@ svg.org{display:inline-block}
 <div id="tab-etkinlik" class="tab">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
     <div class="section-title" style="margin:0">Etkinlikler</div>
-    <button class="btn btn-primary" onclick="openModal('addEvent')"><i class="ti ti-plus"></i> Yeni Etkinlik</button>
+    <button class="btn btn-primary" onclick="openModal('addEvent')" id="btnEtkinlikEkle" style="display:none"><i class="ti ti-plus"></i> Yeni Etkinlik</button>
   </div>
   <div id="eventList"></div>
 </div>
 
 <!-- BÜTÇE -->
 <div id="tab-butce" class="tab">
-  <div class="butce-ozet" id="butceOzet"></div>
-  <div class="card">
-    <div class="section-title" style="margin-bottom:.6rem">Yeni işlem ekle</div>
-    <div class="form-row">
-      <div class="form-group"><label>Tür</label>
-        <select id="b_tur"><option value="gelir">Gelir</option><option value="gider">Gider</option></select>
-      </div>
-      <div class="form-group"><label>Tarih</label><input type="date" id="b_tarih"></div>
-      <div class="form-group"><label>Tutar (₺)</label><input type="number" id="b_tutar" placeholder="0.00" step="0.01"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Açıklama</label><input type="text" id="b_aciklama" placeholder="Açıklama..."></div>
-      <div class="form-group"><label>Kategori</label>
-        <select id="b_kategori"><option>Katkı / Destek</option><option>Ekipman</option><option>Diğer</option></select>
-      </div>
-    </div>
-    <button class="btn btn-success" onclick="reqButce()"><i class="ti ti-plus"></i> Ekle</button>
-  </div>
-  <div class="card">
-    <div class="section-title" style="margin-bottom:.5rem">Excel'den içe aktar</div>
-    <div class="import-area" onclick="document.getElementById('csvInput').click()">
-      <i class="ti ti-upload" style="font-size:18px;display:block;margin-bottom:4px"></i>
-      CSV dosyası seç
-      <input type="file" id="csvInput" accept=".csv" style="display:none" onchange="importCSV(event)">
-    </div>
-    <div style="font-size:11px;color:#555;margin-top:4px">Sütun sırası: Tarih | Açıklama | Tutar | Tür (gelir/gider)</div>
-  </div>
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;flex-wrap:wrap;gap:8px">
-    <div class="section-title" style="margin:0">İşlem geçmişi</div>
-    <div class="filters" style="margin:0">
-      <select id="filterButceTur" onchange="renderButce()">
-        <option value="">Tümü</option><option value="gelir">Gelir</option><option value="gider">Gider</option>
-      </select>
-      <select id="filterButceKat" onchange="renderButce()">
-        <option value="">Tüm kategoriler</option>
-        <option>Katkı / Destek</option><option>Ekipman</option><option>Diğer</option>
-      </select>
-    </div>
-  </div>
-  <div class="table-wrap">
-    <table>
-      <thead><tr>
-        <th style="width:86px">Tarih</th><th>Açıklama</th><th style="width:90px">Kategori</th>
-        <th style="width:54px">Tür</th><th style="width:100px">Tutar</th><th style="width:44px">Sil</th>
-      </tr></thead>
-      <tbody id="butceTableBody"></tbody>
-    </table>
-  </div>
+  <div id="butceContent"></div>
 </div>
 
 <!-- ORGANİZASYON -->
 <div id="tab-org" class="tab">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
-    <div class="section-title" style="margin:0">Organizasyon şeması <span style="font-size:11px;color:#555;font-weight:400">— veriden otomatik üretilir</span></div>
-    <button class="btn btn-primary" onclick="orgKodUret()"><i class="ti ti-code"></i> Kod Üret</button>
+    <div class="section-title" style="margin:0">Organizasyon şeması</div>
+    <button class="btn btn-primary" onclick="orgKodUret()" id="btnKodUret" style="display:none"><i class="ti ti-code"></i> Kod Üret</button>
   </div>
   <div class="org-wrap" id="orgWrap"></div>
 </div>
@@ -312,25 +283,115 @@ svg.org{display:inline-block}
 <div id="tab-log" class="tab">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
     <div class="section-title" style="margin:0">Değişiklik geçmişi</div>
-    <button class="btn btn-danger btn-sm" onclick="clearLog()"><i class="ti ti-trash"></i> Logu temizle</button>
+    <button class="btn btn-danger btn-sm" onclick="clearLog()" id="btnLogTemizle" style="display:none"><i class="ti ti-trash"></i> Logu temizle</button>
   </div>
   <div class="card" style="padding:0;overflow:hidden">
     <div id="logList" style="max-height:600px;overflow-y:auto"></div>
   </div>
 </div>
 
+</div><!-- /mainPanel -->
 <div id="modalContainer"></div>
 
 <script>
+// ══════════════════════════════════════════
+// ROL TANIMI VE İZİN MATRİSİ
+// ══════════════════════════════════════════
+const ROL_SIRASI = ['Lider','Yönetici','Yetkili','Yardımcı','Üye'];
+
+const IZINLER = {
+  Lider:    {dashboard:1,uyeGor:1,uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanGor:1,puanDuzenle:1,gorevAta:1,etkinlikGor:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,orgGor:1},
+  Yönetici: {dashboard:1,uyeGor:1,uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanGor:1,puanDuzenle:1,gorevAta:1,etkinlikGor:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:0,orgGor:1},
+  Yetkili:  {dashboard:1,uyeGor:1,uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanGor:1,puanDuzenle:1,gorevAta:1,etkinlikGor:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,orgGor:1},
+  Yardımcı: {dashboard:1,uyeGor:1,uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanGor:1,puanDuzenle:0,gorevAta:0,etkinlikGor:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,orgGor:1},
+  Üye:      {dashboard:1,uyeGor:1,uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanGor:1,puanDuzenle:0,gorevAta:0,etkinlikGor:1,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,orgGor:1}
+};
+
+// Oturum bilgisi
+let SESSION = {rumuz:'', rol:'Üye', girisZamani: null};
+
+function izin(key){return !!(IZINLER[SESSION.rol]||IZINLER['Üye'])[key]}
+
+// ══════════════════════════════════════════
+// WİX'TEN MESAJ BEKLE (postMessage)
+// ══════════════════════════════════════════
+window.addEventListener('message', function(event){
+  // Güvenlik: sadece Wix'ten gelen mesajları kabul et
+  // Geliştirme/test modunda tüm kaynaklara izin ver
+  const data = event.data;
+  if(data && data.type === 'QGANG_AUTH'){
+    girisYap(data.rumuz, data.rol);
+  }
+});
+
+// Panel yüklenince Wix'e "hazırım" mesajı gönder
+window.addEventListener('load', function(){
+  // Wix parent frame'e hazır olduğumuzu bildir
+  if(window.parent !== window){
+    window.parent.postMessage({type:'QGANG_READY'}, '*');
+  }
+
+  // Eğer Wix entegrasyonu yoksa (direkt açıldıysa) test modu
+  // 3 saniye içinde auth gelmezse test modunu göster
+  setTimeout(function(){
+    if(!SESSION.girisZamani){
+      // Test/geliştirme ortamı — Lider olarak gir
+      girisYap('Test (Lider)', 'Lider');
+    }
+  }, 3000);
+});
+
+function girisYap(rumuz, rol){
+  if(SESSION.girisZamani) return; // Zaten giriş yapılmış
+  SESSION.rumuz = rumuz;
+  SESSION.rol = ROL_SIRASI.includes(rol) ? rol : 'Üye';
+  SESSION.girisZamani = new Date().toISOString();
+
+  // Login ekranını gizle, paneli göster
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainPanel').style.display = 'block';
+
+  // Kullanıcı bilgisini göster
+  const rolClass = {Lider:'lider',Yönetici:'yonetici',Yetkili:'yetkili',Yardımcı:'yardimci',Üye:'uye'};
+  document.getElementById('userRolBadge').innerHTML = `<span class="rol-badge rol-${rolClass[SESSION.rol]||'uye'}">${SESSION.rol}</span>`;
+  document.getElementById('userRumuz').textContent = SESSION.rumuz;
+
+  // İzinlere göre UI'ı ayarla
+  uiAyarla();
+
+  // Log kaydı
+  addLog('Giriş', `${SESSION.rumuz} — ${SESSION.rol} olarak giriş yaptı`);
+  save();
+
+  // Dashboard'u render et
+  renderDashboard();
+}
+
+function uiAyarla(){
+  // Üye Ekle butonu
+  if(izin('uyeEkle')) document.getElementById('btnUyeEkle').style.display='';
+  // Etkinlik Ekle butonu
+  if(izin('etkinlikEkle')) document.getElementById('btnEtkinlikEkle').style.display='';
+  // Kod Üret butonu
+  if(izin('kodUret')) document.getElementById('btnKodUret').style.display='';
+  // Log temizle
+  if(izin('logSil')) document.getElementById('btnLogTemizle').style.display='';
+  // Bütçe nav — sadece görebilenlere
+  if(!izin('butceGor')) document.getElementById('navButce').style.display='none';
+  // Log nav
+  if(!izin('logGor')) document.getElementById('navLog').style.display='none';
+}
+
+// ══════════════════════════════════════════
+// VERİ VE STORAGE
+// ══════════════════════════════════════════
 const RUTBELER=['Siyah','Kırmızı','Mavi','Yeşil','Sarı','Beyaz'];
 const DURUMLAR=['Aktif','Pasif','Riskli','İzinde','Arşiv'];
 const GOREVLER=['Klan','Sosyal Medya','Yönetim','Özel','Yok'];
 const ETK_TURLERI=['GANG-UP','OP-NIGHT','BBQ-GANG','Q-NITY','B-DAY & S-DAY','Diğer'];
 const BUTCE_KAT=['Katkı / Destek','Ekipman','Diğer'];
 
-// Bugünün tarihi YYYY-MM-DD formatında
-function todayStr(){const d=new Date();return d.toISOString().split('T')[0]}
-
+function todayStr(){return new Date().toISOString().split('T')[0]}
 function getLS(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch(e){return def}}
 function setLS(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 
@@ -410,11 +471,15 @@ function save(){
 }
 
 function addLog(action,detail){
-  logs.unshift({time:new Date().toISOString(),action,detail});
+  logs.unshift({time:new Date().toISOString(),who:SESSION.rumuz||'?',rol:SESSION.rol||'?',action,detail});
   if(logs.length>300)logs=logs.slice(0,300);
   setLS('qg_logs',logs);
 }
-function clearLog(){if(!confirm('Tüm log geçmişi silinsin mi?'))return;logs=[];setLS('qg_logs',logs);renderLog()}
+function clearLog(){
+  if(!izin('logSil'))return;
+  if(!confirm('Tüm log silinsin mi?'))return;
+  logs=[];setLS('qg_logs',logs);renderLog();
+}
 
 function rutbeBadge(r){const m={Siyah:'siyah',Kırmızı:'kirmizi',Mavi:'mavi',Yeşil:'yesil',Sarı:'sari',Beyaz:'beyaz'};return`<span class="badge badge-${m[r]||'beyaz'}">${r}</span>`}
 function durumBadge(d){const m={Aktif:'aktif',Pasif:'pasif',Riskli:'riskli',İzinde:'izinde',Arşiv:'arsiv'};return`<span class="badge badge-${m[d]||'pasif'}">${d}</span>`}
@@ -423,18 +488,12 @@ function fmtDate(s){if(!s)return'-';const[y,mo,d]=s.split('-');return`${d}.${mo}
 function fmtDateTime(s){if(!s)return'-';const d=new Date(s);return d.toLocaleDateString('tr-TR')+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}
 function daysUntil(s){if(!s)return null;const n=new Date();n.setHours(0,0,0,0);const d=new Date(s);d.setHours(0,0,0,0);return Math.ceil((d-n)/(864e5))}
 
-// Varsayılan tarihleri bugüne set et
-function setDefaultDates(){
-  const today=todayStr();
-  ['b_tarih','m_katilim','e_date'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.value)el.value=today});
-}
-
 function showTab(name,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   if(btn)btn.classList.add('active');
-  const fns={dashboard:renderDashboard,members:renderMembers,puan:renderPuan,gorev:renderGorev,etkinlik:renderEvents,butce:()=>{renderButce();setTimeout(()=>{const el=document.getElementById('b_tarih');if(el&&!el.value)el.value=todayStr()},50)},org:renderOrg,log:renderLog};
+  const fns={dashboard:renderDashboard,members:renderMembers,puan:renderPuan,gorev:renderGorev,etkinlik:renderEvents,butce:renderButce,org:renderOrg,log:renderLog};
   if(fns[name])fns[name]();
 }
 
@@ -451,6 +510,8 @@ function confirm2(title,desc,onOk){
   document.getElementById('confirmOkBtn').onclick=()=>{closeModal();onOk()};
 }
 
+function engelEkrani(){return`<div class="erisim-engel"><i class="ti ti-lock"></i>Bu bölüme erişim yetkiniz yok.</div>`}
+
 /* ── DASHBOARD ── */
 function renderDashboard(){
   const total=members.length,aktif=members.filter(m=>m.durum==='Aktif').length,pasif=members.filter(m=>m.durum==='Pasif').length,riskli=members.filter(m=>m.durum==='Riskli').length,gorevSiz=members.filter(m=>m.gorev==='Yok'||!m.gorev).length;
@@ -461,25 +522,26 @@ function renderDashboard(){
     <div class="stat-card"><div class="label">Pasif</div><div class="value" style="color:#888">${pasif}</div></div>
     <div class="stat-card"><div class="label">Riskli</div><div class="value" style="color:#e24b4a">${riskli}</div></div>
     <div class="stat-card"><div class="label">Görevsiz</div><div class="value" style="color:#fac775">${gorevSiz}</div></div>
-    <div class="stat-card"><div class="label">Net kasa</div><div class="value" style="color:${net>=0?'#9fe1cb':'#e24b4a'};font-size:14px">${fmtTL(net)}</div></div>`;
+    ${izin('butceGor')?`<div class="stat-card"><div class="label">Net kasa</div><div class="value" style="color:${net>=0?'#9fe1cb':'#e24b4a'};font-size:14px">${fmtTL(net)}</div></div>`:''}`;
   let alerts='';
   if(riskli>0)alerts+=`<div class="alert-row alert-danger"><i class="ti ti-alert-triangle"></i> ${riskli} riskli üye</div>`;
   if(pasif>0)alerts+=`<div class="alert-row alert-warn"><i class="ti ti-clock"></i> ${pasif} pasif üye</div>`;
   if(gorevSiz>3)alerts+=`<div class="alert-row alert-info"><i class="ti ti-briefcase"></i> ${gorevSiz} üye görevsiz</div>`;
   const terfiBek=members.filter(m=>m.puan>=50&&m.rutbe!=='Siyah'&&m.rutbe!=='Mavi');
-  if(terfiBek.length)alerts+=`<div class="alert-row alert-info"><i class="ti ti-arrow-up"></i> ${terfiBek.length} terfi adayı</div>`;
-  if(net<0)alerts+=`<div class="alert-row alert-danger"><i class="ti ti-currency-lira"></i> Kasa negatife düştü!</div>`;
+  if(terfiBek.length&&izin('uyeDuzenle'))alerts+=`<div class="alert-row alert-info"><i class="ti ti-arrow-up"></i> ${terfiBek.length} terfi adayı</div>`;
+  if(net<0&&izin('butceGor'))alerts+=`<div class="alert-row alert-danger"><i class="ti ti-currency-lira"></i> Kasa negatife düştü!</div>`;
   document.getElementById('alertsBox').innerHTML=alerts||'<div style="font-size:12px;color:#555">Uyarı yok</div>';
   const upcoming=events.map(e=>({...e,diff:daysUntil(e.tarih)})).filter(e=>e.diff!==null&&e.diff>=0&&e.diff<=30).sort((a,b)=>a.diff-b.diff);
   document.getElementById('upcomingEvents').innerHTML=upcoming.length?upcoming.map(e=>`<div class="alert-row alert-success"><i class="ti ti-calendar-event"></i> <strong>${e.tur}</strong> — ${e.diff===0?'Bugün!':e.diff+' gün sonra'}</div>`).join(''):'<div style="font-size:12px;color:#555">30 gün içinde etkinlik yok</div>';
   const today=new Date();
   const bd=members.filter(m=>m.dogum).map(m=>{const d=new Date(m.dogum);d.setFullYear(today.getFullYear());return{...m,diff:Math.ceil((d-today)/864e5)}}).filter(m=>m.diff>=0&&m.diff<=30).sort((a,b)=>a.diff-b.diff);
   document.getElementById('birthdaysBox').innerHTML=bd.length?bd.map(m=>`<div class="alert-row alert-info"><i class="ti ti-cake"></i> <strong>${m.rumuz}</strong> — ${m.diff===0?'Bugün!':m.diff+' gün sonra'}</div>`).join(''):'<div style="font-size:12px;color:#555">30 gün içinde doğum günü yok</div>';
-  document.getElementById('dashButce').innerHTML=`
+  document.getElementById('dashButce').innerHTML=izin('butceGor')?`
     <div style="margin-bottom:8px"><span style="font-size:11px;color:#888">Toplam gelir</span><div style="font-size:16px;font-weight:500;color:#9fe1cb">${fmtTL(gelir)}</div></div>
     <div style="margin-bottom:8px"><span style="font-size:11px;color:#888">Toplam gider</span><div style="font-size:16px;font-weight:500;color:#e24b4a">${fmtTL(gider)}</div></div>
     <hr class="sep" style="margin:.5rem 0">
-    <div><span style="font-size:11px;color:#888">Net</span><div style="font-size:19px;font-weight:500;color:${net>=0?'#9fe1cb':'#e24b4a'}">${fmtTL(net)}</div></div>`;
+    <div><span style="font-size:11px;color:#888">Net</span><div style="font-size:19px;font-weight:500;color:${net>=0?'#9fe1cb':'#e24b4a'}">${fmtTL(net)}</div></div>`
+    :'<div style="font-size:12px;color:#555"><i class="ti ti-lock"></i> Erişim yok</div>';
   const counts={};RUTBELER.forEach(r=>counts[r]=0);members.forEach(m=>counts[m.rutbe]=(counts[m.rutbe]||0)+1);
   const maxC=Math.max(...Object.values(counts),1);
   const clrs={Siyah:'#888780',Kırmızı:'#a32d2d',Mavi:'#185fa5',Yeşil:'#0f6e56',Sarı:'#854f0b',Beyaz:'#444'};
@@ -490,13 +552,16 @@ function renderDashboard(){
 function renderMembers(){
   const q=(document.getElementById('searchBox').value||'').toLowerCase(),fr=document.getElementById('filterRutbe').value,fd=document.getElementById('filterDurum').value,fg=document.getElementById('filterGorev').value;
   const filtered=members.filter(m=>(!q||m.rumuz.toLowerCase().includes(q))&&(!fr||m.rutbe===fr)&&(!fd||m.durum===fd)&&(!fg||m.gorev===fg));
+  const editButon=izin('uyeDuzenle')||izin('rutbeDegistir');
+  const silButon=izin('uyeSil');
   document.getElementById('memberTableBody').innerHTML=filtered.map((m,i)=>`<tr>
     <td>${i+1}</td><td style="font-weight:500">${m.rumuz}</td><td>${rutbeBadge(m.rutbe)}</td><td>${durumBadge(m.durum)}</td>
     <td style="font-size:11px;color:#888">${m.gorev||'Yok'}</td><td style="font-weight:500">${m.puan}</td>
     <td style="font-size:11px;color:#555">${m.katilim?fmtDate(m.katilim):'-'}</td>
     <td><div class="action-row">
-      <button class="btn btn-sm" onclick="openModal('editMember',${m.id})"><i class="ti ti-edit"></i></button>
-      <button class="btn btn-danger btn-sm" onclick="reqDeleteMember(${m.id})"><i class="ti ti-trash"></i></button>
+      ${editButon?`<button class="btn btn-sm" onclick="openModal('editMember',${m.id})"><i class="ti ti-edit"></i></button>`:''}
+      ${silButon?`<button class="btn btn-danger btn-sm" onclick="reqDeleteMember(${m.id})"><i class="ti ti-trash"></i></button>`:''}
+      ${!editButon&&!silButon?'<span style="font-size:10px;color:#555">—</span>':''}
     </div></td></tr>`).join('');
 }
 
@@ -509,7 +574,23 @@ function renderPuan(){
     <div class="puan-bar-bg"><div class="puan-bar" style="width:${Math.round(m.puan/maxP*100)}%"></div></div>
     <div style="width:32px;font-size:12px;font-weight:500;color:#d3d1c7;text-align:right">${m.puan}</div>
     <div style="width:65px">${rutbeBadge(m.rutbe)}</div></div>`).join('');
-  document.getElementById('puanUye').innerHTML=members.map(m=>`<option value="${m.id}">${m.rumuz}</option>`).join('');
+
+  document.getElementById('puanEditor').innerHTML=izin('puanDuzenle')?`
+    <hr class="sep">
+    <div class="section-title">Puan ekle / çıkar</div>
+    <div class="card">
+      <div class="form-row">
+        <div class="form-group"><label>Üye</label><select id="puanUye">${members.map(m=>`<option value="${m.id}">${m.rumuz}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Miktar</label><input type="number" id="puanMiktar" value="10" step="1"></div>
+        <div class="form-group"><label>Sebep</label><input type="text" id="puanSebep" placeholder="Sebep..."></div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-success" onclick="reqPuan()"><i class="ti ti-plus"></i> Uygula</button>
+        <button class="btn btn-primary" onclick="document.getElementById('puanMiktar').value=10;reqPuan()">+10 Etkinlik</button>
+        <button class="btn btn-primary" onclick="document.getElementById('puanMiktar').value=15;reqPuan()">+15 İçerik</button>
+        <button class="btn btn-danger" onclick="document.getElementById('puanMiktar').value=-20;reqPuan()">-20 Pasiflik</button>
+      </div>
+    </div>`:'';
 }
 
 function reqPuan(){
@@ -527,7 +608,15 @@ function reqPuan(){
 
 /* ── GÖREV ── */
 function renderGorev(){
-  document.getElementById('gorevUye').innerHTML=members.map(m=>`<option value="${m.id}">${m.rumuz}</option>`).join('');
+  document.getElementById('gorevEditor').innerHTML=izin('gorevAta')?`
+    <div class="section-title">Görev ata</div>
+    <div class="card">
+      <div class="form-row">
+        <div class="form-group"><label>Üye</label><select id="gorevUye">${members.map(m=>`<option value="${m.id}">${m.rumuz}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Görev</label><select id="gorevTip">${GOREVLER.map(g=>`<option>${g}</option>`).join('')}</select></div>
+      </div>
+      <button class="btn btn-primary" onclick="reqGorev()"><i class="ti ti-check"></i> Ata</button>
+    </div>`:'';
   const byG={};GOREVLER.forEach(g=>byG[g]=[]);
   members.forEach(m=>{if(byG[m.gorev||'Yok'])byG[m.gorev||'Yok'].push(m.rumuz)});
   document.getElementById('gorevList').innerHTML=GOREVLER.filter(g=>g!=='Yok').map(g=>`<div class="card" style="padding:.65rem .9rem;margin-bottom:6px"><div style="font-size:12px;font-weight:500;margin-bottom:5px;color:#d3d1c7">${g}</div><div class="member-chips">${byG[g].length?byG[g].map(r=>`<span class="chip">${r}</span>`).join(''):'<span style="font-size:11px;color:#555">Atanmış üye yok</span>'}</div></div>`).join('');
@@ -537,7 +626,7 @@ function reqGorev(){
   const id=parseInt(document.getElementById('gorevUye').value);
   const gorev=document.getElementById('gorevTip').value;
   const m=members.find(m=>m.id===id);if(!m)return;
-  confirm2('Görev ata',`<strong>${m.rumuz}</strong> → <strong>${gorev}</strong> olarak atanacak.`,()=>{
+  confirm2('Görev ata',`<strong>${m.rumuz}</strong> → <strong>${gorev}</strong>`,()=>{
     const eski=m.gorev;m.gorev=gorev;
     addLog('Görev atama',`${m.rumuz}: ${eski} → ${gorev}`);
     save();renderGorev();
@@ -549,15 +638,17 @@ function renderEvents(){
   const sorted=[...events].sort((a,b)=>new Date(b.tarih)-new Date(a.tarih));
   document.getElementById('eventList').innerHTML=sorted.length?sorted.map(e=>`<div class="event-card">
     <div class="ev-header"><div class="ev-title">${e.tur}</div>
-    <button class="btn btn-danger btn-sm" onclick="reqDeleteEvent(${e.id})"><i class="ti ti-trash"></i></button></div>
+    ${izin('etkinlikSil')?`<button class="btn btn-danger btn-sm" onclick="reqDeleteEvent(${e.id})"><i class="ti ti-trash"></i></button>`:''}
+    </div>
     <div class="ev-meta"><i class="ti ti-calendar"></i> ${fmtDate(e.tarih)} &nbsp;|&nbsp; +${e.puan} puan &nbsp;|&nbsp; ${e.katilimcilar.length} katılımcı</div>
     <div class="member-chips">${e.katilimcilar.map(r=>`<span class="chip">${r}</span>`).join('')}</div>
     ${e.not?`<div style="font-size:11px;color:#888;margin-top:5px">${e.not}</div>`:''}</div>`).join(''):'<div style="font-size:12px;color:#555">Henüz etkinlik yok.</div>';
 }
 
 function reqDeleteEvent(id){
+  if(!izin('etkinlikSil'))return;
   const e=events.find(e=>e.id===id);if(!e)return;
-  confirm2('Etkinliği sil',`<strong>${e.tur}</strong> (${fmtDate(e.tarih)}) etkinliği silinecek.`,()=>{
+  confirm2('Etkinliği sil',`<strong>${e.tur}</strong> (${fmtDate(e.tarih)}) silinecek.`,()=>{
     events=events.filter(ev=>ev.id!==id);
     addLog('Etkinlik silindi',`${e.tur} — ${fmtDate(e.tarih)}`);
     save();renderEvents();renderDashboard();
@@ -566,33 +657,60 @@ function reqDeleteEvent(id){
 
 /* ── BÜTÇE ── */
 function renderButce(){
+  if(!izin('butceGor')){document.getElementById('butceContent').innerHTML=engelEkrani();return}
   const gelir=butce.filter(b=>b.tur==='gelir').reduce((s,b)=>s+b.tutar,0),gider=butce.filter(b=>b.tur==='gider').reduce((s,b)=>s+b.tutar,0),net=gelir-gider;
-  document.getElementById('butceOzet').innerHTML=`
-    <div class="butce-kart bk-gelir"><div class="label">Toplam Gelir</div><div class="value">${fmtTL(gelir)}</div></div>
-    <div class="butce-kart bk-gider"><div class="label">Toplam Gider</div><div class="value">${fmtTL(gider)}</div></div>
-    <div class="butce-kart bk-net"><div class="label">Net Kasa</div><div class="value" style="color:${net>=0?'#9fe1cb':'#e24b4a'}">${fmtTL(net)}</div></div>`;
-  const ft=document.getElementById('filterButceTur').value,fk=document.getElementById('filterButceKat').value;
-  const filtered=[...butce].filter(b=>(!ft||b.tur===ft)&&(!fk||b.kategori===fk)).sort((a,b)=>new Date(b.tarih)-new Date(a.tarih));
-  document.getElementById('butceTableBody').innerHTML=filtered.length?filtered.map(b=>`<tr>
-    <td style="font-size:11px;color:#888">${fmtDate(b.tarih)}</td><td>${b.aciklama||'-'}</td>
-    <td style="font-size:11px;color:#888">${b.kategori||'Diğer'}</td>
-    <td><span class="badge badge-${b.tur==='gelir'?'gelir':'gider'}">${b.tur==='gelir'?'Gelir':'Gider'}</span></td>
-    <td style="font-weight:500;color:${b.tur==='gelir'?'#9fe1cb':'#e24b4a'}">${b.tur==='gider'?'-':''}${fmtTL(b.tutar)}</td>
-    <td><button class="btn btn-danger btn-sm" onclick="reqDeleteButce('${b.id}')"><i class="ti ti-trash"></i></button></td></tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:#555;padding:1.2rem">İşlem yok</td></tr>';
+  const editForm=izin('butceDuzenle')?`
+    <div class="card">
+      <div class="section-title" style="margin-bottom:.6rem">Yeni işlem ekle</div>
+      <div class="form-row">
+        <div class="form-group"><label>Tür</label><select id="b_tur"><option value="gelir">Gelir</option><option value="gider">Gider</option></select></div>
+        <div class="form-group"><label>Tarih</label><input type="date" id="b_tarih" value="${todayStr()}"></div>
+        <div class="form-group"><label>Tutar (₺)</label><input type="number" id="b_tutar" placeholder="0.00" step="0.01"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Açıklama</label><input type="text" id="b_aciklama" placeholder="Açıklama..."></div>
+        <div class="form-group"><label>Kategori</label><select id="b_kategori">${BUTCE_KAT.map(k=>`<option>${k}</option>`).join('')}</select></div>
+      </div>
+      <button class="btn btn-success" onclick="reqButce()"><i class="ti ti-plus"></i> Ekle</button>
+    </div>`:'';
+  document.getElementById('butceContent').innerHTML=`
+    <div class="butce-ozet">
+      <div class="butce-kart bk-gelir"><div class="label">Toplam Gelir</div><div class="value">${fmtTL(gelir)}</div></div>
+      <div class="butce-kart bk-gider"><div class="label">Toplam Gider</div><div class="value">${fmtTL(gider)}</div></div>
+      <div class="butce-kart bk-net"><div class="label">Net Kasa</div><div class="value" style="color:${net>=0?'#9fe1cb':'#e24b4a'}">${fmtTL(net)}</div></div>
+    </div>
+    ${editForm}
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:86px">Tarih</th><th>Açıklama</th><th style="width:90px">Kategori</th>
+          <th style="width:54px">Tür</th><th style="width:100px">Tutar</th>
+          ${izin('butceDuzenle')?'<th style="width:44px">Sil</th>':''}
+        </tr></thead>
+        <tbody>${[...butce].sort((a,b)=>new Date(b.tarih)-new Date(a.tarih)).map(b=>`<tr>
+          <td style="font-size:11px;color:#888">${fmtDate(b.tarih)}</td><td>${b.aciklama||'-'}</td>
+          <td style="font-size:11px;color:#888">${b.kategori||'Diğer'}</td>
+          <td><span class="badge badge-${b.tur==='gelir'?'gelir':'gider'}">${b.tur==='gelir'?'Gelir':'Gider'}</span></td>
+          <td style="font-weight:500;color:${b.tur==='gelir'?'#9fe1cb':'#e24b4a'}">${b.tur==='gider'?'-':''}${fmtTL(b.tutar)}</td>
+          ${izin('butceDuzenle')?`<td><button class="btn btn-danger btn-sm" onclick="reqDeleteButce('${b.id}')"><i class="ti ti-trash"></i></button></td>`:''}
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>`;
 }
 
 function reqButce(){
+  if(!izin('butceDuzenle'))return;
   const tur=document.getElementById('b_tur').value,tarih=document.getElementById('b_tarih').value,tutar=parseFloat(document.getElementById('b_tutar').value)||0,aciklama=document.getElementById('b_aciklama').value.trim(),kategori=document.getElementById('b_kategori').value;
   if(!tutar||!aciklama){alert('Tutar ve açıklama zorunlu.');return}
   confirm2('İşlem ekle',`<strong>${tur==='gelir'?'Gelir':'Gider'}</strong>: ${fmtTL(tutar)}<br>${aciklama}`,()=>{
     butce.push({id:Date.now().toString(),tur,tarih,tutar,aciklama,kategori});
     addLog('Bütçe işlemi',`${tur==='gelir'?'Gelir':'Gider'}: ${fmtTL(tutar)} — ${aciklama}`);
     save();renderButce();renderDashboard();
-    document.getElementById('b_tutar').value='';document.getElementById('b_aciklama').value='';
   });
 }
 
 function reqDeleteButce(id){
+  if(!izin('butceDuzenle'))return;
   const b=butce.find(b=>b.id===id);if(!b)return;
   confirm2('İşlemi sil',`${b.tur==='gelir'?'Gelir':'Gider'}: <strong>${fmtTL(b.tutar)}</strong><br>${b.aciklama}`,()=>{
     butce=butce.filter(x=>x.id!==id);
@@ -601,35 +719,18 @@ function reqDeleteButce(id){
   });
 }
 
-function importCSV(event){
-  const file=event.target.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    const lines=e.target.result.split('\n').filter(l=>l.trim());let added=0;
-    lines.forEach((line,i)=>{
-      if(i===0&&line.toLowerCase().includes('tarih'))return;
-      const parts=line.split(/[,;]/).map(p=>p.trim().replace(/^"|"$/g,''));
-      if(parts.length<3)return;
-      const tutar=parseFloat(parts[2].replace(',','.'))||0;if(!tutar)return;
-      butce.push({id:Date.now().toString()+Math.random(),tur:(parts[3]||'').toLowerCase().includes('gider')?'gider':'gelir',tarih:parts[0]||'',tutar,aciklama:parts[1]||'',kategori:parts[4]||'Diğer'});added++;
-    });
-    addLog('CSV import',`${added} bütçe işlemi içe aktarıldı`);
-    save();renderButce();alert(added+' işlem içe aktarıldı.');event.target.value='';
-  };
-  reader.readAsText(file,'UTF-8');
-}
-
 /* ── LOG ── */
 function renderLog(){
+  if(!izin('logGor')){document.getElementById('logList').innerHTML=engelEkrani();return}
   document.getElementById('logList').innerHTML=logs.length?logs.map(l=>`<div class="log-item">
     <div class="log-time"><i class="ti ti-clock" style="font-size:10px"></i> ${fmtDateTime(l.time)}</div>
+    <div><span class="log-who">${l.who||'?'}</span> <span style="font-size:10px;color:#555">(${l.rol||'?'})</span></div>
     <div class="log-action">${l.action}</div>
     <div class="log-detail">${l.detail}</div></div>`).join(''):'<div style="font-size:12px;color:#555;padding:1rem;text-align:center">Henüz log yok</div>';
 }
 
-/* ── ORG ŞEMA (düzeltilmiş + animasyonlu) ── */
+/* ── ORG ŞEMA ── */
 function buildOrgSVG(animated){
-  // Sabit genişlik, tüm satırlar ortalanacak
   const W=700,NW=108,NH=40,NY=34,UW=88,UH=36,GAP=10;
   const lider=members.find(m=>m.rutbe==='Siyah');
   const yoneticiler=members.filter(m=>m.rutbe==='Kırmızı');
@@ -638,21 +739,12 @@ function buildOrgSVG(animated){
   const uyeler=members.filter(m=>m.rutbe==='Sarı'||m.rutbe==='Beyaz');
   const UCOLS=Math.min(uyeler.length,6);
   const uRows=uyeler.length?Math.ceil(uyeler.length/UCOLS):0;
-
   let svgH=20;
-  const LY=svgH;svgH+=NH+30;
-  const YOY=svgH;svgH+=NY+30;
-  const YEY=svgH;svgH+=NH+30;
-  const YAY=svgH;svgH+=yardimcilar.length?NH+30:0;
-  const UY=svgH;
+  const LY=svgH;svgH+=NH+30;const YOY=svgH;svgH+=NY+30;const YEY=svgH;svgH+=NH+30;
+  const YAY=svgH;svgH+=yardimcilar.length?NH+30:0;const UY=svgH;
   if(uyeler.length)svgH+=uRows*(UH+6)+20;
-
-  const cx=W/2;
-  let animDelay=0;
-
-  // Ortalanmış x başlangıcı
-  function rowStartX(count,itemW){return (W-(count*itemW+(count-1)*GAP))/2}
-
+  const cx=W/2;let animDelay=0;
+  function rowStartX(count,itemW){return(W-(count*itemW+(count-1)*GAP))/2}
   function nodeG(cls,x,y,w,h,t1,t2,delay){
     const anim=animated?`class="org-node-anim" style="animation-delay:${delay}ms"`:'';
     return`<g ${anim}><g class="org-node ${cls}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6"/><text class="t1" x="${x+w/2}" y="${y+h/2-7}" text-anchor="middle" dominant-baseline="central">${t1}</text><text class="t2" x="${x+w/2}" y="${y+h/2+7}" text-anchor="middle" dominant-baseline="central">${t2}</text></g></g>`
@@ -661,132 +753,49 @@ function buildOrgSVG(animated){
     const anim=animated?`style="animation-delay:${delay}ms"`:'';
     return`<line class="${dash?'org-conn-dash':'org-conn'}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${anim}/>`
   }
-
   let svg=`<svg class="org" viewBox="0 0 ${W} ${svgH}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${W}px;height:auto">`;
-
-  // Lider
-  if(lider){
-    svg+=nodeG('org-lider',cx-NW/2,LY,NW,NH,lider.rumuz,'Lider',animDelay);
-    svg+=ln(cx,LY+NH,cx,YOY,true,animDelay+50);
-    animDelay+=100;
-  }
-
-  // Yöneticiler
-  if(yoneticiler.length){
-    const sx=rowStartX(yoneticiler.length,NW);
-    const lx1=sx+NW/2,lx2=sx+(yoneticiler.length-1)*(NW+GAP)+NW/2;
-    if(yoneticiler.length>1)svg+=ln(lx1,YOY+NY/2,lx2,YOY+NY/2,false,animDelay);
-    yoneticiler.forEach((m,i)=>{
-      const nx=sx+i*(NW+GAP);const ncx=nx+NW/2;
-      svg+=ln(cx,YOY,ncx,YOY,false,animDelay);
-      svg+=nodeG('org-yonetici',nx,YOY,NW,NY,m.rumuz,'Yönetici',animDelay+50);
-      animDelay+=80;
-    });
-  } else {
-    const bw=260,bx=cx-bw/2;
-    const anim=animated?`class="org-node-anim" style="animation-delay:${animDelay}ms"`:'';
-    svg+=`<g ${anim}><g class="org-node org-yonetici"><rect x="${bx}" y="${YOY}" width="${bw}" height="${NY}" rx="6"/><text class="org-yonetici" x="${cx}" y="${YOY+NY/2}" text-anchor="middle" dominant-baseline="central">Yönetici kademe — henüz boş</text></g></g>`;
-    animDelay+=100;
-  }
-
-  // Yetkililer
-  if(yetkililer.length){
-    const sx=rowStartX(yetkililer.length,NW);
-    const lx1=sx+NW/2,lx2=sx+(yetkililer.length-1)*(NW+GAP)+NW/2;
-    if(yetkililer.length>1)svg+=ln(lx1,YEY+NH/2,lx2,YEY+NH/2,false,animDelay);
-    yetkililer.forEach((m,i)=>{
-      const nx=sx+i*(NW+GAP);const ncx=nx+NW/2;
-      svg+=ln(cx,YOY+NY,ncx,YEY,false,animDelay);
-      svg+=nodeG('org-yetkili',nx,YEY,NW,NH,m.rumuz,'Yetkili',animDelay+50);
-      if(yardimcilar.length)svg+=ln(ncx,YEY+NH,ncx,YAY,false,animDelay+100);
-      animDelay+=80;
-    });
-  }
-
-  // Yardımcılar
-  if(yardimcilar.length){
-    const sx=rowStartX(yardimcilar.length,NW);
-    const lx1=sx+NW/2,lx2=sx+(yardimcilar.length-1)*(NW+GAP)+NW/2;
-    if(yardimcilar.length>1)svg+=ln(lx1,YAY+NH/2,lx2,YAY+NH/2,false,animDelay);
-    yardimcilar.forEach((m,i)=>{
-      const nx=sx+i*(NW+GAP);
-      svg+=nodeG('org-yardimci',nx,YAY,NW,NH,m.rumuz,'Yardımcı',animDelay+50);
-      animDelay+=80;
-    });
-  }
-
-  // Üyeler — her satır ayrı ortalı
-  if(uyeler.length){
-    for(let row=0;row<uRows;row++){
-      const rowItems=uyeler.slice(row*UCOLS,(row+1)*UCOLS);
-      const sx=rowStartX(rowItems.length,UW);
-      const ny=UY+row*(UH+6);
-      // Üst bağlantı çizgisi
-      if(row===0&&yardimcilar.length===0&&yetkililer.length===0){
-        svg+=ln(sx+UW/2,UY,sx+(rowItems.length-1)*(UW+GAP)+UW/2,UY,false,animDelay);
-      }
-      rowItems.forEach((m,i)=>{
-        const nx=sx+i*(UW+GAP);const ncx=nx+UW/2;
-        if(row===0)svg+=ln(ncx,UY,ncx,UY+UH,false,animDelay);
-        svg+=nodeG('org-uye',nx,ny,UW,UH,m.rumuz,'Üye',animDelay+50);
-        animDelay+=40;
-      });
-    }
-  }
-
-  svg+='</svg>';
-  return svg;
+  if(lider){svg+=nodeG('org-lider',cx-NW/2,LY,NW,NH,lider.rumuz,'Lider',animDelay);svg+=ln(cx,LY+NH,cx,YOY,true,animDelay+50);animDelay+=100}
+  if(yoneticiler.length){const sx=rowStartX(yoneticiler.length,NW);if(yoneticiler.length>1)svg+=ln(sx+NW/2,YOY+NY/2,sx+(yoneticiler.length-1)*(NW+GAP)+NW/2,YOY+NY/2,false,animDelay);yoneticiler.forEach((m,i)=>{const nx=sx+i*(NW+GAP);svg+=ln(cx,YOY,nx+NW/2,YOY,false,animDelay);svg+=nodeG('org-yonetici',nx,YOY,NW,NY,m.rumuz,'Yönetici',animDelay+50);animDelay+=80})}
+  else{const bw=260,bx=cx-bw/2;const anim=animated?`class="org-node-anim" style="animation-delay:${animDelay}ms"`:'';svg+=`<g ${anim}><g class="org-node org-yonetici"><rect x="${bx}" y="${YOY}" width="${bw}" height="${NY}" rx="6"/><text class="org-yonetici" x="${cx}" y="${YOY+NY/2}" text-anchor="middle" dominant-baseline="central">Yönetici kademe — henüz boş</text></g></g>`;animDelay+=100}
+  if(yetkililer.length){const sx=rowStartX(yetkililer.length,NW);if(yetkililer.length>1)svg+=ln(sx+NW/2,YEY+NH/2,sx+(yetkililer.length-1)*(NW+GAP)+NW/2,YEY+NH/2,false,animDelay);yetkililer.forEach((m,i)=>{const nx=sx+i*(NW+GAP),ncx=nx+NW/2;svg+=ln(cx,YOY+NY,ncx,YEY,false,animDelay);svg+=nodeG('org-yetkili',nx,YEY,NW,NH,m.rumuz,'Yetkili',animDelay+50);if(yardimcilar.length)svg+=ln(ncx,YEY+NH,ncx,YAY,false,animDelay+100);animDelay+=80})}
+  if(yardimcilar.length){const sx=rowStartX(yardimcilar.length,NW);if(yardimcilar.length>1)svg+=ln(sx+NW/2,YAY+NH/2,sx+(yardimcilar.length-1)*(NW+GAP)+NW/2,YAY+NH/2,false,animDelay);yardimcilar.forEach((m,i)=>{const nx=sx+i*(NW+GAP);svg+=nodeG('org-yardimci',nx,YAY,NW,NH,m.rumuz,'Yardımcı',animDelay+50);animDelay+=80})}
+  if(uyeler.length){for(let row=0;row<uRows;row++){const rowItems=uyeler.slice(row*UCOLS,(row+1)*UCOLS);const sx=rowStartX(rowItems.length,UW);const ny=UY+row*(UH+6);if(row===0&&!yardimcilar.length&&!yetkililer.length)svg+=ln(sx+UW/2,UY,sx+(rowItems.length-1)*(UW+GAP)+UW/2,UY,false,animDelay);rowItems.forEach((m,i)=>{const nx=sx+i*(UW+GAP),ncx=nx+UW/2;if(row===0)svg+=ln(ncx,UY,ncx,UY+UH,false,animDelay);svg+=nodeG('org-uye',nx,ny,UW,UH,m.rumuz,'Üye',animDelay+50);animDelay+=40})}}
+  svg+='</svg>';return svg;
 }
 
 function renderOrg(){document.getElementById('orgWrap').innerHTML=buildOrgSVG(true)}
 
 function orgKodUret(){
+  if(!izin('kodUret'))return;
   const svgCode=buildOrgSVG(false);
   const styles=`<style>
-.org-lider rect{fill:#2c2c2a;stroke:#888780;stroke-width:0.5}
-.org-lider text.t1{fill:#d3d1c7;font-size:12px;font-weight:600;font-family:Arial,sans-serif}
-.org-lider text.t2{fill:#888780;font-size:10px;font-family:Arial,sans-serif}
-.org-yonetici rect{fill:none;stroke:#a32d2d;stroke-width:0.5;stroke-dasharray:5 3}
-.org-yonetici text{fill:#e24b4a;font-size:10px;font-family:Arial,sans-serif;opacity:.7}
-.org-yetkili rect{fill:#042c53;stroke:#185fa5;stroke-width:0.5}
-.org-yetkili text.t1{fill:#b5d4f4;font-size:12px;font-weight:600;font-family:Arial,sans-serif}
-.org-yetkili text.t2{fill:#378add;font-size:10px;font-family:Arial,sans-serif}
-.org-yardimci rect{fill:#04342c;stroke:#0f6e56;stroke-width:0.5}
-.org-yardimci text.t1{fill:#9fe1cb;font-size:12px;font-weight:600;font-family:Arial,sans-serif}
-.org-yardimci text.t2{fill:#1d9e75;font-size:10px;font-family:Arial,sans-serif}
-.org-uye rect{fill:#412402;stroke:#854f0b;stroke-width:0.5}
-.org-uye text.t1{fill:#fac775;font-size:10px;font-weight:600;font-family:Arial,sans-serif}
-.org-uye text.t2{fill:#ba7517;font-size:9px;font-family:Arial,sans-serif}
-.org-conn{stroke:#444;stroke-width:0.5;fill:none}
-.org-conn-dash{stroke:#444;stroke-width:0.5;fill:none;stroke-dasharray:4 3}
+.org-lider rect{fill:#2c2c2a;stroke:#888780;stroke-width:0.5}.org-lider text.t1{fill:#d3d1c7;font-size:12px;font-weight:600;font-family:Arial,sans-serif}.org-lider text.t2{fill:#888780;font-size:10px;font-family:Arial,sans-serif}
+.org-yonetici rect{fill:none;stroke:#a32d2d;stroke-width:0.5;stroke-dasharray:5 3}.org-yonetici text{fill:#e24b4a;font-size:10px;font-family:Arial,sans-serif;opacity:.7}
+.org-yetkili rect{fill:#042c53;stroke:#185fa5;stroke-width:0.5}.org-yetkili text.t1{fill:#b5d4f4;font-size:12px;font-weight:600;font-family:Arial,sans-serif}.org-yetkili text.t2{fill:#378add;font-size:10px;font-family:Arial,sans-serif}
+.org-yardimci rect{fill:#04342c;stroke:#0f6e56;stroke-width:0.5}.org-yardimci text.t1{fill:#9fe1cb;font-size:12px;font-weight:600;font-family:Arial,sans-serif}.org-yardimci text.t2{fill:#1d9e75;font-size:10px;font-family:Arial,sans-serif}
+.org-uye rect{fill:#412402;stroke:#854f0b;stroke-width:0.5}.org-uye text.t1{fill:#fac775;font-size:10px;font-weight:600;font-family:Arial,sans-serif}.org-uye text.t2{fill:#ba7517;font-size:9px;font-family:Arial,sans-serif}
+.org-conn{stroke:#444;stroke-width:0.5;fill:none}.org-conn-dash{stroke:#444;stroke-width:0.5;fill:none;stroke-dasharray:4 3}
 </style>`;
   const fullCode=`<div style="background:#111;padding:20px;text-align:center;overflow-x:auto">\n${styles}\n${svgCode}\n</div>`;
   const mc=document.getElementById('modalContainer');
   mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-    <div class="kod-box">
-      <h3><i class="ti ti-code"></i> Organizasyon Şeması — HTML Kodu</h3>
-      <div style="font-size:11px;color:#888;margin-bottom:.6rem">Kopyalayıp Wix'teki HTML bloğuna yapıştır.</div>
-      <div class="kod-area">${fullCode.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
-        <button class="btn" onclick="closeModal()">Kapat</button>
-        <button class="btn btn-primary" onclick="copyOrgKod()"><i class="ti ti-copy"></i> Kopyala</button>
-      </div>
-      <div id="copyMsg" style="font-size:11px;color:#9fe1cb;text-align:right;margin-top:4px;display:none">Panoya kopyalandı!</div>
+    <div class="kod-box"><h3><i class="ti ti-code"></i> Organizasyon — HTML Kodu</h3>
+    <div style="font-size:11px;color:#888;margin-bottom:.6rem">Wix HTML bloğuna yapıştır.</div>
+    <div class="kod-area">${fullCode.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+      <button class="btn" onclick="closeModal()">Kapat</button>
+      <button class="btn btn-primary" onclick="copyOrgKod()"><i class="ti ti-copy"></i> Kopyala</button>
     </div>
-  </div>`;
+    <div id="copyMsg" style="font-size:11px;color:#9fe1cb;text-align:right;margin-top:4px;display:none">Kopyalandı!</div>
+    </div></div>`;
   window._orgKodFull=fullCode;
 }
-
-function copyOrgKod(){
-  navigator.clipboard.writeText(window._orgKodFull||'').then(()=>{
-    const msg=document.getElementById('copyMsg');
-    if(msg){msg.style.display='block';setTimeout(()=>msg.style.display='none',2500)}
-  });
-}
+function copyOrgKod(){navigator.clipboard.writeText(window._orgKodFull||'').then(()=>{const m=document.getElementById('copyMsg');if(m){m.style.display='block';setTimeout(()=>m.style.display='none',2500)}})}
 
 /* ── MODALLER ── */
-function reqAddMember(){openModal('addMember')}
+function reqAddMember(){if(izin('uyeEkle'))openModal('addMember')}
 function reqDeleteMember(id){
+  if(!izin('uyeSil'))return;
   const m=members.find(m=>m.id===id);if(!m)return;
   confirm2('Üyeyi sil',`<strong>${m.rumuz}</strong> kalıcı olarak silinecek.`,()=>{
     members=members.filter(m=>m.id!==id);
@@ -796,12 +805,13 @@ function reqDeleteMember(id){
 }
 
 function openModal(type,data){
+  if(!SESSION.girisZamani)return;
   const mc=document.getElementById('modalContainer');
   const idVal=typeof data==='number'?data:null;
   const mData=idVal?members.find(m=>m.id===idVal):null;
   const today=todayStr();
 
-  if(type==='addMember'){
+  if(type==='addMember'&&izin('uyeEkle')){
     mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
       <div class="modal-box"><h3>Yeni Üye</h3>
         <div class="form-row">
@@ -823,7 +833,7 @@ function openModal(type,data){
           <button class="btn btn-warn" onclick="reqSaveMember()"><i class="ti ti-check"></i> Onayla & Kaydet</button>
         </div>
       </div></div>`;
-  } else if(type==='addEvent'){
+  } else if(type==='addEvent'&&izin('etkinlikEkle')){
     const opts=members.map(m=>`<option value="${m.rumuz}">${m.rumuz}</option>`).join('');
     mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
       <div class="modal-box"><h3>Yeni Etkinlik</h3>
@@ -842,16 +852,16 @@ function openModal(type,data){
           <button class="btn btn-warn" onclick="reqSaveEvent()"><i class="ti ti-check"></i> Onayla & Kaydet</button>
         </div>
       </div></div>`;
-  } else if(type==='editMember'&&mData){
+  } else if(type==='editMember'&&mData&&(izin('uyeDuzenle')||izin('rutbeDegistir'))){
     mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
       <div class="modal-box"><h3>${mData.rumuz} — Düzenle</h3>
         <div class="form-row">
-          <div class="form-group"><label>Rütbe</label><select id="e_rutbe">${RUTBELER.map(r=>`<option${r===mData.rutbe?' selected':''}>${r}</option>`).join('')}</select></div>
+          <div class="form-group"><label>Rütbe</label><select id="e_rutbe" ${!izin('rutbeDegistir')?'disabled':''}>${RUTBELER.map(r=>`<option${r===mData.rutbe?' selected':''}>${r}</option>`).join('')}</select></div>
           <div class="form-group"><label>Durum</label><select id="e_durum">${DURUMLAR.map(d=>`<option${d===mData.durum?' selected':''}>${d}</option>`).join('')}</select></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>Görev</label><select id="e_gorev">${GOREVLER.map(g=>`<option${g===mData.gorev?' selected':''}>${g}</option>`).join('')}</select></div>
-          <div class="form-group"><label>Puan</label><input type="number" id="e_puan" value="${mData.puan}"></div>
+          <div class="form-group"><label>Görev</label><select id="e_gorev" ${!izin('gorevAta')?'disabled':''}>${GOREVLER.map(g=>`<option${g===mData.gorev?' selected':''}>${g}</option>`).join('')}</select></div>
+          <div class="form-group"><label>Puan</label><input type="number" id="e_puan" value="${mData.puan}" ${!izin('puanDuzenle')?'disabled':''}></div>
         </div>
         <div class="form-row">
           <div class="form-group"><label>Katılım tarihi</label><input type="date" id="e_katilim" value="${mData.katilim||today}"></div>
@@ -870,6 +880,7 @@ function openModal(type,data){
 function closeModal(){document.getElementById('modalContainer').innerHTML=''}
 
 function reqSaveMember(){
+  if(!izin('uyeEkle'))return;
   const rumuz=document.getElementById('m_rumuz').value.trim();if(!rumuz)return;
   const rutbe=document.getElementById('m_rutbe').value,durum=document.getElementById('m_durum').value,gorev=document.getElementById('m_gorev').value;
   confirm2('Yeni üye ekle',`<strong>${rumuz}</strong> — ${rutbe} rütbesiyle ekleniyor.`,()=>{
@@ -881,11 +892,10 @@ function reqSaveMember(){
 
 function reqUpdateMember(id){
   const m=members.find(m=>m.id===id);if(!m)return;
-  const newRutbe=document.getElementById('e_rutbe').value;
+  const newRutbe=izin('rutbeDegistir')?document.getElementById('e_rutbe').value:m.rutbe;
   const newDurum=document.getElementById('e_durum').value;
-  const newGorev=document.getElementById('e_gorev').value;
-  // ÖNEMLİ: Number() ile karşılaştır, parseInt parse hatası yaratabilir
-  const newPuan=Number(document.getElementById('e_puan').value)||0;
+  const newGorev=izin('gorevAta')?document.getElementById('e_gorev').value:m.gorev;
+  const newPuan=izin('puanDuzenle')?Number(document.getElementById('e_puan').value)||0:m.puan;
   const oldPuan=Number(m.puan)||0;
   const changes=[];
   if(m.rutbe!==newRutbe)changes.push(`Rütbe: ${m.rutbe} → ${newRutbe}`);
@@ -894,21 +904,16 @@ function reqUpdateMember(id){
   if(oldPuan!==newPuan)changes.push(`Puan: ${oldPuan} → ${newPuan}`);
   confirm2('Üye güncelle',`<strong>${m.rumuz}</strong><br>${changes.length?changes.join('<br>'):'<span style="color:#888;font-size:12px">Değişiklik yok</span>'}`,()=>{
     m.rutbe=newRutbe;m.durum=newDurum;m.gorev=newGorev;m.puan=newPuan;
-    m.katilim=document.getElementById('e_katilim').value;
-    m.dogum=document.getElementById('e_dogum').value;
-    m.ref=document.getElementById('e_ref').value;
-    m.not=document.getElementById('e_not').value;
-    // Her zaman logla, değişiklik yoksa da kaydedildi yaz
-    if(changes.length){
-      addLog('Üye güncellendi',`${m.rumuz}: ${changes.join(' | ')}`);
-    } else {
-      addLog('Üye düzenlendi',`${m.rumuz} — veri güncellendi (alan değerleri aynı)`);
-    }
+    m.katilim=document.getElementById('e_katilim').value;m.dogum=document.getElementById('e_dogum').value;
+    m.ref=document.getElementById('e_ref').value;m.not=document.getElementById('e_not').value;
+    if(changes.length)addLog('Üye güncellendi',`${m.rumuz}: ${changes.join(' | ')}`);
+    else addLog('Üye düzenlendi',`${m.rumuz} — veri kaydedildi`);
     save();closeModal();renderMembers();renderDashboard();
   });
 }
 
 function reqSaveEvent(){
+  if(!izin('etkinlikEkle'))return;
   const tur=document.getElementById('e_tur').value,date=document.getElementById('e_date').value,puan=parseInt(document.getElementById('e_puan').value)||0;
   const sel=document.getElementById('e_katilimcilar'),katilimcilar=Array.from(sel.selectedOptions).map(o=>o.value),not=document.getElementById('e_not').value;
   if(!tur)return;
@@ -919,14 +924,6 @@ function reqSaveEvent(){
     save();closeModal();renderEvents();renderDashboard();
   });
 }
-
-// Başlangıçta bütçe tarihini bugüne set et
-document.addEventListener('DOMContentLoaded',()=>{
-  const el=document.getElementById('b_tarih');
-  if(el)el.value=todayStr();
-});
-
-renderDashboard();
 </script>
 </body>
 </html>
