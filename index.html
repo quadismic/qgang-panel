@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q-GANG Panel</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#111;color:#d3d1c7;padding:12px}
+.panel{max-width:900px;margin:0 auto}
+.nav{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1.2rem;border-bottom:0.5px solid #333;padding-bottom:.8rem}
+.nav button{padding:6px 12px;border-radius:8px;border:0.5px solid #444;background:transparent;color:#888;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.nav button.active{background:#1e1e1e;color:#d3d1c7;border-color:#666}
+.nav button:hover{background:#1a1a1a}
+.tab{display:none}.tab.active{display:block}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:1.2rem}
+.stat-card{background:#1a1a1a;border-radius:8px;padding:12px}
+.stat-card .label{font-size:11px;color:#888;margin-bottom:4px}
+.stat-card .value{font-size:20px;font-weight:500;color:#d3d1c7}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+th{text-align:left;padding:7px 8px;color:#888;border-bottom:0.5px solid #333;font-weight:500;font-size:11px;white-space:nowrap}
+td{padding:7px 8px;border-bottom:0.5px solid #222;color:#d3d1c7;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:hover td{background:#1a1a1a}
+.badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:500;white-space:nowrap}
+.badge-siyah{background:#2c2c2a;color:#d3d1c7}
+.badge-kirmizi{background:#3a1010;color:#e24b4a}
+.badge-mavi{background:#042c53;color:#b5d4f4}
+.badge-yesil{background:#04342c;color:#9fe1cb}
+.badge-sari{background:#412402;color:#fac775}
+.badge-beyaz{background:#2a2a28;color:#888780}
+.badge-aktif{background:#04342c;color:#9fe1cb}
+.badge-pasif{background:#2a2a28;color:#888780}
+.badge-riskli{background:#3a1010;color:#e24b4a}
+.badge-izinde{background:#042c53;color:#b5d4f4}
+.badge-arsiv{background:#1a1a1a;color:#555}
+.badge-gelir{background:#04342c;color:#9fe1cb}
+.badge-gider{background:#3a1010;color:#e24b4a}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:8px}
+.form-group{display:flex;flex-direction:column;gap:3px}
+.form-group label{font-size:11px;color:#888}
+.form-group input,.form-group select,.form-group textarea{padding:7px 9px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:13px;width:100%}
+.form-group textarea{resize:vertical;min-height:56px}
+.btn{padding:7px 14px;border-radius:8px;border:0.5px solid #444;background:transparent;color:#d3d1c7;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn:hover{background:#1e1e1e}
+.btn-primary{background:#042c53;color:#b5d4f4;border-color:#185fa5}
+.btn-danger{background:#3a1010;color:#e24b4a;border-color:#a32d2d}
+.btn-success{background:#04342c;color:#9fe1cb;border-color:#0f6e56}
+.btn-warn{background:#412402;color:#fac775;border-color:#854f0b}
+.btn-sm{padding:3px 8px;font-size:11px}
+.section-title{font-size:14px;font-weight:500;color:#d3d1c7;margin-bottom:.8rem}
+.card{background:#1a1a1a;border:0.5px solid #333;border-radius:10px;padding:.9rem 1rem;margin-bottom:.8rem}
+.puan-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.puan-bar-bg{flex:1;height:5px;background:#2a2a2a;border-radius:3px;overflow:hidden;min-width:40px}
+.puan-bar{height:100%;background:#1d9e75;border-radius:3px;transition:width .3s}
+.alert-row{display:flex;align-items:flex-start;gap:8px;padding:7px 9px;border-radius:8px;margin-bottom:5px;font-size:12px;line-height:1.4}
+.alert-warn{background:#412402;color:#fac775}
+.alert-info{background:#042c53;color:#b5d4f4}
+.alert-danger{background:#3a1010;color:#e24b4a}
+.alert-success{background:#04342c;color:#9fe1cb}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.8rem;align-items:center}
+.filters select,.filters input{padding:5px 8px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:12px}
+.member-chips{display:flex;flex-wrap:wrap;gap:3px}
+.chip{padding:2px 7px;border-radius:10px;font-size:10px;background:#222;color:#888;border:0.5px solid #333}
+.event-card{background:#1a1a1a;border:0.5px solid #333;border-radius:10px;padding:.9rem;margin-bottom:8px}
+.event-card .ev-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.event-card .ev-title{font-weight:500;font-size:13px}
+.event-card .ev-meta{font-size:11px;color:#888;margin-bottom:6px}
+.butce-ozet{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.2rem}
+.butce-kart{border-radius:8px;padding:12px}
+.butce-kart .label{font-size:11px;margin-bottom:4px}
+.butce-kart .value{font-size:18px;font-weight:500}
+.bk-gelir{background:#04342c}.bk-gelir .label{color:#1d9e75}.bk-gelir .value{color:#9fe1cb}
+.bk-gider{background:#3a1010}.bk-gider .label{color:#a32d2d}.bk-gider .value{color:#e24b4a}
+.bk-net{background:#1a1a1a;border:0.5px solid #333}.bk-net .label{color:#888}.bk-net .value{color:#d3d1c7}
+.import-area{border:0.5px dashed #444;border-radius:8px;padding:1rem;text-align:center;cursor:pointer;color:#888;font-size:12px}
+.import-area:hover{border-color:#666;color:#d3d1c7}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;z-index:1000;padding:12px}
+.modal-box{background:#1a1a1a;border-radius:12px;border:0.5px solid #444;padding:1.25rem;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
+.modal-box h3{font-size:15px;font-weight:500;margin-bottom:.9rem;color:#d3d1c7}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:.9rem;flex-wrap:wrap}
+.confirm-box{background:#1a1a1a;border-radius:12px;border:0.5px solid #854f0b;padding:1.25rem;width:100%;max-width:400px}
+.confirm-box h3{font-size:14px;font-weight:500;margin-bottom:.6rem;color:#fac775}
+.confirm-box p{font-size:13px;color:#d3d1c7;line-height:1.5;margin-bottom:1rem}
+.kod-box{background:#1a1a1a;border-radius:12px;border:0.5px solid #185fa5;padding:1.25rem;width:100%;max-width:680px;max-height:90vh;overflow-y:auto}
+.kod-box h3{font-size:14px;font-weight:500;margin-bottom:.6rem;color:#b5d4f4}
+.kod-area{background:#0a0a0a;border:0.5px solid #333;border-radius:8px;padding:.8rem;font-family:monospace;font-size:11px;color:#9fe1cb;white-space:pre-wrap;word-break:break-all;max-height:300px;overflow-y:auto;margin-bottom:.8rem;line-height:1.5}
+.log-item{padding:8px 10px;border-bottom:0.5px solid #222;font-size:11px;line-height:1.5}
+.log-item:last-child{border-bottom:none}
+.log-time{color:#555;font-size:10px;margin-bottom:2px}
+.log-action{color:#d3d1c7}
+.log-detail{color:#888;font-size:10px}
+/* ORG */
+.org-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:.5rem 0;text-align:center}
+svg.org{display:inline-block}
+/* Org animasyonu */
+@keyframes orgFadeIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+.org-node-anim{opacity:0;animation:orgFadeIn .4s ease forwards}
+.org-lider rect{fill:#2c2c2a;stroke:#888780;stroke-width:0.5}
+.org-lider text.t1{fill:#d3d1c7;font-size:12px;font-weight:600}
+.org-lider text.t2{fill:#888780;font-size:10px}
+.org-yonetici rect{fill:none;stroke:#a32d2d;stroke-width:0.5;stroke-dasharray:5 3}
+.org-yonetici text{fill:#e24b4a;font-size:10px;opacity:.7}
+.org-yetkili rect{fill:#042c53;stroke:#185fa5;stroke-width:0.5}
+.org-yetkili text.t1{fill:#b5d4f4;font-size:12px;font-weight:600}
+.org-yetkili text.t2{fill:#378add;font-size:10px}
+.org-yardimci rect{fill:#04342c;stroke:#0f6e56;stroke-width:0.5}
+.org-yardimci text.t1{fill:#9fe1cb;font-size:12px;font-weight:600}
+.org-yardimci text.t2{fill:#1d9e75;font-size:10px}
+.org-uye rect{fill:#412402;stroke:#854f0b;stroke-width:0.5}
+.org-uye text.t1{fill:#fac775;font-size:10px;font-weight:600}
+.org-uye text.t2{fill:#ba7517;font-size:9px}
+.org-conn{stroke:#444;stroke-width:0.5;fill:none;opacity:0;animation:orgFadeIn .3s ease forwards}
+.org-conn-dash{stroke:#444;stroke-width:0.5;fill:none;stroke-dasharray:4 3;opacity:0;animation:orgFadeIn .3s ease forwards}
+.sep{border:none;border-top:0.5px solid #333;margin:.9rem 0}
+.top-bar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.9rem;gap:8px;flex-wrap:wrap}
+.top-bar h1{font-size:17px;font-weight:500;color:#d3d1c7}
+.top-bar .sub{font-size:11px;color:#555;margin-top:2px}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:600px){
+  body{padding:8px}
+  .dash-grid{grid-template-columns:1fr}
+  .butce-ozet{grid-template-columns:1fr 1fr}
+  .butce-kart.bk-net{grid-column:1/-1}
+  .form-row{grid-template-columns:1fr}
+  .filters{flex-direction:column;align-items:stretch}
+  .filters select,.filters input{width:100%}
+  .modal-box,.confirm-box,.kod-box{padding:1rem}
+  .nav button{font-size:11px;padding:5px 9px}
+  table{font-size:11px}th,td{padding:5px 6px}
+}
+</style>
+</head>
+<body>
+<div class="panel">
+
+<div class="top-bar">
+  <div>
+    <h1>Q-GANG Paneli</h1>
+    <div class="sub" id="lastSaved">Hazır</div>
+  </div>
+  <button class="btn btn-primary" onclick="reqAddMember()"><i class="ti ti-plus"></i> Üye Ekle</button>
+</div>
+
+<nav class="nav">
+  <button class="active" onclick="showTab('dashboard',this)"><i class="ti ti-chart-bar"></i> Dashboard</button>
+  <button onclick="showTab('members',this)"><i class="ti ti-users"></i> Üyeler</button>
+  <button onclick="showTab('puan',this)"><i class="ti ti-star"></i> Puan</button>
+  <button onclick="showTab('gorev',this)"><i class="ti ti-check"></i> Görevler</button>
+  <button onclick="showTab('etkinlik',this)"><i class="ti ti-calendar"></i> Etkinlikler</button>
+  <button onclick="showTab('butce',this)"><i class="ti ti-currency-lira"></i> Bütçe</button>
+  <button onclick="showTab('org',this)"><i class="ti ti-hierarchy"></i> Organizasyon</button>
+  <button onclick="showTab('log',this)"><i class="ti ti-history"></i> Log</button>
+</nav>
+
+<!-- DASHBOARD -->
+<div id="tab-dashboard" class="tab active">
+  <div class="stat-grid" id="statsGrid"></div>
+  <div class="dash-grid">
+    <div><div class="section-title">Uyarılar</div><div id="alertsBox"></div></div>
+    <div><div class="section-title">Yaklaşan etkinlikler</div><div id="upcomingEvents"></div></div>
+  </div>
+  <div class="dash-grid" style="margin-top:1rem">
+    <div><div class="section-title">Yaklaşan doğum günleri</div><div id="birthdaysBox"></div></div>
+    <div><div class="section-title">Kasa özeti</div><div id="dashButce"></div></div>
+  </div>
+  <hr class="sep">
+  <div class="section-title">Rütbe dağılımı</div>
+  <div id="rutbeChart"></div>
+</div>
+
+<!-- ÜYELER -->
+<div id="tab-members" class="tab">
+  <div class="filters">
+    <input type="text" id="searchBox" placeholder="Ara..." oninput="renderMembers()" style="max-width:150px">
+    <select id="filterRutbe" onchange="renderMembers()">
+      <option value="">Tüm rütbeler</option>
+      <option>Siyah</option><option>Kırmızı</option><option>Mavi</option>
+      <option>Yeşil</option><option>Sarı</option><option>Beyaz</option>
+    </select>
+    <select id="filterDurum" onchange="renderMembers()">
+      <option value="">Tüm durumlar</option>
+      <option>Aktif</option><option>Pasif</option><option>Riskli</option>
+      <option>İzinde</option><option>Arşiv</option>
+    </select>
+    <select id="filterGorev" onchange="renderMembers()">
+      <option value="">Tüm görevler</option>
+      <option>Klan</option><option>Sosyal Medya</option><option>Yönetim</option><option>Özel</option><option>Yok</option>
+    </select>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th style="width:26px">#</th><th style="width:100px">Rumuz</th><th style="width:72px">Rütbe</th>
+        <th style="width:64px">Durum</th><th style="width:80px">Görev</th><th style="width:44px">Puan</th>
+        <th style="width:80px">Katılım</th><th style="width:70px">İşlem</th>
+      </tr></thead>
+      <tbody id="memberTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- PUAN -->
+<div id="tab-puan" class="tab">
+  <div class="section-title">Puan tablosu</div>
+  <div id="puanList"></div>
+  <hr class="sep">
+  <div class="section-title">Puan ekle / çıkar</div>
+  <div class="card">
+    <div class="form-row">
+      <div class="form-group"><label>Üye</label><select id="puanUye"></select></div>
+      <div class="form-group"><label>Miktar</label><input type="number" id="puanMiktar" value="10" step="1"></div>
+      <div class="form-group"><label>Sebep</label><input type="text" id="puanSebep" placeholder="Sebep..."></div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn btn-success" onclick="reqPuan()"><i class="ti ti-plus"></i> Uygula</button>
+      <button class="btn btn-primary" onclick="document.getElementById('puanMiktar').value=10;reqPuan()">+10 Etkinlik</button>
+      <button class="btn btn-primary" onclick="document.getElementById('puanMiktar').value=15;reqPuan()">+15 İçerik</button>
+      <button class="btn btn-danger" onclick="document.getElementById('puanMiktar').value=-20;reqPuan()">-20 Pasiflik</button>
+    </div>
+  </div>
+</div>
+
+<!-- GÖREVLER -->
+<div id="tab-gorev" class="tab">
+  <div class="section-title">Görev ata</div>
+  <div class="card">
+    <div class="form-row">
+      <div class="form-group"><label>Üye</label><select id="gorevUye"></select></div>
+      <div class="form-group"><label>Görev</label>
+        <select id="gorevTip"><option>Klan</option><option>Sosyal Medya</option><option>Yönetim</option><option>Özel</option><option>Yok</option></select>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="reqGorev()"><i class="ti ti-check"></i> Ata</button>
+  </div>
+  <div class="section-title">Görev dağılımı</div>
+  <div id="gorevList"></div>
+</div>
+
+<!-- ETKİNLİKLER -->
+<div id="tab-etkinlik" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0">Etkinlikler</div>
+    <button class="btn btn-primary" onclick="openModal('addEvent')"><i class="ti ti-plus"></i> Yeni Etkinlik</button>
+  </div>
+  <div id="eventList"></div>
+</div>
+
+<!-- BÜTÇE -->
+<div id="tab-butce" class="tab">
+  <div class="butce-ozet" id="butceOzet"></div>
+  <div class="card">
+    <div class="section-title" style="margin-bottom:.6rem">Yeni işlem ekle</div>
+    <div class="form-row">
+      <div class="form-group"><label>Tür</label>
+        <select id="b_tur"><option value="gelir">Gelir</option><option value="gider">Gider</option></select>
+      </div>
+      <div class="form-group"><label>Tarih</label><input type="date" id="b_tarih"></div>
+      <div class="form-group"><label>Tutar (₺)</label><input type="number" id="b_tutar" placeholder="0.00" step="0.01"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Açıklama</label><input type="text" id="b_aciklama" placeholder="Açıklama..."></div>
+      <div class="form-group"><label>Kategori</label>
+        <select id="b_kategori"><option>Katkı / Destek</option><option>Ekipman</option><option>Diğer</option></select>
+      </div>
+    </div>
+    <button class="btn btn-success" onclick="reqButce()"><i class="ti ti-plus"></i> Ekle</button>
+  </div>
+  <div class="card">
+    <div class="section-title" style="margin-bottom:.5rem">Excel'den içe aktar</div>
+    <div class="import-area" onclick="document.getElementById('csvInput').click()">
+      <i class="ti ti-upload" style="font-size:18px;display:block;margin-bottom:4px"></i>
+      CSV dosyası seç
+      <input type="file" id="csvInput" accept=".csv" style="display:none" onchange="importCSV(event)">
+    </div>
+    <div style="font-size:11px;color:#555;margin-top:4px">Sütun sırası: Tarih | Açıklama | Tutar | Tür (gelir/gider)</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0">İşlem geçmişi</div>
+    <div class="filters" style="margin:0">
+      <select id="filterButceTur" onchange="renderButce()">
+        <option value="">Tümü</option><option value="gelir">Gelir</option><option value="gider">Gider</option>
+      </select>
+      <select id="filterButceKat" onchange="renderButce()">
+        <option value="">Tüm kategoriler</option>
+        <option>Katkı / Destek</option><option>Ekipman</option><option>Diğer</option>
+      </select>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th style="width:86px">Tarih</th><th>Açıklama</th><th style="width:90px">Kategori</th>
+        <th style="width:54px">Tür</th><th style="width:100px">Tutar</th><th style="width:44px">Sil</th>
+      </tr></thead>
+      <tbody id="butceTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ORGANİZASYON -->
+<div id="tab-org" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0">Organizasyon şeması <span style="font-size:11px;color:#555;font-weight:400">— veriden otomatik üretilir</span></div>
+    <button class="btn btn-primary" onclick="orgKodUret()"><i class="ti ti-code"></i> Kod Üret</button>
+  </div>
+  <div class="org-wrap" id="orgWrap"></div>
+</div>
+
+<!-- LOG -->
+<div id="tab-log" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0">Değişiklik geçmişi</div>
+    <button class="btn btn-danger btn-sm" onclick="clearLog()"><i class="ti ti-trash"></i> Logu temizle</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div id="logList" style="max-height:600px;overflow-y:auto"></div>
+  </div>
+</div>
+
+<div id="modalContainer"></div>
+
+<script>
+const RUTBELER=['Siyah','Kırmızı','Mavi','Yeşil','Sarı','Beyaz'];
+const DURUMLAR=['Aktif','Pasif','Riskli','İzinde','Arşiv'];
+const GOREVLER=['Klan','Sosyal Medya','Yönetim','Özel','Yok'];
+const ETK_TURLERI=['GANG-UP','OP-NIGHT','BBQ-GANG','Q-NITY','B-DAY & S-DAY','Diğer'];
+const BUTCE_KAT=['Katkı / Destek','Ekipman','Diğer'];
+
+// Bugünün tarihi YYYY-MM-DD formatında
+function todayStr(){const d=new Date();return d.toISOString().split('T')[0]}
+
+function getLS(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch(e){return def}}
+function setLS(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+
+const defaultMembers=[
+  {id:1,rumuz:'Quadismic',rutbe:'Siyah',durum:'Aktif',gorev:'Yok',puan:100,katilim:'2023-01-01',dogum:'',not:'Lider',ref:''},
+  {id:2,rumuz:'Schizo',rutbe:'Mavi',durum:'Aktif',gorev:'Yönetim',puan:75,katilim:'2023-02-01',dogum:'',not:'',ref:''},
+  {id:3,rumuz:'Renovich',rutbe:'Mavi',durum:'Aktif',gorev:'Yok',puan:70,katilim:'2023-02-15',dogum:'',not:'',ref:''},
+  {id:4,rumuz:'Lincoln',rutbe:'Yeşil',durum:'Aktif',gorev:'Klan',puan:55,katilim:'2023-03-01',dogum:'',not:'',ref:''},
+  {id:5,rumuz:'Ranmaru',rutbe:'Yeşil',durum:'Aktif',gorev:'Klan',puan:52,katilim:'2023-03-10',dogum:'',not:'',ref:''},
+  {id:6,rumuz:'Forsaken',rutbe:'Sarı',durum:'Aktif',gorev:'Yok',puan:30,katilim:'2023-04-01',dogum:'',not:'',ref:''},
+  {id:7,rumuz:'HanlyX',rutbe:'Sarı',durum:'Aktif',gorev:'Sosyal Medya',puan:35,katilim:'2023-04-05',dogum:'',not:'',ref:''},
+  {id:8,rumuz:'BonusKafa',rutbe:'Sarı',durum:'Aktif',gorev:'Yok',puan:28,katilim:'2023-04-10',dogum:'',not:'',ref:''},
+  {id:9,rumuz:'SaintDark',rutbe:'Sarı',durum:'Aktif',gorev:'Sosyal Medya',puan:40,katilim:'2023-04-12',dogum:'',not:'',ref:''},
+  {id:10,rumuz:'Pancroft',rutbe:'Sarı',durum:'Pasif',gorev:'Yok',puan:15,katilim:'2023-04-20',dogum:'',not:'',ref:''},
+  {id:11,rumuz:'Casanovian',rutbe:'Sarı',durum:'Aktif',gorev:'Klan',puan:45,katilim:'2023-04-22',dogum:'',not:'',ref:''},
+  {id:12,rumuz:'CoocooliKoo',rutbe:'Sarı',durum:'Aktif',gorev:'Yok',puan:20,katilim:'2023-05-01',dogum:'',not:'',ref:''},
+  {id:13,rumuz:'Kyklos',rutbe:'Sarı',durum:'Aktif',gorev:'Klan',puan:38,katilim:'2023-05-05',dogum:'',not:'',ref:''},
+  {id:14,rumuz:'Yalvach',rutbe:'Sarı',durum:'Riskli',gorev:'Yok',puan:10,katilim:'2023-05-10',dogum:'',not:'',ref:''},
+  {id:15,rumuz:'Lillycha',rutbe:'Sarı',durum:'Aktif',gorev:'Sosyal Medya',puan:33,katilim:'2023-05-12',dogum:'',not:'',ref:''},
+  {id:16,rumuz:'Sheila',rutbe:'Sarı',durum:'Aktif',gorev:'Yok',puan:22,katilim:'2023-05-15',dogum:'',not:'',ref:''},
+  {id:17,rumuz:'JUSTilknur',rutbe:'Sarı',durum:'Aktif',gorev:'Yok',puan:18,katilim:'2023-05-20',dogum:'',not:'',ref:''}
+];
+
+const defaultButce=[
+  {id:"1",tur:"gelir",tarih:"2025-11-12",tutar:1000,aciklama:"HanlyX — Sweat üretimi",kategori:"Katkı / Destek"},
+  {id:"2",tur:"gelir",tarih:"2025-11-12",tutar:1500,aciklama:"Lillycha — Sweat üretimi",kategori:"Katkı / Destek"},
+  {id:"3",tur:"gelir",tarih:"2025-11-12",tutar:1600,aciklama:"Renovich — Sweat üretimi",kategori:"Katkı / Destek"},
+  {id:"4",tur:"gelir",tarih:"2025-11-12",tutar:1500,aciklama:"Ranmaru — Sweat üretimi",kategori:"Katkı / Destek"},
+  {id:"5",tur:"gelir",tarih:"2025-11-12",tutar:800,aciklama:"Yalvach — Sweat üretimi",kategori:"Katkı / Destek"},
+  {id:"6",tur:"gelir",tarih:"2026-01-12",tutar:2000,aciklama:"Quadismic — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"7",tur:"gelir",tarih:"2026-01-04",tutar:1750,aciklama:"Renovich — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"8",tur:"gelir",tarih:"2026-01-29",tutar:2000,aciklama:"Quadismic — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"9",tur:"gelir",tarih:"2026-02-05",tutar:1000,aciklama:"Renovich — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"10",tur:"gelir",tarih:"2026-03-02",tutar:500,aciklama:"Renovich — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"11",tur:"gelir",tarih:"2026-03-06",tutar:500,aciklama:"Ali Hamza — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"12",tur:"gelir",tarih:"2026-03-06",tutar:2500,aciklama:"BonusKafa — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"13",tur:"gelir",tarih:"2026-03-06",tutar:2000,aciklama:"Lillycha — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"14",tur:"gelir",tarih:"2026-03-06",tutar:2000,aciklama:"Quadismic — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"15",tur:"gelir",tarih:"2026-03-06",tutar:800,aciklama:"Schizo — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"16",tur:"gelir",tarih:"2026-03-06",tutar:1000,aciklama:"HanlyX — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"17",tur:"gelir",tarih:"2026-03-18",tutar:1000,aciklama:"Renovich — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"18",tur:"gelir",tarih:"2026-03-26",tutar:2000,aciklama:"Quadismic — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"19",tur:"gelir",tarih:"2026-04-05",tutar:1000,aciklama:"Schizo — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"20",tur:"gelir",tarih:"2026-04-15",tutar:1000,aciklama:"Renovich — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"21",tur:"gelir",tarih:"2026-04-20",tutar:2000,aciklama:"Quadismic — Ekip içi katkı",kategori:"Katkı / Destek"},
+  {id:"22",tur:"gider",tarih:"2025-11-12",tutar:7400,aciklama:"Quadismic — Sweat üretim desteği",kategori:"Diğer"},
+  {id:"23",tur:"gider",tarih:"2025-11-12",tutar:1000,aciklama:"Quadismic — Evlilik teklifi bilet desteği",kategori:"Diğer"},
+  {id:"24",tur:"gider",tarih:"2026-03-07",tutar:4371.96,aciklama:"Quadismic — BBQ-GANG etkinlik harcaması",kategori:"Diğer"},
+  {id:"25",tur:"gider",tarih:"2026-04-29",tutar:2000,aciklama:"Quadismic — Geri ödemeli borç kesintisi",kategori:"Diğer"}
+];
+
+const defaultEvents=[
+  {id:1,tur:"OP-NIGHT",tarih:"2025-11-21",puan:10,katilimcilar:["Quadismic","Ranmaru","Kyklos","CoocooliKoo","SaintDark"],not:""},
+  {id:2,tur:"OP-NIGHT",tarih:"2025-11-23",puan:10,katilimcilar:["Quadismic","Kyklos","CoocooliKoo","SaintDark"],not:""},
+  {id:3,tur:"B-DAY & S-DAY",tarih:"2025-11-27",puan:10,katilimcilar:["Quadismic","Sheila","CoocooliKoo","Kyklos","Schizo","HanlyX","Yalvach"],not:""},
+  {id:4,tur:"OP-NIGHT",tarih:"2025-11-28",puan:10,katilimcilar:["Quadismic","Kyklos","SaintDark","BonusKafa"],not:""},
+  {id:5,tur:"BBQ-GANG",tarih:"2025-12-14",puan:10,katilimcilar:["Quadismic","HanlyX","Renovich","Pancroft","SaintDark","Kyklos","Sheila","BonusKafa"],not:""},
+  {id:6,tur:"B-DAY & S-DAY",tarih:"2025-12-26",puan:10,katilimcilar:["Quadismic","Lillycha","CoocooliKoo","SaintDark","Kyklos","Schizo","Yalvach"],not:""},
+  {id:7,tur:"GANG-UP",tarih:"2026-02-12",puan:10,katilimcilar:["Quadismic","Lillycha","CoocooliKoo","Sheila","SaintDark","Schizo","Yalvach","Ranmaru","Forsaken"],not:""},
+  {id:8,tur:"BBQ-GANG",tarih:"2026-03-07",puan:10,katilimcilar:["Quadismic","Lillycha","Renovich","CoocooliKoo","Schizo","Yalvach","Ranmaru","Forsaken","HanlyX"],not:""},
+  {id:9,tur:"GANG-UP",tarih:"2026-04-03",puan:10,katilimcilar:["Quadismic","Renovich","BonusKafa","Yalvach","Ranmaru"],not:""},
+  {id:10,tur:"GANG-UP",tarih:"2026-04-17",puan:10,katilimcilar:["Quadismic","BonusKafa","Yalvach","Ranmaru","JUSTilknur","Kyklos","CoocooliKoo","SaintDark","Sheila","Casanovian"],not:""},
+  {id:11,tur:"GANG-UP",tarih:"2026-04-26",puan:10,katilimcilar:["Quadismic","HanlyX","Schizo","Yalvach","Kyklos","CoocooliKoo","SaintDark","Sheila","Casanovian","Pancroft"],not:""}
+];
+
+let members=getLS('qg_members',null);if(!members){members=defaultMembers;setLS('qg_members',members)}
+let events=getLS('qg_events',null);if(!events){events=defaultEvents;setLS('qg_events',events)}
+let butce=getLS('qg_butce',null);if(!butce){butce=defaultButce;setLS('qg_butce',butce)}
+let logs=getLS('qg_logs',[]);
+let nextId=getLS('qg_nextid',18);
+let nextEvId=getLS('qg_nextevid',12);
+
+function save(){
+  setLS('qg_members',members);setLS('qg_events',events);setLS('qg_butce',butce);
+  setLS('qg_nextid',nextId);setLS('qg_nextevid',nextEvId);setLS('qg_logs',logs);
+  document.getElementById('lastSaved').textContent='Son kayıt: '+new Date().toLocaleTimeString('tr-TR');
+}
+
+function addLog(action,detail){
+  logs.unshift({time:new Date().toISOString(),action,detail});
+  if(logs.length>300)logs=logs.slice(0,300);
+  setLS('qg_logs',logs);
+}
+function clearLog(){if(!confirm('Tüm log geçmişi silinsin mi?'))return;logs=[];setLS('qg_logs',logs);renderLog()}
+
+function rutbeBadge(r){const m={Siyah:'siyah',Kırmızı:'kirmizi',Mavi:'mavi',Yeşil:'yesil',Sarı:'sari',Beyaz:'beyaz'};return`<span class="badge badge-${m[r]||'beyaz'}">${r}</span>`}
+function durumBadge(d){const m={Aktif:'aktif',Pasif:'pasif',Riskli:'riskli',İzinde:'izinde',Arşiv:'arsiv'};return`<span class="badge badge-${m[d]||'pasif'}">${d}</span>`}
+function fmtTL(v){return Number(v).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₺'}
+function fmtDate(s){if(!s)return'-';const[y,mo,d]=s.split('-');return`${d}.${mo}.${y}`}
+function fmtDateTime(s){if(!s)return'-';const d=new Date(s);return d.toLocaleDateString('tr-TR')+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}
+function daysUntil(s){if(!s)return null;const n=new Date();n.setHours(0,0,0,0);const d=new Date(s);d.setHours(0,0,0,0);return Math.ceil((d-n)/(864e5))}
+
+// Varsayılan tarihleri bugüne set et
+function setDefaultDates(){
+  const today=todayStr();
+  ['b_tarih','m_katilim','e_date'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.value)el.value=today});
+}
+
+function showTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  const fns={dashboard:renderDashboard,members:renderMembers,puan:renderPuan,gorev:renderGorev,etkinlik:renderEvents,butce:()=>{renderButce();setTimeout(()=>{const el=document.getElementById('b_tarih');if(el&&!el.value)el.value=todayStr()},50)},org:renderOrg,log:renderLog};
+  if(fns[name])fns[name]();
+}
+
+/* ── ONAY ── */
+function confirm2(title,desc,onOk){
+  const mc=document.getElementById('modalContainer');
+  mc.innerHTML=`<div class="modal-overlay"><div class="confirm-box">
+    <h3><i class="ti ti-alert-circle"></i> ${title}</h3>
+    <p>${desc}</p>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn" onclick="closeModal()">İptal</button>
+      <button class="btn btn-warn" id="confirmOkBtn">Onayla</button>
+    </div></div></div>`;
+  document.getElementById('confirmOkBtn').onclick=()=>{closeModal();onOk()};
+}
+
+/* ── DASHBOARD ── */
+function renderDashboard(){
+  const total=members.length,aktif=members.filter(m=>m.durum==='Aktif').length,pasif=members.filter(m=>m.durum==='Pasif').length,riskli=members.filter(m=>m.durum==='Riskli').length,gorevSiz=members.filter(m=>m.gorev==='Yok'||!m.gorev).length;
+  const gelir=butce.filter(b=>b.tur==='gelir').reduce((s,b)=>s+b.tutar,0),gider=butce.filter(b=>b.tur==='gider').reduce((s,b)=>s+b.tutar,0),net=gelir-gider;
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat-card"><div class="label">Toplam üye</div><div class="value">${total}</div></div>
+    <div class="stat-card"><div class="label">Aktif</div><div class="value" style="color:#9fe1cb">${aktif}</div></div>
+    <div class="stat-card"><div class="label">Pasif</div><div class="value" style="color:#888">${pasif}</div></div>
+    <div class="stat-card"><div class="label">Riskli</div><div class="value" style="color:#e24b4a">${riskli}</div></div>
+    <div class="stat-card"><div class="label">Görevsiz</div><div class="value" style="color:#fac775">${gorevSiz}</div></div>
+    <div class="stat-card"><div class="label">Net kasa</div><div class="value" style="color:${net>=0?'#9fe1cb':'#e24b4a'};font-size:14px">${fmtTL(net)}</div></div>`;
+  let alerts='';
+  if(riskli>0)alerts+=`<div class="alert-row alert-danger"><i class="ti ti-alert-triangle"></i> ${riskli} riskli üye</div>`;
+  if(pasif>0)alerts+=`<div class="alert-row alert-warn"><i class="ti ti-clock"></i> ${pasif} pasif üye</div>`;
+  if(gorevSiz>3)alerts+=`<div class="alert-row alert-info"><i class="ti ti-briefcase"></i> ${gorevSiz} üye görevsiz</div>`;
+  const terfiBek=members.filter(m=>m.puan>=50&&m.rutbe!=='Siyah'&&m.rutbe!=='Mavi');
+  if(terfiBek.length)alerts+=`<div class="alert-row alert-info"><i class="ti ti-arrow-up"></i> ${terfiBek.length} terfi adayı</div>`;
+  if(net<0)alerts+=`<div class="alert-row alert-danger"><i class="ti ti-currency-lira"></i> Kasa negatife düştü!</div>`;
+  document.getElementById('alertsBox').innerHTML=alerts||'<div style="font-size:12px;color:#555">Uyarı yok</div>';
+  const upcoming=events.map(e=>({...e,diff:daysUntil(e.tarih)})).filter(e=>e.diff!==null&&e.diff>=0&&e.diff<=30).sort((a,b)=>a.diff-b.diff);
+  document.getElementById('upcomingEvents').innerHTML=upcoming.length?upcoming.map(e=>`<div class="alert-row alert-success"><i class="ti ti-calendar-event"></i> <strong>${e.tur}</strong> — ${e.diff===0?'Bugün!':e.diff+' gün sonra'}</div>`).join(''):'<div style="font-size:12px;color:#555">30 gün içinde etkinlik yok</div>';
+  const today=new Date();
+  const bd=members.filter(m=>m.dogum).map(m=>{const d=new Date(m.dogum);d.setFullYear(today.getFullYear());return{...m,diff:Math.ceil((d-today)/864e5)}}).filter(m=>m.diff>=0&&m.diff<=30).sort((a,b)=>a.diff-b.diff);
+  document.getElementById('birthdaysBox').innerHTML=bd.length?bd.map(m=>`<div class="alert-row alert-info"><i class="ti ti-cake"></i> <strong>${m.rumuz}</strong> — ${m.diff===0?'Bugün!':m.diff+' gün sonra'}</div>`).join(''):'<div style="font-size:12px;color:#555">30 gün içinde doğum günü yok</div>';
+  document.getElementById('dashButce').innerHTML=`
+    <div style="margin-bottom:8px"><span style="font-size:11px;color:#888">Toplam gelir</span><div style="font-size:16px;font-weight:500;color:#9fe1cb">${fmtTL(gelir)}</div></div>
+    <div style="margin-bottom:8px"><span style="font-size:11px;color:#888">Toplam gider</span><div style="font-size:16px;font-weight:500;color:#e24b4a">${fmtTL(gider)}</div></div>
+    <hr class="sep" style="margin:.5rem 0">
+    <div><span style="font-size:11px;color:#888">Net</span><div style="font-size:19px;font-weight:500;color:${net>=0?'#9fe1cb':'#e24b4a'}">${fmtTL(net)}</div></div>`;
+  const counts={};RUTBELER.forEach(r=>counts[r]=0);members.forEach(m=>counts[m.rutbe]=(counts[m.rutbe]||0)+1);
+  const maxC=Math.max(...Object.values(counts),1);
+  const clrs={Siyah:'#888780',Kırmızı:'#a32d2d',Mavi:'#185fa5',Yeşil:'#0f6e56',Sarı:'#854f0b',Beyaz:'#444'};
+  document.getElementById('rutbeChart').innerHTML=RUTBELER.map(r=>`<div class="puan-row"><div style="width:65px;font-size:11px;color:#888">${r}</div><div class="puan-bar-bg"><div class="puan-bar" style="width:${Math.round(counts[r]/maxC*100)}%;background:${clrs[r]}"></div></div><div style="width:20px;font-size:11px;color:#888;text-align:right">${counts[r]}</div></div>`).join('');
+}
+
+/* ── ÜYELER ── */
+function renderMembers(){
+  const q=(document.getElementById('searchBox').value||'').toLowerCase(),fr=document.getElementById('filterRutbe').value,fd=document.getElementById('filterDurum').value,fg=document.getElementById('filterGorev').value;
+  const filtered=members.filter(m=>(!q||m.rumuz.toLowerCase().includes(q))&&(!fr||m.rutbe===fr)&&(!fd||m.durum===fd)&&(!fg||m.gorev===fg));
+  document.getElementById('memberTableBody').innerHTML=filtered.map((m,i)=>`<tr>
+    <td>${i+1}</td><td style="font-weight:500">${m.rumuz}</td><td>${rutbeBadge(m.rutbe)}</td><td>${durumBadge(m.durum)}</td>
+    <td style="font-size:11px;color:#888">${m.gorev||'Yok'}</td><td style="font-weight:500">${m.puan}</td>
+    <td style="font-size:11px;color:#555">${m.katilim?fmtDate(m.katilim):'-'}</td>
+    <td><div class="action-row">
+      <button class="btn btn-sm" onclick="openModal('editMember',${m.id})"><i class="ti ti-edit"></i></button>
+      <button class="btn btn-danger btn-sm" onclick="reqDeleteMember(${m.id})"><i class="ti ti-trash"></i></button>
+    </div></td></tr>`).join('');
+}
+
+/* ── PUAN ── */
+function renderPuan(){
+  const sorted=[...members].sort((a,b)=>b.puan-a.puan),maxP=Math.max(...sorted.map(m=>m.puan),1);
+  document.getElementById('puanList').innerHTML=sorted.map((m,i)=>`<div class="puan-row">
+    <div style="width:18px;font-size:11px;color:#555">${i+1}</div>
+    <div style="width:95px;font-size:12px;font-weight:500;color:#d3d1c7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.rumuz}</div>
+    <div class="puan-bar-bg"><div class="puan-bar" style="width:${Math.round(m.puan/maxP*100)}%"></div></div>
+    <div style="width:32px;font-size:12px;font-weight:500;color:#d3d1c7;text-align:right">${m.puan}</div>
+    <div style="width:65px">${rutbeBadge(m.rutbe)}</div></div>`).join('');
+  document.getElementById('puanUye').innerHTML=members.map(m=>`<option value="${m.id}">${m.rumuz}</option>`).join('');
+}
+
+function reqPuan(){
+  const id=parseInt(document.getElementById('puanUye').value);
+  const miktar=parseInt(document.getElementById('puanMiktar').value)||0;
+  const sebep=document.getElementById('puanSebep').value||'—';
+  const m=members.find(m=>m.id===id);if(!m)return;
+  const sign=miktar>=0?'+':'';
+  confirm2('Puan değişikliği',`<strong>${m.rumuz}</strong> — ${sign}${miktar} puan<br><span style="font-size:12px;color:#888">Sebep: ${sebep}</span>`,()=>{
+    m.puan=Math.max(0,m.puan+miktar);
+    addLog('Puan değişimi',`${m.rumuz}: ${sign}${miktar} puan — ${sebep}`);
+    save();renderPuan();renderDashboard();
+  });
+}
+
+/* ── GÖREV ── */
+function renderGorev(){
+  document.getElementById('gorevUye').innerHTML=members.map(m=>`<option value="${m.id}">${m.rumuz}</option>`).join('');
+  const byG={};GOREVLER.forEach(g=>byG[g]=[]);
+  members.forEach(m=>{if(byG[m.gorev||'Yok'])byG[m.gorev||'Yok'].push(m.rumuz)});
+  document.getElementById('gorevList').innerHTML=GOREVLER.filter(g=>g!=='Yok').map(g=>`<div class="card" style="padding:.65rem .9rem;margin-bottom:6px"><div style="font-size:12px;font-weight:500;margin-bottom:5px;color:#d3d1c7">${g}</div><div class="member-chips">${byG[g].length?byG[g].map(r=>`<span class="chip">${r}</span>`).join(''):'<span style="font-size:11px;color:#555">Atanmış üye yok</span>'}</div></div>`).join('');
+}
+
+function reqGorev(){
+  const id=parseInt(document.getElementById('gorevUye').value);
+  const gorev=document.getElementById('gorevTip').value;
+  const m=members.find(m=>m.id===id);if(!m)return;
+  confirm2('Görev ata',`<strong>${m.rumuz}</strong> → <strong>${gorev}</strong> olarak atanacak.`,()=>{
+    const eski=m.gorev;m.gorev=gorev;
+    addLog('Görev atama',`${m.rumuz}: ${eski} → ${gorev}`);
+    save();renderGorev();
+  });
+}
+
+/* ── ETKİNLİK ── */
+function renderEvents(){
+  const sorted=[...events].sort((a,b)=>new Date(b.tarih)-new Date(a.tarih));
+  document.getElementById('eventList').innerHTML=sorted.length?sorted.map(e=>`<div class="event-card">
+    <div class="ev-header"><div class="ev-title">${e.tur}</div>
+    <button class="btn btn-danger btn-sm" onclick="reqDeleteEvent(${e.id})"><i class="ti ti-trash"></i></button></div>
+    <div class="ev-meta"><i class="ti ti-calendar"></i> ${fmtDate(e.tarih)} &nbsp;|&nbsp; +${e.puan} puan &nbsp;|&nbsp; ${e.katilimcilar.length} katılımcı</div>
+    <div class="member-chips">${e.katilimcilar.map(r=>`<span class="chip">${r}</span>`).join('')}</div>
+    ${e.not?`<div style="font-size:11px;color:#888;margin-top:5px">${e.not}</div>`:''}</div>`).join(''):'<div style="font-size:12px;color:#555">Henüz etkinlik yok.</div>';
+}
+
+function reqDeleteEvent(id){
+  const e=events.find(e=>e.id===id);if(!e)return;
+  confirm2('Etkinliği sil',`<strong>${e.tur}</strong> (${fmtDate(e.tarih)}) etkinliği silinecek.`,()=>{
+    events=events.filter(ev=>ev.id!==id);
+    addLog('Etkinlik silindi',`${e.tur} — ${fmtDate(e.tarih)}`);
+    save();renderEvents();renderDashboard();
+  });
+}
+
+/* ── BÜTÇE ── */
+function renderButce(){
+  const gelir=butce.filter(b=>b.tur==='gelir').reduce((s,b)=>s+b.tutar,0),gider=butce.filter(b=>b.tur==='gider').reduce((s,b)=>s+b.tutar,0),net=gelir-gider;
+  document.getElementById('butceOzet').innerHTML=`
+    <div class="butce-kart bk-gelir"><div class="label">Toplam Gelir</div><div class="value">${fmtTL(gelir)}</div></div>
+    <div class="butce-kart bk-gider"><div class="label">Toplam Gider</div><div class="value">${fmtTL(gider)}</div></div>
+    <div class="butce-kart bk-net"><div class="label">Net Kasa</div><div class="value" style="color:${net>=0?'#9fe1cb':'#e24b4a'}">${fmtTL(net)}</div></div>`;
+  const ft=document.getElementById('filterButceTur').value,fk=document.getElementById('filterButceKat').value;
+  const filtered=[...butce].filter(b=>(!ft||b.tur===ft)&&(!fk||b.kategori===fk)).sort((a,b)=>new Date(b.tarih)-new Date(a.tarih));
+  document.getElementById('butceTableBody').innerHTML=filtered.length?filtered.map(b=>`<tr>
+    <td style="font-size:11px;color:#888">${fmtDate(b.tarih)}</td><td>${b.aciklama||'-'}</td>
+    <td style="font-size:11px;color:#888">${b.kategori||'Diğer'}</td>
+    <td><span class="badge badge-${b.tur==='gelir'?'gelir':'gider'}">${b.tur==='gelir'?'Gelir':'Gider'}</span></td>
+    <td style="font-weight:500;color:${b.tur==='gelir'?'#9fe1cb':'#e24b4a'}">${b.tur==='gider'?'-':''}${fmtTL(b.tutar)}</td>
+    <td><button class="btn btn-danger btn-sm" onclick="reqDeleteButce('${b.id}')"><i class="ti ti-trash"></i></button></td></tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:#555;padding:1.2rem">İşlem yok</td></tr>';
+}
+
+function reqButce(){
+  const tur=document.getElementById('b_tur').value,tarih=document.getElementById('b_tarih').value,tutar=parseFloat(document.getElementById('b_tutar').value)||0,aciklama=document.getElementById('b_aciklama').value.trim(),kategori=document.getElementById('b_kategori').value;
+  if(!tutar||!aciklama){alert('Tutar ve açıklama zorunlu.');return}
+  confirm2('İşlem ekle',`<strong>${tur==='gelir'?'Gelir':'Gider'}</strong>: ${fmtTL(tutar)}<br>${aciklama}`,()=>{
+    butce.push({id:Date.now().toString(),tur,tarih,tutar,aciklama,kategori});
+    addLog('Bütçe işlemi',`${tur==='gelir'?'Gelir':'Gider'}: ${fmtTL(tutar)} — ${aciklama}`);
+    save();renderButce();renderDashboard();
+    document.getElementById('b_tutar').value='';document.getElementById('b_aciklama').value='';
+  });
+}
+
+function reqDeleteButce(id){
+  const b=butce.find(b=>b.id===id);if(!b)return;
+  confirm2('İşlemi sil',`${b.tur==='gelir'?'Gelir':'Gider'}: <strong>${fmtTL(b.tutar)}</strong><br>${b.aciklama}`,()=>{
+    butce=butce.filter(x=>x.id!==id);
+    addLog('Bütçe silindi',`${b.tur}: ${fmtTL(b.tutar)} — ${b.aciklama}`);
+    save();renderButce();renderDashboard();
+  });
+}
+
+function importCSV(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const lines=e.target.result.split('\n').filter(l=>l.trim());let added=0;
+    lines.forEach((line,i)=>{
+      if(i===0&&line.toLowerCase().includes('tarih'))return;
+      const parts=line.split(/[,;]/).map(p=>p.trim().replace(/^"|"$/g,''));
+      if(parts.length<3)return;
+      const tutar=parseFloat(parts[2].replace(',','.'))||0;if(!tutar)return;
+      butce.push({id:Date.now().toString()+Math.random(),tur:(parts[3]||'').toLowerCase().includes('gider')?'gider':'gelir',tarih:parts[0]||'',tutar,aciklama:parts[1]||'',kategori:parts[4]||'Diğer'});added++;
+    });
+    addLog('CSV import',`${added} bütçe işlemi içe aktarıldı`);
+    save();renderButce();alert(added+' işlem içe aktarıldı.');event.target.value='';
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+/* ── LOG ── */
+function renderLog(){
+  document.getElementById('logList').innerHTML=logs.length?logs.map(l=>`<div class="log-item">
+    <div class="log-time"><i class="ti ti-clock" style="font-size:10px"></i> ${fmtDateTime(l.time)}</div>
+    <div class="log-action">${l.action}</div>
+    <div class="log-detail">${l.detail}</div></div>`).join(''):'<div style="font-size:12px;color:#555;padding:1rem;text-align:center">Henüz log yok</div>';
+}
+
+/* ── ORG ŞEMA (düzeltilmiş + animasyonlu) ── */
+function buildOrgSVG(animated){
+  // Sabit genişlik, tüm satırlar ortalanacak
+  const W=700,NW=108,NH=40,NY=34,UW=88,UH=36,GAP=10;
+  const lider=members.find(m=>m.rutbe==='Siyah');
+  const yoneticiler=members.filter(m=>m.rutbe==='Kırmızı');
+  const yetkililer=members.filter(m=>m.rutbe==='Mavi');
+  const yardimcilar=members.filter(m=>m.rutbe==='Yeşil');
+  const uyeler=members.filter(m=>m.rutbe==='Sarı'||m.rutbe==='Beyaz');
+  const UCOLS=Math.min(uyeler.length,6);
+  const uRows=uyeler.length?Math.ceil(uyeler.length/UCOLS):0;
+
+  let svgH=20;
+  const LY=svgH;svgH+=NH+30;
+  const YOY=svgH;svgH+=NY+30;
+  const YEY=svgH;svgH+=NH+30;
+  const YAY=svgH;svgH+=yardimcilar.length?NH+30:0;
+  const UY=svgH;
+  if(uyeler.length)svgH+=uRows*(UH+6)+20;
+
+  const cx=W/2;
+  let animDelay=0;
+
+  // Ortalanmış x başlangıcı
+  function rowStartX(count,itemW){return (W-(count*itemW+(count-1)*GAP))/2}
+
+  function nodeG(cls,x,y,w,h,t1,t2,delay){
+    const anim=animated?`class="org-node-anim" style="animation-delay:${delay}ms"`:'';
+    return`<g ${anim}><g class="org-node ${cls}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6"/><text class="t1" x="${x+w/2}" y="${y+h/2-7}" text-anchor="middle" dominant-baseline="central">${t1}</text><text class="t2" x="${x+w/2}" y="${y+h/2+7}" text-anchor="middle" dominant-baseline="central">${t2}</text></g></g>`
+  }
+  function ln(x1,y1,x2,y2,dash,delay){
+    const anim=animated?`style="animation-delay:${delay}ms"`:'';
+    return`<line class="${dash?'org-conn-dash':'org-conn'}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${anim}/>`
+  }
+
+  let svg=`<svg class="org" viewBox="0 0 ${W} ${svgH}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${W}px;height:auto">`;
+
+  // Lider
+  if(lider){
+    svg+=nodeG('org-lider',cx-NW/2,LY,NW,NH,lider.rumuz,'Lider',animDelay);
+    svg+=ln(cx,LY+NH,cx,YOY,true,animDelay+50);
+    animDelay+=100;
+  }
+
+  // Yöneticiler
+  if(yoneticiler.length){
+    const sx=rowStartX(yoneticiler.length,NW);
+    const lx1=sx+NW/2,lx2=sx+(yoneticiler.length-1)*(NW+GAP)+NW/2;
+    if(yoneticiler.length>1)svg+=ln(lx1,YOY+NY/2,lx2,YOY+NY/2,false,animDelay);
+    yoneticiler.forEach((m,i)=>{
+      const nx=sx+i*(NW+GAP);const ncx=nx+NW/2;
+      svg+=ln(cx,YOY,ncx,YOY,false,animDelay);
+      svg+=nodeG('org-yonetici',nx,YOY,NW,NY,m.rumuz,'Yönetici',animDelay+50);
+      animDelay+=80;
+    });
+  } else {
+    const bw=260,bx=cx-bw/2;
+    const anim=animated?`class="org-node-anim" style="animation-delay:${animDelay}ms"`:'';
+    svg+=`<g ${anim}><g class="org-node org-yonetici"><rect x="${bx}" y="${YOY}" width="${bw}" height="${NY}" rx="6"/><text class="org-yonetici" x="${cx}" y="${YOY+NY/2}" text-anchor="middle" dominant-baseline="central">Yönetici kademe — henüz boş</text></g></g>`;
+    animDelay+=100;
+  }
+
+  // Yetkililer
+  if(yetkililer.length){
+    const sx=rowStartX(yetkililer.length,NW);
+    const lx1=sx+NW/2,lx2=sx+(yetkililer.length-1)*(NW+GAP)+NW/2;
+    if(yetkililer.length>1)svg+=ln(lx1,YEY+NH/2,lx2,YEY+NH/2,false,animDelay);
+    yetkililer.forEach((m,i)=>{
+      const nx=sx+i*(NW+GAP);const ncx=nx+NW/2;
+      svg+=ln(cx,YOY+NY,ncx,YEY,false,animDelay);
+      svg+=nodeG('org-yetkili',nx,YEY,NW,NH,m.rumuz,'Yetkili',animDelay+50);
+      if(yardimcilar.length)svg+=ln(ncx,YEY+NH,ncx,YAY,false,animDelay+100);
+      animDelay+=80;
+    });
+  }
+
+  // Yardımcılar
+  if(yardimcilar.length){
+    const sx=rowStartX(yardimcilar.length,NW);
+    const lx1=sx+NW/2,lx2=sx+(yardimcilar.length-1)*(NW+GAP)+NW/2;
+    if(yardimcilar.length>1)svg+=ln(lx1,YAY+NH/2,lx2,YAY+NH/2,false,animDelay);
+    yardimcilar.forEach((m,i)=>{
+      const nx=sx+i*(NW+GAP);
+      svg+=nodeG('org-yardimci',nx,YAY,NW,NH,m.rumuz,'Yardımcı',animDelay+50);
+      animDelay+=80;
+    });
+  }
+
+  // Üyeler — her satır ayrı ortalı
+  if(uyeler.length){
+    for(let row=0;row<uRows;row++){
+      const rowItems=uyeler.slice(row*UCOLS,(row+1)*UCOLS);
+      const sx=rowStartX(rowItems.length,UW);
+      const ny=UY+row*(UH+6);
+      // Üst bağlantı çizgisi
+      if(row===0&&yardimcilar.length===0&&yetkililer.length===0){
+        svg+=ln(sx+UW/2,UY,sx+(rowItems.length-1)*(UW+GAP)+UW/2,UY,false,animDelay);
+      }
+      rowItems.forEach((m,i)=>{
+        const nx=sx+i*(UW+GAP);const ncx=nx+UW/2;
+        if(row===0)svg+=ln(ncx,UY,ncx,UY+UH,false,animDelay);
+        svg+=nodeG('org-uye',nx,ny,UW,UH,m.rumuz,'Üye',animDelay+50);
+        animDelay+=40;
+      });
+    }
+  }
+
+  svg+='</svg>';
+  return svg;
+}
+
+function renderOrg(){document.getElementById('orgWrap').innerHTML=buildOrgSVG(true)}
+
+function orgKodUret(){
+  const svgCode=buildOrgSVG(false);
+  const styles=`<style>
+.org-lider rect{fill:#2c2c2a;stroke:#888780;stroke-width:0.5}
+.org-lider text.t1{fill:#d3d1c7;font-size:12px;font-weight:600;font-family:Arial,sans-serif}
+.org-lider text.t2{fill:#888780;font-size:10px;font-family:Arial,sans-serif}
+.org-yonetici rect{fill:none;stroke:#a32d2d;stroke-width:0.5;stroke-dasharray:5 3}
+.org-yonetici text{fill:#e24b4a;font-size:10px;font-family:Arial,sans-serif;opacity:.7}
+.org-yetkili rect{fill:#042c53;stroke:#185fa5;stroke-width:0.5}
+.org-yetkili text.t1{fill:#b5d4f4;font-size:12px;font-weight:600;font-family:Arial,sans-serif}
+.org-yetkili text.t2{fill:#378add;font-size:10px;font-family:Arial,sans-serif}
+.org-yardimci rect{fill:#04342c;stroke:#0f6e56;stroke-width:0.5}
+.org-yardimci text.t1{fill:#9fe1cb;font-size:12px;font-weight:600;font-family:Arial,sans-serif}
+.org-yardimci text.t2{fill:#1d9e75;font-size:10px;font-family:Arial,sans-serif}
+.org-uye rect{fill:#412402;stroke:#854f0b;stroke-width:0.5}
+.org-uye text.t1{fill:#fac775;font-size:10px;font-weight:600;font-family:Arial,sans-serif}
+.org-uye text.t2{fill:#ba7517;font-size:9px;font-family:Arial,sans-serif}
+.org-conn{stroke:#444;stroke-width:0.5;fill:none}
+.org-conn-dash{stroke:#444;stroke-width:0.5;fill:none;stroke-dasharray:4 3}
+</style>`;
+  const fullCode=`<div style="background:#111;padding:20px;text-align:center;overflow-x:auto">\n${styles}\n${svgCode}\n</div>`;
+  const mc=document.getElementById('modalContainer');
+  mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="kod-box">
+      <h3><i class="ti ti-code"></i> Organizasyon Şeması — HTML Kodu</h3>
+      <div style="font-size:11px;color:#888;margin-bottom:.6rem">Kopyalayıp Wix'teki HTML bloğuna yapıştır.</div>
+      <div class="kod-area">${fullCode.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+        <button class="btn" onclick="closeModal()">Kapat</button>
+        <button class="btn btn-primary" onclick="copyOrgKod()"><i class="ti ti-copy"></i> Kopyala</button>
+      </div>
+      <div id="copyMsg" style="font-size:11px;color:#9fe1cb;text-align:right;margin-top:4px;display:none">Panoya kopyalandı!</div>
+    </div>
+  </div>`;
+  window._orgKodFull=fullCode;
+}
+
+function copyOrgKod(){
+  navigator.clipboard.writeText(window._orgKodFull||'').then(()=>{
+    const msg=document.getElementById('copyMsg');
+    if(msg){msg.style.display='block';setTimeout(()=>msg.style.display='none',2500)}
+  });
+}
+
+/* ── MODALLER ── */
+function reqAddMember(){openModal('addMember')}
+function reqDeleteMember(id){
+  const m=members.find(m=>m.id===id);if(!m)return;
+  confirm2('Üyeyi sil',`<strong>${m.rumuz}</strong> kalıcı olarak silinecek.`,()=>{
+    members=members.filter(m=>m.id!==id);
+    addLog('Üye silindi',m.rumuz);
+    save();renderMembers();renderDashboard();
+  });
+}
+
+function openModal(type,data){
+  const mc=document.getElementById('modalContainer');
+  const idVal=typeof data==='number'?data:null;
+  const mData=idVal?members.find(m=>m.id===idVal):null;
+  const today=todayStr();
+
+  if(type==='addMember'){
+    mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-box"><h3>Yeni Üye</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Rumuz</label><input id="m_rumuz" placeholder="Rumuz"></div>
+          <div class="form-group"><label>Rütbe</label><select id="m_rutbe">${RUTBELER.map(r=>`<option>${r}</option>`).join('')}</select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Durum</label><select id="m_durum">${DURUMLAR.map(d=>`<option>${d}</option>`).join('')}</select></div>
+          <div class="form-group"><label>Görev</label><select id="m_gorev">${GOREVLER.map(g=>`<option>${g}</option>`).join('')}</select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Katılım tarihi</label><input type="date" id="m_katilim" value="${today}"></div>
+          <div class="form-group"><label>Doğum tarihi</label><input type="date" id="m_dogum"></div>
+        </div>
+        <div class="form-group" style="margin-bottom:8px"><label>Referans</label><input id="m_ref" placeholder="Kim getirdi?"></div>
+        <div class="form-group" style="margin-bottom:8px"><label>Not</label><textarea id="m_not" placeholder="Lider notu..."></textarea></div>
+        <div class="modal-footer">
+          <button class="btn" onclick="closeModal()">İptal</button>
+          <button class="btn btn-warn" onclick="reqSaveMember()"><i class="ti ti-check"></i> Onayla & Kaydet</button>
+        </div>
+      </div></div>`;
+  } else if(type==='addEvent'){
+    const opts=members.map(m=>`<option value="${m.rumuz}">${m.rumuz}</option>`).join('');
+    mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-box"><h3>Yeni Etkinlik</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Etkinlik Türü</label><select id="e_tur">${ETK_TURLERI.map(t=>`<option>${t}</option>`).join('')}</select></div>
+          <div class="form-group"><label>Tarih</label><input type="date" id="e_date" value="${today}"></div>
+        </div>
+        <div class="form-group" style="margin-bottom:8px"><label>Verilecek puan</label><input type="number" id="e_puan" value="10"></div>
+        <div class="form-group" style="margin-bottom:8px"><label>Katılımcılar</label>
+          <select id="e_katilimcilar" multiple style="height:110px">${opts}</select>
+          <div style="font-size:10px;color:#555;margin-top:2px">Ctrl/Cmd ile çoklu seçim</div>
+        </div>
+        <div class="form-group" style="margin-bottom:8px"><label>Not</label><textarea id="e_not" placeholder="Notlar..."></textarea></div>
+        <div class="modal-footer">
+          <button class="btn" onclick="closeModal()">İptal</button>
+          <button class="btn btn-warn" onclick="reqSaveEvent()"><i class="ti ti-check"></i> Onayla & Kaydet</button>
+        </div>
+      </div></div>`;
+  } else if(type==='editMember'&&mData){
+    mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-box"><h3>${mData.rumuz} — Düzenle</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Rütbe</label><select id="e_rutbe">${RUTBELER.map(r=>`<option${r===mData.rutbe?' selected':''}>${r}</option>`).join('')}</select></div>
+          <div class="form-group"><label>Durum</label><select id="e_durum">${DURUMLAR.map(d=>`<option${d===mData.durum?' selected':''}>${d}</option>`).join('')}</select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Görev</label><select id="e_gorev">${GOREVLER.map(g=>`<option${g===mData.gorev?' selected':''}>${g}</option>`).join('')}</select></div>
+          <div class="form-group"><label>Puan</label><input type="number" id="e_puan" value="${mData.puan}"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Katılım tarihi</label><input type="date" id="e_katilim" value="${mData.katilim||today}"></div>
+          <div class="form-group"><label>Doğum tarihi</label><input type="date" id="e_dogum" value="${mData.dogum||''}"></div>
+        </div>
+        <div class="form-group" style="margin-bottom:8px"><label>Referans</label><input id="e_ref" value="${mData.ref||''}" placeholder="Kim getirdi?"></div>
+        <div class="form-group" style="margin-bottom:8px"><label>Lider notu</label><textarea id="e_not">${mData.not||''}</textarea></div>
+        <div class="modal-footer">
+          <button class="btn" onclick="closeModal()">İptal</button>
+          <button class="btn btn-warn" onclick="reqUpdateMember(${mData.id})"><i class="ti ti-check"></i> Onayla & Güncelle</button>
+        </div>
+      </div></div>`;
+  }
+}
+
+function closeModal(){document.getElementById('modalContainer').innerHTML=''}
+
+function reqSaveMember(){
+  const rumuz=document.getElementById('m_rumuz').value.trim();if(!rumuz)return;
+  const rutbe=document.getElementById('m_rutbe').value,durum=document.getElementById('m_durum').value,gorev=document.getElementById('m_gorev').value;
+  confirm2('Yeni üye ekle',`<strong>${rumuz}</strong> — ${rutbe} rütbesiyle ekleniyor.`,()=>{
+    members.push({id:nextId++,rumuz,rutbe,durum,gorev,puan:0,katilim:document.getElementById('m_katilim').value,dogum:document.getElementById('m_dogum').value,ref:document.getElementById('m_ref').value,not:document.getElementById('m_not').value});
+    addLog('Üye eklendi',`${rumuz} — ${rutbe}`);
+    save();closeModal();renderMembers();renderDashboard();
+  });
+}
+
+function reqUpdateMember(id){
+  const m=members.find(m=>m.id===id);if(!m)return;
+  const newRutbe=document.getElementById('e_rutbe').value;
+  const newDurum=document.getElementById('e_durum').value;
+  const newGorev=document.getElementById('e_gorev').value;
+  // ÖNEMLİ: Number() ile karşılaştır, parseInt parse hatası yaratabilir
+  const newPuan=Number(document.getElementById('e_puan').value)||0;
+  const oldPuan=Number(m.puan)||0;
+  const changes=[];
+  if(m.rutbe!==newRutbe)changes.push(`Rütbe: ${m.rutbe} → ${newRutbe}`);
+  if(m.durum!==newDurum)changes.push(`Durum: ${m.durum} → ${newDurum}`);
+  if(m.gorev!==newGorev)changes.push(`Görev: ${m.gorev} → ${newGorev}`);
+  if(oldPuan!==newPuan)changes.push(`Puan: ${oldPuan} → ${newPuan}`);
+  confirm2('Üye güncelle',`<strong>${m.rumuz}</strong><br>${changes.length?changes.join('<br>'):'<span style="color:#888;font-size:12px">Değişiklik yok</span>'}`,()=>{
+    m.rutbe=newRutbe;m.durum=newDurum;m.gorev=newGorev;m.puan=newPuan;
+    m.katilim=document.getElementById('e_katilim').value;
+    m.dogum=document.getElementById('e_dogum').value;
+    m.ref=document.getElementById('e_ref').value;
+    m.not=document.getElementById('e_not').value;
+    // Her zaman logla, değişiklik yoksa da kaydedildi yaz
+    if(changes.length){
+      addLog('Üye güncellendi',`${m.rumuz}: ${changes.join(' | ')}`);
+    } else {
+      addLog('Üye düzenlendi',`${m.rumuz} — veri güncellendi (alan değerleri aynı)`);
+    }
+    save();closeModal();renderMembers();renderDashboard();
+  });
+}
+
+function reqSaveEvent(){
+  const tur=document.getElementById('e_tur').value,date=document.getElementById('e_date').value,puan=parseInt(document.getElementById('e_puan').value)||0;
+  const sel=document.getElementById('e_katilimcilar'),katilimcilar=Array.from(sel.selectedOptions).map(o=>o.value),not=document.getElementById('e_not').value;
+  if(!tur)return;
+  confirm2('Etkinlik ekle',`<strong>${tur}</strong> — ${fmtDate(date)}<br>${katilimcilar.length} katılımcı, +${puan} puan`,()=>{
+    events.push({id:nextEvId++,tur,tarih:date,puan,katilimcilar,not});
+    katilimcilar.forEach(r=>{const m=members.find(m=>m.rumuz===r);if(m)m.puan+=puan});
+    addLog('Etkinlik eklendi',`${tur} — ${fmtDate(date)}, ${katilimcilar.length} katılımcı, +${puan} puan`);
+    save();closeModal();renderEvents();renderDashboard();
+  });
+}
+
+// Başlangıçta bütçe tarihini bugüne set et
+document.addEventListener('DOMContentLoaded',()=>{
+  const el=document.getElementById('b_tarih');
+  if(el)el.value=todayStr();
+});
+
+renderDashboard();
+</script>
+</body>
+</html>
