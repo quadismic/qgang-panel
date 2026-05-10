@@ -313,136 +313,108 @@ let SESSION = {rumuz:'', rol:'Üye', girisZamani: null};
 function izin(key){return !!(IZINLER[SESSION.rol]||IZINLER['Üye'])[key]}
 
 // ══════════════════════════════════════════
-// CMS KÖPRÜSÜ — Velo ile haberleşme
+// CMS KÖPRÜSÜ — HTTP API ile haberleşme
 // ══════════════════════════════════════════
 
-// Velo'ya mesaj gönder (CMS işlemleri için)
-function cmsGonder(mesaj){
-  if(window.parent !== window){
-    window.parent.postMessage(mesaj, '*');
+// Wix HTTP Functions endpoint
+const API_URL = 'https://www.q-gang.com/_functions/qgang';
+
+// CMS'den veri oku
+async function cmsOku(){
+  try {
+    const res = await fetch(API_URL, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    if(!res.ok) throw new Error('API yanıt vermedi: ' + res.status);
+    return await res.json();
+  } catch(e) {
+    console.error('CMS okuma hatası:', e);
+    return null;
   }
 }
 
-// CMS işlem kuyruğu — cevap bekleme
-const _cmsBekle = {};
-function cmsIstek(mesaj){
-  return new Promise((resolve, reject) => {
-    const key = mesaj.type + '_' + Date.now();
-    mesaj._key = key;
-    _cmsBekle[key] = {resolve, reject};
-    cmsGonder(mesaj);
-    // 10 saniye timeout
-    setTimeout(()=>{
-      if(_cmsBekle[key]){
-        delete _cmsBekle[key];
-        reject(new Error('CMS zaman aşımı'));
-      }
-    }, 10000);
-  });
-}
-
-// CMS'e yaz (localStorage yerine)
+// CMS'e yaz
 async function cmsYaz(action, data){
   try {
-    const tip = {
-      MEMBER_ADD:    'CMS_MEMBER_ADD',
-      MEMBER_UPDATE: 'CMS_MEMBER_UPDATE',
-      MEMBER_DELETE: 'CMS_MEMBER_DELETE',
-      EVENT_ADD:     'CMS_EVENT_ADD',
-      EVENT_DELETE:  'CMS_EVENT_DELETE',
-      BUDGET_ADD:    'CMS_BUDGET_ADD',
-      BUDGET_DELETE: 'CMS_BUDGET_DELETE',
-    }[action];
-    if(!tip) return;
-    const payload = action.includes('DELETE') ? {type:tip, id:data} : {type:tip, item:data};
-    const result = await cmsIstek(payload);
+    const payload = action.includes('DELETE')
+      ? { action, id: data }
+      : { action, item: data };
+
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error('API yazma hatası: ' + res.status);
+    const result = await res.json();
     document.getElementById('lastSaved').textContent = 'Son kayıt: ' + new Date().toLocaleTimeString('tr-TR');
+
+    // Local array'e yansıt
+    if(result.result){
+      const item = result.result;
+      if(action==='MEMBER_ADD') members.push({...item, id: item._id||item.id});
+      if(action==='MEMBER_UPDATE'){
+        const i=members.findIndex(m=>m._id===item._id||m.id===item.id);
+        if(i>-1) members[i]={...members[i],...item,id:item._id||item.id};
+      }
+      if(action==='EVENT_ADD') events.push({...item, id: item._id||item.id, katilimcilar: typeof item.katilimcilar==='string'?item.katilimcilar.split(',').map(s=>s.trim()):(item.katilimcilar||[])});
+      if(action==='BUDGET_ADD') butce.push({...item, id: item._id||item.id});
+    }
     return result;
   } catch(e) {
     console.error('CMS yazma hatası:', e);
-    // Fallback: localStorage'a yaz
-    setLS('qg_members', members);
-    setLS('qg_events', events);
-    setLS('qg_butce', butce);
   }
 }
 
-// ══════════════════════════════════════════
-// WİX'TEN MESAJ BEKLE (postMessage)
-// ══════════════════════════════════════════
+// Wix'ten postMessage ile auth al (hâlâ destekleniyor)
 window.addEventListener('message', function(event){
   const data = event.data;
   if(!data) return;
-
-  // Auth mesajı — giriş yap + CMS verilerini yükle
   if(data.type === 'QGANG_AUTH'){
-    // CMS verilerini yükle
-    if(data.cmsData){
-      if(data.cmsData.members && data.cmsData.members.length > 0){
-        members = data.cmsData.members.map(m => ({
-          ...m,
-          id: m._id || m.id,
-          katilimcilar: typeof m.katilimcilar === 'string'
-            ? m.katilimcilar.split(',').map(s=>s.trim())
-            : (m.katilimcilar || [])
-        }));
-      }
-      if(data.cmsData.events && data.cmsData.events.length > 0){
-        events = data.cmsData.events.map(e => ({
-          ...e,
-          id: e._id || e.id,
-          katilimcilar: typeof e.katilimcilar === 'string'
-            ? e.katilimcilar.split(',').map(s=>s.trim())
-            : (e.katilimcilar || [])
-        }));
-      }
-      if(data.cmsData.budget && data.cmsData.budget.length > 0){
-        butce = data.cmsData.budget.map(b => ({
-          ...b,
-          id: b._id || b.id
-        }));
-      }
-    }
-    girisYap(data.rumuz, data.rol);
-  }
-
-  // CMS cevabı — bekleyen isteği çöz
-  if(data.type === 'CMS_OK' || data.type === 'CMS_ERR'){
-    const key = data._key || Object.keys(_cmsBekle)[0];
-    if(key && _cmsBekle[key]){
-      if(data.type === 'CMS_OK') _cmsBekle[key].resolve(data);
-      else _cmsBekle[key].reject(new Error(data.error));
-      delete _cmsBekle[key];
-    }
-    // CMS'ten gelen güncel item'ı local array'e de yansıt
-    if(data.type === 'CMS_OK' && data.item){
-      if(data.action === 'MEMBER_ADD') members.push({...data.item, id: data.item._id || data.item.id});
-      if(data.action === 'MEMBER_UPDATE'){
-        const i = members.findIndex(m=>m._id===data.item._id||m.id===data.item.id);
-        if(i>-1) members[i] = {...data.item, id: data.item._id || data.item.id};
-      }
-      if(data.action === 'EVENT_ADD') events.push({...data.item, id: data.item._id || data.item.id});
-      if(data.action === 'BUDGET_ADD') butce.push({...data.item, id: data.item._id || data.item.id});
-    }
-    if(data.type === 'CMS_OK' && data.id){
-      if(data.action === 'MEMBER_DELETE') members = members.filter(m=>m._id!==data.id&&m.id!==data.id);
-      if(data.action === 'EVENT_DELETE') events = events.filter(e=>e._id!==data.id&&e.id!==data.id);
-      if(data.action === 'BUDGET_DELETE') butce = butce.filter(b=>b._id!==data.id&&b.id!==data.id);
-    }
+    girisYap(data.rumuz || 'Üye', data.rol || 'Üye');
   }
 });
 
-// Panel yüklenince Wix'e "hazırım" mesajı gönder
-window.addEventListener('load', function(){
+// Panel yüklenince: Wix'e mesaj gönder + HTTP API'den veri çek
+window.addEventListener('load', async function(){
+  // Wix iframe'ine hazır mesajı gönder
   if(window.parent !== window){
     window.parent.postMessage({type:'QGANG_READY'}, '*');
   }
-  // 4 saniye içinde auth gelmezse test modu (Lider)
+
+  // HTTP API'den CMS verilerini çek
+  const cmsVeri = await cmsOku();
+  if(cmsVeri){
+    if(cmsVeri.members && cmsVeri.members.length > 0){
+      members = cmsVeri.members.map(m => ({
+        ...m,
+        id: m._id || m.id,
+        katilimcilar: typeof m.katilimcilar==='string'
+          ? m.katilimcilar.split(',').map(s=>s.trim())
+          : (m.katilimcilar||[])
+      }));
+    }
+    if(cmsVeri.events && cmsVeri.events.length > 0){
+      events = cmsVeri.events.map(e => ({
+        ...e,
+        id: e._id || e.id,
+        katilimcilar: typeof e.katilimcilar==='string'
+          ? e.katilimcilar.split(',').map(s=>s.trim())
+          : (e.katilimcilar||[])
+      }));
+    }
+    if(cmsVeri.budget && cmsVeri.budget.length > 0){
+      butce = cmsVeri.budget.map(b => ({...b, id: b._id||b.id}));
+    }
+  }
+
+  // 3 saniye içinde Wix'ten auth gelmezse test modu
   setTimeout(function(){
     if(!SESSION.girisZamani){
       girisYap('Test (Lider)', 'Lider');
     }
-  }, 4000);
+  }, 3000);
 });
 
 function girisYap(rumuz, rol){
