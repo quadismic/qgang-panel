@@ -367,7 +367,7 @@ async function cmsYaz(action, data){
   }
 }
 
-// Wix'ten postMessage ile auth al (hâlâ destekleniyor)
+// Wix'ten postMessage ile auth al
 window.addEventListener('message', function(event){
   const data = event.data;
   if(!data) return;
@@ -409,12 +409,8 @@ window.addEventListener('load', async function(){
     }
   }
 
-  // 3 saniye içinde Wix'ten auth gelmezse test modu
-  setTimeout(function(){
-    if(!SESSION.girisZamani){
-      girisYap('Test (Lider)', 'Lider');
-    }
-  }, 3000);
+  // Wix'ten auth bekliyoruz — timeout YOK
+  // Auth gelmezse login ekranı açık kalır
 });
 
 function girisYap(rumuz, rol){
