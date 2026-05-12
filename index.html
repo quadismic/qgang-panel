@@ -436,6 +436,7 @@ svg.org{display:inline-block}
       <div class="nav-dd-item" id="navButceDD" onclick="showTabDD('butce','ddYonetim','navYonetimBtn')"><i class="ti ti-currency-lira"></i> Bütçe</div>
       <div class="nav-dd-item" onclick="showTabDD('davet','ddYonetim','navYonetimBtn')"><i class="ti ti-mail-forward"></i> Davetler</div>
       <div class="nav-dd-item" onclick="showTabDD('tuzuk','ddYonetim','navYonetimBtn')"><i class="ti ti-license"></i> Tüzük & Disiplin</div>
+      <div class="nav-dd-item" id="navErisimDD" onclick="showTabDD('erisim','ddYonetim','navYonetimBtn')" style="display:none"><i class="ti ti-shield-lock"></i> Erişim Yönetimi</div>
     </div>
   </div>
 
@@ -529,6 +530,19 @@ svg.org{display:inline-block}
     <button class="btn btn-warn" onclick="openModal('addDuyuru')" id="btnDuyuruEkle" style="display:none"><i class="ti ti-plus"></i> Yeni Duyuru</button>
   </div>
   <div id="duyuruList"></div>
+</div>
+
+<!-- ERİŞİM YÖNETİMİ -->
+<div id="tab-erisim" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-shield-lock"></i> Erişim Yönetimi</div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-success btn-sm" onclick="izinKaydet()"><i class="ti ti-check"></i> Kaydet</button>
+      <button class="btn btn-sm" onclick="izinSifirla()"><i class="ti ti-refresh"></i> Sıfırla</button>
+    </div>
+  </div>
+  <div style="font-size:11px;color:#555;margin-bottom:1rem">Her rol için izinleri aç/kapat. Sadece Lider erişebilir.</div>
+  <div id="izinBoard"></div>
 </div>
 
 <!-- DAVET -->
@@ -870,14 +884,15 @@ function uiAyarla(){
   if(izin('logSil')) document.getElementById('btnLogTemizle').style.display='';
   if(izin('duyuruEkle')) document.getElementById('btnDuyuruEkle').style.display='';
   if(izin('disiplinUygula')) document.getElementById('btnDisiplinEkle').style.display='';
-  if(!izin('butceGor')) document.getElementById('navButce').style.display='none';
+  if(!izin('butceGor')) document.getElementById('navButceDD').style.display='none';
   if(!izin('logGor')) document.getElementById('navLog').style.display='none';
+  if(SESSION.rol==='Lider') document.getElementById('navErisimDD').style.display='';
 }
 
 // ══════════════════════════════════════════
 // VERİ
 // ══════════════════════════════════════════
-const RUTBELER=['Siyah','Kırmızı','Mavi','Yeşil','Sarı','Beyaz'];
+const RUTBELER=['Lider','Vekilharç','Kaptan','Teğmen','Üye','Görüntüleyici'];
 const DURUMLAR=['Aktif','Pasif','Riskli','İzinde','Arşiv'];
 const GOREVLER=['Klan','Sosyal Medya','Yönetim','Özel','Yok'];
 const ETK_TURLERI=['GANG-UP','OP-NIGHT','BBQ-GANG','Q-NITY','B-DAY & S-DAY','Diğer'];
@@ -899,7 +914,15 @@ function save(){setLS('qg_logs',logs);document.getElementById('lastSaved').textC
 function addLog(action,detail){logs.unshift({time:new Date().toISOString(),who:SESSION.rumuz||'?',rol:SESSION.rol||'?',action,detail});if(logs.length>300)logs=logs.slice(0,300);setLS('qg_logs',logs)}
 function clearLog(){if(!izin('logSil'))return;if(!confirm('Tüm log silinsin mi?'))return;logs=[];setLS('qg_logs',logs);renderLog()}
 
-function rutbeBadge(r){const m={Siyah:'siyah',Kırmızı:'kirmizi',Mavi:'mavi',Yeşil:'yesil',Sarı:'sari',Beyaz:'beyaz'};return`<span class="badge badge-${m[r]||'beyaz'}">${r}</span>`}
+function rutbeBadge(r){
+  const m={
+    Lider:'siyah', Vekilharç:'kirmizi', Kaptan:'mavi',
+    Teğmen:'yesil', Üye:'sari', Görüntüleyici:'beyaz',
+    // Eski isimler için fallback
+    Siyah:'siyah',Kırmızı:'kirmizi',Mavi:'mavi',Yeşil:'yesil',Sarı:'sari',Beyaz:'beyaz'
+  };
+  return`<span class="badge badge-${m[r]||'beyaz'}">${r}</span>`
+}
 function durumBadge(d){const m={Aktif:'aktif',Pasif:'pasif',Riskli:'riskli',İzinde:'izinde',Arşiv:'arsiv'};return`<span class="badge badge-${m[d]||'pasif'}">${d}</span>`}
 function fmtTL(v){return Number(v).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₺'}
 function fmtDate(s){if(!s)return'-';try{const[y,mo,d]=s.split('-');return`${d}.${mo}.${y}`}catch{return s}}
@@ -952,7 +975,7 @@ function _showTabContent(name){
     dashboard:renderDashboard, members:renderMembers, puan:renderPuan,
     gorev:renderGorev, etkinlik:renderEvents, butce:renderButce,
     duyurular:renderDuyurular, davet:renderDavet, tuzuk:renderTuzuk,
-    org:renderOrg, log:renderLog
+    erisim:renderErisimBoard, org:renderOrg, log:renderLog
   };
   if(fns[name]) fns[name]();
 }
@@ -1241,6 +1264,80 @@ function reqDeleteDuyuru(id){
     addLog('Duyuru silindi',d.baslik);save();
     renderDuyurular();renderDuyuruBanner();
     await cmsYaz('DUYURU_DELETE',d._id||d.id);
+  });
+}
+
+// ══════════════════════════════════════════
+// ERİŞİM YÖNETİMİ BOARD
+// ══════════════════════════════════════════
+const IZIN_ETIKETLER = {
+  uyeEkle:'Üye Ekle', uyeSil:'Üye Sil', uyeDuzenle:'Üye Düzenle',
+  rutbeDegistir:'Rütbe Değiştir', puanDuzenle:'Puan Düzenle',
+  gorevAta:'Görev Ata', etkinlikEkle:'Etkinlik Ekle', etkinlikSil:'Etkinlik Sil',
+  butceGor:'Bütçe Gör', butceDuzenle:'Bütçe Düzenle',
+  logGor:'Log Gör', logSil:'Log Temizle', kodUret:'Kod Üret',
+  duyuruEkle:'Duyuru Ekle', duyuruSil:'Duyuru Sil',
+  basvuruGor:'Başvuru Gör', davetYonet:'Davet Yönet',
+  disiplinUygula:'Disiplin Uygula', tuzukDuzenle:'Tüzük Düzenle'
+};
+
+const ROLLER_LISTE = ['Vekilharç','Kaptan','Teğmen','Üye','Görüntüleyici'];
+let aktifIzinler = JSON.parse(JSON.stringify(IZINLER));
+
+async function renderErisimBoard(){
+  if(SESSION.rol!=='Lider'){
+    document.getElementById('izinBoard').innerHTML='<div class="erisim-engel"><i class="ti ti-lock"></i>Sadece Lider erişebilir.</div>';
+    return;
+  }
+  // Kayıtlı izinleri çek
+  try{
+    const result=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'IZIN_OKU'})});
+    const data=await result.json();
+    if(data.result){aktifIzinler={...IZINLER,...data.result};Object.assign(IZINLER,data.result);}
+  }catch(e){}
+
+  const izinler=Object.keys(IZIN_ETIKETLER);
+  let html=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
+    <thead><tr>
+      <th style="text-align:left;padding:8px;color:#888;border-bottom:0.5px solid #333;min-width:140px">İzin</th>
+      ${ROLLER_LISTE.map(r=>`<th style="text-align:center;padding:8px;color:#888;border-bottom:0.5px solid #333;white-space:nowrap">${r}</th>`).join('')}
+    </tr></thead><tbody>`;
+
+  izinler.forEach(key=>{
+    html+=`<tr><td style="padding:7px 8px;border-bottom:0.5px solid #222;color:#d3d1c7">${IZIN_ETIKETLER[key]}</td>
+      ${ROLLER_LISTE.map(rol=>{
+        const checked=aktifIzinler[rol]?.[key]?'checked':'';
+        return`<td style="text-align:center;padding:7px 8px;border-bottom:0.5px solid #222">
+          <input type="checkbox" ${checked} onchange="izinDegistir('${rol}','${key}',this.checked)"
+          style="width:16px;height:16px;cursor:pointer;accent-color:#fac775"></td>`;
+      }).join('')}</tr>`;
+  });
+
+  html+=`</tbody></table></div>`;
+  document.getElementById('izinBoard').innerHTML=html;
+}
+
+function izinDegistir(rol,key,deger){
+  if(!aktifIzinler[rol])aktifIzinler[rol]={};
+  aktifIzinler[rol][key]=deger?1:0;
+}
+
+async function izinKaydet(){
+  const kayit={};
+  ROLLER_LISTE.forEach(r=>{kayit[r]=aktifIzinler[r]||{}});
+  const result=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'IZIN_KAYDET',item:kayit})});
+  const data=await result.json();
+  if(data.success){
+    Object.assign(IZINLER,kayit);
+    addLog('Erişim izinleri güncellendi','Lider tarafından');save();
+    cmsStatusGoster('ok','<i class="ti ti-check"></i> İzinler kaydedildi');
+  }
+}
+
+function izinSifirla(){
+  confirm2('İzinleri sıfırla','Tüm izinler varsayılan değerlere döndürülecek.',()=>{
+    aktifIzinler=JSON.parse(JSON.stringify(IZINLER));
+    renderErisimBoard();
   });
 }
 
@@ -1911,6 +2008,10 @@ function reqUpdateMember(id){
     else addLog('Üye düzenlendi',`${m.rumuz} — kaydedildi`);
     save();closeModal();
     await cmsYaz('MEMBER_UPDATE',gunc);
+    // Rütbe değişince QKullanicilar'daki rolü de güncelle
+    if(m.rutbe!==newRutbe){
+      await cmsYaz('USER_RUTBE_SYNC',{rumuz:m.rumuz,rol:newRutbe});
+    }
     renderMembers();renderDashboard();
   });
 }
