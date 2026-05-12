@@ -637,7 +637,7 @@ function izin(key){return !!(IZINLER[SESSION.rol]||IZINLER['Görüntüleyici'])[
 // ══════════════════════════════════════════
 // CMS KÖPRÜSÜ — HTTP API
 // ══════════════════════════════════════════
-const AUTH_URL = 'https://www.q-gang.com/_functions/qauth';
+const AUTH_URL = 'https://www.q-gang.com/_functions/qgang';
 const API_URL = 'https://www.q-gang.com/_functions/qgang';
 
 // ── AUTH FONKSİYONLARI ──────────────────────
@@ -741,11 +741,12 @@ async function girisYapBtn(){
     const res=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'LOGIN',rumuz,sifreHash})});
     const data=await res.json();
     if(data.success){
+      const user=data.result;
       const beniHatirla=document.getElementById('beniHatirla').checked;
       if(beniHatirla){
-        localStorage.setItem('qg_session',JSON.stringify({rumuz:data.user.rumuz,rol:data.user.rol,zaman:Date.now()}));
+        localStorage.setItem('qg_session',JSON.stringify({rumuz:user.rumuz,rol:user.rol,zaman:Date.now()}));
       }
-      panelAc(data.user.rumuz,data.user.rol);
+      panelAc(user.rumuz,user.rol);
     } else {
       hata.textContent=data.error||'Giriş başarısız.';hata.style.display='block';
       btn.textContent='KAPI ÇALMAK İSTİYORUM';btn.disabled=false;
