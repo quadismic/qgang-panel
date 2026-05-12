@@ -378,6 +378,7 @@ svg.org{display:inline-block}
   <button onclick="showTab('etkinlik',this)"><i class="ti ti-calendar"></i> Etkinlikler</button>
   <button onclick="showTab('butce',this)" id="navButce"><i class="ti ti-currency-lira"></i> Bütçe</button>
   <button onclick="showTab('duyurular',this)" id="navDuyuru"><i class="ti ti-speakerphone"></i> Duyurular</button>
+  <button onclick="showTab('tuzuk',this)"><i class="ti ti-license"></i> Tüzük</button>
   <button onclick="showTab('org',this)"><i class="ti ti-hierarchy"></i> Organizasyon</button>
   <button onclick="showTab('log',this)" id="navLog"><i class="ti ti-history"></i> Log</button>
 </nav>
@@ -466,6 +467,33 @@ svg.org{display:inline-block}
   <div id="duyuruList"></div>
 </div>
 
+<!-- TÜZÜK + DİSİPLİN -->
+<div id="tab-tuzuk" class="tab">
+  <!-- TÜZÜK -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-license"></i> Q-GANG Tüzüğü</div>
+    <div style="display:flex;gap:6px" id="tuzukBtnGroup"></div>
+  </div>
+  <div id="tuzukGorunum" class="card" style="min-height:200px;line-height:1.8;font-size:13px;white-space:pre-wrap"></div>
+  <div id="tuzukEditor" style="display:none">
+    <textarea id="tuzukMetin" style="width:100%;min-height:400px;padding:12px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:13px;line-height:1.8;resize:vertical"></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;justify-content:flex-end">
+      <button class="btn" onclick="tuzukIptal()">İptal</button>
+      <button class="btn btn-success" onclick="tuzukKaydet()"><i class="ti ti-check"></i> Kaydet</button>
+    </div>
+  </div>
+  <div id="tuzukMeta" style="font-size:10px;color:#444;margin-top:6px;text-align:right"></div>
+
+  <hr class="sep">
+
+  <!-- DİSİPLİN -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-gavel"></i> Disiplin Kayıtları</div>
+    <button class="btn btn-danger btn-sm" onclick="openModal('addDisiplin')" id="btnDisiplinEkle" style="display:none"><i class="ti ti-plus"></i> Kayıt Ekle</button>
+  </div>
+  <div id="disiplinList"></div>
+</div>
+
 <!-- ORGANİZASYON -->
 <div id="tab-org" class="tab">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
@@ -501,12 +529,12 @@ svg.org{display:inline-block}
 const ROL_SIRASI = ['Lider','Vekilharç','Kaptan','Teğmen','Üye','Görüntüleyici'];
 
 const IZINLER = {
-  Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,duyuruEkle:1,duyuruSil:1,basvuruGor:1,davetYonet:1},
-  Vekilharç:     {uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:0,duyuruEkle:1,duyuruSil:0,basvuruGor:1,davetYonet:0},
-  Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0},
-  Teğmen:        {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0},
-  Üye:           {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0},
-  Görüntüleyici: {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0}
+  Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,duyuruEkle:1,duyuruSil:1,basvuruGor:1,davetYonet:1,disiplinUygula:1,tuzukDuzenle:1},
+  Vekilharç:     {uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:0,duyuruEkle:1,duyuruSil:0,basvuruGor:1,davetYonet:0,disiplinUygula:1,tuzukDuzenle:0},
+  Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
+  Teğmen:        {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
+  Üye:           {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
+  Görüntüleyici: {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0}
 };
 
 function cikisYap(){
@@ -722,6 +750,8 @@ window.addEventListener('load',async function(){
           if(veri.events?.length)events=veri.events.map(e=>({...e,id:e._id||e.id,katilimcilar:parseKat(e.katilimcilar)}));
           if(veri.budget?.length)butce=veri.budget.map(b=>({...b,id:b._id||b.id}));
           if(veri.duyurular?.length)duyurular=veri.duyurular.map(d=>({...d,id:d._id||d.id}));
+          if(veri.disiplin?.length)disiplin=veri.disiplin.map(d=>({...d,id:d._id||d.id}));
+          if(veri.tuzuk)tuzuk=veri.tuzuk;
         }
         panelAc(s.rumuz,s.rol);
         return;
@@ -737,6 +767,8 @@ window.addEventListener('load',async function(){
       if(veri.events?.length)events=veri.events.map(e=>({...e,id:e._id||e.id,katilimcilar:parseKat(e.katilimcilar)}));
       if(veri.budget?.length)butce=veri.budget.map(b=>({...b,id:b._id||b.id}));
       if(veri.duyurular?.length)duyurular=veri.duyurular.map(d=>({...d,id:d._id||d.id}));
+      if(veri.disiplin?.length)disiplin=veri.disiplin.map(d=>({...d,id:d._id||d.id}));
+      if(veri.tuzuk)tuzuk=veri.tuzuk;
     }
   });
 });
@@ -753,6 +785,7 @@ function uiAyarla(){
   if(izin('kodUret')) document.getElementById('btnKodUret').style.display='';
   if(izin('logSil')) document.getElementById('btnLogTemizle').style.display='';
   if(izin('duyuruEkle')) document.getElementById('btnDuyuruEkle').style.display='';
+  if(izin('disiplinUygula')) document.getElementById('btnDisiplinEkle').style.display='';
   if(!izin('butceGor')) document.getElementById('navButce').style.display='none';
   if(!izin('logGor')) document.getElementById('navLog').style.display='none';
 }
@@ -774,6 +807,8 @@ let members=[];
 let events=[];
 let butce=[];
 let duyurular=[];
+let disiplin=[];
+let tuzuk=null;
 let logs=getLS('qg_logs',[]);
 
 function save(){setLS('qg_logs',logs);document.getElementById('lastSaved').textContent='Son kayıt: '+new Date().toLocaleTimeString('tr-TR')}
@@ -793,7 +828,7 @@ function showTab(name,btn){
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   if(btn)btn.classList.add('active');
-  const fns={dashboard:renderDashboard,members:renderMembers,puan:renderPuan,gorev:renderGorev,etkinlik:renderEvents,butce:renderButce,duyurular:renderDuyurular,org:renderOrg,log:renderLog};
+  const fns={dashboard:renderDashboard,members:renderMembers,puan:renderPuan,gorev:renderGorev,etkinlik:renderEvents,butce:renderButce,duyurular:renderDuyurular,tuzuk:renderTuzuk,org:renderOrg,log:renderLog};
   if(fns[name])fns[name]();
 }
 
@@ -1085,7 +1120,93 @@ function reqDeleteDuyuru(id){
 }
 
 // ══════════════════════════════════════════
-// LOG
+// TÜZÜK
+// ══════════════════════════════════════════
+function renderTuzuk(){
+  const gorunum=document.getElementById('tuzukGorunum');
+  const meta=document.getElementById('tuzukMeta');
+  const btnGroup=document.getElementById('tuzukBtnGroup');
+  gorunum.textContent=tuzuk?.icerik||'Henüz tüzük eklenmemiş.';
+  if(tuzuk?.guncelleyen) meta.textContent=`Son güncelleme: ${tuzuk.guncelleyen} — ${tuzuk.guncellemeTarih||''}`;
+  btnGroup.innerHTML=izin('tuzukDuzenle')?`<button class="btn btn-primary btn-sm" onclick="tuzukDuzenle()"><i class="ti ti-edit"></i> Düzenle</button>`:'';
+  renderDisiplin();
+}
+
+function tuzukDuzenle(){
+  document.getElementById('tuzukGorunum').style.display='none';
+  document.getElementById('tuzukEditor').style.display='block';
+  document.getElementById('tuzukMetin').value=tuzuk?.icerik||'';
+}
+
+function tuzukIptal(){
+  document.getElementById('tuzukGorunum').style.display='block';
+  document.getElementById('tuzukEditor').style.display='none';
+}
+
+async function tuzukKaydet(){
+  const icerik=document.getElementById('tuzukMetin').value.trim();
+  if(!icerik){alert('Tüzük metni boş olamaz.');return}
+  const item={icerik,guncelleyen:SESSION.rumuz,guncellemeTarih:new Date().toLocaleString('tr-TR')};
+  const result=await cmsYaz('TUZUK_SAVE',item);
+  if(result){
+    tuzuk={...item,...(result.result||{})};
+    tuzukIptal();
+    renderTuzuk();
+    addLog('Tüzük güncellendi',`${SESSION.rumuz} tarafından`);save();
+  }
+}
+
+// ══════════════════════════════════════════
+// DİSİPLİN
+// ══════════════════════════════════════════
+const CEZA_TURLERI=['Uyarı','Uzaklaştırma','İhraç'];
+const CEZA_RENK={Uyarı:'badge-sari',Uzaklaştırma:'badge-kirmizi',İhraç:'badge-riskli'};
+
+function renderDisiplin(){
+  const el=document.getElementById('disiplinList');
+  if(!disiplin.length){el.innerHTML='<div style="font-size:12px;color:#555">Henüz disiplin kaydı yok.</div>';return}
+  el.innerHTML=disiplin.map(d=>{
+    const did=d._id||d.id;
+    return`<div class="card" style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:6px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <strong style="font-size:13px">${d.uye}</strong>
+          <span class="badge ${CEZA_RENK[d.cezaTuru]||'badge-sari'}">${d.cezaTuru}</span>
+          ${d.durum==='Kaldırıldı'?'<span class="badge badge-pasif">Kaldırıldı</span>':''}
+        </div>
+        <div style="display:flex;gap:4px">
+          ${izin('disiplinUygula')&&d.durum!=='Kaldırıldı'?`<button class="btn btn-sm" onclick="reqDisiplinKaldir('${did}')"><i class="ti ti-x"></i> Kaldır</button>`:''}
+          ${izin('disiplinUygula')?`<button class="btn btn-danger btn-sm" onclick="reqDisiplinSil('${did}')"><i class="ti ti-trash"></i></button>`:''}
+        </div>
+      </div>
+      <div style="font-size:12px;color:#d3d1c7;margin-bottom:4px">${d.gerekce||'—'}</div>
+      ${d.tuzukMaddesi?`<div style="font-size:11px;color:#555;margin-bottom:4px">Tüzük maddesi: ${d.tuzukMaddesi}</div>`:''}
+      <div style="font-size:10px;color:#555">${d.tarih||''} · Uygulayan: ${d.uygulayan||'—'}</div>
+    </div>`}).join('');
+}
+
+function reqDisiplinKaldir(id){
+  const d=disiplin.find(d=>String(d._id)===String(id)||String(d.id)===String(id));if(!d)return;
+  confirm2('Cezayı kaldır',`<strong>${d.uye}</strong> — ${d.cezaTuru} cezası kaldırılacak.`,async()=>{
+    const gunc={...d,_id:d._id||d.id,durum:'Kaldırıldı'};
+    const idx=disiplin.findIndex(x=>String(x._id)===String(id)||String(x.id)===String(id));
+    if(idx>-1)disiplin[idx]={...disiplin[idx],durum:'Kaldırıldı'};
+    addLog('Ceza kaldırıldı',`${d.uye} — ${d.cezaTuru}`);save();
+    await cmsYaz('DISIPLIN_UPDATE',gunc);
+    renderDisiplin();
+  });
+}
+
+function reqDisiplinSil(id){
+  const d=disiplin.find(d=>String(d._id)===String(id)||String(d.id)===String(id));if(!d)return;
+  confirm2('Kaydı sil',`<strong>${d.uye}</strong> disiplin kaydı silinecek.`,async()=>{
+    disiplin=disiplin.filter(x=>String(x._id)!==String(id)&&String(x.id)!==String(id));
+    addLog('Disiplin kaydı silindi',`${d.uye} — ${d.cezaTuru}`);save();
+    await cmsYaz('DISIPLIN_DELETE',d._id||d.id);
+    renderDisiplin();
+  });
+}
+
 // ══════════════════════════════════════════
 function renderLog(){
   if(!izin('logGor')){document.getElementById('logList').innerHTML=engelEkrani();return}
@@ -1315,10 +1436,42 @@ function openModal(type,data){
           <button class="btn btn-warn" onclick="reqUpdateDuyuru('${did}')"><i class="ti ti-check"></i> Güncelle</button>
         </div>
       </div></div>`;
+  } else if(type==='addDisiplin'&&izin('disiplinUygula')){
+    mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-box"><h3><i class="ti ti-gavel"></i> Disiplin Kaydı Ekle</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Üye</label><select id="dis_uye">${members.map(m=>`<option value="${m.rumuz}">${m.rumuz}</option>`).join('')}</select></div>
+          <div class="form-group"><label>Ceza Türü</label><select id="dis_ceza">${CEZA_TURLERI.map(c=>`<option>${c}</option>`).join('')}</select></div>
+        </div>
+        <div class="form-group" style="margin-bottom:8px"><label>Gerekçe *</label><textarea id="dis_gerekce" placeholder="Disiplin sebebini açıkla..." style="min-height:80px"></textarea></div>
+        <div class="form-group" style="margin-bottom:8px"><label>Tüzük Maddesi (varsa)</label><input id="dis_madde" placeholder="Örn: Madde 5.2 — ..."></div>
+        <div class="form-group" style="margin-bottom:8px"><label>Tarih</label><input type="date" id="dis_tarih" value="${today}"></div>
+        <div class="modal-footer">
+          <button class="btn" onclick="closeModal()">İptal</button>
+          <button class="btn btn-danger" onclick="reqDisiplinKaydet()"><i class="ti ti-gavel"></i> Uygula</button>
+        </div>
+      </div></div>`;
   }
 }
 
 function closeModal(){document.getElementById('modalContainer').innerHTML=''}
+
+async function reqDisiplinKaydet(){
+  if(!izin('disiplinUygula'))return;
+  const uye=document.getElementById('dis_uye').value;
+  const cezaTuru=document.getElementById('dis_ceza').value;
+  const gerekce=document.getElementById('dis_gerekce').value.trim();
+  const tuzukMaddesi=document.getElementById('dis_madde').value.trim();
+  const tarih=document.getElementById('dis_tarih').value;
+  if(!gerekce){alert('Gerekçe zorunlu.');return}
+  confirm2('Disiplin uygula',`<strong>${uye}</strong> — ${cezaTuru}<br><span style="font-size:12px">${gerekce}</span>`,async()=>{
+    const yeni={uye,cezaTuru,gerekce,tuzukMaddesi,tarih,uygulayan:SESSION.rumuz,durum:'Aktif'};
+    addLog('Disiplin uygulandı',`${uye} — ${cezaTuru}`);save();
+    closeModal();
+    await cmsYaz('DISIPLIN_ADD',yeni);
+    renderDisiplin();
+  });
+}
 
 function reqSaveMember(){
   if(!izin('uyeEkle'))return;
@@ -1345,19 +1498,26 @@ function reqUpdateMember(id){
   const newDurum=document.getElementById('e_durum').value;
   const newGorev=izin('gorevAta')?document.getElementById('e_gorev').value:m.gorev;
   const newPuan=izin('puanDuzenle')?Number(document.getElementById('e_puan').value)||0:m.puan;
+  const newKatilim=document.getElementById('e_katilim').value||m.katilim||'';
+  const newDogum=document.getElementById('e_dogum').value||'';
+  const newRef=document.getElementById('e_ref').value||'';
+  const newNot=document.getElementById('e_not').value||'';
   const oldPuan=Number(m.puan)||0;
   const changes=[];
   if(m.rutbe!==newRutbe)changes.push(`Rütbe: ${m.rutbe} → ${newRutbe}`);
   if(m.durum!==newDurum)changes.push(`Durum: ${m.durum} → ${newDurum}`);
   if(m.gorev!==newGorev)changes.push(`Görev: ${m.gorev} → ${newGorev}`);
   if(oldPuan!==newPuan)changes.push(`Puan: ${oldPuan} → ${newPuan}`);
+  if((m.katilim||'')!==newKatilim)changes.push('Katılım tarihi güncellendi');
+  if((m.dogum||'')!==newDogum)changes.push('Doğum tarihi güncellendi');
+  if((m.ref||'')!==newRef)changes.push('Referans güncellendi');
+  if((m.not||'')!==newNot)changes.push('Not güncellendi');
   confirm2('Üye güncelle',`<strong>${m.rumuz}</strong><br>${changes.length?changes.join('<br>'):'<span style="color:#888;font-size:12px">Değişiklik yok</span>'}`,async()=>{
-    const gunc={...m,rutbe:newRutbe,durum:newDurum,gorev:newGorev,puan:newPuan,
-      katilim:document.getElementById('e_katilim').value,
-      dogum:document.getElementById('e_dogum').value,
-      ref:document.getElementById('e_ref').value,
-      not:document.getElementById('e_not').value,
-      _id:m._id||m.id
+    const gunc={
+      ...m,
+      _id:m._id||m.id,
+      rutbe:newRutbe,durum:newDurum,gorev:newGorev,puan:newPuan,
+      katilim:newKatilim,dogum:newDogum,ref:newRef,not:newNot
     };
     const idx=members.findIndex(x=>String(x._id)===String(id)||String(x.id)===String(id));
     if(idx>-1)members[idx]={...members[idx],...gunc};
