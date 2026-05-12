@@ -470,8 +470,8 @@ svg.org{display:inline-block}
     <input type="text" id="searchBox" placeholder="Ara..." oninput="renderMembers()" style="max-width:150px">
     <select id="filterRutbe" onchange="renderMembers()">
       <option value="">Tüm rütbeler</option>
-      <option>Siyah</option><option>Kırmızı</option><option>Mavi</option>
-      <option>Yeşil</option><option>Sarı</option><option>Beyaz</option>
+      <option>Lider</option><option>Vekilharç</option><option>Kaptan</option>
+      <option>Teğmen</option><option>Üye</option><option>Görüntüleyici</option>
     </select>
     <select id="filterDurum" onchange="renderMembers()">
       <option value="">Tüm durumlar</option>
@@ -1035,7 +1035,10 @@ function renderDashboard(){
 // ══════════════════════════════════════════
 function renderMembers(){
   const q=(document.getElementById('searchBox').value||'').toLowerCase(),fr=document.getElementById('filterRutbe').value,fd=document.getElementById('filterDurum').value,fg=document.getElementById('filterGorev').value;
-  const filtered=members.filter(m=>(!q||m.rumuz.toLowerCase().includes(q))&&(!fr||m.rutbe===fr)&&(!fd||m.durum===fd)&&(!fg||m.gorev===fg));
+  const rutbeSira={Lider:0,Vekilharç:1,Kaptan:2,Teğmen:3,Üye:4,Görüntüleyici:5};
+  const filtered=members
+    .filter(m=>(!q||m.rumuz.toLowerCase().includes(q))&&(!fr||m.rutbe===fr)&&(!fd||m.durum===fd)&&(!fg||m.gorev===fg))
+    .sort((a,b)=>(rutbeSira[a.rutbe]??9)-(rutbeSira[b.rutbe]??9));
   const editBtn=izin('uyeDuzenle')||izin('rutbeDegistir'),silBtn=izin('uyeSil');
   document.getElementById('memberTableBody').innerHTML=filtered.map((m,i)=>{
     const mid=m._id||m.id;
@@ -1636,14 +1639,11 @@ function yedegiAl(){
 // ══════════════════════════════════════════
 function buildOrgSVG(animated){
   const W=700,NW=120,NH=42,UW=90,UH=36,GAP=10;
-  // Rütbeye göre grupla
-  const lider=members.find(m=>m.rutbe==='Siyah');
-  const vekilharclar=members.filter(m=>m.rutbe==='Kırmızı'||m.rutbe==='Mavi');
-  const kaptanlar=members.filter(m=>m.rutbe==='Yeşil');
-  const tegmenler=members.filter(m=>m.rutbe==='Mor');
-  const uyeler=members.filter(m=>m.rutbe==='Sarı'||m.rutbe==='Beyaz');
-
-  const ROL_LABEL={Siyah:'Lider',Kırmızı:'Vekilharç',Mavi:'Vekilharç',Yeşil:'Kaptan',Mor:'Teğmen',Sarı:'Üye',Beyaz:'Üye'};
+  const lider=members.find(m=>m.rutbe==='Lider');
+  const vekilharclar=members.filter(m=>m.rutbe==='Vekilharç');
+  const kaptanlar=members.filter(m=>m.rutbe==='Kaptan');
+  const tegmenler=members.filter(m=>m.rutbe==='Teğmen');
+  const uyeler=members.filter(m=>m.rutbe==='Üye'||m.rutbe==='Görüntüleyici');
 
   const UCOLS=Math.min(uyeler.length||1,6),uRows=uyeler.length?Math.ceil(uyeler.length/UCOLS):0;
   let svgH=20;
