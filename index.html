@@ -16,11 +16,36 @@ body{font-family:Arial,sans-serif;background:#111;color:#d3d1c7;padding:12px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .rol-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
 .rol-lider{background:#2c2c2a;color:#d3d1c7}
-.rol-yonetici{background:#3a1010;color:#e24b4a}
-.rol-yetkili{background:#042c53;color:#b5d4f4}
-.rol-yardimci{background:#04342c;color:#9fe1cb}
+.rol-vekilharc{background:#3a1010;color:#e24b4a}
+.rol-kaptan{background:#042c53;color:#b5d4f4}
+.rol-tegmen{background:#04342c;color:#9fe1cb}
 .rol-uye{background:#412402;color:#fac775}
 .rol-goruntüleyici{background:#222;color:#555}
+
+/* GİRİŞ / KAYIT EKRANI */
+.auth-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:#0a0a0a;display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;overflow-y:auto}
+.auth-box{background:#111;border:0.5px solid #333;border-radius:16px;padding:2rem;width:100%;max-width:420px;margin:auto}
+.auth-logo{text-align:center;margin-bottom:1.5rem}
+.auth-logo .logo-text{font-size:24px;font-weight:700;letter-spacing:3px;color:#fac775}
+.auth-logo .logo-sub{font-size:11px;color:#555;margin-top:4px;letter-spacing:2px}
+.auth-tabs{display:flex;border-bottom:0.5px solid #333;margin-bottom:1.5rem}
+.auth-tab{flex:1;text-align:center;padding:8px;font-size:13px;color:#888;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.auth-tab.active{color:#fac775;border-bottom-color:#fac775}
+.auth-form-group{margin-bottom:12px}
+.auth-form-group label{display:block;font-size:11px;color:#888;margin-bottom:4px}
+.auth-form-group input,.auth-form-group select,.auth-form-group textarea{width:100%;padding:9px 12px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:13px}
+.auth-form-group textarea{resize:vertical;min-height:70px}
+.auth-btn{width:100%;padding:10px;border-radius:8px;border:none;background:#854f0b;color:#fac775;font-size:13px;font-weight:600;cursor:pointer;margin-top:4px;letter-spacing:1px}
+.auth-btn:hover{background:#a36310}
+.auth-error{font-size:12px;color:#e24b4a;margin-bottom:8px;padding:8px;background:#3a1010;border-radius:6px;display:none}
+.auth-success{font-size:12px;color:#9fe1cb;margin-bottom:8px;padding:8px;background:#04342c;border-radius:6px;display:none}
+.auth-divider{text-align:center;font-size:11px;color:#555;margin:12px 0}
+.radio-group{display:flex;flex-direction:column;gap:6px}
+.radio-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:0.5px solid #333;cursor:pointer;font-size:12px;color:#d3d1c7}
+.radio-item:hover{background:#1a1a1a}
+.radio-item input{width:auto;margin:0}
+.kayit-adim{display:none}.kayit-adim.active{display:block}
+.adim-no{font-size:11px;color:#555;margin-bottom:1rem;text-align:center}
 
 /* DUYURU BANNER */
 .duyuru-banner{background:linear-gradient(90deg,#412402,#2a1800,#412402);border:0.5px solid #854f0b;border-radius:8px;padding:0;margin-bottom:1rem;overflow:hidden;display:none}
@@ -171,10 +196,153 @@ svg.org{display:inline-block}
 </head>
 <body>
 
-<div id="loginScreen">
-  <div class="logo">Q-GANG</div>
-  <div class="sub">Kimlik doğrulanıyor...</div>
-  <div class="spinner"></div>
+<!-- AUTH EKRANI -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="logo-text">⚔ Q-GANG</div>
+      <div class="logo-sub">KARDEŞLIK · DAİMA</div>
+    </div>
+
+    <!-- TAB -->
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="authTab('giris')">Giriş Yap</div>
+      <div class="auth-tab" onclick="authTab('kayit')">Kayıt Ol</div>
+    </div>
+
+    <!-- GİRİŞ FORMU -->
+    <div id="girisForm">
+      <div class="auth-error" id="girisHata"></div>
+      <div class="auth-form-group">
+        <label>Rumuz</label>
+        <input type="text" id="girisRumuz" placeholder="Rumuzun..." onkeydown="if(event.key==='Enter')girisYapBtn()">
+      </div>
+      <div class="auth-form-group">
+        <label>Şifre</label>
+        <input type="password" id="girusSifre" placeholder="••••••••" onkeydown="if(event.key==='Enter')girisYapBtn()">
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <input type="checkbox" id="beniHatirla" style="width:auto">
+        <label for="beniHatirla" style="font-size:12px;color:#888;cursor:pointer">Beni hatırla (30 gün)</label>
+      </div>
+      <button class="auth-btn" onclick="girisYapBtn()">KAPI ÇALMAK İSTİYORUM</button>
+    </div>
+
+    <!-- KAYIT FORMU -->
+    <div id="kayitForm" style="display:none">
+      <div class="auth-error" id="kayitHata"></div>
+      <div class="auth-success" id="kayitBasari"></div>
+
+      <!-- ADIM 1: Davet kodu -->
+      <div class="kayit-adim active" id="adim1">
+        <div class="adim-no">Adım 1 / 4 — Davet Kodu</div>
+        <div class="auth-form-group">
+          <label>Davet Kodu</label>
+          <input type="text" id="k_davetKodu" placeholder="Davet kodunu gir..." style="text-transform:uppercase;letter-spacing:2px">
+        </div>
+        <p style="font-size:11px;color:#555;margin-bottom:12px">Koda sahip değilsen Q-GANG üyelerinden biri aracılığıyla ulaşabilirsin.</p>
+        <button class="auth-btn" onclick="adimIleri(1)">DEVAM ET</button>
+      </div>
+
+      <!-- ADIM 2: Kişisel bilgiler -->
+      <div class="kayit-adim" id="adim2">
+        <div class="adim-no">Adım 2 / 4 — Kimsin?</div>
+        <div class="auth-form-group">
+          <label>Rumuz (Takma Ad) *</label>
+          <input type="text" id="k_rumuz" placeholder="Topluluktaki adın...">
+        </div>
+        <div class="auth-form-group">
+          <label>Ad Soyad *</label>
+          <input type="text" id="k_adSoyad" placeholder="Gerçek adın...">
+        </div>
+        <div class="form-row" style="margin-bottom:0">
+          <div class="auth-form-group">
+            <label>Doğum Tarihi *</label>
+            <input type="date" id="k_dogum">
+          </div>
+          <div class="auth-form-group">
+            <label>Şehir *</label>
+            <input type="text" id="k_sehir" placeholder="İstanbul...">
+          </div>
+        </div>
+        <div class="auth-form-group">
+          <label>E-posta *</label>
+          <input type="email" id="k_email" placeholder="sen@mail.com">
+        </div>
+        <div class="auth-form-group">
+          <label>WhatsApp Numarası *</label>
+          <input type="tel" id="k_whatsapp" placeholder="+90 5xx xxx xx xx">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="adimGeri(2)" style="flex:1">Geri</button>
+          <button class="auth-btn" onclick="adimIleri(2)" style="flex:2;margin-top:0">DEVAM ET</button>
+        </div>
+      </div>
+
+      <!-- ADIM 3: Niyet ve durum -->
+      <div class="kayit-adim" id="adim3">
+        <div class="adim-no">Adım 3 / 4 — Sen Kimsin?</div>
+        <div class="auth-form-group">
+          <label>Günlük hayatında neler yapıyorsun? *</label>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Okuyorum"> Okuyorum</label>
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Çalışıyorum"> Çalışıyorum</label>
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Hem okuyorum hem çalışıyorum"> Hem okuyorum hem çalışıyorum</label>
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Arayıştayım"> Arayıştayım</label>
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Hiçbiri ama doluyum"> Hiçbiri ama doluyum</label>
+          </div>
+        </div>
+        <div class="auth-form-group">
+          <label>Q-GANG'de seni en çok çeken şey ne oldu? *</label>
+          <textarea id="k_niyetCeken" placeholder="Kısa cümle, kalpten olsun..."></textarea>
+        </div>
+        <div class="auth-form-group">
+          <label>Bu yapıya ne katabilirsin? *</label>
+          <textarea id="k_katki" placeholder="Bir cümleyle..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="adimGeri(3)" style="flex:1">Geri</button>
+          <button class="auth-btn" onclick="adimIleri(3)" style="flex:2;margin-top:0">DEVAM ET</button>
+        </div>
+      </div>
+
+      <!-- ADIM 4: Taahhüt ve şifre -->
+      <div class="kayit-adim" id="adim4">
+        <div class="adim-no">Adım 4 / 4 — Son Adım</div>
+        <div class="auth-form-group">
+          <label>Ayda bir verilen küçük görevlere var mısın? *</label>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="gorevVar" value="Varım"> Varım</label>
+            <label class="radio-item"><input type="radio" name="gorevVar" value="Duruma göre"> Duruma göre</label>
+            <label class="radio-item"><input type="radio" name="gorevVar" value="Henüz hazır değilim"> Henüz hazır değilim</label>
+          </div>
+        </div>
+        <div class="auth-form-group">
+          <label>Son söz — Sahne senin</label>
+          <textarea id="k_sonSoz" placeholder="İster motto, ister komik bir şey, istersen sessiz kal..."></textarea>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:12px;padding:10px;background:#1a1a1a;border-radius:8px;border:0.5px solid #333">
+          <input type="checkbox" id="k_taahhut" style="width:auto;margin-top:2px">
+          <label for="k_taahhut" style="font-size:12px;color:#d3d1c7;cursor:pointer;line-height:1.4">
+            <strong style="color:#fac775">Tüzük Taahhüdü</strong><br>
+            Evet, okudum ve topluluk kuralları olan tüzüğe ve ilgili tüm yetkililere sadık kalacağım.
+          </label>
+        </div>
+        <div class="auth-form-group">
+          <label>Şifre belirle *</label>
+          <input type="password" id="k_sifre" placeholder="En az 6 karakter...">
+        </div>
+        <div class="auth-form-group">
+          <label>Şifre tekrar *</label>
+          <input type="password" id="k_sifreTekrar" placeholder="Tekrar gir...">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="adimGeri(4)" style="flex:1">Geri</button>
+          <button class="auth-btn" onclick="kayitGonder()" style="flex:2;margin-top:0">KAPI ÇALMAK İSTİYORUM</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="panel" id="mainPanel" style="display:none">
@@ -198,7 +366,7 @@ svg.org{display:inline-block}
     <span id="userRolBadge"></span>
     <span id="userRumuz" style="font-size:13px;color:#888"></span>
     <button class="btn btn-primary" onclick="reqAddMember()" id="btnUyeEkle" style="display:none"><i class="ti ti-plus"></i> Üye Ekle</button>
-    <button class="btn" onclick="yoneticiGirisModal()" id="btnYoneticiGiris" style="border-color:#854f0b;color:#fac775;display:none"><i class="ti ti-lock"></i> Yönetici Girişi</button>
+    <button class="btn btn-sm" onclick="cikisYap()" style="color:#555;border-color:#333"><i class="ti ti-logout"></i></button>
   </div>
 </div>
 
@@ -329,61 +497,27 @@ svg.org{display:inline-block}
 // ══════════════════════════════════════════
 // ROL VE İZİN SİSTEMİ
 // ══════════════════════════════════════════
-const ROL_SIRASI = ['Lider','Yönetici','Yetkili','Yardımcı','Üye','Görüntüleyici'];
+// Yeni hiyerarşi: Lider > Vekilharç > Kaptan > Teğmen > Üye > Görüntüleyici
+const ROL_SIRASI = ['Lider','Vekilharç','Kaptan','Teğmen','Üye','Görüntüleyici'];
 
 const IZINLER = {
-  Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,duyuruEkle:1,duyuruSil:1},
-  Yönetici:      {uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:0,duyuruEkle:1,duyuruSil:0},
-  Yetkili:       {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0},
-  Yardımcı:      {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0},
-  Üye:           {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0},
-  Görüntüleyici: {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0}
+  Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,duyuruEkle:1,duyuruSil:1,basvuruGor:1,davetYonet:1},
+  Vekilharç:     {uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:0,duyuruEkle:1,duyuruSil:0,basvuruGor:1,davetYonet:0},
+  Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0},
+  Teğmen:        {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0},
+  Üye:           {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0},
+  Görüntüleyici: {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0}
 };
 
-const YONETICI_SIFRE_HASH = 'e91b06fa56f6c05b184444495a2197d3c73f22a36d03434b405b356c017273e4';
+function cikisYap(){
+  localStorage.removeItem('qg_session');
+  location.reload();
+}
 
 async function hashSifre(s){
   const enc=new TextEncoder().encode(s);
   const buf=await crypto.subtle.digest('SHA-256',enc);
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-function yoneticiGirisModal(){
-  const mc=document.getElementById('modalContainer');
-  mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-    <div class="confirm-box" style="max-width:320px">
-      <h3><i class="ti ti-lock"></i> Yönetici Girişi</h3>
-      <div class="form-group" style="margin-bottom:12px">
-        <label>Şifre</label>
-        <input type="password" id="yoneticiSifre" placeholder="••••••••" onkeydown="if(event.key==='Enter')yoneticiGirisKontrol()" autofocus>
-      </div>
-      <div id="sifreHata" style="font-size:12px;color:#e24b4a;margin-bottom:8px;display:none">Yanlış şifre</div>
-      <div style="display:flex;gap:8px;justify-content:flex-end">
-        <button class="btn" onclick="closeModal()">İptal</button>
-        <button class="btn btn-warn" onclick="yoneticiGirisKontrol()">Giriş</button>
-      </div>
-    </div></div>`;
-  setTimeout(()=>document.getElementById('yoneticiSifre')?.focus(),100);
-}
-
-async function yoneticiGirisKontrol(){
-  const sifre=document.getElementById('yoneticiSifre').value;
-  const hash=await hashSifre(sifre);
-  if(hash===YONETICI_SIFRE_HASH){
-    closeModal();
-    SESSION.rol='Lider';SESSION.rumuz='Yönetici';
-    const rolClass={Lider:'lider',Yönetici:'yonetici',Yetkili:'yetkili',Yardımcı:'yardimci',Üye:'uye'};
-    document.getElementById('userRolBadge').innerHTML=`<span class="rol-badge rol-lider">Lider</span>`;
-    document.getElementById('userRumuz').textContent='Yönetici';
-    document.getElementById('btnYoneticiGiris').style.display='none';
-    uiAyarla();
-    addLog('Yönetici girişi','Şifre ile tam erişim açıldı');
-    renderDashboard();
-  } else {
-    document.getElementById('sifreHata').style.display='block';
-    document.getElementById('yoneticiSifre').value='';
-    document.getElementById('yoneticiSifre').focus();
-  }
 }
 
 let SESSION={rumuz:'Ziyaretçi',rol:'Görüntüleyici',girisZamani:new Date().toISOString()};
@@ -392,116 +526,225 @@ function izin(key){return !!(IZINLER[SESSION.rol]||IZINLER['Görüntüleyici'])[
 // ══════════════════════════════════════════
 // CMS KÖPRÜSÜ — HTTP API
 // ══════════════════════════════════════════
+const AUTH_URL = 'https://www.q-gang.com/_functions/qauth';
 const API_URL = 'https://www.q-gang.com/_functions/qgang';
 
-function cmsStatusGoster(tip,mesaj){
-  const el=document.getElementById('cmsStatus');
-  el.className='cms-status show cms-'+tip;
-  el.innerHTML=mesaj;
-  clearTimeout(el._t);
-  el._t=setTimeout(()=>el.classList.remove('show'),3000);
+// ── AUTH FONKSİYONLARI ──────────────────────
+function authTab(tab){
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',i===(tab==='giris'?0:1)));
+  document.getElementById('girisForm').style.display=tab==='giris'?'block':'none';
+  document.getElementById('kayitForm').style.display=tab==='kayit'?'block':'none';
 }
 
-// CMS'den tüm veriyi çek
-async function cmsOku(){
-  try{
-    const res=await fetch(API_URL,{method:'GET'});
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    return await res.json();
-  }catch(e){
-    console.error('CMS okuma hatası:',e);
-    return null;
+function adimGoster(n){
+  document.querySelectorAll('.kayit-adim').forEach(a=>a.classList.remove('active'));
+  document.getElementById('adim'+n).classList.add('active');
+}
+
+function adimIleri(mevcut){
+  const hata=document.getElementById('kayitHata');
+  hata.style.display='none';
+  if(mevcut===1){
+    const kod=document.getElementById('k_davetKodu').value.trim();
+    if(!kod){hata.textContent='Davet kodu gerekli.';hata.style.display='block';return}
+    adimGoster(2);
+  } else if(mevcut===2){
+    const rumuz=document.getElementById('k_rumuz').value.trim();
+    const adSoyad=document.getElementById('k_adSoyad').value.trim();
+    const email=document.getElementById('k_email').value.trim();
+    const dogum=document.getElementById('k_dogum').value;
+    const sehir=document.getElementById('k_sehir').value.trim();
+    const whatsapp=document.getElementById('k_whatsapp').value.trim();
+    if(!rumuz||!adSoyad||!email||!dogum||!sehir||!whatsapp){hata.textContent='Tüm alanları doldurun.';hata.style.display='block';return}
+    adimGoster(3);
+  } else if(mevcut===3){
+    const gunluk=document.querySelector('input[name="gunlukDurum"]:checked');
+    const niyet=document.getElementById('k_niyetCeken').value.trim();
+    const katki=document.getElementById('k_katki').value.trim();
+    if(!gunluk||!niyet||!katki){hata.textContent='Tüm alanları doldurun.';hata.style.display='block';return}
+    adimGoster(4);
   }
 }
 
-// CMS'e yaz
+function adimGeri(mevcut){adimGoster(mevcut-1)}
+
+async function kayitGonder(){
+  const hata=document.getElementById('kayitHata');
+  const basari=document.getElementById('kayitBasari');
+  hata.style.display='none';basari.style.display='none';
+  const gorev=document.querySelector('input[name="gorevVar"]:checked');
+  const taahhut=document.getElementById('k_taahhut').checked;
+  const sifre=document.getElementById('k_sifre').value;
+  const sifreTekrar=document.getElementById('k_sifreTekrar').value;
+  if(!gorev){hata.textContent='Görev tercihini seçin.';hata.style.display='block';return}
+  if(!taahhut){hata.textContent='Tüzük taahhüdünü kabul etmelisin.';hata.style.display='block';return}
+  if(!sifre||sifre.length<6){hata.textContent='Şifre en az 6 karakter olmalı.';hata.style.display='block';return}
+  if(sifre!==sifreTekrar){hata.textContent='Şifreler eşleşmiyor.';hata.style.display='block';return}
+  const sifreHash=await hashStr(sifre);
+  const btn=document.querySelector('#adim4 .auth-btn');
+  btn.textContent='Gönderiliyor...';btn.disabled=true;
+  try{
+    const res=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      action:'KAYIT',
+      davetKodu:document.getElementById('k_davetKodu').value.trim().toUpperCase(),
+      rumuz:document.getElementById('k_rumuz').value.trim(),
+      sifreHash,
+      formData:{
+        adSoyad:document.getElementById('k_adSoyad').value.trim(),
+        dogum:document.getElementById('k_dogum').value,
+        sehir:document.getElementById('k_sehir').value.trim(),
+        email:document.getElementById('k_email').value.trim(),
+        whatsapp:document.getElementById('k_whatsapp').value.trim(),
+        gunlukDurum:document.querySelector('input[name="gunlukDurum"]:checked').value,
+        niyetCeken:document.getElementById('k_niyetCeken').value.trim(),
+        katki:document.getElementById('k_katki').value.trim(),
+        gorevVar:gorev.value,
+        sonSoz:document.getElementById('k_sonSoz').value.trim()
+      }
+    })});
+    const data=await res.json();
+    if(data.success){
+      basari.textContent=data.message||'Başvurun alındı! Lider onayladıktan sonra giriş yapabilirsin.';
+      basari.style.display='block';
+      btn.textContent='Başvuru Gönderildi ✓';
+    } else {
+      hata.textContent=data.error||'Bir hata oluştu.';hata.style.display='block';
+      btn.textContent='KAPI ÇALMAK İSTİYORUM';btn.disabled=false;
+    }
+  }catch(e){
+    hata.textContent='Bağlantı hatası.';hata.style.display='block';
+    btn.textContent='KAPI ÇALMAK İSTİYORUM';btn.disabled=false;
+  }
+}
+
+async function girisYapBtn(){
+  const rumuz=document.getElementById('girisRumuz').value.trim();
+  const sifre=document.getElementById('girusSifre').value;
+  const hata=document.getElementById('girisHata');
+  hata.style.display='none';
+  if(!rumuz||!sifre){hata.textContent='Rumuz ve şifre gerekli.';hata.style.display='block';return}
+  const btn=document.querySelector('#girisForm .auth-btn');
+  btn.textContent='Giriş yapılıyor...';btn.disabled=true;
+  const sifreHash=await hashStr(sifre);
+  try{
+    const res=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'LOGIN',rumuz,sifreHash})});
+    const data=await res.json();
+    if(data.success){
+      const beniHatirla=document.getElementById('beniHatirla').checked;
+      if(beniHatirla){
+        localStorage.setItem('qg_session',JSON.stringify({rumuz:data.user.rumuz,rol:data.user.rol,zaman:Date.now()}));
+      }
+      panelAc(data.user.rumuz,data.user.rol);
+    } else {
+      hata.textContent=data.error||'Giriş başarısız.';hata.style.display='block';
+      btn.textContent='KAPI ÇALMAK İSTİYORUM';btn.disabled=false;
+    }
+  }catch(e){
+    hata.textContent='Bağlantı hatası.';hata.style.display='block';
+    btn.textContent='KAPI ÇALMAK İSTİYORUM';btn.disabled=false;
+  }
+}
+
+async function hashStr(s){
+  const enc=new TextEncoder().encode(s);
+  const buf=await crypto.subtle.digest('SHA-256',enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function panelAc(rumuz,rol){
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('mainPanel').style.display='block';
+  const rolClass={Lider:'lider',Vekilharç:'vekilharc',Kaptan:'kaptan',Teğmen:'tegmen',Üye:'uye',Görüntüleyici:'goruntüleyici'};
+  document.getElementById('userRolBadge').innerHTML=`<span class="rol-badge rol-${rolClass[rol]||'uye'}">${rol}</span>`;
+  document.getElementById('userRumuz').textContent=rumuz;
+  SESSION.rumuz=rumuz;SESSION.rol=ROL_SIRASI.includes(rol)?rol:'Görüntüleyici';
+  SESSION.girisZamani=new Date().toISOString();
+  uiAyarla();
+  addLog('Giriş',`${rumuz} — ${rol}`);
+  renderDashboard();renderDuyuruBanner();
+}
+
+// ── CMS FONKSİYONLARI ───────────────────────
+function cmsStatusGoster(tip,mesaj){
+  const el=document.getElementById('cmsStatus');
+  el.className='cms-status show cms-'+tip;el.innerHTML=mesaj;
+  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+async function cmsOku(){
+  try{
+    const res=await fetch(API_URL,{method:'GET'});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    return await res.json();
+  }catch(e){console.error('CMS okuma hatası:',e);return null}
+}
+
 async function cmsYaz(action,data){
   const payload=action.includes('DELETE')?{action,id:data}:{action,item:data};
   try{
     cmsStatusGoster('loading','<i class="ti ti-loader"></i> Kaydediliyor...');
-    const res=await fetch(API_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(payload)
-    });
-    if(!res.ok) throw new Error('HTTP '+res.status);
+    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!res.ok)throw new Error('HTTP '+res.status);
     const result=await res.json();
     cmsStatusGoster('ok','<i class="ti ti-check"></i> Kaydedildi');
     document.getElementById('lastSaved').textContent='Son kayıt: '+new Date().toLocaleTimeString('tr-TR');
-    // Local array güncelle
+    // Local güncelle
     if(result.result){
       const item={...result.result,id:result.result._id||result.result.id};
-      if(action==='MEMBER_ADD') members.push({...item,katilimcilar:parseKat(item.katilimcilar)});
+      if(action==='MEMBER_ADD')members.push({...item,katilimcilar:parseKat(item.katilimcilar)});
       if(action==='MEMBER_UPDATE'){const i=members.findIndex(m=>m._id===item._id||m.id===item.id);if(i>-1)members[i]={...members[i],...item};}
-      if(action==='EVENT_ADD') events.push({...item,katilimcilar:parseKat(item.katilimcilar)});
-      if(action==='BUDGET_ADD') butce.push(item);
-      if(action==='DUYURU_ADD') duyurular.unshift(item);
+      if(action==='EVENT_ADD')events.push({...item,katilimcilar:parseKat(item.katilimcilar)});
+      if(action==='BUDGET_ADD')butce.push(item);
+      if(action==='DUYURU_ADD')duyurular.unshift(item);
       if(action==='DUYURU_UPDATE'){const i=duyurular.findIndex(d=>d._id===item._id||d.id===item.id);if(i>-1)duyurular[i]={...duyurular[i],...item};}
     }
-    if(action==='MEMBER_DELETE') members=members.filter(m=>m._id!==data&&m.id!==data);
-    if(action==='EVENT_DELETE') events=events.filter(e=>e._id!==data&&e.id!==data);
-    if(action==='BUDGET_DELETE') butce=butce.filter(b=>b._id!==data&&b.id!==data);
-    if(action==='DUYURU_DELETE') duyurular=duyurular.filter(d=>d._id!==data&&d.id!==data);
+    if(action==='MEMBER_DELETE')members=members.filter(m=>m._id!==data&&m.id!==data);
+    if(action==='EVENT_DELETE')events=events.filter(e=>e._id!==data&&e.id!==data);
+    if(action==='BUDGET_DELETE')butce=butce.filter(b=>b._id!==data&&b.id!==data);
+    if(action==='DUYURU_DELETE')duyurular=duyurular.filter(d=>d._id!==data&&d.id!==data);
     return result;
-  }catch(e){
-    console.error('CMS yazma hatası:',e);
-    cmsStatusGoster('err','<i class="ti ti-x"></i> Kayıt hatası');
-  }
+  }catch(e){console.error('CMS yazma hatası:',e);cmsStatusGoster('err','<i class="ti ti-x"></i> Kayıt hatası');}
 }
 
-// Wix'ten mesaj dinle (auth için hâlâ kullan)
-window.addEventListener('message',function(event){
-  const data=event.data;
-  if(!data)return;
-  if(data.type==='QGANG_AUTH'){
-    girisYap(data.rumuz||'Ziyaretçi',data.rol||'Görüntüleyici');
-  }
-});
-
-// Panel yüklenince HTTP API'den veri çek
+// Panel yüklenince
 window.addEventListener('load',async function(){
-  // Wix'e hazır mesajı gönder (auth için)
-  if(window.parent!==window) window.parent.postMessage({type:'QGANG_READY'},'*');
-
-  // HTTP API'den veri çek
-  const veri=await cmsOku();
-  if(veri){
-    if(veri.members?.length) members=veri.members.map(m=>({...m,id:m._id||m.id,katilimcilar:parseKat(m.katilimcilar)}));
-    if(veri.events?.length) events=veri.events.map(e=>({...e,id:e._id||e.id,katilimcilar:parseKat(e.katilimcilar)}));
-    if(veri.budget?.length) butce=veri.budget.map(b=>({...b,id:b._id||b.id}));
-    if(veri.duyurular?.length) duyurular=veri.duyurular.map(d=>({...d,id:d._id||d.id}));
+  // Kaydedilmiş oturum var mı?
+  const saved=localStorage.getItem('qg_session');
+  if(saved){
+    try{
+      const s=JSON.parse(saved);
+      const otuzGun=30*24*60*60*1000;
+      if(Date.now()-s.zaman<otuzGun){
+        // Oturum geçerli — veri çek ve aç
+        const veri=await cmsOku();
+        if(veri){
+          if(veri.members?.length)members=veri.members.map(m=>({...m,id:m._id||m.id,katilimcilar:parseKat(m.katilimcilar)}));
+          if(veri.events?.length)events=veri.events.map(e=>({...e,id:e._id||e.id,katilimcilar:parseKat(e.katilimcilar)}));
+          if(veri.budget?.length)butce=veri.budget.map(b=>({...b,id:b._id||b.id}));
+          if(veri.duyurular?.length)duyurular=veri.duyurular.map(d=>({...d,id:d._id||d.id}));
+        }
+        panelAc(s.rumuz,s.rol);
+        return;
+      } else {
+        localStorage.removeItem('qg_session');
+      }
+    }catch(e){localStorage.removeItem('qg_session')}
   }
-
-  // Görüntüleyici olarak aç — Wix auth gelirse güncellenir
-  girisYap('Ziyaretçi','Görüntüleyici');
-
-  // 2 saniye sonra Wix auth geldiyse güncelle
-  setTimeout(()=>{
-    if(window.parent!==window) window.parent.postMessage({type:'QGANG_READY'},'*');
-  },2000);
+  // Oturum yok — auth ekranını göster (veri arka planda çekiliyor)
+  cmsOku().then(veri=>{
+    if(veri){
+      if(veri.members?.length)members=veri.members.map(m=>({...m,id:m._id||m.id,katilimcilar:parseKat(m.katilimcilar)}));
+      if(veri.events?.length)events=veri.events.map(e=>({...e,id:e._id||e.id,katilimcilar:parseKat(e.katilimcilar)}));
+      if(veri.budget?.length)butce=veri.budget.map(b=>({...b,id:b._id||b.id}));
+      if(veri.duyurular?.length)duyurular=veri.duyurular.map(d=>({...d,id:d._id||d.id}));
+    }
+  });
 });
 
 function parseKat(k){
   if(Array.isArray(k))return k;
   if(typeof k==='string'&&k)return k.split(',').map(s=>s.trim()).filter(Boolean);
   return[];
-}
-
-function girisYap(rumuz,rol){
-  SESSION.rumuz=rumuz;
-  SESSION.rol=ROL_SIRASI.includes(rol)?rol:'Görüntüleyici';
-  SESSION.girisZamani=new Date().toISOString();
-  const rolClass={Lider:'lider',Yönetici:'yonetici',Yetkili:'yetkili',Yardımcı:'yardimci',Üye:'uye',Görüntüleyici:'goruntüleyici'};
-  document.getElementById('userRolBadge').innerHTML=`<span class="rol-badge rol-${rolClass[SESSION.rol]||'uye'}">${SESSION.rol}</span>`;
-  document.getElementById('userRumuz').textContent=SESSION.rumuz;
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('mainPanel').style.display='block';
-  // Yönetici butonu sadece görüntüleyici ve üyelere göster
-  if(['Görüntüleyici','Üye'].includes(SESSION.rol)) document.getElementById('btnYoneticiGiris').style.display='';
-  uiAyarla();
-  addLog('Giriş',`${SESSION.rumuz} — ${SESSION.rol}`);
-  renderDashboard();
-  renderDuyuruBanner();
 }
 
 function uiAyarla(){
