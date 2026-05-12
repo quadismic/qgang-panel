@@ -58,10 +58,19 @@ body{font-family:Arial,sans-serif;background:#111;color:#d3d1c7;padding:12px}
 .duyuru-item{display:inline-flex;align-items:center;gap:6px;margin-right:60px;font-size:12px;color:#fac775}
 .duyuru-item::before{content:'◆';font-size:8px;color:#854f0b}
 
-.nav{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1.2rem;border-bottom:0.5px solid #333;padding-bottom:.8rem}
-.nav button{padding:6px 12px;border-radius:8px;border:0.5px solid #444;background:transparent;color:#888;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
-.nav button.active{background:#1e1e1e;color:#d3d1c7;border-color:#666}
-.nav button:hover{background:#1a1a1a}
+/* NAV — DROPDOWN */
+.nav{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:1.2rem;border-bottom:0.5px solid #333;padding-bottom:.8rem;position:relative}
+.nav-item{position:relative}
+.nav-btn{padding:6px 12px;border-radius:8px;border:0.5px solid #444;background:transparent;color:#888;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:4px}
+.nav-btn.active{background:#1e1e1e;color:#d3d1c7;border-color:#666}
+.nav-btn:hover{background:#1a1a1a;color:#d3d1c7}
+.nav-btn .arrow{font-size:9px;transition:transform .2s}
+.nav-btn.open .arrow{transform:rotate(180deg)}
+.nav-dropdown{position:absolute;top:calc(100% + 6px);left:0;background:#1a1a1a;border:0.5px solid #444;border-radius:10px;padding:4px;min-width:160px;z-index:200;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.nav-dropdown.show{display:block}
+.nav-dd-item{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:7px;font-size:12px;color:#888;cursor:pointer;transition:all .15s;white-space:nowrap}
+.nav-dd-item:hover{background:#252525;color:#d3d1c7}
+.nav-dd-item.active{color:#fac775;background:#2a1800}
 .tab{display:none}.tab.active{display:block}
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:1.2rem}
 .stat-card{background:#1a1a1a;border-radius:8px;padding:12px}
@@ -139,7 +148,25 @@ tr:hover td{background:#1a1a1a}
 .log-who{color:#fac775;font-size:10px;font-weight:600}
 .log-action{color:#d3d1c7}
 .log-detail{color:#888;font-size:10px}
-/* Duyuru kartı */
+/* TÜZÜK STİLLERİ */
+.tuzuk-section{margin-bottom:14px;border:0.5px solid #2c2c2a;border-radius:10px;overflow:hidden;opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+.tuzuk-section.visible{opacity:1;transform:translateY(0)}
+.tuzuk-section-header{display:flex;align-items:center;gap:12px;padding:14px 18px;background:#1a1a18;border-bottom:0.5px solid #2c2c2a}
+.tuzuk-section-num{font-size:11px;font-weight:600;letter-spacing:.1em;color:#5f5e5a;min-width:20px}
+.tuzuk-section-title{font-size:13px;font-weight:600;letter-spacing:.06em;color:#888780}
+.tuzuk-section-body{padding:18px;font-size:14px;line-height:1.75;color:#b4b2a9}
+.tuzuk-rule{display:flex;gap:12px;padding:13px 0;border-bottom:0.5px solid #1e1e1c}
+.tuzuk-rule:first-child{padding-top:0}.tuzuk-rule:last-child{border-bottom:none;padding-bottom:0}
+.tuzuk-rule-num{font-size:11px;font-weight:600;color:#444441;min-width:18px;padding-top:2px;flex-shrink:0}
+.tuzuk-rule-title{font-size:13px;font-weight:600;color:#888780;margin-bottom:4px}
+.tuzuk-rule-text{font-size:13px;line-height:1.7;color:#5f5e5a}
+.sanction-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.sanction-card{background:#1a1a18;border:0.5px solid #2c2c2a;border-radius:8px;padding:14px 12px;text-align:center}
+.sanction-label{font-size:11px;font-weight:600;letter-spacing:.06em;margin-bottom:6px}
+.sanction-label.uyari{color:#ba7517}.sanction-label.uzaklastirma{color:#185fa5}.sanction-label.ihrac{color:#a32d2d}
+.sanction-desc{font-size:12px;color:#444441;line-height:1.5}
+.sanction-note{font-size:13px;color:#5f5e5a;line-height:1.75;padding-top:14px;border-top:0.5px solid #1e1e1c}
+@media(max-width:480px){.sanction-grid{grid-template-columns:1fr}}
 .duyuru-kart{background:#1a1a1a;border:0.5px solid #333;border-radius:10px;padding:.9rem;margin-bottom:8px}
 .duyuru-kart .dk-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
 .duyuru-kart .dk-baslik{font-weight:500;font-size:13px;color:#fac775}
@@ -366,21 +393,58 @@ svg.org{display:inline-block}
     <span id="userRolBadge"></span>
     <span id="userRumuz" style="font-size:13px;color:#888"></span>
     <button class="btn btn-primary" onclick="reqAddMember()" id="btnUyeEkle" style="display:none"><i class="ti ti-plus"></i> Üye Ekle</button>
-    <button class="btn btn-sm" onclick="cikisYap()" style="color:#555;border-color:#333"><i class="ti ti-logout"></i></button>
+    <button class="btn btn-sm" onclick="openModal('sifreDegistir')" style="color:#888;border-color:#333" title="Şifre Değiştir"><i class="ti ti-key"></i></button>
+    <button class="btn btn-sm" onclick="cikisYap()" style="color:#555;border-color:#333" title="Çıkış Yap"><i class="ti ti-logout"></i></button>
   </div>
 </div>
 
-<nav class="nav">
-  <button class="active" onclick="showTab('dashboard',this)"><i class="ti ti-chart-bar"></i> Dashboard</button>
-  <button onclick="showTab('members',this)"><i class="ti ti-users"></i> Üyeler</button>
-  <button onclick="showTab('puan',this)"><i class="ti ti-star"></i> Puan</button>
-  <button onclick="showTab('gorev',this)"><i class="ti ti-check"></i> Görevler</button>
-  <button onclick="showTab('etkinlik',this)"><i class="ti ti-calendar"></i> Etkinlikler</button>
-  <button onclick="showTab('butce',this)" id="navButce"><i class="ti ti-currency-lira"></i> Bütçe</button>
-  <button onclick="showTab('duyurular',this)" id="navDuyuru"><i class="ti ti-speakerphone"></i> Duyurular</button>
-  <button onclick="showTab('tuzuk',this)"><i class="ti ti-license"></i> Tüzük</button>
-  <button onclick="showTab('org',this)"><i class="ti ti-hierarchy"></i> Organizasyon</button>
-  <button onclick="showTab('log',this)" id="navLog"><i class="ti ti-history"></i> Log</button>
+<nav class="nav" id="mainNav">
+  <!-- Dashboard -->
+  <div class="nav-item">
+    <button class="nav-btn active" onclick="showTab('dashboard',this)" id="navDashboard">
+      <i class="ti ti-chart-bar"></i> Dashboard
+    </button>
+  </div>
+
+  <!-- Topluluk dropdown -->
+  <div class="nav-item">
+    <button class="nav-btn" onclick="toggleDropdown('ddTopluluk',this)" id="navToplulukBtn">
+      <i class="ti ti-users"></i> Topluluk <span class="arrow">▼</span>
+    </button>
+    <div class="nav-dropdown" id="ddTopluluk">
+      <div class="nav-dd-item" onclick="showTabDD('members','ddTopluluk','navToplulukBtn')"><i class="ti ti-users"></i> Üyeler</div>
+      <div class="nav-dd-item" onclick="showTabDD('puan','ddTopluluk','navToplulukBtn')"><i class="ti ti-star"></i> Puanlar</div>
+      <div class="nav-dd-item" onclick="showTabDD('gorev','ddTopluluk','navToplulukBtn')"><i class="ti ti-check"></i> Görevler</div>
+      <div class="nav-dd-item" onclick="showTabDD('org','ddTopluluk','navToplulukBtn')"><i class="ti ti-hierarchy"></i> Organizasyon</div>
+    </div>
+  </div>
+
+  <!-- Etkinlikler -->
+  <div class="nav-item">
+    <button class="nav-btn" onclick="showTab('etkinlik',this)">
+      <i class="ti ti-calendar"></i> Etkinlikler
+    </button>
+  </div>
+
+  <!-- Yönetim dropdown -->
+  <div class="nav-item">
+    <button class="nav-btn" onclick="toggleDropdown('ddYonetim',this)" id="navYonetimBtn">
+      <i class="ti ti-settings"></i> Yönetim <span class="arrow">▼</span>
+    </button>
+    <div class="nav-dropdown" id="ddYonetim">
+      <div class="nav-dd-item" onclick="showTabDD('duyurular','ddYonetim','navYonetimBtn')"><i class="ti ti-speakerphone"></i> Duyurular</div>
+      <div class="nav-dd-item" id="navButceDD" onclick="showTabDD('butce','ddYonetim','navYonetimBtn')"><i class="ti ti-currency-lira"></i> Bütçe</div>
+      <div class="nav-dd-item" onclick="showTabDD('davet','ddYonetim','navYonetimBtn')"><i class="ti ti-mail-forward"></i> Davetler</div>
+      <div class="nav-dd-item" onclick="showTabDD('tuzuk','ddYonetim','navYonetimBtn')"><i class="ti ti-license"></i> Tüzük & Disiplin</div>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="nav-item">
+    <button class="nav-btn" onclick="showTab('log',this)" id="navLog">
+      <i class="ti ti-history"></i> Log
+    </button>
+  </div>
 </nav>
 
 <!-- DASHBOARD -->
@@ -467,22 +531,41 @@ svg.org{display:inline-block}
   <div id="duyuruList"></div>
 </div>
 
+<!-- DAVET -->
+<div id="tab-davet" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-mail-forward"></i> Davet Kodları</div>
+    <button class="btn btn-warn btn-sm" onclick="openModal('addDavet')" id="btnDavetEkle" style="display:none"><i class="ti ti-plus"></i> Kod Üret</button>
+  </div>
+  <div id="davetKodListesi"></div>
+  <hr class="sep">
+  <div class="section-title">Davet Bağlantım</div>
+  <div class="card" id="benimDavetim">
+    <div style="font-size:12px;color:#888;margin-bottom:8px">Kendi davet kodunu oluşturmak için Kod Üret butonunu kullan.</div>
+  </div>
+</div>
+
 <!-- TÜZÜK + DİSİPLİN -->
 <div id="tab-tuzuk" class="tab">
   <!-- TÜZÜK -->
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
     <div class="section-title" style="margin:0"><i class="ti ti-license"></i> Q-GANG Tüzüğü</div>
-    <div style="display:flex;gap:6px" id="tuzukBtnGroup"></div>
+    <div id="tuzukBtnGroup"></div>
   </div>
-  <div id="tuzukGorunum" class="card" style="min-height:200px;line-height:1.8;font-size:13px;white-space:pre-wrap"></div>
+
+  <!-- Görüntüleme -->
+  <div id="tuzukGorunum"></div>
+  <div id="tuzukMeta" style="font-size:10px;color:#444;margin-top:6px;text-align:right"></div>
+
+  <!-- Düzenleme editörü -->
   <div id="tuzukEditor" style="display:none">
-    <textarea id="tuzukMetin" style="width:100%;min-height:400px;padding:12px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:13px;line-height:1.8;resize:vertical"></textarea>
+    <div style="font-size:11px;color:#555;margin-bottom:8px">Tüzük içeriğini HTML olarak düzenleyebilirsin. Mevcut format korunur.</div>
+    <textarea id="tuzukMetin" style="width:100%;min-height:500px;padding:12px;border-radius:8px;border:0.5px solid #444;background:#0a0a0a;color:#9fe1cb;font-family:monospace;font-size:12px;line-height:1.6;resize:vertical"></textarea>
     <div style="display:flex;gap:8px;margin-top:8px;justify-content:flex-end">
       <button class="btn" onclick="tuzukIptal()">İptal</button>
       <button class="btn btn-success" onclick="tuzukKaydet()"><i class="ti ti-check"></i> Kaydet</button>
     </div>
   </div>
-  <div id="tuzukMeta" style="font-size:10px;color:#444;margin-top:6px;text-align:right"></div>
 
   <hr class="sep">
 
@@ -823,13 +906,54 @@ function fmtDateTime(s){if(!s)return'-';const d=new Date(s);return d.toLocaleDat
 function daysUntil(s){if(!s)return null;const n=new Date();n.setHours(0,0,0,0);const d=new Date(s);d.setHours(0,0,0,0);return Math.ceil((d-n)/(864e5))}
 function engelEkrani(){return`<div class="erisim-engel"><i class="ti ti-lock"></i>Bu bölüme erişim yetkiniz yok.</div>`}
 
-function showTab(name,btn){
+function toggleDropdown(id, btn){
+  const dd=document.getElementById(id);
+  const isOpen=dd.classList.contains('show');
+  // Tüm dropdown'ları kapat
+  document.querySelectorAll('.nav-dropdown').forEach(d=>d.classList.remove('show'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('open'));
+  if(!isOpen){dd.classList.add('show');btn.classList.add('open')}
+}
+
+// Dışarı tıklayınca dropdown'ları kapat
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.nav-item')){
+    document.querySelectorAll('.nav-dropdown').forEach(d=>d.classList.remove('show'));
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('open'));
+  }
+});
+
+function showTabDD(name, ddId, btnId){
+  // Dropdown'u kapat
+  document.getElementById(ddId).classList.remove('show');
+  document.getElementById(btnId).classList.remove('open');
+  // Tüm nav butonlarını pasif yap
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(btnId).classList.add('active');
+  // Dropdown item'larını güncelle
+  document.querySelectorAll(`#${ddId} .nav-dd-item`).forEach(i=>i.classList.remove('active'));
+  // Sekmeyi göster
+  _showTabContent(name);
+}
+
+function showTab(name, btn){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-dropdown').forEach(d=>d.classList.remove('show'));
+  if(btn) btn.classList.add('active');
+  _showTabContent(name);
+}
+
+function _showTabContent(name){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  if(btn)btn.classList.add('active');
-  const fns={dashboard:renderDashboard,members:renderMembers,puan:renderPuan,gorev:renderGorev,etkinlik:renderEvents,butce:renderButce,duyurular:renderDuyurular,tuzuk:renderTuzuk,org:renderOrg,log:renderLog};
-  if(fns[name])fns[name]();
+  const tab=document.getElementById('tab-'+name);
+  if(tab) tab.classList.add('active');
+  const fns={
+    dashboard:renderDashboard, members:renderMembers, puan:renderPuan,
+    gorev:renderGorev, etkinlik:renderEvents, butce:renderButce,
+    duyurular:renderDuyurular, davet:renderDavet, tuzuk:renderTuzuk,
+    org:renderOrg, log:renderLog
+  };
+  if(fns[name]) fns[name]();
 }
 
 function confirm2(title,desc,onOk){
@@ -1119,14 +1243,75 @@ function reqDeleteDuyuru(id){
   });
 }
 
-// ══════════════════════════════════════════
-// TÜZÜK
-// ══════════════════════════════════════════
+// Varsayılan tüzük HTML
+const VARSAYILAN_TUZUK = `<div class="page">
+  <div class="tuzuk-section" data-delay="0">
+    <div class="tuzuk-section-header">
+      <span class="tuzuk-section-num">I</span>
+      <span class="tuzuk-section-title">Başlangıç</span>
+    </div>
+    <div class="tuzuk-section-body">
+      Q-GANG; birlikte oyun oynama ve sosyal dayanışma alanlarında faaliyet gösteren bir eğlence ve kardeşlik topluluğudur.
+      <br><br>
+      Lider, topluluğun en yetkili yöneticisidir. Lider tarafından alınan tüm kararlar kesin ve bağlayıcıdır. Tüzükte açıkça düzenlenmeyen hususlar, topluluk ilkeleri ve kardeşlik ruhu esas alınarak Lider tarafından belirlenir.
+      <br><br>
+      Tüzük gerekli görüldüğünde Lider tarafından güncellenebilir. Topluluğa bağlı olan herkes, tüzüğün güncel hâlini bilmek ve buna uymakla sorumludur.
+    </div>
+  </div>
+  <div class="tuzuk-section" data-delay="1">
+    <div class="tuzuk-section-header">
+      <span class="tuzuk-section-num">II</span>
+      <span class="tuzuk-section-title">İlkeler</span>
+    </div>
+    <div class="tuzuk-section-body">
+      <div class="tuzuk-rule">
+        <span class="tuzuk-rule-num">1</span>
+        <div><div class="tuzuk-rule-title">Huzur esastır</div>
+        <div class="tuzuk-rule-text">Herkes topluluğun huzurunu korumakla yükümlüdür. Gereksiz gerginlik, sert tartışma ve huzur bozucu tutumlara yer yoktur.</div></div>
+      </div>
+      <div class="tuzuk-rule">
+        <span class="tuzuk-rule-num">2</span>
+        <div><div class="tuzuk-rule-title">Saygı vazgeçilmezdir</div>
+        <div class="tuzuk-rule-text">Fikir ayrılıkları doğaldır. Ancak hakaret, aşağılama, dışlama ve benzeri davranışlara asla müsamaha gösterilmez.</div></div>
+      </div>
+      <div class="tuzuk-rule">
+        <span class="tuzuk-rule-num">3</span>
+        <div><div class="tuzuk-rule-title">Kardeşlik emek ister</div>
+        <div class="tuzuk-rule-text">Topluluğun bir parçası olmak, imkânlar dâhilinde aktif katılımı veya katılamadığında dahi bu bağa özen göstermeyi gerektirir.</div></div>
+      </div>
+      <div class="tuzuk-rule">
+        <span class="tuzuk-rule-num">4</span>
+        <div><div class="tuzuk-rule-title">Kırgınlıklar çözülür, taşınmaz</div>
+        <div class="tuzuk-rule-text">Tartışma ve dargınlıklar iyi niyet, empati ve gönül alma iradesiyle çözülür. Küslük Q-GANG'de kalıcı olamaz.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="tuzuk-section" data-delay="2">
+    <div class="tuzuk-section-header">
+      <span class="tuzuk-section-num">III</span>
+      <span class="tuzuk-section-title">Disiplin ve Yaptırımlar</span>
+    </div>
+    <div class="tuzuk-section-body">
+      <div class="sanction-grid">
+        <div class="sanction-card"><div class="sanction-label uyari">Uyarı</div><div class="sanction-desc">Hafif ihlaller, ilk tekrar</div></div>
+        <div class="sanction-card"><div class="sanction-label uzaklastirma">Uzaklaştırma</div><div class="sanction-desc">Orta ağırlıklı ihlaller</div></div>
+        <div class="sanction-card"><div class="sanction-label ihrac">İhraç</div><div class="sanction-desc">Ağır veya tekrarlayan ihlaller</div></div>
+      </div>
+      <div class="sanction-note">İhlalin ağırlığı, kişinin tutumu, pişmanlığı, telafi iradesi ve tekrar durumu dikkate alınarak yaptırım belirlenir. Karar, ilgilinin savunması alındıktan sonra verilir ve uygulama sonrasında topluluğa duyurulur.</div>
+    </div>
+  </div>
+</div>`;
+
 function renderTuzuk(){
   const gorunum=document.getElementById('tuzukGorunum');
   const meta=document.getElementById('tuzukMeta');
   const btnGroup=document.getElementById('tuzukBtnGroup');
-  gorunum.textContent=tuzuk?.icerik||'Henüz tüzük eklenmemiş.';
+  const icerik=tuzuk?.icerik||VARSAYILAN_TUZUK;
+  gorunum.innerHTML=icerik;
+  // Animasyon
+  gorunum.querySelectorAll('.tuzuk-section').forEach((s,i)=>{
+    setTimeout(()=>s.classList.add('visible'),i*160+100);
+  });
   if(tuzuk?.guncelleyen) meta.textContent=`Son güncelleme: ${tuzuk.guncelleyen} — ${tuzuk.guncellemeTarih||''}`;
   btnGroup.innerHTML=izin('tuzukDuzenle')?`<button class="btn btn-primary btn-sm" onclick="tuzukDuzenle()"><i class="ti ti-edit"></i> Düzenle</button>`:'';
   renderDisiplin();
@@ -1135,7 +1320,7 @@ function renderTuzuk(){
 function tuzukDuzenle(){
   document.getElementById('tuzukGorunum').style.display='none';
   document.getElementById('tuzukEditor').style.display='block';
-  document.getElementById('tuzukMetin').value=tuzuk?.icerik||'';
+  document.getElementById('tuzukMetin').value=tuzuk?.icerik||VARSAYILAN_TUZUK;
 }
 
 function tuzukIptal(){
@@ -1150,10 +1335,91 @@ async function tuzukKaydet(){
   const result=await cmsYaz('TUZUK_SAVE',item);
   if(result){
     tuzuk={...item,...(result.result||{})};
-    tuzukIptal();
-    renderTuzuk();
+    tuzukIptal();renderTuzuk();
     addLog('Tüzük güncellendi',`${SESSION.rumuz} tarafından`);save();
   }
+}
+
+// ══════════════════════════════════════════
+// DAVET
+// ══════════════════════════════════════════
+let davetKodlari=[];
+
+async function renderDavet(){
+  // Kodları çek
+  const result=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'DAVET_LIST'})});
+  const data=await result.json();
+  davetKodlari=data.result||[];
+
+  const el=document.getElementById('davetKodListesi');
+  const canManage=izin('davetYonet');
+
+  // Kendi kodlarını göster
+  const benimKodlar=davetKodlari.filter(d=>d.olusturan===SESSION.rumuz||canManage);
+
+  if(!benimKodlar.length){
+    el.innerHTML='<div style="font-size:12px;color:#555">Henüz davet kodu yok.</div>';
+  } else {
+    el.innerHTML=`<div class="table-wrap"><table>
+      <thead><tr>
+        <th>Kod</th><th>Tür</th><th>Durum</th><th>Kullanan</th><th>Oluşturan</th>${canManage?'<th>Sil</th>':''}
+      </tr></thead>
+      <tbody>${benimKodlar.map(d=>{
+        const did=d._id||d.id;
+        return`<tr>
+          <td style="font-family:monospace;font-size:13px;letter-spacing:2px;color:#fac775">${d.kod}</td>
+          <td>${d.tur==='tek'?'Tek kullanım':'Çok kullanım'}</td>
+          <td><span class="badge ${d.aktif?'badge-aktif':'badge-pasif'}">${d.aktif?'Aktif':'Kullanıldı'}</span></td>
+          <td style="font-size:11px;color:#888">${d.kullanan||'—'}</td>
+          <td style="font-size:11px;color:#888">${d.olusturan||'—'}</td>
+          ${canManage?`<td><button class="btn btn-danger btn-sm" onclick="reqDavetSil('${did}')"><i class="ti ti-trash"></i></button></td>`:''}
+        </tr>`}).join('')}
+      </tbody></table></div>`;
+  }
+
+  document.getElementById('btnDavetEkle').style.display=izin('davetYonet')||true?'':'none';
+}
+
+async function reqDavetSil(id){
+  confirm2('Kodu sil','Bu davet kodu silinecek.',async()=>{
+    await cmsYaz('DAVET_DELETE',id);
+    renderDavet();
+  });
+}
+
+// ══════════════════════════════════════════
+// ŞİFRE DEĞİŞTİRME
+// ══════════════════════════════════════════
+async function sifreDegistir(){
+  const eskiSifre=document.getElementById('eskiSifre').value;
+  const yeniSifre=document.getElementById('yeniSifre').value;
+  const yeniSifreTekrar=document.getElementById('yeniSifreTekrar').value;
+  const hata=document.getElementById('sifreHataMsg');
+  hata.style.display='none';
+
+  if(!eskiSifre||!yeniSifre){hata.textContent='Tüm alanları doldur.';hata.style.display='block';return}
+  if(yeniSifre.length<6){hata.textContent='Şifre en az 6 karakter olmalı.';hata.style.display='block';return}
+  if(yeniSifre!==yeniSifreTekrar){hata.textContent='Yeni şifreler eşleşmiyor.';hata.style.display='block';return}
+
+  const eskiHash=await hashStr(eskiSifre);
+  const yeniHash=await hashStr(yeniSifre);
+
+  // Eski şifreyi doğrula
+  const kontrol=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'LOGIN',rumuz:SESSION.rumuz,sifreHash:eskiHash})});
+  const kontData=await kontrol.json();
+  if(!kontData.success){hata.textContent='Mevcut şifren hatalı.';hata.style.display='block';return}
+
+  // Şifreyi güncelle
+  await cmsYaz('USER_UPDATE',{_id:kontData.user?.id,sifre:yeniHash,varsayilanSifre:false});
+
+  // Oturumu güncelle
+  const saved=localStorage.getItem('qg_session');
+  if(saved){const s=JSON.parse(saved);localStorage.setItem('qg_session',JSON.stringify({...s,zaman:Date.now()}))}
+
+  closeModal();
+  alert('Şifren başarıyla değiştirildi! ✓');
+  addLog('Şifre değiştirildi',SESSION.rumuz);save();
 }
 
 // ══════════════════════════════════════════
@@ -1271,18 +1537,26 @@ function yedegiAl(){
 // ORG ŞEMA
 // ══════════════════════════════════════════
 function buildOrgSVG(animated){
-  const W=700,NW=108,NH=40,NY=34,UW=88,UH=36,GAP=10;
+  const W=700,NW=120,NH=42,UW=90,UH=36,GAP=10;
+  // Rütbeye göre grupla
   const lider=members.find(m=>m.rutbe==='Siyah');
-  const yoneticiler=members.filter(m=>m.rutbe==='Kırmızı');
-  const yetkililer=members.filter(m=>m.rutbe==='Mavi');
-  const yardimcilar=members.filter(m=>m.rutbe==='Yeşil');
+  const vekilharclar=members.filter(m=>m.rutbe==='Kırmızı'||m.rutbe==='Mavi');
+  const kaptanlar=members.filter(m=>m.rutbe==='Yeşil');
+  const tegmenler=members.filter(m=>m.rutbe==='Mor');
   const uyeler=members.filter(m=>m.rutbe==='Sarı'||m.rutbe==='Beyaz');
+
+  const ROL_LABEL={Siyah:'Lider',Kırmızı:'Vekilharç',Mavi:'Vekilharç',Yeşil:'Kaptan',Mor:'Teğmen',Sarı:'Üye',Beyaz:'Üye'};
+
   const UCOLS=Math.min(uyeler.length||1,6),uRows=uyeler.length?Math.ceil(uyeler.length/UCOLS):0;
   let svgH=20;
-  const LY=svgH;svgH+=NH+30;const YOY=svgH;svgH+=NY+30;const YEY=svgH;svgH+=NH+30;
-  const YAY=svgH;svgH+=yardimcilar.length?NH+30:0;const UY=svgH;
+  const LY=svgH;svgH+=NH+30;
+  const VY=svgH;svgH+=vekilharclar.length?NH+30:40;
+  const KY=svgH;svgH+=kaptanlar.length?NH+30:0;
+  const TY=svgH;svgH+=tegmenler.length?NH+30:0;
+  const UY=svgH;
   if(uyeler.length)svgH+=uRows*(UH+6)+20;
   const cx=W/2;let animDelay=0;
+
   function rowStartX(count,itemW){return(W-(count*itemW+(count-1)*GAP))/2}
   function nodeG(cls,x,y,w,h,t1,t2,delay){
     const anim=animated?`class="org-node-anim" style="animation-delay:${delay}ms"`:'';
@@ -1292,13 +1566,70 @@ function buildOrgSVG(animated){
     const anim=animated?`style="animation-delay:${delay}ms"`:'';
     return`<line class="${dash?'org-conn-dash':'org-conn'}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${anim}/>`
   }
+
   let svg=`<svg class="org" viewBox="0 0 ${W} ${svgH}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${W}px;height:auto">`;
-  if(lider){svg+=nodeG('org-lider',cx-NW/2,LY,NW,NH,lider.rumuz,'Lider',animDelay);svg+=ln(cx,LY+NH,cx,YOY,true,animDelay+50);animDelay+=100}
-  if(yoneticiler.length){const sx=rowStartX(yoneticiler.length,NW);if(yoneticiler.length>1)svg+=ln(sx+NW/2,YOY+NY/2,sx+(yoneticiler.length-1)*(NW+GAP)+NW/2,YOY+NY/2,false,animDelay);yoneticiler.forEach((m,i)=>{const nx=sx+i*(NW+GAP);svg+=ln(cx,YOY,nx+NW/2,YOY,false,animDelay);svg+=nodeG('org-yonetici',nx,YOY,NW,NY,m.rumuz,'Yönetici',animDelay+50);animDelay+=80})}
-  else{const bw=260,bx=cx-bw/2;const anim=animated?`class="org-node-anim" style="animation-delay:${animDelay}ms"`:'';svg+=`<g ${anim}><g class="org-node org-yonetici"><rect x="${bx}" y="${YOY}" width="${bw}" height="${NY}" rx="6"/><text class="org-yonetici" x="${cx}" y="${YOY+NY/2}" text-anchor="middle" dominant-baseline="central">Yönetici kademe — henüz boş</text></g></g>`;animDelay+=100}
-  if(yetkililer.length){const sx=rowStartX(yetkililer.length,NW);if(yetkililer.length>1)svg+=ln(sx+NW/2,YEY+NH/2,sx+(yetkililer.length-1)*(NW+GAP)+NW/2,YEY+NH/2,false,animDelay);yetkililer.forEach((m,i)=>{const nx=sx+i*(NW+GAP),ncx=nx+NW/2;svg+=ln(cx,YOY+NY,ncx,YEY,false,animDelay);svg+=nodeG('org-yetkili',nx,YEY,NW,NH,m.rumuz,'Yetkili',animDelay+50);if(yardimcilar.length)svg+=ln(ncx,YEY+NH,ncx,YAY,false,animDelay+100);animDelay+=80})}
-  if(yardimcilar.length){const sx=rowStartX(yardimcilar.length,NW);if(yardimcilar.length>1)svg+=ln(sx+NW/2,YAY+NH/2,sx+(yardimcilar.length-1)*(NW+GAP)+NW/2,YAY+NH/2,false,animDelay);yardimcilar.forEach((m,i)=>{const nx=sx+i*(NW+GAP);svg+=nodeG('org-yardimci',nx,YAY,NW,NH,m.rumuz,'Yardımcı',animDelay+50);animDelay+=80})}
-  if(uyeler.length){for(let row=0;row<uRows;row++){const rowItems=uyeler.slice(row*UCOLS,(row+1)*UCOLS);const sx=rowStartX(rowItems.length,UW);const ny=UY+row*(UH+6);if(row===0&&!yardimcilar.length&&!yetkililer.length)svg+=ln(sx+UW/2,UY,sx+(rowItems.length-1)*(UW+GAP)+UW/2,UY,false,animDelay);rowItems.forEach((m,i)=>{const nx=sx+i*(UW+GAP),ncx=nx+UW/2;if(row===0)svg+=ln(ncx,UY,ncx,UY+UH,false,animDelay);svg+=nodeG('org-uye',nx,ny,UW,UH,m.rumuz,'Üye',animDelay+50);animDelay+=40})}}
+
+  // LİDER
+  if(lider){
+    svg+=nodeG('org-lider',cx-NW/2,LY,NW,NH,lider.rumuz,'Lider',animDelay);
+    if(vekilharclar.length||uyeler.length) svg+=ln(cx,LY+NH,cx,VY,true,animDelay+50);
+    animDelay+=100;
+  }
+
+  // VEKİLHARÇ
+  if(vekilharclar.length){
+    const sx=rowStartX(vekilharclar.length,NW);
+    if(vekilharclar.length>1) svg+=ln(sx+NW/2,VY+NH/2,sx+(vekilharclar.length-1)*(NW+GAP)+NW/2,VY+NH/2,false,animDelay);
+    vekilharclar.forEach((m,i)=>{
+      const nx=sx+i*(NW+GAP);
+      svg+=ln(cx,VY,nx+NW/2,VY,false,animDelay);
+      svg+=nodeG('org-yonetici',nx,VY,NW,NH,m.rumuz,'Vekilharç',animDelay+50);
+      animDelay+=80;
+    });
+  } else {
+    const bw=220,bx=cx-bw/2;
+    const anim=animated?`class="org-node-anim" style="animation-delay:${animDelay}ms"`:'';
+    svg+=`<g ${anim}><g class="org-node org-yonetici"><rect x="${bx}" y="${VY}" width="${bw}" height="30" rx="6"/><text class="org-yonetici" x="${cx}" y="${VY+15}" text-anchor="middle" dominant-baseline="central">Vekilharç kademe — henüz boş</text></g></g>`;
+    animDelay+=100;
+  }
+
+  // KAPTAN
+  if(kaptanlar.length){
+    const sx=rowStartX(kaptanlar.length,NW);
+    if(kaptanlar.length>1) svg+=ln(sx+NW/2,KY+NH/2,sx+(kaptanlar.length-1)*(NW+GAP)+NW/2,KY+NH/2,false,animDelay);
+    kaptanlar.forEach((m,i)=>{
+      const nx=sx+i*(NW+GAP);
+      svg+=ln(cx,VY+(vekilharclar.length?NH:30),nx+NW/2,KY,false,animDelay);
+      svg+=nodeG('org-yetkili',nx,KY,NW,NH,m.rumuz,'Kaptan',animDelay+50);
+      animDelay+=80;
+    });
+  }
+
+  // TEĞMEN
+  if(tegmenler.length){
+    const sx=rowStartX(tegmenler.length,NW);
+    tegmenler.forEach((m,i)=>{
+      const nx=sx+i*(NW+GAP);
+      svg+=nodeG('org-yardimci',nx,TY,NW,NH,m.rumuz,'Teğmen',animDelay+50);
+      animDelay+=80;
+    });
+  }
+
+  // ÜYELER
+  if(uyeler.length){
+    for(let row=0;row<uRows;row++){
+      const rowItems=uyeler.slice(row*UCOLS,(row+1)*UCOLS);
+      const sx=rowStartX(rowItems.length,UW);
+      const ny=UY+row*(UH+6);
+      rowItems.forEach((m,i)=>{
+        const nx=sx+i*(UW+GAP),ncx=nx+UW/2;
+        if(row===0) svg+=ln(ncx,UY,ncx,UY+UH,false,animDelay);
+        svg+=nodeG('org-uye',nx,ny,UW,UH,m.rumuz,'Üye',animDelay+50);
+        animDelay+=40;
+      });
+    }
+  }
+
   svg+='</svg>';return svg;
 }
 function renderOrg(){document.getElementById('orgWrap').innerHTML=buildOrgSVG(true)}
@@ -1436,7 +1767,43 @@ function openModal(type,data){
           <button class="btn btn-warn" onclick="reqUpdateDuyuru('${did}')"><i class="ti ti-check"></i> Güncelle</button>
         </div>
       </div></div>`;
-  } else if(type==='addDisiplin'&&izin('disiplinUygula')){
+  } else if(type==='sifreDegistir'){
+    mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-box"><h3><i class="ti ti-key"></i> Şifre Değiştir</h3>
+        <div id="sifreHataMsg" style="font-size:12px;color:#e24b4a;margin-bottom:8px;padding:8px;background:#3a1010;border-radius:6px;display:none"></div>
+        <div class="form-group" style="margin-bottom:8px"><label>Mevcut Şifre</label><input type="password" id="eskiSifre" placeholder="••••••••"></div>
+        <div class="form-group" style="margin-bottom:8px"><label>Yeni Şifre</label><input type="password" id="yeniSifre" placeholder="En az 6 karakter..."></div>
+        <div class="form-group" style="margin-bottom:8px"><label>Yeni Şifre (tekrar)</label><input type="password" id="yeniSifreTekrar" placeholder="Tekrar gir..."></div>
+        <div class="modal-footer">
+          <button class="btn" onclick="closeModal()">İptal</button>
+          <button class="btn btn-success" onclick="sifreDegistir()"><i class="ti ti-check"></i> Değiştir</button>
+        </div>
+      </div></div>`;
+
+  } else if(type==='addDavet'){
+    mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-box"><h3><i class="ti ti-mail-forward"></i> Davet Kodu Üret</h3>
+        <div class="form-group" style="margin-bottom:8px">
+          <label>Kod Türü</label>
+          <select id="davetTur">
+            <option value="tek">Tek kullanımlık</option>
+            <option value="cok">Çok kullanımlık</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:8px">
+          <label>Açıklama (opsiyonel)</label>
+          <input id="davetAciklama" placeholder="Kime gönderilecek?">
+        </div>
+        <div class="form-group" style="margin-bottom:8px">
+          <label>Özel kod (boş bırakırsan otomatik üretilir)</label>
+          <input id="davetKod" placeholder="QGANG-XXXX" style="text-transform:uppercase;letter-spacing:2px">
+        </div>
+        <div class="modal-footer">
+          <button class="btn" onclick="closeModal()">İptal</button>
+          <button class="btn btn-warn" onclick="reqDavetEkle()"><i class="ti ti-plus"></i> Üret</button>
+        </div>
+      </div></div>`;
+  }
     mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
       <div class="modal-box"><h3><i class="ti ti-gavel"></i> Disiplin Kaydı Ekle</h3>
         <div class="form-row">
@@ -1455,6 +1822,23 @@ function openModal(type,data){
 }
 
 function closeModal(){document.getElementById('modalContainer').innerHTML=''}
+
+async function reqDavetEkle(){
+  const tur=document.getElementById('davetTur').value;
+  const aciklama=document.getElementById('davetAciklama').value.trim();
+  let kod=document.getElementById('davetKod').value.trim().toUpperCase();
+  if(!kod){
+    // Otomatik kod üret
+    kod='QGANG-'+Math.random().toString(36).substring(2,6).toUpperCase();
+  }
+  confirm2('Davet kodu üret',`<strong>${kod}</strong><br>${tur==='tek'?'Tek kullanımlık':'Çok kullanımlık'}`,async()=>{
+    const yeni={kod,tur,aktif:true,aciklama,olusturan:SESSION.rumuz,kullanan:''};
+    addLog('Davet kodu üretildi',`${kod} — ${SESSION.rumuz}`);save();
+    closeModal();
+    await cmsYaz('DAVET_ADD',yeni);
+    renderDavet();
+  });
+}
 
 async function reqDisiplinKaydet(){
   if(!izin('disiplinUygula'))return;
