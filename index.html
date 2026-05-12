@@ -1804,7 +1804,8 @@ function openModal(type,data){
           <button class="btn btn-warn" onclick="reqDavetEkle()"><i class="ti ti-plus"></i> Üret</button>
         </div>
       </div></div>`;
-  }
+
+  } else if(type==='addDisiplin'&&izin('disiplinUygula')){
     mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
       <div class="modal-box"><h3><i class="ti ti-gavel"></i> Disiplin Kaydı Ekle</h3>
         <div class="form-row">
