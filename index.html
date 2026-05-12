@@ -229,8 +229,8 @@ svg.org{display:inline-block}
 <div id="authScreen" class="auth-screen">
   <div class="auth-box">
     <div class="auth-logo">
-      <div class="logo-text" style="font-family:'Vanilla Whale',serif;font-size:48px;letter-spacing:-0.5px;font-weight:400;line-height:1">-qg-</div>
-      <div class="logo-sub" style="font-family:'Kenyan Coffee Stencil',sans-serif;font-size:13px;letter-spacing:4px;margin-top:8px;color:#6b6960;font-weight:600">ONE CODE.</div>
+      <div class="logo-text" style="font-family:'Vanilla Whale',serif;font-size:64px;letter-spacing:-0.5px;font-weight:400;line-height:1">-qg-</div>
+      <div class="logo-sub" style="font-family:'Kenyan Coffee Stencil',sans-serif;font-size:13px;letter-spacing:4px;margin-top:8px;color:#6b6960;font-weight:600">KARDEŞLİK DAİMA.</div>
     </div>
 
     <!-- TAB -->
@@ -254,7 +254,7 @@ svg.org{display:inline-block}
         <input type="checkbox" id="beniHatirla" style="width:auto">
         <label for="beniHatirla" style="font-size:12px;color:#888;cursor:pointer">Beni hatırla (30 gün)</label>
       </div>
-      <button class="auth-btn" onclick="girisYapBtn()">BENİ İÇERİ AL, KARDEŞİM.</button>
+      <button class="auth-btn" onclick="girisYapBtn()">BENİ İÇERİ AL</button>
     </div>
 
     <!-- KAYIT FORMU -->
@@ -389,8 +389,7 @@ svg.org{display:inline-block}
 <div class="top-bar">
   <div style="display:flex;align-items:center;gap:14px">
     <div style="line-height:1;text-align:center">
-      <div style="font-family:'Vanilla Whale',serif;font-size:26px;letter-spacing:-0.5px;color:#fac775;line-height:1">-qg-</div>
-      <div style="font-family:'Kenyan Coffee Stencil',sans-serif;font-size:8px;letter-spacing:3px;color:#555;margin-top:1px">ONE CODE.</div>
+      <div style="font-family:'Vanilla Whale',serif;font-size:32px;letter-spacing:-0.5px;color:#fac775;line-height:1">-qg-</div>
     </div>
     <div style="width:0.5px;height:32px;background:#333"></div>
     <div>
@@ -461,12 +460,20 @@ svg.org{display:inline-block}
 <div id="tab-dashboard" class="tab active">
   <div class="stat-grid" id="statsGrid"></div>
   <div class="dash-grid">
-    <div><div class="section-title">Uyarılar</div><div id="alertsBox"></div></div>
-    <div><div class="section-title">Yaklaşan etkinlikler</div><div id="upcomingEvents"></div></div>
+    <div>
+      <div class="section-title">Uyarılar</div>
+      <div id="alertsBox"></div>
+    </div>
+    <div>
+      <div class="section-title">Yaklaşan etkinlikler</div>
+      <div id="upcomingEvents"></div>
+      <div class="section-title" style="margin-top:1rem">Yaklaşan doğum günleri</div>
+      <div id="birthdaysBox"></div>
+    </div>
   </div>
   <div class="dash-grid" style="margin-top:1rem">
-    <div><div class="section-title">Yaklaşan doğum günleri</div><div id="birthdaysBox"></div></div>
     <div><div class="section-title">Kasa özeti</div><div id="dashButce"></div></div>
+    <div></div>
   </div>
   <hr class="sep">
   <div class="section-title">Rütbe dağılımı</div>
@@ -480,7 +487,7 @@ svg.org{display:inline-block}
     <select id="filterRutbe" onchange="renderMembers()">
       <option value="">Tüm rütbeler</option>
       <option>Lider</option><option>Vekilharç</option><option>Kaptan</option>
-      <option>Teğmen</option><option>Üye</option><option>Görüntüleyici</option>
+      <option>Teğmen</option><option>Üye</option><option>Gözlemci</option>
     </select>
     <select id="filterDurum" onchange="renderMembers()">
       <option value="">Tüm durumlar</option>
@@ -631,8 +638,8 @@ svg.org{display:inline-block}
 // ══════════════════════════════════════════
 // ROL VE İZİN SİSTEMİ
 // ══════════════════════════════════════════
-// Yeni hiyerarşi: Lider > Vekilharç > Kaptan > Teğmen > Üye > Görüntüleyici
-const ROL_SIRASI = ['Lider','Vekilharç','Kaptan','Teğmen','Üye','Görüntüleyici'];
+// Yeni hiyerarşi: Lider > Vekilharç > Kaptan > Teğmen > Üye > Gözlemci
+const ROL_SIRASI = ['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
 
 const IZINLER = {
   Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,duyuruEkle:1,duyuruSil:1,basvuruGor:1,davetYonet:1,disiplinUygula:1,tuzukDuzenle:1},
@@ -640,7 +647,7 @@ const IZINLER = {
   Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
   Teğmen:        {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
   Üye:           {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
-  Görüntüleyici: {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0}
+  Gözlemci: {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0}
 };
 
 function cikisYap(){
@@ -654,8 +661,8 @@ async function hashSifre(s){
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-let SESSION={rumuz:'Ziyaretçi',rol:'Görüntüleyici',girisZamani:new Date().toISOString()};
-function izin(key){return !!(IZINLER[SESSION.rol]||IZINLER['Görüntüleyici'])[key]}
+let SESSION={rumuz:'Ziyaretçi',rol:'Gözlemci',girisZamani:new Date().toISOString()};
+function izin(key){return !!(IZINLER[SESSION.rol]||IZINLER['Gözlemci'])[key]}
 
 // ══════════════════════════════════════════
 // CMS KÖPRÜSÜ — HTTP API
@@ -789,10 +796,10 @@ async function hashStr(s){
 function panelAc(rumuz,rol){
   document.getElementById('authScreen').style.display='none';
   document.getElementById('mainPanel').style.display='block';
-  const rolClass={Lider:'lider',Vekilharç:'vekilharc',Kaptan:'kaptan',Teğmen:'tegmen',Üye:'uye',Görüntüleyici:'goruntüleyici'};
+  const rolClass={Lider:'lider',Vekilharç:'vekilharc',Kaptan:'kaptan',Teğmen:'tegmen',Üye:'uye',Gözlemci:'goruntüleyici'};
   document.getElementById('userRolBadge').innerHTML=`<span class="rol-badge rol-${rolClass[rol]||'uye'}">${rol}</span>`;
   document.getElementById('userRumuz').textContent=rumuz;
-  SESSION.rumuz=rumuz;SESSION.rol=ROL_SIRASI.includes(rol)?rol:'Görüntüleyici';
+  SESSION.rumuz=rumuz;SESSION.rol=ROL_SIRASI.includes(rol)?rol:'Gözlemci';
   SESSION.girisZamani=new Date().toISOString();
   uiAyarla();
   addLog('Giriş',`${rumuz} — ${rol}`);
@@ -901,7 +908,7 @@ function uiAyarla(){
 // ══════════════════════════════════════════
 // VERİ
 // ══════════════════════════════════════════
-const RUTBELER=['Lider','Vekilharç','Kaptan','Teğmen','Üye','Görüntüleyici'];
+const RUTBELER=['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
 const DURUMLAR=['Aktif','Pasif','Riskli','İzinde','Arşiv'];
 const GOREVLER=['Klan','Sosyal Medya','Yönetim','Özel','Yok'];
 const ETK_TURLERI=['GANG-UP','OP-NIGHT','BBQ-GANG','Q-NITY','B-DAY & S-DAY','Diğer'];
@@ -926,7 +933,7 @@ function clearLog(){if(!izin('logSil'))return;if(!confirm('Tüm log silinsin mi?
 function rutbeBadge(r){
   const m={
     Lider:'siyah', Vekilharç:'kirmizi', Kaptan:'mavi',
-    Teğmen:'yesil', Üye:'sari', Görüntüleyici:'beyaz'
+    Teğmen:'yesil', Üye:'sari', Gözlemci:'beyaz'
   };
   return`<span class="badge badge-${m[r]||'beyaz'}">${r||'—'}</span>`
 }
@@ -1042,7 +1049,7 @@ function renderDashboard(){
 // ══════════════════════════════════════════
 function renderMembers(){
   const q=(document.getElementById('searchBox').value||'').toLowerCase(),fr=document.getElementById('filterRutbe').value,fd=document.getElementById('filterDurum').value,fg=document.getElementById('filterGorev').value;
-  const rutbeSira={Lider:0,Vekilharç:1,Kaptan:2,Teğmen:3,Üye:4,Görüntüleyici:5};
+  const rutbeSira={Lider:0,Vekilharç:1,Kaptan:2,Teğmen:3,Üye:4,Gözlemci:5};
   const filtered=members
     .filter(m=>(!q||m.rumuz.toLowerCase().includes(q))&&(!fr||m.rutbe===fr)&&(!fd||m.durum===fd)&&(!fg||m.gorev===fg))
     .sort((a,b)=>(rutbeSira[a.rutbe]??9)-(rutbeSira[b.rutbe]??9));
@@ -1291,7 +1298,7 @@ const IZIN_ETIKETLER = {
   disiplinUygula:'Disiplin Uygula', tuzukDuzenle:'Tüzük Düzenle'
 };
 
-const ROLLER_LISTE = ['Vekilharç','Kaptan','Teğmen','Üye','Görüntüleyici'];
+const ROLLER_LISTE = ['Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
 let aktifIzinler = JSON.parse(JSON.stringify(IZINLER));
 
 async function renderErisimBoard(){
@@ -1650,7 +1657,7 @@ function buildOrgSVG(animated){
   const vekilharclar=members.filter(m=>m.rutbe==='Vekilharç');
   const kaptanlar=members.filter(m=>m.rutbe==='Kaptan');
   const tegmenler=members.filter(m=>m.rutbe==='Teğmen');
-  const uyeler=members.filter(m=>m.rutbe==='Üye'||m.rutbe==='Görüntüleyici');
+  const uyeler=members.filter(m=>m.rutbe==='Üye'||m.rutbe==='Gözlemci');
 
   const UCOLS=Math.min(uyeler.length||1,6),uRows=uyeler.length?Math.ceil(uyeler.length/UCOLS):0;
   let svgH=20;
@@ -1698,37 +1705,58 @@ function buildOrgSVG(animated){
     animDelay+=100;
   }
 
-  // KAPTAN
+  // VEKİLHARÇ → KAPTAN bağlantısı
   if(kaptanlar.length){
     const sx=rowStartX(kaptanlar.length,NW);
     if(kaptanlar.length>1) svg+=ln(sx+NW/2,KY+NH/2,sx+(kaptanlar.length-1)*(NW+GAP)+NW/2,KY+NH/2,false,animDelay);
     kaptanlar.forEach((m,i)=>{
-      const nx=sx+i*(NW+GAP);
-      svg+=ln(cx,VY+(vekilharclar.length?NH:30),nx+NW/2,KY,false,animDelay);
+      const nx=sx+i*(NW+GAP),ncx=nx+NW/2;
+      // Vekilharç'tan Kaptan'a çizgi
+      if(vekilharclar.length){
+        const vsx=rowStartX(vekilharclar.length,NW);
+        const vcx=vsx+Math.floor(vekilharclar.length/2)*(NW+GAP)+NW/2;
+        svg+=ln(vcx,VY+NH,ncx,KY,false,animDelay);
+      } else {
+        svg+=ln(cx,VY+30,ncx,KY,false,animDelay);
+      }
       svg+=nodeG('org-yetkili',nx,KY,NW,NH,m.rumuz,'Kaptan',animDelay+50);
       animDelay+=80;
     });
   }
 
-  // TEĞMEN
+  // KAPTAN → TEĞMEN bağlantısı
   if(tegmenler.length){
     const sx=rowStartX(tegmenler.length,NW);
+    if(tegmenler.length>1) svg+=ln(sx+NW/2,TY+NH/2,sx+(tegmenler.length-1)*(NW+GAP)+NW/2,TY+NH/2,false,animDelay);
     tegmenler.forEach((m,i)=>{
-      const nx=sx+i*(NW+GAP);
+      const nx=sx+i*(NW+GAP),ncx=nx+NW/2;
+      if(kaptanlar.length){
+        const ksx=rowStartX(kaptanlar.length,NW);
+        const kcx=ksx+Math.floor(kaptanlar.length/2)*(NW+GAP)+NW/2;
+        svg+=ln(kcx,KY+NH,ncx,TY,false,animDelay);
+      } else {
+        svg+=ln(cx,VY+NH,ncx,TY,false,animDelay);
+      }
       svg+=nodeG('org-yardimci',nx,TY,NW,NH,m.rumuz,'Teğmen',animDelay+50);
       animDelay+=80;
     });
   }
 
-  // ÜYELER
+  // TEĞMEN/KAPTAN → ÜYELER
   if(uyeler.length){
+    const baglanti= tegmenler.length ? TY+NH : kaptanlar.length ? KY+NH : VY+NH;
+    const bagcx = tegmenler.length ?
+      rowStartX(tegmenler.length,NW)+Math.floor(tegmenler.length/2)*(NW+GAP)+NW/2 :
+      kaptanlar.length ?
+      rowStartX(kaptanlar.length,NW)+Math.floor(kaptanlar.length/2)*(NW+GAP)+NW/2 : cx;
+
     for(let row=0;row<uRows;row++){
       const rowItems=uyeler.slice(row*UCOLS,(row+1)*UCOLS);
       const sx=rowStartX(rowItems.length,UW);
       const ny=UY+row*(UH+6);
       rowItems.forEach((m,i)=>{
         const nx=sx+i*(UW+GAP),ncx=nx+UW/2;
-        if(row===0) svg+=ln(ncx,UY,ncx,UY+UH,false,animDelay);
+        if(row===0) svg+=ln(bagcx,baglanti,ncx,UY,false,animDelay);
         svg+=nodeG('org-uye',nx,ny,UW,UH,m.rumuz,'Üye',animDelay+50);
         animDelay+=40;
       });
