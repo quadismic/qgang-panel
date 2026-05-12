@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Q-GANG Panel</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#111;color:#d3d1c7;padding:12px}
@@ -227,8 +229,8 @@ svg.org{display:inline-block}
 <div id="authScreen" class="auth-screen">
   <div class="auth-box">
     <div class="auth-logo">
-      <div class="logo-text">⚔ Q-GANG</div>
-      <div class="logo-sub">KARDEŞLIK · DAİMA</div>
+      <div class="logo-text" style="font-family:'Vanilla Whale',serif;font-size:48px;letter-spacing:-0.5px;font-weight:400;line-height:1">-qg-</div>
+      <div class="logo-sub" style="font-family:'Kenyan Coffee Stencil',sans-serif;font-size:13px;letter-spacing:4px;margin-top:8px;color:#6b6960;font-weight:600">ONE CODE.</div>
     </div>
 
     <!-- TAB -->
@@ -252,7 +254,7 @@ svg.org{display:inline-block}
         <input type="checkbox" id="beniHatirla" style="width:auto">
         <label for="beniHatirla" style="font-size:12px;color:#888;cursor:pointer">Beni hatırla (30 gün)</label>
       </div>
-      <button class="auth-btn" onclick="girisYapBtn()">KAPI ÇALMAK İSTİYORUM</button>
+      <button class="auth-btn" onclick="girisYapBtn()">BENİ İÇERİ AL, KARDEŞİM.</button>
     </div>
 
     <!-- KAYIT FORMU -->
@@ -365,7 +367,7 @@ svg.org{display:inline-block}
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn" onclick="adimGeri(4)" style="flex:1">Geri</button>
-          <button class="auth-btn" onclick="kayitGonder()" style="flex:2;margin-top:0">KAPI ÇALMAK İSTİYORUM</button>
+          <button class="auth-btn" onclick="kayitGonder()" style="flex:2;margin-top:0">KAPI ÇALMAK İSTİYORUM.</button>
         </div>
       </div>
     </div>
@@ -385,9 +387,16 @@ svg.org{display:inline-block}
 </div>
 
 <div class="top-bar">
-  <div>
-    <h1>Q-GANG Paneli</h1>
-    <div class="sub" id="lastSaved">Hazır</div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <div style="line-height:1;text-align:center">
+      <div style="font-family:'Vanilla Whale',serif;font-size:26px;letter-spacing:-0.5px;color:#fac775;line-height:1">-qg-</div>
+      <div style="font-family:'Kenyan Coffee Stencil',sans-serif;font-size:8px;letter-spacing:3px;color:#555;margin-top:1px">ONE CODE.</div>
+    </div>
+    <div style="width:0.5px;height:32px;background:#333"></div>
+    <div>
+      <h1>Q-GANG Paneli</h1>
+      <div class="sub" id="lastSaved">Hazır</div>
+    </div>
   </div>
   <div class="user-info">
     <span id="userRolBadge"></span>
@@ -734,11 +743,11 @@ async function kayitGonder(){
       btn.textContent='Başvuru Gönderildi ✓';
     } else {
       hata.textContent=data.error||'Bir hata oluştu.';hata.style.display='block';
-      btn.textContent='KAPI ÇALMAK İSTİYORUM';btn.disabled=false;
+      btn.textContent='KAPI ÇALMAK İSTİYORUM.';btn.disabled=false;
     }
   }catch(e){
     hata.textContent='Bağlantı hatası.';hata.style.display='block';
-    btn.textContent='KAPI ÇALMAK İSTİYORUM';btn.disabled=false;
+    btn.textContent='KAPI ÇALMAK İSTİYORUM.';btn.disabled=false;
   }
 }
 
@@ -763,11 +772,11 @@ async function girisYapBtn(){
       panelAc(user.rumuz,user.rol);
     } else {
       hata.textContent=data.error||'Giriş başarısız.';hata.style.display='block';
-      btn.textContent='KAPI ÇALMAK İSTİYORUM';btn.disabled=false;
+      btn.textContent='KAPI ÇALMAK İSTİYORUM.';btn.disabled=false;
     }
   }catch(e){
     hata.textContent='Bağlantı hatası.';hata.style.display='block';
-    btn.textContent='KAPI ÇALMAK İSTİYORUM';btn.disabled=false;
+    btn.textContent='KAPI ÇALMAK İSTİYORUM.';btn.disabled=false;
   }
 }
 
@@ -917,11 +926,9 @@ function clearLog(){if(!izin('logSil'))return;if(!confirm('Tüm log silinsin mi?
 function rutbeBadge(r){
   const m={
     Lider:'siyah', Vekilharç:'kirmizi', Kaptan:'mavi',
-    Teğmen:'yesil', Üye:'sari', Görüntüleyici:'beyaz',
-    // Eski isimler için fallback
-    Siyah:'siyah',Kırmızı:'kirmizi',Mavi:'mavi',Yeşil:'yesil',Sarı:'sari',Beyaz:'beyaz'
+    Teğmen:'yesil', Üye:'sari', Görüntüleyici:'beyaz'
   };
-  return`<span class="badge badge-${m[r]||'beyaz'}">${r}</span>`
+  return`<span class="badge badge-${m[r]||'beyaz'}">${r||'—'}</span>`
 }
 function durumBadge(d){const m={Aktif:'aktif',Pasif:'pasif',Riskli:'riskli',İzinde:'izinde',Arşiv:'arsiv'};return`<span class="badge badge-${m[d]||'pasif'}">${d}</span>`}
 function fmtTL(v){return Number(v).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₺'}
