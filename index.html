@@ -496,7 +496,7 @@ svg.org{display:inline-block}
     <select id="filterDurum" onchange="renderMembers()">
       <option value="">Tüm durumlar</option>
       <option>Aktif</option><option>Pasif</option><option>Riskli</option>
-      <option>İzinde</option><option>Arşiv</option>
+      <option>Cezalı</option><option>İzinde</option><option>Arşiv</option>
     </select>
     <select id="filterGorev" onchange="renderMembers()">
       <option value="">Tüm görevler</option>
@@ -1868,6 +1868,7 @@ function openModal(type,data){
   } else if(type==='editMember'&&mData&&(izin('uyeDuzenle')||izin('rutbeDegistir'))){
     mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
       <div class="modal-box"><h3>${mData.rumuz} — Düzenle</h3>
+        ${izin('rutbeDegistir')?`<div class="form-group" style="margin-bottom:8px"><label>Rumuz</label><input id="e_rumuz" value="${mData.rumuz||''}" placeholder="Rumuz..."></div>`:''}
         <div class="form-row">
           <div class="form-group"><label>Rütbe</label><select id="e_rutbe" ${!izin('rutbeDegistir')?'disabled':''}>${RUTBELER.map(r=>`<option${r===mData.rutbe?' selected':''}>${r}</option>`).join('')}</select></div>
           <div class="form-group"><label>Durum</label><select id="e_durum">${DURUMLAR.map(d=>`<option${d===mData.durum?' selected':''}>${d}</option>`).join('')}</select></div>
@@ -2041,6 +2042,7 @@ function reqSaveMember(){
 
 function reqUpdateMember(id){
   const m=members.find(m=>String(m._id)===String(id)||String(m.id)===String(id));if(!m)return;
+  const newRumuz=izin('rutbeDegistir')?(document.getElementById('e_rumuz')?.value.trim()||m.rumuz):m.rumuz;
   const newRutbe=izin('rutbeDegistir')?document.getElementById('e_rutbe').value:m.rutbe;
   const newDurum=document.getElementById('e_durum').value;
   const newGorev=izin('gorevAta')?document.getElementById('e_gorev').value:m.gorev;
@@ -2051,6 +2053,7 @@ function reqUpdateMember(id){
   const newNot=document.getElementById('e_not').value||'';
   const oldPuan=Number(m.puan)||0;
   const changes=[];
+  if(m.rumuz!==newRumuz)changes.push(`Rumuz: ${m.rumuz} → ${newRumuz}`);
   if(m.rutbe!==newRutbe)changes.push(`Rütbe: ${m.rutbe} → ${newRutbe}`);
   if(m.durum!==newDurum)changes.push(`Durum: ${m.durum} → ${newDurum}`);
   if(m.gorev!==newGorev)changes.push(`Görev: ${m.gorev} → ${newGorev}`);
@@ -2063,7 +2066,7 @@ function reqUpdateMember(id){
     const gunc={
       ...m,
       _id:m._id||m.id,
-      rutbe:newRutbe,durum:newDurum,gorev:newGorev,puan:newPuan,
+      rumuz:newRumuz,rutbe:newRutbe,durum:newDurum,gorev:newGorev,puan:newPuan,
       katilim:newKatilim,dogum:newDogum,ref:newRef,not:newNot
     };
     const idx=members.findIndex(x=>String(x._id)===String(id)||String(x.id)===String(id));
