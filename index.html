@@ -3,10 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Q-GANG Panel</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#111;color:#d3d1c7;padding:12px}
@@ -229,8 +233,8 @@ svg.org{display:inline-block}
 <div id="authScreen" class="auth-screen">
   <div class="auth-box">
     <div class="auth-logo">
-      <div class="logo-text" style="font-family:'Vanilla Whale',serif;font-size:64px;letter-spacing:-0.5px;font-weight:400;line-height:1">-qg-</div>
-      <div class="logo-sub" style="font-family:'Kenyan Coffee Stencil',sans-serif;font-size:13px;letter-spacing:4px;margin-top:8px;color:#6b6960;font-weight:600">KARDEŞLİK DAİMA.</div>
+      <div class="logo-text" style="font-family:'Vanilla Whale',serif;font-size:64px;letter-spacing:-0.5px;font-weight:400;line-height:1">-QG-</div>
+      <div class="logo-sub" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;margin-top:12px;color:#8a7d5a;font-weight:600;line-height:1.8">CESARET · ASALET · ADALET · SADAKAT</div>
     </div>
 
     <!-- TAB -->
@@ -389,7 +393,7 @@ svg.org{display:inline-block}
 <div class="top-bar">
   <div style="display:flex;align-items:center;gap:14px">
     <div style="line-height:1;text-align:center">
-      <div style="font-family:'Vanilla Whale',serif;font-size:32px;letter-spacing:-0.5px;color:#fac775;line-height:1">-qg-</div>
+      <div style="font-family:'Vanilla Whale',serif;font-size:32px;letter-spacing:-0.5px;color:#fac775;line-height:1">-QG-</div>
     </div>
     <div style="width:0.5px;height:32px;background:#333"></div>
     <div>
@@ -909,7 +913,7 @@ function uiAyarla(){
 // VERİ
 // ══════════════════════════════════════════
 const RUTBELER=['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
-const DURUMLAR=['Aktif','Pasif','Riskli','İzinde','Arşiv'];
+const DURUMLAR=['Aktif','Pasif','Riskli','Cezalı','İzinde','Arşiv'];
 const GOREVLER=['Klan','Sosyal Medya','Yönetim','Özel','Yok'];
 const ETK_TURLERI=['GANG-UP','OP-NIGHT','BBQ-GANG','Q-NITY','B-DAY & S-DAY','Diğer'];
 const BUTCE_KAT=['Katkı / Destek','Ekipman','Diğer'];
@@ -937,7 +941,7 @@ function rutbeBadge(r){
   };
   return`<span class="badge badge-${m[r]||'beyaz'}">${r||'—'}</span>`
 }
-function durumBadge(d){const m={Aktif:'aktif',Pasif:'pasif',Riskli:'riskli',İzinde:'izinde',Arşiv:'arsiv'};return`<span class="badge badge-${m[d]||'pasif'}">${d}</span>`}
+function durumBadge(d){const m={Aktif:'aktif',Pasif:'pasif',Riskli:'riskli',Cezalı:'riskli',İzinde:'izinde',Arşiv:'arsiv'};return`<span class="badge badge-${m[d]||'pasif'}">${d}</span>`}
 function fmtTL(v){return Number(v).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₺'}
 function fmtDate(s){if(!s)return'-';try{const[y,mo,d]=s.split('-');return`${d}.${mo}.${y}`}catch{return s}}
 function fmtDateTime(s){if(!s)return'-';const d=new Date(s);return d.toLocaleDateString('tr-TR')+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}
@@ -1568,13 +1572,25 @@ function renderDisiplin(){
 
 function reqDisiplinKaldir(id){
   const d=disiplin.find(d=>String(d._id)===String(id)||String(d.id)===String(id));if(!d)return;
-  confirm2('Cezayı kaldır',`<strong>${d.uye}</strong> — ${d.cezaTuru} cezası kaldırılacak.`,async()=>{
+  confirm2('Cezayı kaldır',`<strong>${d.uye}</strong> — ${d.cezaTuru} cezası kaldırılacak ve erişim yeniden açılacak.`,async()=>{
     const gunc={...d,_id:d._id||d.id,durum:'Kaldırıldı'};
     const idx=disiplin.findIndex(x=>String(x._id)===String(id)||String(x.id)===String(id));
     if(idx>-1)disiplin[idx]={...disiplin[idx],durum:'Kaldırıldı'};
     addLog('Ceza kaldırıldı',`${d.uye} — ${d.cezaTuru}`);save();
     await cmsYaz('DISIPLIN_UPDATE',gunc);
-    renderDisiplin();
+
+    // Başka aktif ceza yoksa üyeyi Aktif'e döndür
+    const aktifCezalar=disiplin.filter(x=>x.uye===d.uye&&x.durum!=='Kaldırıldı'&&String(x._id||x.id)!==String(id));
+    if(!aktifCezalar.length){
+      const m=members.find(m=>m.rumuz===d.uye);
+      if(m&&(m.durum==='Cezalı'||m.durum==='Arşiv')){
+        m.durum='Aktif';
+        await cmsYaz('MEMBER_UPDATE',{...m,_id:m._id||m.id,durum:'Aktif'});
+        await cmsYaz('USER_RUTBE_SYNC',{rumuz:d.uye,rol:m.rutbe,durum:'aktif'});
+        addLog('Otomatik durum',`${d.uye} → Aktif (ceza kaldırıldı)`);
+      }
+    }
+    renderDisiplin();renderMembers();renderDashboard();
   });
 }
 
@@ -1987,7 +2003,20 @@ async function reqDisiplinKaydet(){
     addLog('Disiplin uygulandı',`${uye} — ${cezaTuru}`);save();
     closeModal();
     await cmsYaz('DISIPLIN_ADD',yeni);
-    renderDisiplin();
+
+    // Uzaklaştırma veya İhraç → üyeyi Cezalı yap
+    if(cezaTuru==='Uzaklaştırma'||cezaTuru==='İhraç'){
+      const m=members.find(m=>m.rumuz===uye);
+      if(m){
+        const yeniDurum=cezaTuru==='İhraç'?'Arşiv':'Cezalı';
+        m.durum=yeniDurum;
+        await cmsYaz('MEMBER_UPDATE',{...m,_id:m._id||m.id,durum:yeniDurum});
+        // QKullanicilar'da da engelle
+        await cmsYaz('USER_RUTBE_SYNC',{rumuz:uye,rol:m.rutbe,durum:yeniDurum==='Arşiv'?'engelli':'cezali'});
+        addLog('Otomatik durum',`${uye} → ${yeniDurum} (${cezaTuru} nedeniyle)`);
+      }
+    }
+    renderDisiplin();renderMembers();renderDashboard();
   });
 }
 
