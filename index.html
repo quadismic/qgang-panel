@@ -94,11 +94,14 @@ tr:hover td{background:#1a1a1a}
 .badge-yesil{background:#04342c;color:#9fe1cb}
 .badge-sari{background:#412402;color:#fac775}
 .badge-beyaz{background:#2a2a28;color:#888780}
-.badge-aktif{background:#04342c;color:#9fe1cb}
-.badge-pasif{background:#2a2a28;color:#888780}
-.badge-riskli{background:#3a1010;color:#e24b4a}
-.badge-izinde{background:#042c53;color:#b5d4f4}
-.badge-arsiv{background:#1a1a1a;color:#555}
+.badge-aktif{background:transparent;color:#4caf7d;border:0.5px solid #4caf7d;padding:2px 8px}
+.badge-aktif::before{content:'● ';font-size:8px}
+.badge-pasif{background:transparent;color:#555;border:0.5px dashed #444;font-style:italic;text-decoration:none}
+.badge-riskli{background:#ff6b00;color:#fff;border:none;font-weight:700;padding:2px 8px}
+.badge-riskli::before{content:'⚠ ';font-size:9px}
+.badge-cezali{background:#e24b4a;color:#fff;border:none;font-weight:700;padding:2px 8px;text-transform:uppercase;letter-spacing:1px}
+.badge-izinde{background:transparent;color:#b5d4f4;border:1px dashed #378add;padding:2px 8px}
+.badge-arsiv{background:transparent;color:#3a3a3a;border:0.5px solid #2a2a2a;text-decoration:line-through}
 .badge-gelir{background:#04342c;color:#9fe1cb}
 .badge-gider{background:#3a1010;color:#e24b4a}
 .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:8px}
@@ -464,24 +467,19 @@ svg.org{display:inline-block}
 <div id="tab-dashboard" class="tab active">
   <div class="stat-grid" id="statsGrid"></div>
   <div class="dash-grid">
-    <div>
-      <div class="section-title">Uyarılar</div>
+    <div class="card" style="padding:.9rem">
+      <div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-alert-circle" style="color:#fac775"></i> Uyarılar</div>
       <div id="alertsBox"></div>
     </div>
-    <div>
-      <div class="section-title">Yaklaşan etkinlikler</div>
+    <div class="card" style="padding:.9rem">
+      <div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-calendar-event" style="color:#9fe1cb"></i> Yaklaşan Etkinlikler</div>
       <div id="upcomingEvents"></div>
-      <div class="section-title" style="margin-top:1rem">Yaklaşan doğum günleri</div>
+      <div class="section-title" style="margin-bottom:.6rem;margin-top:.9rem"><i class="ti ti-cake" style="color:#b5d4f4"></i> Yaklaşan Doğum Günleri</div>
       <div id="birthdaysBox"></div>
     </div>
   </div>
-  <div class="dash-grid" style="margin-top:1rem">
-    <div><div class="section-title">Kasa özeti</div><div id="dashButce"></div></div>
-    <div></div>
-  </div>
-  <hr class="sep">
-  <div class="section-title">Rütbe dağılımı</div>
-  <div id="rutbeChart"></div>
+  <div id="dashButce" style="display:none"></div>
+  <div id="rutbeChart" style="display:none"></div>
 </div>
 
 <!-- ÜYELER -->
@@ -941,7 +939,7 @@ function rutbeBadge(r){
   };
   return`<span class="badge badge-${m[r]||'beyaz'}">${r||'—'}</span>`
 }
-function durumBadge(d){const m={Aktif:'aktif',Pasif:'pasif',Riskli:'riskli',Cezalı:'riskli',İzinde:'izinde',Arşiv:'arsiv'};return`<span class="badge badge-${m[d]||'pasif'}">${d}</span>`}
+function durumBadge(d){const m={Aktif:'aktif',Pasif:'pasif',Riskli:'riskli',Cezalı:'cezali',İzinde:'izinde',Arşiv:'arsiv'};return`<span class="badge badge-${m[d]||'pasif'}">${d}</span>`}
 function fmtTL(v){return Number(v).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₺'}
 function fmtDate(s){if(!s)return'-';try{const[y,mo,d]=s.split('-');return`${d}.${mo}.${y}`}catch{return s}}
 function fmtDateTime(s){if(!s)return'-';const d=new Date(s);return d.toLocaleDateString('tr-TR')+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}
@@ -1549,25 +1547,61 @@ const CEZA_RENK={Uyarı:'badge-sari',Uzaklaştırma:'badge-kirmizi',İhraç:'bad
 
 function renderDisiplin(){
   const el=document.getElementById('disiplinList');
-  if(!disiplin.length){el.innerHTML='<div style="font-size:12px;color:#555">Henüz disiplin kaydı yok.</div>';return}
-  el.innerHTML=disiplin.map(d=>{
-    const did=d._id||d.id;
-    return`<div class="card" style="margin-bottom:8px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:6px">
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <strong style="font-size:13px">${d.uye}</strong>
-          <span class="badge ${CEZA_RENK[d.cezaTuru]||'badge-sari'}">${d.cezaTuru}</span>
-          ${d.durum==='Kaldırıldı'?'<span class="badge badge-pasif">Kaldırıldı</span>':''}
+  if(!disiplin.length){el.innerHTML='<div style="font-size:12px;color:#555;padding:8px">Henüz disiplin kaydı yok.</div>';return}
+
+  // Üye bazlı gruplandır
+  const gruplar={};
+  disiplin.forEach(d=>{
+    if(!gruplar[d.uye]) gruplar[d.uye]=[];
+    gruplar[d.uye].push(d);
+  });
+
+  // Alfabetik sırala
+  const siraliUyeler=Object.keys(gruplar).sort((a,b)=>a.localeCompare(b,'tr'));
+
+  el.innerHTML=`
+    <div style="margin-bottom:10px">
+      <input type="text" id="disiplinAra" placeholder="Üye ara..." oninput="disiplinFiltrele()"
+        style="padding:6px 10px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:12px;width:200px">
+    </div>
+    <div id="disiplinGruplar">
+    ${siraliUyeler.map(uye=>{
+      const kayitlar=gruplar[uye];
+      const aktifSayi=kayitlar.filter(k=>k.durum!=='Kaldırıldı').length;
+      return`<div class="disiplin-grup" data-uye="${uye.toLowerCase()}">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#222;border-radius:8px;margin-bottom:4px;cursor:pointer" onclick="this.nextElementSibling.classList.toggle('open')">
+          <span style="font-size:13px;font-weight:500;color:#d3d1c7">${uye}</span>
+          ${aktifSayi?`<span class="badge badge-cezali" style="font-size:10px">${aktifSayi} aktif</span>`:'<span style="font-size:10px;color:#555">temiz</span>'}
+          <i class="ti ti-chevron-down" style="margin-left:auto;color:#555;font-size:12px"></i>
         </div>
-        <div style="display:flex;gap:4px">
-          ${izin('disiplinUygula')&&d.durum!=='Kaldırıldı'?`<button class="btn btn-sm" onclick="reqDisiplinKaldir('${did}')"><i class="ti ti-x"></i> Kaldır</button>`:''}
-          ${izin('disiplinUygula')?`<button class="btn btn-danger btn-sm" onclick="reqDisiplinSil('${did}')"><i class="ti ti-trash"></i></button>`:''}
+        <div class="disiplin-detay" style="display:none;padding:0 6px 8px">
+          ${kayitlar.map(d=>{
+            const did=d._id||d.id;
+            return`<div class="card" style="margin-bottom:6px;padding:.7rem">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:4px">
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span class="badge ${CEZA_RENK[d.cezaTuru]||'badge-sari'}">${d.cezaTuru}</span>
+                  ${d.durum==='Kaldırıldı'?'<span class="badge badge-pasif" style="font-size:10px">Kaldırıldı</span>':''}
+                </div>
+                <div style="display:flex;gap:4px">
+                  ${izin('disiplinUygula')&&d.durum!=='Kaldırıldı'?`<button class="btn btn-sm" onclick="reqDisiplinKaldir('${did}')"><i class="ti ti-x"></i> Kaldır</button>`:''}
+                  ${izin('disiplinUygula')?`<button class="btn btn-danger btn-sm" onclick="reqDisiplinSil('${did}')"><i class="ti ti-trash"></i></button>`:''}
+                </div>
+              </div>
+              <div style="font-size:12px;color:#d3d1c7;margin-bottom:4px">${d.gerekce||'—'}</div>
+              ${d.tuzukMaddesi?`<div style="font-size:11px;color:#555;margin-bottom:4px">Tüzük: ${d.tuzukMaddesi}</div>`:''}
+              <div style="font-size:10px;color:#555">${d.tarih||''} · ${d.uygulayan||'—'}</div>
+            </div>`}).join('')}
         </div>
-      </div>
-      <div style="font-size:12px;color:#d3d1c7;margin-bottom:4px">${d.gerekce||'—'}</div>
-      ${d.tuzukMaddesi?`<div style="font-size:11px;color:#555;margin-bottom:4px">Tüzük maddesi: ${d.tuzukMaddesi}</div>`:''}
-      <div style="font-size:10px;color:#555">${d.tarih||''} · Uygulayan: ${d.uygulayan||'—'}</div>
-    </div>`}).join('');
+      </div>`}).join('')}
+    </div>`;
+}
+
+function disiplinFiltrele(){
+  const q=(document.getElementById('disiplinAra')?.value||'').toLowerCase();
+  document.querySelectorAll('.disiplin-grup').forEach(el=>{
+    el.style.display=el.dataset.uye.includes(q)?'block':'none';
+  });
 }
 
 function reqDisiplinKaldir(id){
@@ -1668,29 +1702,33 @@ function yedegiAl(){
 // ORG ŞEMA
 // ══════════════════════════════════════════
 function buildOrgSVG(animated){
-  const W=700,NW=120,NH=42,UW=90,UH=36,GAP=10;
+  const W=700,NW=130,NH=44,UW=95,UH=36,GAP=12;
   const lider=members.find(m=>m.rutbe==='Lider');
   const vekilharclar=members.filter(m=>m.rutbe==='Vekilharç');
   const kaptanlar=members.filter(m=>m.rutbe==='Kaptan');
   const tegmenler=members.filter(m=>m.rutbe==='Teğmen');
   const uyeler=members.filter(m=>m.rutbe==='Üye'||m.rutbe==='Gözlemci');
 
-  const UCOLS=Math.min(uyeler.length||1,6),uRows=uyeler.length?Math.ceil(uyeler.length/UCOLS):0;
-  let svgH=20;
-  const LY=svgH;svgH+=NH+30;
-  const VY=svgH;svgH+=vekilharclar.length?NH+30:40;
-  const KY=svgH;svgH+=kaptanlar.length?NH+30:0;
-  const TY=svgH;svgH+=tegmenler.length?NH+30:0;
-  const UY=svgH;
-  if(uyeler.length)svgH+=uRows*(UH+6)+20;
-  const cx=W/2;let animDelay=0;
+  const UCOLS=Math.min(uyeler.length||1,6);
+  const uRows=uyeler.length?Math.ceil(uyeler.length/UCOLS):0;
 
-  function rowStartX(count,itemW){return(W-(count*itemW+(count-1)*GAP))/2}
+  // Yükseklik hesapla
+  let svgH=20;
+  const LY=svgH; svgH+=NH+40;
+  const VY=svgH; svgH+=vekilharclar.length?NH+40:50;
+  const KY=svgH; svgH+=kaptanlar.length?NH+40:0;
+  const TY=svgH; svgH+=tegmenler.length?NH+40:0;
+  const UY=svgH; if(uyeler.length) svgH+=uRows*(UH+8)+20;
+
+  const cx=W/2;
+  let animDelay=0;
+
+  function rowCX(count,itemW){return(W-(count*itemW+(count-1)*GAP))/2}
   function nodeG(cls,x,y,w,h,t1,t2,delay){
     const anim=animated?`class="org-node-anim" style="animation-delay:${delay}ms"`:'';
-    return`<g ${anim}><g class="org-node ${cls}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6"/><text class="t1" x="${x+w/2}" y="${y+h/2-7}" text-anchor="middle" dominant-baseline="central">${t1}</text><text class="t2" x="${x+w/2}" y="${y+h/2+7}" text-anchor="middle" dominant-baseline="central">${t2}</text></g></g>`
+    return`<g ${anim}><g class="org-node ${cls}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="7"/><text class="t1" x="${x+w/2}" y="${y+h/2-7}" text-anchor="middle" dominant-baseline="central">${t1}</text><text class="t2" x="${x+w/2}" y="${y+h/2+8}" text-anchor="middle" dominant-baseline="central">${t2}</text></g></g>`
   }
-  function ln(x1,y1,x2,y2,dash,delay){
+  function line(x1,y1,x2,y2,dash,delay){
     const anim=animated?`style="animation-delay:${delay}ms"`:'';
     return`<line class="${dash?'org-conn-dash':'org-conn'}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${anim}/>`
   }
@@ -1700,87 +1738,92 @@ function buildOrgSVG(animated){
   // LİDER
   if(lider){
     svg+=nodeG('org-lider',cx-NW/2,LY,NW,NH,lider.rumuz,'Lider',animDelay);
-    if(vekilharclar.length||uyeler.length) svg+=ln(cx,LY+NH,cx,VY,true,animDelay+50);
     animDelay+=100;
   }
 
   // VEKİLHARÇ
   if(vekilharclar.length){
-    const sx=rowStartX(vekilharclar.length,NW);
-    if(vekilharclar.length>1) svg+=ln(sx+NW/2,VY+NH/2,sx+(vekilharclar.length-1)*(NW+GAP)+NW/2,VY+NH/2,false,animDelay);
+    const sx=rowCX(vekilharclar.length,NW);
+    // Lider'den aşağı çizgi
+    svg+=line(cx,LY+NH,cx,VY-10,true,animDelay);
+    // Yatay çizgi (birden fazlaysa)
+    if(vekilharclar.length>1){
+      const left=sx+NW/2, right=sx+(vekilharclar.length-1)*(NW+GAP)+NW/2;
+      svg+=line(left,VY+NH/2,right,VY+NH/2,false,animDelay);
+    }
     vekilharclar.forEach((m,i)=>{
-      const nx=sx+i*(NW+GAP);
-      svg+=ln(cx,VY,nx+NW/2,VY,false,animDelay);
+      const nx=sx+i*(NW+GAP), ncx=nx+NW/2;
+      svg+=line(cx,VY-10,ncx,VY,false,animDelay);
       svg+=nodeG('org-yonetici',nx,VY,NW,NH,m.rumuz,'Vekilharç',animDelay+50);
       animDelay+=80;
     });
   } else {
-    const bw=220,bx=cx-bw/2;
+    const bw=200,bx=cx-bw/2;
+    svg+=line(cx,LY+NH,cx,VY,true,animDelay);
     const anim=animated?`class="org-node-anim" style="animation-delay:${animDelay}ms"`:'';
     svg+=`<g ${anim}><g class="org-node org-yonetici"><rect x="${bx}" y="${VY}" width="${bw}" height="30" rx="6"/><text class="org-yonetici" x="${cx}" y="${VY+15}" text-anchor="middle" dominant-baseline="central">Vekilharç kademe — henüz boş</text></g></g>`;
-    animDelay+=100;
+    animDelay+=80;
   }
 
-  // VEKİLHARÇ → KAPTAN bağlantısı
+  // KAPTAN
   if(kaptanlar.length){
-    const sx=rowStartX(kaptanlar.length,NW);
-    if(kaptanlar.length>1) svg+=ln(sx+NW/2,KY+NH/2,sx+(kaptanlar.length-1)*(NW+GAP)+NW/2,KY+NH/2,false,animDelay);
+    const prevY=vekilharclar.length?VY+NH:VY+30;
+    const sx=rowCX(kaptanlar.length,NW);
+    svg+=line(cx,prevY,cx,KY-10,false,animDelay);
+    if(kaptanlar.length>1){
+      const left=sx+NW/2, right=sx+(kaptanlar.length-1)*(NW+GAP)+NW/2;
+      svg+=line(left,KY+NH/2,right,KY+NH/2,false,animDelay);
+    }
     kaptanlar.forEach((m,i)=>{
-      const nx=sx+i*(NW+GAP),ncx=nx+NW/2;
-      // Vekilharç'tan Kaptan'a çizgi
-      if(vekilharclar.length){
-        const vsx=rowStartX(vekilharclar.length,NW);
-        const vcx=vsx+Math.floor(vekilharclar.length/2)*(NW+GAP)+NW/2;
-        svg+=ln(vcx,VY+NH,ncx,KY,false,animDelay);
-      } else {
-        svg+=ln(cx,VY+30,ncx,KY,false,animDelay);
-      }
+      const nx=sx+i*(NW+GAP), ncx=nx+NW/2;
+      svg+=line(cx,KY-10,ncx,KY,false,animDelay);
       svg+=nodeG('org-yetkili',nx,KY,NW,NH,m.rumuz,'Kaptan',animDelay+50);
       animDelay+=80;
     });
   }
 
-  // KAPTAN → TEĞMEN bağlantısı
+  // TEĞMEN
   if(tegmenler.length){
-    const sx=rowStartX(tegmenler.length,NW);
-    if(tegmenler.length>1) svg+=ln(sx+NW/2,TY+NH/2,sx+(tegmenler.length-1)*(NW+GAP)+NW/2,TY+NH/2,false,animDelay);
+    const prevY=kaptanlar.length?KY+NH:vekilharclar.length?VY+NH:LY+NH;
+    const sx=rowCX(tegmenler.length,NW);
+    svg+=line(cx,prevY,cx,TY-10,false,animDelay);
+    if(tegmenler.length>1){
+      const left=sx+NW/2, right=sx+(tegmenler.length-1)*(NW+GAP)+NW/2;
+      svg+=line(left,TY+NH/2,right,TY+NH/2,false,animDelay);
+    }
     tegmenler.forEach((m,i)=>{
-      const nx=sx+i*(NW+GAP),ncx=nx+NW/2;
-      if(kaptanlar.length){
-        const ksx=rowStartX(kaptanlar.length,NW);
-        const kcx=ksx+Math.floor(kaptanlar.length/2)*(NW+GAP)+NW/2;
-        svg+=ln(kcx,KY+NH,ncx,TY,false,animDelay);
-      } else {
-        svg+=ln(cx,VY+NH,ncx,TY,false,animDelay);
-      }
+      const nx=sx+i*(NW+GAP), ncx=nx+NW/2;
+      svg+=line(cx,TY-10,ncx,TY,false,animDelay);
       svg+=nodeG('org-yardimci',nx,TY,NW,NH,m.rumuz,'Teğmen',animDelay+50);
       animDelay+=80;
     });
   }
 
-  // TEĞMEN/KAPTAN → ÜYELER
+  // ÜYELER
   if(uyeler.length){
-    const baglanti= tegmenler.length ? TY+NH : kaptanlar.length ? KY+NH : VY+NH;
-    const bagcx = tegmenler.length ?
-      rowStartX(tegmenler.length,NW)+Math.floor(tegmenler.length/2)*(NW+GAP)+NW/2 :
-      kaptanlar.length ?
-      rowStartX(kaptanlar.length,NW)+Math.floor(kaptanlar.length/2)*(NW+GAP)+NW/2 : cx;
-
+    const prevY=tegmenler.length?TY+NH:kaptanlar.length?KY+NH:vekilharclar.length?VY+NH:LY+NH;
+    svg+=line(cx,prevY,cx,UY-10,false,animDelay);
     for(let row=0;row<uRows;row++){
       const rowItems=uyeler.slice(row*UCOLS,(row+1)*UCOLS);
-      const sx=rowStartX(rowItems.length,UW);
-      const ny=UY+row*(UH+6);
+      const sx=rowCX(rowItems.length,UW);
+      const ny=UY+row*(UH+8);
+      if(row===0){
+        const left=sx+UW/2, right=sx+(rowItems.length-1)*(UW+GAP)+UW/2;
+        if(rowItems.length>1) svg+=line(left,UY-10,right,UY-10,false,animDelay);
+      }
       rowItems.forEach((m,i)=>{
-        const nx=sx+i*(UW+GAP),ncx=nx+UW/2;
-        if(row===0) svg+=ln(bagcx,baglanti,ncx,UY,false,animDelay);
-        svg+=nodeG('org-uye',nx,ny,UW,UH,m.rumuz,'Üye',animDelay+50);
-        animDelay+=40;
+        const nx=sx+i*(UW+GAP), ncx=nx+UW/2;
+        if(row===0) svg+=line(ncx,UY-10,ncx,ny,false,animDelay);
+        svg+=nodeG('org-uye',nx,ny,UW,UH,m.rumuz,'Üye',animDelay+30);
+        animDelay+=30;
       });
     }
   }
 
-  svg+='</svg>';return svg;
+  svg+='</svg>';
+  return svg;
 }
+
 function renderOrg(){document.getElementById('orgWrap').innerHTML=buildOrgSVG(true)}
 function orgKodUret(){
   if(!izin('kodUret'))return;
@@ -2111,10 +2154,11 @@ function reqSaveDuyuru(){
   if(!baslik||!icerik){alert('Başlık ve içerik zorunlu.');return}
   confirm2('Duyuru yayınla',`<strong>${baslik}</strong><br>${icerik}`,async()=>{
     const yeni={baslik,icerik,aktif,tarih:new Date().toISOString(),yazar:SESSION.rumuz};
-    duyurular.unshift({...yeni,id:'temp_'+Date.now()});
     addLog('Duyuru eklendi',baslik);save();
-    closeModal();renderDuyurular();renderDuyuruBanner();
-    await cmsYaz('DUYURU_ADD',yeni);
+    closeModal();
+    const result=await cmsYaz('DUYURU_ADD',yeni);
+    // CMS'den gelen gerçek item'ı kullan — local unshift cmsYaz içinde yapılıyor
+    renderDuyurular();renderDuyuruBanner();
   });
 }
 
