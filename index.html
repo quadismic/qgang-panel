@@ -365,14 +365,21 @@ svg.org{display:inline-block}
           <label>Son söz — Sahne senin</label>
           <textarea id="k_sonSoz" placeholder="İster motto, ister komik bir şey, istersen sessiz kal..."></textarea>
         </div>
-        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:12px;padding:10px;background:#1a1a1a;border-radius:8px;border:0.5px solid #333">
-          <input type="checkbox" id="k_taahhut" disabled style="width:auto;margin-top:2px;accent-color:#fac775">
-          <label style="font-size:12px;color:#d3d1c7;line-height:1.4">
-            <strong style="color:#fac775">Tüzük Taahhüdü</strong><br>
-            <span style="color:#888">Taahhüt edebilmek için önce </span>
-            <span onclick="tuzukOku()" style="color:#fac775;text-decoration:underline;cursor:pointer;font-weight:600">tüzüğü oku</span>
-            <span style="color:#888">. Okuduktan sonra onaylayabilirsin.</span>
-          </label>
+        <div style="margin-bottom:12px;padding:10px;background:#1a1a1a;border-radius:8px;border:0.5px solid #333">
+          <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px">
+            <input type="checkbox" id="k_taahhut" style="width:auto;margin-top:3px;accent-color:#fac775;flex-shrink:0">
+            <label for="k_taahhut" style="font-size:11px;color:#b4b2a9;cursor:pointer;line-height:1.5">
+              <strong style="color:#fac775;display:block;margin-bottom:2px">Tüzük Onayı *</strong>
+              Q-GANG Topluluk Tüzüğü'nü okuduğumu, anladığımı ve tüzüğe uygun davranacağımı; tüzüğün güncel hâlinden sorumlu olduğumu kabul, beyan ve taahhüt ederim.
+            </label>
+          </div>
+          <div style="border-top:0.5px solid #2a2a2a;padding-top:10px;display:flex;align-items:flex-start;gap:8px">
+            <input type="checkbox" id="k_kvkk" style="width:auto;margin-top:3px;accent-color:#fac775;flex-shrink:0">
+            <label for="k_kvkk" style="font-size:11px;color:#b4b2a9;cursor:pointer;line-height:1.5">
+              <strong style="color:#fac775;display:block;margin-bottom:2px">KVKK Aydınlatma Onayı *</strong>
+              KVKK Aydınlatma Metni kapsamında kişisel verilerimin üyelik ve kayıt süreci amacıyla işlendiği konusunda bilgilendirildiğimi kabul ederim.
+            </label>
+          </div>
         </div>
         <div class="auth-form-group">
           <label>Şifre belirle *</label>
@@ -571,11 +578,6 @@ svg.org{display:inline-block}
   <div id="duyuruList"></div>
 </div>
 
-<!-- BAŞVURULAR -->
-<div id="tab-basvurular" class="tab">
-  <div class="section-title"><i class="ti ti-user-check"></i> Bekleyen Başvurular</div>
-  <div id="basvuruList"><div style="font-size:12px;color:#555">Yükleniyor...</div></div>
-</div>
 
 <!-- ERİŞİM YÖNETİMİ -->
 <div id="tab-erisim" class="tab">
@@ -749,10 +751,12 @@ async function kayitGonder(){
   hata.style.display='none';basari.style.display='none';
   const gorev=document.querySelector('input[name="gorevVar"]:checked');
   const taahhut=document.getElementById('k_taahhut').checked;
+  const kvkk=document.getElementById('k_kvkk')?.checked;
+  if(!gorev){hata.textContent='Görev tercihini seçin.';hata.style.display='block';return}
+  if(!taahhut){hata.textContent='Tüzük Onayı zorunludur.';hata.style.display='block';return}
+  if(!kvkk){hata.textContent='KVKK Aydınlatma Onayı zorunludur.';hata.style.display='block';return}
   const sifre=document.getElementById('k_sifre').value;
   const sifreTekrar=document.getElementById('k_sifreTekrar').value;
-  if(!gorev){hata.textContent='Görev tercihini seçin.';hata.style.display='block';return}
-  if(!taahhut){hata.textContent='Tüzük taahhüdünü kabul etmelisin.';hata.style.display='block';return}
   if(!sifre||sifre.length<6){hata.textContent='Şifre en az 6 karakter olmalı.';hata.style.display='block';return}
   if(sifre!==sifreTekrar){hata.textContent='Şifreler eşleşmiyor.';hata.style.display='block';return}
   const sifreHash=await hashStr(sifre);
@@ -856,7 +860,8 @@ async function cmsOku(){
 }
 
 async function cmsYaz(action,data){
-  const payload=action.includes('DELETE')?{action,id:data}:{action,item:data};
+  const idActions=['DELETE','USER_APPROVE','USER_REJECT','DISIPLIN_DELETE','DAVET_DELETE','BUDGET_DELETE','EVENT_DELETE','MEMBER_DELETE','DUYURU_DELETE'];
+  const payload=idActions.some(a=>action.includes(a))?{action,id:data}:{action,item:data};
   try{
     cmsStatusGoster('loading','<i class="ti ti-loader"></i> Kaydediliyor...');
     const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
@@ -1575,7 +1580,7 @@ async function basvuruSayisiniGuncelle(){
     const sayi=(data.result||[]).length;
     if(sayi>0){
       const el=document.getElementById('basvuruUyari');
-      if(el) el.innerHTML=`<div class="alert-row alert-warn" style="cursor:pointer" onclick="showTabDD('basvurular','ddYonetim','navYonetimBtn')">
+      if(el) el.innerHTML=`<div class="alert-row alert-warn" style="cursor:pointer" onclick="showTabDD('davet','ddYonetim','navYonetimBtn')">
         <i class="ti ti-user-plus"></i> <strong>${sayi} bekleyen başvuru</strong> — onay bekliyor
       </div>`;
     }
@@ -1630,7 +1635,9 @@ async function reqBasvuruOnayla(id,rumuz){
   confirm2('Başvuruyu onayla',`<strong>${rumuz}</strong> üyeliğe kabul edilecek.`,async()=>{
     await cmsYaz('USER_APPROVE',id);
     addLog('Başvuru onaylandı',rumuz);save();
-    renderDavet();basvuruSayisiniGuncelle();
+    await renderDavet();
+    await basvuruSayisiniGuncelle();
+    renderDashboard();
   });
 }
 
@@ -1638,7 +1645,9 @@ async function reqBasvuruReddet(id,rumuz){
   confirm2('Başvuruyu reddet',`<strong>${rumuz}</strong> başvurusu reddedilecek ve silinecek.`,async()=>{
     await cmsYaz('USER_REJECT',id);
     addLog('Başvuru reddedildi',rumuz);save();
-    renderDavet();basvuruSayisiniGuncelle();
+    await renderDavet();
+    await basvuruSayisiniGuncelle();
+    renderDashboard();
   });
 }
 
