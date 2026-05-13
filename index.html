@@ -366,10 +366,12 @@ svg.org{display:inline-block}
           <textarea id="k_sonSoz" placeholder="İster motto, ister komik bir şey, istersen sessiz kal..."></textarea>
         </div>
         <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:12px;padding:10px;background:#1a1a1a;border-radius:8px;border:0.5px solid #333">
-          <input type="checkbox" id="k_taahhut" style="width:auto;margin-top:2px">
-          <label for="k_taahhut" style="font-size:12px;color:#d3d1c7;cursor:pointer;line-height:1.4">
+          <input type="checkbox" id="k_taahhut" disabled style="width:auto;margin-top:2px;accent-color:#fac775">
+          <label style="font-size:12px;color:#d3d1c7;line-height:1.4">
             <strong style="color:#fac775">Tüzük Taahhüdü</strong><br>
-            Evet, okudum ve topluluk kuralları olan tüzüğe ve ilgili tüm yetkililere sadık kalacağım.
+            <span style="color:#888">Taahhüt edebilmek için önce </span>
+            <span onclick="tuzukOku()" style="color:#fac775;text-decoration:underline;cursor:pointer;font-weight:600">tüzüğü oku</span>
+            <span style="color:#888">. Okuduktan sonra onaylayabilirsin.</span>
           </label>
         </div>
         <div class="auth-form-group">
@@ -382,7 +384,7 @@ svg.org{display:inline-block}
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn" onclick="adimGeri(4)" style="flex:1">Geri</button>
-          <button class="auth-btn" onclick="kayitGonder()" style="flex:2;margin-top:0">KAPI ÇALMAK İSTİYORUM.</button>
+          <button class="auth-btn" onclick="kayitGonder()" style="flex:2;margin-top:0">BENİ İÇERİ ALIN.</button>
         </div>
       </div>
     </div>
@@ -467,7 +469,7 @@ svg.org{display:inline-block}
     <div class="nav-dropdown" id="ddYonetim">
       <div class="nav-dd-item" onclick="showTabDD('duyurular','ddYonetim','navYonetimBtn')"><i class="ti ti-speakerphone"></i> Duyurular</div>
       <div class="nav-dd-item" id="navButceDD" onclick="showTabDD('butce','ddYonetim','navYonetimBtn')"><i class="ti ti-currency-lira"></i> Bütçe</div>
-      <div class="nav-dd-item" onclick="showTabDD('davet','ddYonetim','navYonetimBtn')"><i class="ti ti-mail-forward"></i> Davetler</div>
+      <div class="nav-dd-item" onclick="showTabDD('davet','ddYonetim','navYonetimBtn')"><i class="ti ti-mail-forward"></i> Davet & Başvuru</div>
       <div class="nav-dd-item" onclick="showTabDD('tuzuk','ddYonetim','navYonetimBtn')"><i class="ti ti-license"></i> Tüzük & Disiplin</div>
       <div class="nav-dd-item" id="navErisimDD" onclick="showTabDD('erisim','ddYonetim','navYonetimBtn')" style="display:none"><i class="ti ti-shield-lock"></i> Erişim Yönetimi</div>
     </div>
@@ -487,6 +489,7 @@ svg.org{display:inline-block}
   <div class="dash-grid">
     <div class="card" style="padding:.9rem">
       <div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-alert-circle" style="color:#fac775"></i> Uyarılar</div>
+      <div id="basvuruUyari"></div>
       <div id="alertsBox"></div>
     </div>
     <div class="card" style="padding:.9rem">
@@ -568,6 +571,12 @@ svg.org{display:inline-block}
   <div id="duyuruList"></div>
 </div>
 
+<!-- BAŞVURULAR -->
+<div id="tab-basvurular" class="tab">
+  <div class="section-title"><i class="ti ti-user-check"></i> Bekleyen Başvurular</div>
+  <div id="basvuruList"><div style="font-size:12px;color:#555">Yükleniyor...</div></div>
+</div>
+
 <!-- ERİŞİM YÖNETİMİ -->
 <div id="tab-erisim" class="tab">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
@@ -581,18 +590,23 @@ svg.org{display:inline-block}
   <div id="izinBoard"></div>
 </div>
 
-<!-- DAVET -->
+<!-- DAVET & BAŞVURU -->
 <div id="tab-davet" class="tab">
+  <!-- DAVET KODLARI -->
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
     <div class="section-title" style="margin:0"><i class="ti ti-mail-forward"></i> Davet Kodları</div>
     <button class="btn btn-warn btn-sm" onclick="openModal('addDavet')" id="btnDavetEkle" style="display:none"><i class="ti ti-plus"></i> Kod Üret</button>
   </div>
   <div id="davetKodListesi"></div>
+
   <hr class="sep">
-  <div class="section-title">Davet Bağlantım</div>
-  <div class="card" id="benimDavetim">
-    <div style="font-size:12px;color:#888;margin-bottom:8px">Kendi davet kodunu oluşturmak için Kod Üret butonunu kullan.</div>
+
+  <!-- BAŞVURULAR -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-user-check"></i> Bekleyen Başvurular</div>
+    <div id="basvuruSayiBadge"></div>
   </div>
+  <div id="basvuruList"><div style="font-size:12px;color:#555">Yükleniyor...</div></div>
 </div>
 
 <!-- TÜZÜK + DİSİPLİN -->
@@ -765,16 +779,16 @@ async function kayitGonder(){
     })});
     const data=await res.json();
     if(data.success){
-      basari.textContent=data.message||'Başvurun alındı! Lider onayladıktan sonra giriş yapabilirsin.';
+      basari.textContent=data.message||'Başvurun alındı! Yetkili onayından sonra giriş yapabilirsin.';
       basari.style.display='block';
       btn.textContent='Başvuru Gönderildi ✓';
     } else {
       hata.textContent=data.error||'Bir hata oluştu.';hata.style.display='block';
-      btn.textContent='KAPI ÇALMAK İSTİYORUM.';btn.disabled=false;
+      btn.textContent='BENİ İÇERİ ALIN.';btn.disabled=false;
     }
   }catch(e){
     hata.textContent='Bağlantı hatası.';hata.style.display='block';
-    btn.textContent='KAPI ÇALMAK İSTİYORUM.';btn.disabled=false;
+    btn.textContent='BENİ İÇERİ ALIN.';btn.disabled=false;
   }
 }
 
@@ -799,11 +813,11 @@ async function girisYapBtn(){
       panelAc(user.rumuz,user.rol);
     } else {
       hata.textContent=data.error||'Giriş başarısız.';hata.style.display='block';
-      btn.textContent='KAPI ÇALMAK İSTİYORUM.';btn.disabled=false;
+      btn.textContent='BENİ İÇERİ ALIN.';btn.disabled=false;
     }
   }catch(e){
     hata.textContent='Bağlantı hatası.';hata.style.display='block';
-    btn.textContent='KAPI ÇALMAK İSTİYORUM.';btn.disabled=false;
+    btn.textContent='BENİ İÇERİ ALIN.';btn.disabled=false;
   }
 }
 
@@ -922,6 +936,11 @@ function uiAyarla(){
   if(izin('disiplinUygula')) document.getElementById('btnDisiplinEkle').style.display='';
   if(!izin('butceGor')) document.getElementById('navButceDD').style.display='none';
   if(!izin('logGor')) document.getElementById('navLog').style.display='none';
+  if(SESSION.rol==='Lider'||SESSION.rol==='Vekilharç'){
+    const navBasvuru=document.getElementById('navBasvuruDD');
+    if(navBasvuru) navBasvuru.style.display='';
+    basvuruSayisiniGuncelle();
+  }
   if(SESSION.rol==='Lider') document.getElementById('navErisimDD').style.display='';
 }
 
@@ -1009,7 +1028,7 @@ function _showTabContent(name){
     dashboard:renderDashboard, members:renderMembers, puan:renderPuan,
     gorev:renderGorev, etkinlik:renderEvents, butce:renderButce,
     duyurular:renderDuyurular, davet:renderDavet, tuzuk:renderTuzuk,
-    erisim:renderErisimBoard, org:renderOrg, log:renderLog
+    basvurular:renderBasvurular, erisim:renderErisimBoard, org:renderOrg, log:renderLog
   };
   if(fns[name]) fns[name]();
 }
@@ -1495,9 +1514,159 @@ async function tuzukKaydet(){
   }
 }
 
+// Tüzük okuma modal - kayıt formunda
+function tuzukOku(){
+  const mc=document.getElementById('modalContainer');
+  const icerik=tuzuk?.icerik||VARSAYILAN_TUZUK;
+  mc.innerHTML=`<div class="modal-overlay">
+    <div class="modal-box" style="max-width:600px">
+      <h3><i class="ti ti-license"></i> Q-GANG Tüzüğü</h3>
+      <div style="max-height:400px;overflow-y:auto;margin-bottom:1rem;padding-right:4px">${icerik}</div>
+      <div id="tuzukGeriSayim" style="text-align:center;font-size:12px;color:#555;margin-bottom:8px">Lütfen tüzüğü okuyun... <span id="sayac">15</span> saniye</div>
+      <button id="tuzukOnayBtn" class="btn btn-warn" style="width:100%;display:none" onclick="tuzukOnaylandı()">
+        <i class="ti ti-check"></i> Okudum, anladım — Onaylıyorum
+      </button>
+    </div>
+  </div>`;
+
+  // Geri sayım
+  let kalan=15;
+  const interval=setInterval(()=>{
+    kalan--;
+    const sayac=document.getElementById('sayac');
+    if(sayac) sayac.textContent=kalan;
+    if(kalan<=0){
+      clearInterval(interval);
+      const geri=document.getElementById('tuzukGeriSayim');
+      const btn=document.getElementById('tuzukOnayBtn');
+      if(geri) geri.style.display='none';
+      if(btn) btn.style.display='block';
+    }
+  },1000);
+}
+
+function tuzukOnaylandı(){
+  closeModal();
+  const cb=document.getElementById('k_taahhut');
+  if(cb){cb.disabled=false;cb.checked=true;}
+}
+
+// Bekleyen başvuru sayısını çek ve dashboard'da göster
+async function basvuruSayisiniGuncelle(){
+  if(!izin('basvuruGor'))return;
+  try{
+    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'BASVURU_LIST'})});
+    const data=await res.json();
+    const sayi=(data.result||[]).length;
+    if(sayi>0){
+      const el=document.getElementById('basvuruUyari');
+      if(el) el.innerHTML=`<div class="alert-row alert-warn" style="cursor:pointer" onclick="showTabDD('basvurular','ddYonetim','navYonetimBtn')">
+        <i class="ti ti-user-plus"></i> <strong>${sayi} bekleyen başvuru</strong> — onay bekliyor
+      </div>`;
+    }
+  }catch(e){}
+}
+
 // ══════════════════════════════════════════
-// DAVET
+// BAŞVURULAR
 // ══════════════════════════════════════════
+async function renderBasvurular(){
+  if(!izin('basvuruGor')){document.getElementById('basvuruList').innerHTML=engelEkrani();return}
+  const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'BASVURU_LIST'})});
+  const data=await res.json();
+  const basvurular=data.result||[];
+  const el=document.getElementById('basvuruList');
+  if(!basvurular.length){
+    el.innerHTML='<div class="card" style="text-align:center;color:#555;font-size:12px;padding:2rem">Bekleyen başvuru yok.</div>';
+    return;
+  }
+  el.innerHTML=basvurular.map(b=>{
+    const bid=b._id||b.id;
+    return`<div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:#fac775">${b.rumuz}</div>
+          <div style="font-size:11px;color:#555">${b.kayitTarih?new Date(b.kayitTarih).toLocaleDateString('tr-TR'):''}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-success btn-sm" onclick="reqBasvuruOnayla('${bid}','${b.rumuz}')"><i class="ti ti-check"></i> Onayla</button>
+          <button class="btn btn-sm" onclick="reqBasvuruDuzenle('${bid}')"><i class="ti ti-edit"></i> Düzenle</button>
+          <button class="btn btn-danger btn-sm" onclick="reqBasvuruReddet('${bid}','${b.rumuz}')"><i class="ti ti-x"></i> Reddet</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px">
+        ${b.adSoyad?`<div><span style="color:#555">Ad Soyad:</span> ${b.adSoyad}</div>`:''}
+        ${b.email?`<div><span style="color:#555">E-posta:</span> ${b.email}</div>`:''}
+        ${b.whatsapp?`<div><span style="color:#555">WhatsApp:</span> ${b.whatsapp}</div>`:''}
+        ${b.sehir?`<div><span style="color:#555">Şehir:</span> ${b.sehir}</div>`:''}
+        ${b.dogum?`<div><span style="color:#555">Doğum:</span> ${b.dogum}</div>`:''}
+        ${b.gunlukDurum?`<div><span style="color:#555">Durum:</span> ${b.gunlukDurum}</div>`:''}
+        ${b.davetKodu?`<div><span style="color:#555">Davet kodu:</span> ${b.davetKodu}</div>`:''}
+      </div>
+      ${b.niyetCeken?`<div style="margin-top:8px;font-size:12px"><span style="color:#555">Q-GANG'de çeken:</span><br><span style="color:#d3d1c7">${b.niyetCeken}</span></div>`:''}
+      ${b.katki?`<div style="margin-top:6px;font-size:12px"><span style="color:#555">Katkı:</span><br><span style="color:#d3d1c7">${b.katki}</span></div>`:''}
+      ${b.sonSoz?`<div style="margin-top:6px;font-size:12px;color:#555;font-style:italic">"${b.sonSoz}"</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+async function reqBasvuruOnayla(id,rumuz){
+  confirm2('Başvuruyu onayla',`<strong>${rumuz}</strong> üyeliğe kabul edilecek.`,async()=>{
+    await cmsYaz('USER_APPROVE',id);
+    addLog('Başvuru onaylandı',rumuz);save();
+    renderDavet();basvuruSayisiniGuncelle();
+  });
+}
+
+async function reqBasvuruReddet(id,rumuz){
+  confirm2('Başvuruyu reddet',`<strong>${rumuz}</strong> başvurusu reddedilecek ve silinecek.`,async()=>{
+    await cmsYaz('USER_REJECT',id);
+    addLog('Başvuru reddedildi',rumuz);save();
+    renderDavet();basvuruSayisiniGuncelle();
+  });
+}
+
+async function reqBasvuruDuzenle(id){
+  // Başvuruyu bul
+  const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'BASVURU_LIST'})});
+  const data=await res.json();
+  const b=(data.result||[]).find(x=>(x._id||x.id)===id);
+  if(!b)return;
+  const mc=document.getElementById('modalContainer');
+  mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal-box"><h3><i class="ti ti-edit"></i> Başvuru Düzenle — ${b.rumuz}</h3>
+      <div class="form-group" style="margin-bottom:8px"><label>Rumuz</label><input id="bd_rumuz" value="${b.rumuz||''}"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Ad Soyad</label><input id="bd_adSoyad" value="${b.adSoyad||''}"></div>
+        <div class="form-group"><label>Şehir</label><input id="bd_sehir" value="${b.sehir||''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>E-posta</label><input id="bd_email" value="${b.email||''}"></div>
+        <div class="form-group"><label>WhatsApp</label><input id="bd_whatsapp" value="${b.whatsapp||''}"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeModal()">İptal</button>
+        <button class="btn btn-warn" onclick="reqBasvuruKaydet('${id}')"><i class="ti ti-check"></i> Kaydet</button>
+      </div>
+    </div></div>`;
+}
+
+async function reqBasvuruKaydet(id){
+  const gunc={
+    _id:id,
+    rumuz:document.getElementById('bd_rumuz').value.trim(),
+    adSoyad:document.getElementById('bd_adSoyad').value.trim(),
+    sehir:document.getElementById('bd_sehir').value.trim(),
+    email:document.getElementById('bd_email').value.trim(),
+    whatsapp:document.getElementById('bd_whatsapp').value.trim()
+  };
+  await cmsYaz('USER_UPDATE',gunc);
+  addLog('Başvuru düzenlendi',gunc.rumuz);save();
+  closeModal();renderDavet();
+}
+
 let davetKodlari=[];
 
 async function renderDavet(){
@@ -1508,8 +1677,6 @@ async function renderDavet(){
 
   const el=document.getElementById('davetKodListesi');
   const canManage=izin('davetYonet');
-
-  // Kendi kodlarını göster
   const benimKodlar=davetKodlari.filter(d=>d.olusturan===SESSION.rumuz||canManage);
 
   if(!benimKodlar.length){
@@ -1521,10 +1688,12 @@ async function renderDavet(){
       </tr></thead>
       <tbody>${benimKodlar.map(d=>{
         const did=d._id||d.id;
+        const kodGoster=d.kod&&d.kod!=='undefined'?d.kod:'Kod Geçersiz';
+        const aktif=d.aktif!==false&&d.kod&&d.kod!=='undefined';
         return`<tr>
-          <td style="font-family:monospace;font-size:13px;letter-spacing:2px;color:#fac775">${d.kod}</td>
+          <td style="font-family:monospace;font-size:13px;letter-spacing:2px;color:${aktif?'#fac775':'#555'}">${kodGoster}</td>
           <td>${d.tur==='tek'?'Tek kullanım':'Çok kullanım'}</td>
-          <td><span class="badge ${d.aktif?'badge-aktif':'badge-pasif'}">${d.aktif?'Aktif':'Kullanıldı'}</span></td>
+          <td><span class="badge ${aktif?'badge-aktif':'badge-pasif'}">${aktif?'Aktif':'Kullanıldı'}</span></td>
           <td style="font-size:11px;color:#888">${d.kullanan||'—'}</td>
           <td style="font-size:11px;color:#888">${d.olusturan||'—'}</td>
           ${canManage?`<td><button class="btn btn-danger btn-sm" onclick="reqDavetSil('${did}')"><i class="ti ti-trash"></i></button></td>`:''}
@@ -1532,7 +1701,10 @@ async function renderDavet(){
       </tbody></table></div>`;
   }
 
-  document.getElementById('btnDavetEkle').style.display=izin('davetYonet')||true?'':'none';
+  document.getElementById('btnDavetEkle').style.display='';
+
+  // Başvuruları da yükle
+  await renderBasvurular();
 }
 
 async function reqDavetSil(id){
