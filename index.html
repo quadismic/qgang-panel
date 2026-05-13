@@ -757,15 +757,16 @@ function adimIleri(mevcut){
     const katki=document.getElementById('k_katki').value.trim();
     if(!gunluk||!niyet||!katki){hata.textContent='Tüm alanları doldurun.';hata.style.display='block';return}
     adimGoster(4);
-    // Tüzük metnini yükle
+    // Tüzük metnini yükle - HTML'i temiz render et
     setTimeout(()=>{
       const el=document.getElementById('kayitTuzukMetin');
       if(el){
         const icerik=tuzuk?.icerik||VARSAYILAN_TUZUK;
-        // HTML içeriyorsa düz metne çevir
-        const tmp=document.createElement('div');
-        tmp.innerHTML=icerik;
-        el.textContent=tmp.textContent||'Tüzük yüklenemedi.';
+        el.innerHTML=icerik;
+        // Tüzük stil sınıflarını küçült
+        el.querySelectorAll('.tuzuk-section').forEach(s=>s.style.opacity='1');
+        el.style.fontSize='11px';
+        el.style.color='#888';
       }
     },100);
   }
@@ -870,6 +871,11 @@ function panelAc(rumuz,rol){
   uiAyarla();
   addLog('Giriş',`${rumuz} — ${rol}`);
   renderDashboard();renderDuyuruBanner();
+  // Başvuru sayısını periyodik kontrol et
+  if(izin('basvuruGor')){
+    basvuruSayisiniGuncelle();
+    setInterval(basvuruSayisiniGuncelle, 30000);
+  }
 }
 
 // ── CMS FONKSİYONLARI ───────────────────────
@@ -2338,13 +2344,6 @@ function openModal(type,data){
     mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
       <div class="modal-box"><h3><i class="ti ti-mail-forward"></i> Davet Kodu Üret</h3>
         <div class="form-group" style="margin-bottom:8px">
-          <label>Kod Türü</label>
-          <select id="davetTur">
-            <option value="tek">Tek kullanımlık</option>
-            <option value="cok">Çok kullanımlık</option>
-          </select>
-        </div>
-        <div class="form-group" style="margin-bottom:8px">
           <label>Açıklama (opsiyonel)</label>
           <input id="davetAciklama" placeholder="Kime gönderilecek?">
         </div>
@@ -2352,6 +2351,7 @@ function openModal(type,data){
           <label>Özel kod (boş bırakırsan otomatik üretilir)</label>
           <input id="davetKod" placeholder="QGANG-XXXX" style="text-transform:uppercase;letter-spacing:2px">
         </div>
+        <p style="font-size:11px;color:#555;margin-bottom:12px">Tüm kodlar tek kullanımlıktır — kullanıldıktan sonra geçersiz olur.</p>
         <div class="modal-footer">
           <button class="btn" onclick="closeModal()">İptal</button>
           <button class="btn btn-warn" onclick="reqDavetEkle()"><i class="ti ti-plus"></i> Üret</button>
@@ -2379,15 +2379,11 @@ function openModal(type,data){
 function closeModal(){document.getElementById('modalContainer').innerHTML=''}
 
 async function reqDavetEkle(){
-  const tur=document.getElementById('davetTur').value;
   const aciklama=document.getElementById('davetAciklama').value.trim();
   let kod=document.getElementById('davetKod').value.trim().toUpperCase();
-  if(!kod){
-    // Otomatik kod üret
-    kod='QGANG-'+Math.random().toString(36).substring(2,6).toUpperCase();
-  }
-  confirm2('Davet kodu üret',`<strong>${kod}</strong><br>${tur==='tek'?'Tek kullanımlık':'Çok kullanımlık'}`,async()=>{
-    const yeni={kod,tur,aktif:true,aciklama,olusturan:SESSION.rumuz,kullanan:''};
+  if(!kod) kod='QGANG-'+Math.random().toString(36).substring(2,6).toUpperCase();
+  confirm2('Davet kodu üret',`<strong>${kod}</strong><br>Tek kullanımlık`,async()=>{
+    const yeni={kod,tur:'tek',aktif:true,aciklama,olusturan:SESSION.rumuz,kullanan:''};
     addLog('Davet kodu üretildi',`${kod} — ${SESSION.rumuz}`);save();
     closeModal();
     await cmsYaz('DAVET_ADD',yeni);
