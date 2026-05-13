@@ -366,14 +366,31 @@ svg.org{display:inline-block}
           <textarea id="k_sonSoz" placeholder="İster motto, ister komik bir şey, istersen sessiz kal..."></textarea>
         </div>
         <div style="margin-bottom:12px;padding:10px;background:#1a1a1a;border-radius:8px;border:0.5px solid #333">
-          <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px">
+          <!-- Tüzük metni -->
+          <div style="margin-bottom:10px">
+            <div style="font-size:11px;color:#fac775;font-weight:600;margin-bottom:6px">📜 Q-GANG Topluluk Tüzüğü</div>
+            <div style="max-height:120px;overflow-y:auto;font-size:11px;color:#555;line-height:1.6;padding:8px;background:#111;border-radius:6px;border:0.5px solid #2a2a2a" id="kayitTuzukMetin">Yükleniyor...</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:14px">
             <input type="checkbox" id="k_taahhut" style="width:auto;margin-top:3px;accent-color:#fac775;flex-shrink:0">
             <label for="k_taahhut" style="font-size:11px;color:#b4b2a9;cursor:pointer;line-height:1.5">
               <strong style="color:#fac775;display:block;margin-bottom:2px">Tüzük Onayı *</strong>
               Q-GANG Topluluk Tüzüğü'nü okuduğumu, anladığımı ve tüzüğe uygun davranacağımı; tüzüğün güncel hâlinden sorumlu olduğumu kabul, beyan ve taahhüt ederim.
             </label>
           </div>
-          <div style="border-top:0.5px solid #2a2a2a;padding-top:10px;display:flex;align-items:flex-start;gap:8px">
+          <!-- KVKK metni -->
+          <div style="margin-bottom:10px;border-top:0.5px solid #2a2a2a;padding-top:10px">
+            <div style="font-size:11px;color:#fac775;font-weight:600;margin-bottom:6px">🔒 KVKK Aydınlatma Metni</div>
+            <div style="max-height:120px;overflow-y:auto;font-size:11px;color:#555;line-height:1.6;padding:8px;background:#111;border-radius:6px;border:0.5px solid #2a2a2a">
+              <strong style="color:#888;display:block;margin-bottom:4px">Veri Sorumlusu:</strong> Q-GANG Topluluğu<br><br>
+              <strong style="color:#888;display:block;margin-bottom:4px">İşlenen Kişisel Veriler:</strong> Ad-soyad, doğum tarihi, e-posta adresi, telefon numarası (WhatsApp), yaşadığı şehir.<br><br>
+              <strong style="color:#888;display:block;margin-bottom:4px">İşleme Amaçları:</strong> Topluluk üyeliği sürecinin yürütülmesi, üyeler arası iletişimin sağlanması, topluluk faaliyetlerinin organizasyonu.<br><br>
+              <strong style="color:#888;display:block;margin-bottom:4px">Hukuki Dayanak:</strong> KVKK Madde 5/2-a (açık rıza), Madde 5/2-f (meşru menfaat).<br><br>
+              <strong style="color:#888;display:block;margin-bottom:4px">Saklama Süresi:</strong> Üyelik süresince; üyelikten ayrılma veya talep halinde silinir.<br><br>
+              <strong style="color:#888;display:block;margin-bottom:4px">Haklarınız:</strong> KVKK Madde 11 kapsamında verilerinize erişim, düzeltme, silme, itiraz haklarına sahipsiniz.
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px">
             <input type="checkbox" id="k_kvkk" style="width:auto;margin-top:3px;accent-color:#fac775;flex-shrink:0">
             <label for="k_kvkk" style="font-size:11px;color:#b4b2a9;cursor:pointer;line-height:1.5">
               <strong style="color:#fac775;display:block;margin-bottom:2px">KVKK Aydınlatma Onayı *</strong>
@@ -740,6 +757,17 @@ function adimIleri(mevcut){
     const katki=document.getElementById('k_katki').value.trim();
     if(!gunluk||!niyet||!katki){hata.textContent='Tüm alanları doldurun.';hata.style.display='block';return}
     adimGoster(4);
+    // Tüzük metnini yükle
+    setTimeout(()=>{
+      const el=document.getElementById('kayitTuzukMetin');
+      if(el){
+        const icerik=tuzuk?.icerik||VARSAYILAN_TUZUK;
+        // HTML içeriyorsa düz metne çevir
+        const tmp=document.createElement('div');
+        tmp.innerHTML=icerik;
+        el.textContent=tmp.textContent||'Tüzük yüklenemedi.';
+      }
+    },100);
   }
 }
 
@@ -1621,10 +1649,12 @@ async function renderBasvurular(){
         ${b.whatsapp?`<div><span style="color:#555">WhatsApp:</span> ${b.whatsapp}</div>`:''}
         ${b.sehir?`<div><span style="color:#555">Şehir:</span> ${b.sehir}</div>`:''}
         ${b.dogum?`<div><span style="color:#555">Doğum:</span> ${b.dogum}</div>`:''}
-        ${b.gunlukDurum?`<div><span style="color:#555">Durum:</span> ${b.gunlukDurum}</div>`:''}
+        ${b.gunlukDurum?`<div><span style="color:#555">Günlük durum:</span> ${b.gunlukDurum}</div>`:''}
+        ${b.gorevVar?`<div><span style="color:#555">Görev:</span> ${b.gorevVar}</div>`:''}
         ${b.davetKodu?`<div><span style="color:#555">Davet kodu:</span> ${b.davetKodu}</div>`:''}
+        ${b.kayitTarih?`<div><span style="color:#555">Başvuru tarihi:</span> ${new Date(b.kayitTarih).toLocaleDateString('tr-TR')}</div>`:''}
       </div>
-      ${b.niyetCeken?`<div style="margin-top:8px;font-size:12px"><span style="color:#555">Q-GANG'de çeken:</span><br><span style="color:#d3d1c7">${b.niyetCeken}</span></div>`:''}
+      ${b.niyetCeken?`<div style="margin-top:8px;font-size:12px"><span style="color:#555">Q-GANG'e çeken:</span><br><span style="color:#d3d1c7">${b.niyetCeken}</span></div>`:''}
       ${b.katki?`<div style="margin-top:6px;font-size:12px"><span style="color:#555">Katkı:</span><br><span style="color:#d3d1c7">${b.katki}</span></div>`:''}
       ${b.sonSoz?`<div style="margin-top:6px;font-size:12px;color:#555;font-style:italic">"${b.sonSoz}"</div>`:''}
     </div>`;
@@ -1632,12 +1662,40 @@ async function renderBasvurular(){
 }
 
 async function reqBasvuruOnayla(id,rumuz){
-  confirm2('Başvuruyu onayla',`<strong>${rumuz}</strong> üyeliğe kabul edilecek.`,async()=>{
+  confirm2('Başvuruyu onayla',`<strong>${rumuz}</strong> üyeliğe kabul edilecek ve Gözlemci olarak eklenecek.`,async()=>{
+    // 1. QKullanicilar'da durumu aktif yap
     await cmsYaz('USER_APPROVE',id);
+
+    // 2. QMembers'a Gözlemci olarak ekle
+    const mevcutUye=members.find(m=>m.rumuz===rumuz);
+    if(!mevcutUye){
+      // Başvuru verisini bul
+      const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'BASVURU_LIST'})});
+      const data=await res.json();
+      const b=(data.result||[]).find(x=>(x._id||x.id)===id)||{};
+      const yeniUye={
+        rumuz:b.rumuz||rumuz, rutbe:'Gözlemci', durum:'Aktif',
+        gorev:'Yok', puan:0,
+        dogum:b.dogum||'', katilim:new Date().toISOString().split('T')[0],
+        ref:b.davetKodu||'', not:'', wixMemberId:''
+      };
+      const result=await cmsYaz('MEMBER_ADD',yeniUye);
+      if(result?.result){
+        members.push({...yeniUye,_id:result.result._id,id:result.result._id});
+      }
+    }
+
     addLog('Başvuru onaylandı',rumuz);save();
+
+    // 3. Bildirimi temizle
+    const uyari=document.getElementById('basvuruUyari');
+    if(uyari) uyari.innerHTML='';
+
     await renderDavet();
     await basvuruSayisiniGuncelle();
     renderDashboard();
+    renderMembers();
   });
 }
 
@@ -1711,8 +1769,8 @@ async function renderDavet(){
       </tr></thead>
       <tbody>${benimKodlar.map(d=>{
         const did=d._id||d.id;
-        const kodGoster=d.kod&&d.kod!=='undefined'?d.kod:'Kod kullanıldı.';
-        const aktif=d.aktif!==false&&d.kod&&d.kod!=='undefined';
+        const kodGoster=d.kod&&d.kod!=='undefined'?d.kod:'—';
+        const aktif=d.aktif!==false;
         return`<tr>
           <td style="font-family:monospace;font-size:13px;letter-spacing:2px;color:${aktif?'#fac775':'#555'}">${kodGoster}</td>
           <td>${d.tur==='tek'?'Tek kullanım':'Çok kullanım'}</td>
