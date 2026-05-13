@@ -1133,11 +1133,13 @@ function reqPuan(){
 // GÖREV
 // ══════════════════════════════════════════
 function renderGorev(){
+  const rutbeSira={Lider:0,Vekilharç:1,Kaptan:2,Teğmen:3,Üye:4,Gözlemci:5};
+  const siraliUyeler=[...members].sort((a,b)=>(rutbeSira[a.rutbe]??9)-(rutbeSira[b.rutbe]??9));
   document.getElementById('gorevEditor').innerHTML=izin('gorevAta')?`
     <div class="section-title">Görev ata</div>
     <div class="card">
       <div class="form-row">
-        <div class="form-group"><label>Üye</label><select id="gorevUye">${members.map(m=>`<option value="${m._id||m.id}">${m.rumuz}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Üye</label><select id="gorevUye">${siraliUyeler.map(m=>`<option value="${m._id||m.id}">${m.rumuz} (${m.rutbe})</option>`).join('')}</select></div>
         <div class="form-group"><label>Görev</label><select id="gorevTip">${GOREVLER.map(g=>`<option>${g}</option>`).join('')}</select></div>
       </div>
       <button class="btn btn-primary" onclick="reqGorev()"><i class="ti ti-check"></i> Ata</button>
@@ -1269,7 +1271,7 @@ function renderDuyuruBanner(){
   else{
     banner.style.display='block';
     const scroll=document.getElementById('duyuruScroll');
-    const icerik=aktif.map(d=>`<span class="duyuru-item">${d.baslik}: ${d.icerik}</span>`).join('');
+    const icerik=aktif.map(d=>`<span class="duyuru-item"><span style="font-weight:700;color:#ffd280;letter-spacing:0.5px">${d.baslik}</span><span style="color:#854f0b;margin:0 6px">◆</span><span style="color:#c9aa7a;font-weight:400">${d.icerik}</span></span>`).join('');
     scroll.innerHTML=icerik+icerik;
     const sure=Math.max(20,aktif.length*15);
     scroll.style.animation=`scroll-left ${sure}s linear infinite`;
@@ -1290,7 +1292,7 @@ function renderDogumgunuBanner(){
   if(!bugunUyeler.length){banner.style.display='none';return}
   banner.style.display='block';
   const scroll=document.getElementById('dogumgunuScroll');
-  const icerik=bugunUyeler.map(m=>`<span class="dogumgunu-item">🎉 İyi ki doğdun, ${m.rumuz}!</span>`).join('');
+  const icerik=bugunUyeler.map(m=>`<span class="dogumgunu-item"><span style="font-weight:700;color:#d4eaff;letter-spacing:0.5px">${m.rumuz}</span><span style="color:#185fa5;margin:0 6px">◆</span><span style="color:#8ab8d8;font-weight:400">İyi ki doğdun!</span></span>`).join('');
   scroll.innerHTML=icerik+icerik;
 }
 
