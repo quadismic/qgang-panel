@@ -57,12 +57,20 @@ body{font-family:Arial,sans-serif;background:#111;color:#d3d1c7;padding:12px}
 .duyuru-banner{background:linear-gradient(90deg,#412402,#2a1800,#412402);border:0.5px solid #854f0b;border-radius:8px;padding:0;margin-bottom:1rem;overflow:hidden;display:none}
 .duyuru-inner{display:flex;align-items:center;gap:0}
 .duyuru-label{background:#854f0b;color:#fac775;font-size:11px;font-weight:700;padding:8px 12px;white-space:nowrap;flex-shrink:0;letter-spacing:1px}
-.duyuru-track{flex:1;overflow:hidden;position:relative;height:34px}
+.duyuru-track{flex:1;overflow:hidden;position:relative;height:34px;-webkit-mask-image:linear-gradient(90deg,transparent 0%,black 5%,black 85%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,black 5%,black 85%,transparent 100%)}
 .duyuru-scroll{display:flex;align-items:center;height:100%;white-space:nowrap;animation:scroll-left 30s linear infinite}
 .duyuru-scroll:hover{animation-play-state:paused}
 @keyframes scroll-left{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
-.duyuru-item{display:inline-flex;align-items:center;gap:6px;margin-right:60px;font-size:12px;color:#fac775}
-.duyuru-item::before{content:'◆';font-size:8px;color:#854f0b}
+.duyuru-item{display:inline-flex;align-items:center;gap:6px;margin-right:80px;font-size:12px;color:#fac775}
+.duyuru-item::before{content:'◆';font-size:8px;color:#854f0b;margin-right:4px}
+
+/* DOĞUM GÜNÜ BANNER */
+.dogumgunu-banner{background:linear-gradient(90deg,#042c53,#031a33,#042c53);border:0.5px solid #185fa5;border-radius:8px;padding:0;margin-bottom:6px;overflow:hidden}
+.dogumgunu-inner{display:flex;align-items:center;gap:0}
+.dogumgunu-label{background:#185fa5;color:#b5d4f4;font-size:11px;font-weight:700;padding:8px 12px;white-space:nowrap;flex-shrink:0;letter-spacing:1px}
+.dogumgunu-track{flex:1;overflow:hidden;position:relative;height:34px;-webkit-mask-image:linear-gradient(90deg,transparent 0%,black 5%,black 85%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,black 5%,black 85%,transparent 100%)}
+.dogumgunu-scroll{display:flex;align-items:center;height:100%;white-space:nowrap;animation:scroll-left 20s linear infinite}
+.dogumgunu-item{display:inline-flex;align-items:center;gap:6px;margin-right:80px;font-size:12px;color:#b5d4f4}
 
 /* NAV — DROPDOWN */
 .nav{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:1.2rem;border-bottom:0.5px solid #333;padding-bottom:.8rem;position:relative}
@@ -382,6 +390,16 @@ svg.org{display:inline-block}
 </div>
 
 <div class="panel" id="mainPanel" style="display:none">
+
+<!-- DOĞUM GÜNÜ BANNER -->
+<div class="dogumgunu-banner" id="dogumgunuBanner" style="display:none">
+  <div class="dogumgunu-inner">
+    <div class="dogumgunu-label">🎂 BUGÜN</div>
+    <div class="dogumgunu-track">
+      <div class="dogumgunu-scroll" id="dogumgunuScroll"></div>
+    </div>
+  </div>
+</div>
 
 <!-- DUYURU BANNER -->
 <div class="duyuru-banner" id="duyuruBanner">
@@ -1247,15 +1265,33 @@ function reqDeleteButce(id){
 function renderDuyuruBanner(){
   const aktif=duyurular.filter(d=>d.aktif!==false);
   const banner=document.getElementById('duyuruBanner');
-  if(!aktif.length){banner.style.display='none';return}
+  if(!aktif.length){banner.style.display='none';}
+  else{
+    banner.style.display='block';
+    const scroll=document.getElementById('duyuruScroll');
+    const icerik=aktif.map(d=>`<span class="duyuru-item">${d.baslik}: ${d.icerik}</span>`).join('');
+    scroll.innerHTML=icerik+icerik;
+    const sure=Math.max(20,aktif.length*15);
+    scroll.style.animation=`scroll-left ${sure}s linear infinite`;
+  }
+  renderDogumgunuBanner();
+}
+
+function renderDogumgunuBanner(){
+  const bugun=new Date();
+  const bugunAy=bugun.getMonth()+1;
+  const bugunGun=bugun.getDate();
+  const bugunUyeler=members.filter(m=>{
+    if(!m.dogum)return false;
+    const d=new Date(m.dogum);
+    return d.getMonth()+1===bugunAy&&d.getDate()===bugunGun;
+  });
+  const banner=document.getElementById('dogumgunuBanner');
+  if(!bugunUyeler.length){banner.style.display='none';return}
   banner.style.display='block';
-  const scroll=document.getElementById('duyuruScroll');
-  // İki kez tekrarla — sonsuz scroll efekti için
-  const icerik=aktif.map(d=>`<span class="duyuru-item">${d.baslik}: ${d.icerik}</span>`).join('');
+  const scroll=document.getElementById('dogumgunuScroll');
+  const icerik=bugunUyeler.map(m=>`<span class="dogumgunu-item">🎉 İyi ki doğdun, ${m.rumuz}!</span>`).join('');
   scroll.innerHTML=icerik+icerik;
-  // Hız uzunluğa göre ayarla
-  const sure=Math.max(20,aktif.length*15);
-  scroll.style.animation=`scroll-left ${sure}s linear infinite`;
 }
 
 function renderDuyurular(){
@@ -1651,51 +1687,121 @@ function renderLog(){
 // ══════════════════════════════════════════
 // YEDEKLEME
 // ══════════════════════════════════════════
-function yedegiAl(){
+async function yedegiAl(){
+  cmsStatusGoster('loading','<i class="ti ti-loader"></i> Yedek hazırlanıyor...');
+
+  // Tüm verileri API'den çek
+  const res=await fetch(API_URL,{method:'GET'});
+  const cmsVeri=await res.json();
+
+  // Hesapları da çek (şifre hariç)
+  const hesapRes=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'BASVURU_LIST'})});
+
   const veri={
     tarih:new Date().toISOString(),
-    versiyon:'Q-GANG Panel v8',
-    members:members.map(m=>({
-      rumuz:m.rumuz,rutbe:m.rutbe,durum:m.durum,gorev:m.gorev,puan:m.puan||0,
-      katilim:m.katilim||'',dogum:m.dogum||'',ref:m.ref||'',not:m.not||''
+    versiyon:'Q-GANG Panel v9',
+    olusturan:SESSION.rumuz,
+
+    uyeler:(cmsVeri.members||[]).map(m=>({
+      rumuz:m.rumuz, rutbe:m.rutbe, durum:m.durum, gorev:m.gorev||'Yok',
+      puan:m.puan||0, katilim:m.katilim||'', dogum:m.dogum||'',
+      ref:m.ref||'', not:m.not||''
     })),
-    events:events.map(e=>({
-      tur:e.tur,tarih:e.tarih,puan:e.puan||0,
-      katilimcilar:parseKat(e.katilimcilar).join(', '),not:e.not||''
+
+    etkinlikler:(cmsVeri.events||[]).map(e=>({
+      tur:e.tur, tarih:e.tarih, puan:e.puan||0,
+      katilimcilar:typeof e.katilimcilar==='string'?e.katilimcilar:
+        Array.isArray(e.katilimcilar)?e.katilimcilar.join(', '):'',
+      not:e.not||''
     })),
-    budget:butce.map(b=>({
-      tarih:b.tarih,aciklama:b.aciklama,tutar:Number(b.tutar),tur:b.tur,kategori:b.kategori||''
+
+    butce:(cmsVeri.budget||[]).map(b=>({
+      tarih:b.tarih, aciklama:b.aciklama, tutar:Number(b.tutar),
+      tur:b.tur, kategori:b.kategori||''
     })),
-    logs:logs.slice(0,100)
+
+    duyurular:(cmsVeri.duyurular||[]).map(d=>({
+      baslik:d.baslik, icerik:d.icerik, yazar:d.yazar||'',
+      tarih:d.tarih||'', aktif:d.aktif!==false
+    })),
+
+    disiplin:(cmsVeri.disiplin||[]).map(d=>({
+      uye:d.uye, cezaTuru:d.cezaTuru, gerekce:d.gerekce||'',
+      tuzukMaddesi:d.tuzukMaddesi||'', tarih:d.tarih||'',
+      uygulayan:d.uygulayan||'', durum:d.durum||'Aktif'
+    })),
+
+    tuzuk:cmsVeri.tuzuk?{
+      icerik:cmsVeri.tuzuk.icerik||'',
+      guncelleyen:cmsVeri.tuzuk.guncelleyen||'',
+      guncellemeTarih:cmsVeri.tuzuk.guncellemeTarih||''
+    }:null,
+
+    log:logs.slice(0,500)
   };
+
+  // Özet
+  const ozet={
+    toplamUye:veri.uyeler.length,
+    toplamEtkinlik:veri.etkinlikler.length,
+    toplamButce:veri.butce.length,
+    toplamDuyuru:veri.duyurular.length,
+    toplamDisiplin:veri.disiplin.length,
+    netKasa:veri.butce.reduce((s,b)=>b.tur==='gelir'?s+b.tutar:s-b.tutar,0)
+  };
+  veri.ozet=ozet;
 
   // JSON indir
   const jsonBlob=new Blob([JSON.stringify(veri,null,2)],{type:'application/json'});
   const jsonUrl=URL.createObjectURL(jsonBlob);
   const jsonA=document.createElement('a');
-  jsonA.href=jsonUrl;jsonA.download=`qgang-yedek-${new Date().toLocaleDateString('tr-TR').replace(/\./g,'-')}.json`;
+  const tarihStr=new Date().toLocaleDateString('tr-TR').replace(/\./g,'-');
+  jsonA.href=jsonUrl;jsonA.download=`qgang-yedek-${tarihStr}.json`;
   jsonA.click();URL.revokeObjectURL(jsonUrl);
 
-  // Excel (CSV) indir
+  // CSV indir (Excel uyumlu)
+  const BOM='\uFEFF';
   let csv='SEP=,\n';
+
+  csv+='=== Q-GANG TAM YEDEĞİ ===\n';
+  csv+=`Tarih:,"${new Date().toLocaleString('tr-TR')}"\n`;
+  csv+=`Oluşturan:,"${SESSION.rumuz}"\n\n`;
+
   csv+='=== ÜYELER ===\n';
-  csv+='Rumuz,Rütbe,Durum,Görev,Puan,Katılım,Doğum,Ref,Not\n';
-  veri.members.forEach(m=>csv+=`"${m.rumuz}","${m.rutbe}","${m.durum}","${m.gorev}","${m.puan}","${m.katilim}","${m.dogum}","${m.ref}","${m.not}"\n`);
+  csv+='Rumuz,Rütbe,Durum,Görev,Puan,Katılım,Doğum,Referans,Not\n';
+  veri.uyeler.forEach(m=>csv+=`"${m.rumuz}","${m.rutbe}","${m.durum}","${m.gorev}","${m.puan}","${m.katilim}","${m.dogum}","${m.ref}","${m.not}"\n`);
+
   csv+='\n=== ETKİNLİKLER ===\n';
   csv+='Tür,Tarih,Puan,Katılımcılar,Not\n';
-  veri.events.forEach(e=>csv+=`"${e.tur}","${e.tarih}","${e.puan}","${e.katilimcilar}","${e.not}"\n`);
+  veri.etkinlikler.forEach(e=>csv+=`"${e.tur}","${e.tarih}","${e.puan}","${e.katilimcilar}","${e.not}"\n`);
+
   csv+='\n=== BÜTÇE ===\n';
   csv+='Tarih,Açıklama,Tutar,Tür,Kategori\n';
-  veri.budget.forEach(b=>csv+=`"${b.tarih}","${b.aciklama}","${b.tutar}","${b.tur}","${b.kategori}"\n`);
+  veri.butce.forEach(b=>csv+=`"${b.tarih}","${b.aciklama}","${b.tutar}","${b.tur}","${b.kategori}"\n`);
 
-  const BOM='\uFEFF';
+  csv+='\n=== DUYURULAR ===\n';
+  csv+='Başlık,İçerik,Yazar,Tarih,Aktif\n';
+  veri.duyurular.forEach(d=>csv+=`"${d.baslik}","${d.icerik}","${d.yazar}","${d.tarih}","${d.aktif}"\n`);
+
+  csv+='\n=== DİSİPLİN ===\n';
+  csv+='Üye,Ceza Türü,Gerekçe,Tüzük Maddesi,Tarih,Uygulayan,Durum\n';
+  veri.disiplin.forEach(d=>csv+=`"${d.uye}","${d.cezaTuru}","${d.gerekce}","${d.tuzukMaddesi}","${d.tarih}","${d.uygulayan}","${d.durum}"\n`);
+
+  csv+=`\n=== ÖZET ===\n`;
+  csv+=`Toplam Üye:,"${ozet.toplamUye}"\n`;
+  csv+=`Toplam Etkinlik:,"${ozet.toplamEtkinlik}"\n`;
+  csv+=`Net Kasa:,"${ozet.netKasa.toLocaleString('tr-TR')} ₺"\n`;
+
   const csvBlob=new Blob([BOM+csv],{type:'text/csv;charset=utf-8'});
   const csvUrl=URL.createObjectURL(csvBlob);
   const csvA=document.createElement('a');
-  csvA.href=csvUrl;csvA.download=`qgang-yedek-${new Date().toLocaleDateString('tr-TR').replace(/\./g,'-')}.csv`;
-  setTimeout(()=>{csvA.click();URL.revokeObjectURL(csvUrl);},300);
+  csvA.href=csvUrl;csvA.download=`qgang-yedek-${tarihStr}.csv`;
+  setTimeout(()=>{csvA.click();URL.revokeObjectURL(csvUrl);},400);
 
-  addLog('Yedek alındı',`${veri.members.length} üye, ${veri.events.length} etkinlik, ${veri.budget.length} bütçe kaydı`);save();
+  addLog('Tam yedek alındı',`${ozet.toplamUye} üye, ${ozet.toplamEtkinlik} etkinlik, ${ozet.toplamButce} bütçe, ${ozet.toplamDisiplin} disiplin kaydı`);
+  save();
+  cmsStatusGoster('ok','<i class="ti ti-check"></i> Yedek alındı');
 }
 
 // ══════════════════════════════════════════
