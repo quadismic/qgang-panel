@@ -1517,29 +1517,43 @@ async function tuzukKaydet(){
 // Tüzük okuma modal - kayıt formunda
 function tuzukOku(){
   const mc=document.getElementById('modalContainer');
+  // CMS'den gelen tüzük varsa onu, yoksa varsayılanı göster
   const icerik=tuzuk?.icerik||VARSAYILAN_TUZUK;
   mc.innerHTML=`<div class="modal-overlay">
-    <div class="modal-box" style="max-width:600px">
-      <h3><i class="ti ti-license"></i> Q-GANG Tüzüğü</h3>
-      <div style="max-height:400px;overflow-y:auto;margin-bottom:1rem;padding-right:4px">${icerik}</div>
-      <div id="tuzukGeriSayim" style="text-align:center;font-size:12px;color:#555;margin-bottom:8px">Lütfen tüzüğü okuyun... <span id="sayac">15</span> saniye</div>
+    <div class="modal-box" style="max-width:620px">
+      <h3 style="margin-bottom:.9rem"><i class="ti ti-license"></i> Q-GANG Tüzüğü</h3>
+      <div style="max-height:380px;overflow-y:auto;margin-bottom:1rem;padding-right:6px;border:0.5px solid #333;border-radius:8px;padding:12px">${icerik}</div>
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:11px;color:#555;letter-spacing:1px">LÜTFEN BEKLEYİNİZ</span>
+          <span id="sayacSaniye" style="font-size:11px;color:#555">15s</span>
+        </div>
+        <div style="background:#1a1a1a;border-radius:20px;height:4px;overflow:hidden;border:0.5px solid #333">
+          <div id="beklemeBari" style="height:100%;width:100%;background:linear-gradient(90deg,#854f0b,#fac775);border-radius:20px;transition:width 1s linear"></div>
+        </div>
+      </div>
       <button id="tuzukOnayBtn" class="btn btn-warn" style="width:100%;display:none" onclick="tuzukOnaylandı()">
         <i class="ti ti-check"></i> Okudum, anladım — Onaylıyorum
       </button>
     </div>
   </div>`;
 
-  // Geri sayım
+  // Bar animasyonu
   let kalan=15;
+  const bari=document.getElementById('beklemeBari');
+  const saniye=document.getElementById('sayacSaniye');
+  // İlk frame'de bar'ı başlat
+  setTimeout(()=>{if(bari)bari.style.width='100%'},50);
+
   const interval=setInterval(()=>{
     kalan--;
-    const sayac=document.getElementById('sayac');
-    if(sayac) sayac.textContent=kalan;
+    if(saniye) saniye.textContent=kalan+'s';
+    if(bari) bari.style.width=Math.round((kalan/15)*100)+'%';
     if(kalan<=0){
       clearInterval(interval);
-      const geri=document.getElementById('tuzukGeriSayim');
+      if(saniye) saniye.textContent='';
+      if(bari){bari.style.background='#1d9e75';bari.style.width='100%';}
       const btn=document.getElementById('tuzukOnayBtn');
-      if(geri) geri.style.display='none';
       if(btn) btn.style.display='block';
     }
   },1000);
