@@ -676,12 +676,12 @@ svg.org{display:inline-block}
 const ROL_SIRASI = ['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
 
 const IZINLER = {
-  Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,duyuruEkle:1,duyuruSil:1,basvuruGor:1,davetYonet:1,disiplinUygula:1,tuzukDuzenle:1},
-  Vekilharç:     {uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:0,duyuruEkle:1,duyuruSil:0,basvuruGor:1,davetYonet:0,disiplinUygula:1,tuzukDuzenle:0},
-  Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
-  Teğmen:        {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
-  Üye:           {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
-  Gözlemci: {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0}
+  Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,duyuruEkle:1,duyuruSil:1,basvuruGor:1,basvuruOnayla:1,davetYonet:1,disiplinUygula:1,tuzukDuzenle:1},
+  Vekilharç:     {uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:0,duyuruEkle:1,duyuruSil:0,basvuruGor:1,basvuruOnayla:1,davetYonet:0,disiplinUygula:1,tuzukDuzenle:0},
+  Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
+  Teğmen:        {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
+  Üye:           {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
+  Gözlemci: {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0}
 };
 
 function cikisYap(){
@@ -1353,7 +1353,7 @@ const IZIN_ETIKETLER = {
   butceGor:'Bütçe Gör', butceDuzenle:'Bütçe Düzenle',
   logGor:'Log Gör', logSil:'Log Temizle', kodUret:'Kod Üret',
   duyuruEkle:'Duyuru Ekle', duyuruSil:'Duyuru Sil',
-  basvuruGor:'Başvuru Gör', davetYonet:'Davet Yönet',
+  basvuruGor:'Başvuru Gör', basvuruOnayla:'Başvuru Onayla/Reddet', davetYonet:'Davet Yönet',
   disiplinUygula:'Disiplin Uygula', tuzukDuzenle:'Tüzük Düzenle'
 };
 
@@ -1591,9 +1591,9 @@ async function renderBasvurular(){
           <div style="font-size:11px;color:#555">${b.kayitTarih?new Date(b.kayitTarih).toLocaleDateString('tr-TR'):''}</div>
         </div>
         <div style="display:flex;gap:6px">
-          <button class="btn btn-success btn-sm" onclick="reqBasvuruOnayla('${bid}','${b.rumuz}')"><i class="ti ti-check"></i> Onayla</button>
-          <button class="btn btn-sm" onclick="reqBasvuruDuzenle('${bid}')"><i class="ti ti-edit"></i> Düzenle</button>
-          <button class="btn btn-danger btn-sm" onclick="reqBasvuruReddet('${bid}','${b.rumuz}')"><i class="ti ti-x"></i> Reddet</button>
+          ${izin('basvuruOnayla')?`<button class="btn btn-success btn-sm" onclick="reqBasvuruOnayla('${bid}','${b.rumuz}')"><i class="ti ti-check"></i> Onayla</button>`:''}
+          ${izin('basvuruGor')?`<button class="btn btn-sm" onclick="reqBasvuruDuzenle('${bid}')"><i class="ti ti-edit"></i> Düzenle</button>`:''}
+          ${izin('basvuruOnayla')?`<button class="btn btn-danger btn-sm" onclick="reqBasvuruReddet('${bid}','${b.rumuz}')"><i class="ti ti-x"></i> Reddet</button>`:''}
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px">
@@ -1688,7 +1688,7 @@ async function renderDavet(){
       </tr></thead>
       <tbody>${benimKodlar.map(d=>{
         const did=d._id||d.id;
-        const kodGoster=d.kod&&d.kod!=='undefined'?d.kod:'Kod Geçersiz';
+        const kodGoster=d.kod&&d.kod!=='undefined'?d.kod:'Kod kullanıldı.';
         const aktif=d.aktif!==false&&d.kod&&d.kod!=='undefined';
         return`<tr>
           <td style="font-family:monospace;font-size:13px;letter-spacing:2px;color:${aktif?'#fac775':'#555'}">${kodGoster}</td>
