@@ -369,7 +369,7 @@ svg.org{display:inline-block}
           <!-- Tüzük metni -->
           <div style="margin-bottom:10px">
             <div style="font-size:11px;color:#fac775;font-weight:600;margin-bottom:6px">📜 Q-GANG Topluluk Tüzüğü</div>
-            <div style="max-height:120px;overflow-y:auto;font-size:11px;color:#555;line-height:1.6;padding:8px;background:#111;border-radius:6px;border:0.5px solid #2a2a2a" id="kayitTuzukMetin">Yükleniyor...</div>
+            <div style="max-height:200px;overflow-y:auto;font-size:11px;color:#888;line-height:1.7;padding:10px;background:#111;border-radius:6px;border:0.5px solid #2a2a2a" id="kayitTuzukMetin">Yükleniyor...</div>
           </div>
           <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:14px">
             <input type="checkbox" id="k_taahhut" style="width:auto;margin-top:3px;accent-color:#fac775;flex-shrink:0">
@@ -381,13 +381,13 @@ svg.org{display:inline-block}
           <!-- KVKK metni -->
           <div style="margin-bottom:10px;border-top:0.5px solid #2a2a2a;padding-top:10px">
             <div style="font-size:11px;color:#fac775;font-weight:600;margin-bottom:6px">🔒 KVKK Aydınlatma Metni</div>
-            <div style="max-height:120px;overflow-y:auto;font-size:11px;color:#555;line-height:1.6;padding:8px;background:#111;border-radius:6px;border:0.5px solid #2a2a2a">
-              <strong style="color:#888;display:block;margin-bottom:4px">Veri Sorumlusu:</strong> Q-GANG Topluluğu<br><br>
-              <strong style="color:#888;display:block;margin-bottom:4px">İşlenen Kişisel Veriler:</strong> Ad-soyad, doğum tarihi, e-posta adresi, telefon numarası (WhatsApp), yaşadığı şehir.<br><br>
-              <strong style="color:#888;display:block;margin-bottom:4px">İşleme Amaçları:</strong> Topluluk üyeliği sürecinin yürütülmesi, üyeler arası iletişimin sağlanması, topluluk faaliyetlerinin organizasyonu.<br><br>
-              <strong style="color:#888;display:block;margin-bottom:4px">Hukuki Dayanak:</strong> KVKK Madde 5/2-a (açık rıza), Madde 5/2-f (meşru menfaat).<br><br>
-              <strong style="color:#888;display:block;margin-bottom:4px">Saklama Süresi:</strong> Üyelik süresince; üyelikten ayrılma veya talep halinde silinir.<br><br>
-              <strong style="color:#888;display:block;margin-bottom:4px">Haklarınız:</strong> KVKK Madde 11 kapsamında verilerinize erişim, düzeltme, silme, itiraz haklarına sahipsiniz.
+            <div style="max-height:200px;overflow-y:auto;font-size:11px;color:#888;line-height:1.7;padding:10px;background:#111;border-radius:6px;border:0.5px solid #2a2a2a">
+              <strong style="color:#aaa;display:block;margin-bottom:6px">Veri Sorumlusu:</strong> Q-GANG Topluluğu<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">İşlenen Kişisel Veriler:</strong> Ad-soyad, doğum tarihi, e-posta adresi, telefon numarası (WhatsApp), yaşadığı şehir.<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">İşleme Amaçları:</strong> Topluluk üyeliği sürecinin yürütülmesi, üyeler arası iletişimin sağlanması, topluluk faaliyetlerinin organizasyonu.<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">Hukuki Dayanak:</strong> KVKK Madde 5/2-a (açık rıza), Madde 5/2-f (meşru menfaat).<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">Saklama Süresi:</strong> Üyelik süresince; üyelikten ayrılma veya talep halinde silinir.<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">Haklarınız:</strong> KVKK Madde 11 kapsamında verilerinize erişim, düzeltme, silme, itiraz haklarına sahipsiniz.
             </div>
           </div>
           <div style="display:flex;align-items:flex-start;gap:8px">
@@ -695,12 +695,12 @@ svg.org{display:inline-block}
 const ROL_SIRASI = ['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
 
 const IZINLER = {
-  Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,duyuruEkle:1,duyuruSil:1,basvuruGor:1,basvuruOnayla:1,davetYonet:1,disiplinUygula:1,tuzukDuzenle:1},
-  Vekilharç:     {uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:0,duyuruEkle:1,duyuruSil:0,basvuruGor:1,basvuruOnayla:1,davetYonet:0,disiplinUygula:1,tuzukDuzenle:0},
-  Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
-  Teğmen:        {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
-  Üye:           {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
-  Gözlemci: {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0}
+  Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,kodGor:1,duyuruEkle:1,duyuruSil:1,basvuruGor:1,basvuruOnayla:1,davetYonet:1,disiplinUygula:1,tuzukDuzenle:1},
+  Vekilharç:     {uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:1,kodGor:1,duyuruEkle:1,duyuruSil:0,basvuruGor:1,basvuruOnayla:1,davetYonet:0,disiplinUygula:1,tuzukDuzenle:0},
+  Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
+  Teğmen:        {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
+  Üye:           {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0},
+  Gözlemci: {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0}
 };
 
 function cikisYap(){
@@ -757,16 +757,12 @@ function adimIleri(mevcut){
     const katki=document.getElementById('k_katki').value.trim();
     if(!gunluk||!niyet||!katki){hata.textContent='Tüm alanları doldurun.';hata.style.display='block';return}
     adimGoster(4);
-    // Tüzük metnini yükle - HTML'i temiz render et
     setTimeout(()=>{
       const el=document.getElementById('kayitTuzukMetin');
       if(el){
         const icerik=tuzuk?.icerik||VARSAYILAN_TUZUK;
         el.innerHTML=icerik;
-        // Tüzük stil sınıflarını küçült
-        el.querySelectorAll('.tuzuk-section').forEach(s=>s.style.opacity='1');
-        el.style.fontSize='11px';
-        el.style.color='#888';
+        el.querySelectorAll('.tuzuk-section').forEach(s=>{s.style.opacity='1';s.style.transform='none'});
       }
     },100);
   }
@@ -1160,7 +1156,7 @@ function renderPuan(){
     <hr class="sep"><div class="section-title">Puan ekle / çıkar</div>
     <div class="card">
       <div class="form-row">
-        <div class="form-group"><label>Üye</label><select id="puanUye">${members.map(m=>`<option value="${m._id||m.id}">${m.rumuz}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Üye</label><select id="puanUye">${[...members].sort((a,b)=>(rutbeSira[a.rutbe]??9)-(rutbeSira[b.rutbe]??9)).map(m=>`<option value="${m._id||m.id}">${m.rumuz} (${m.rutbe})</option>`).join('')}</select></div>
         <div class="form-group"><label>Miktar</label><input type="number" id="puanMiktar" value="10" step="1"></div>
         <div class="form-group"><label>Sebep</label><input type="text" id="puanSebep" placeholder="Sebep..."></div>
       </div>
@@ -1390,7 +1386,7 @@ const IZIN_ETIKETLER = {
   rutbeDegistir:'Rütbe Değiştir', puanDuzenle:'Puan Düzenle',
   gorevAta:'Görev Ata', etkinlikEkle:'Etkinlik Ekle', etkinlikSil:'Etkinlik Sil',
   butceGor:'Bütçe Gör', butceDuzenle:'Bütçe Düzenle',
-  logGor:'Log Gör', logSil:'Log Temizle', kodUret:'Kod Üret',
+  logGor:'Log Gör', logSil:'Log Temizle', kodUret:'Davet Kodu Üret', kodGor:'Davet Kodlarını Gör',
   duyuruEkle:'Duyuru Ekle', duyuruSil:'Duyuru Sil',
   basvuruGor:'Başvuru Gör', basvuruOnayla:'Başvuru Onayla/Reddet', davetYonet:'Davet Yönet',
   disiplinUygula:'Disiplin Uygula', tuzukDuzenle:'Tüzük Düzenle'
@@ -1709,6 +1705,9 @@ async function reqBasvuruReddet(id,rumuz){
   confirm2('Başvuruyu reddet',`<strong>${rumuz}</strong> başvurusu reddedilecek ve silinecek.`,async()=>{
     await cmsYaz('USER_REJECT',id);
     addLog('Başvuru reddedildi',rumuz);save();
+    // Bildirimi hemen temizle
+    const uyari=document.getElementById('basvuruUyari');
+    if(uyari) uyari.innerHTML='';
     await renderDavet();
     await basvuruSayisiniGuncelle();
     renderDashboard();
@@ -1764,9 +1763,12 @@ async function renderDavet(){
 
   const el=document.getElementById('davetKodListesi');
   const canManage=izin('davetYonet');
-  const benimKodlar=davetKodlari.filter(d=>d.olusturan===SESSION.rumuz||canManage);
+  const canSee=izin('kodGor');
+  const benimKodlar=canManage ? davetKodlari : davetKodlari.filter(d=>d.olusturan===SESSION.rumuz);
 
-  if(!benimKodlar.length){
+  if(!canSee){
+    el.innerHTML='<div style="font-size:12px;color:#555">Davet kodlarını görme yetkiniz yok.</div>';
+  } else if(!benimKodlar.length){
     el.innerHTML='<div style="font-size:12px;color:#555">Henüz davet kodu yok.</div>';
   } else {
     el.innerHTML=`<div class="table-wrap"><table>
