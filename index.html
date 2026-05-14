@@ -1679,22 +1679,17 @@ async function renderBasvurular(){
 
 async function reqBasvuruOnayla(id,rumuz){
   confirm2('Başvuruyu onayla',`<strong>${rumuz}</strong> üyeliğe kabul edilecek ve Gözlemci olarak eklenecek.`,async()=>{
-    // 1. QKullanicilar'da durumu aktif yap
+    // 1. QKullanicilar'da aktif yap
     await cmsYaz('USER_APPROVE',id);
 
-    // 2. QMembers'a Gözlemci olarak ekle
+    // 2. QMembers'da zaten var mı kontrol et
     const mevcutUye=members.find(m=>m.rumuz===rumuz);
     if(!mevcutUye){
-      // Başvuru verisini bul
-      const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'BASVURU_LIST'})});
-      const data=await res.json();
-      const b=(data.result||[]).find(x=>(x._id||x.id)===id)||{};
       const yeniUye={
-        rumuz:b.rumuz||rumuz, rutbe:'Gözlemci', durum:'Aktif',
+        rumuz, rutbe:'Gözlemci', durum:'Aktif',
         gorev:'Yok', puan:0,
-        dogum:b.dogum||'', katilim:new Date().toISOString().split('T')[0],
-        ref:b.davetKodu||'', not:'', wixMemberId:''
+        katilim:new Date().toISOString().split('T')[0],
+        dogum:'', ref:'', not:'', wixMemberId:''
       };
       const result=await cmsYaz('MEMBER_ADD',yeniUye);
       if(result?.result){
@@ -1703,11 +1698,8 @@ async function reqBasvuruOnayla(id,rumuz){
     }
 
     addLog('Başvuru onaylandı',rumuz);save();
-
-    // 3. Bildirimi temizle
     const uyari=document.getElementById('basvuruUyari');
     if(uyari) uyari.innerHTML='';
-
     await renderDavet();
     await basvuruSayisiniGuncelle();
     renderDashboard();
@@ -1824,15 +1816,14 @@ async function renderDavet(){
   } else {
     el.innerHTML=`<div class="table-wrap"><table>
       <thead><tr>
-        <th>Kod</th><th>Tür</th><th>Durum</th><th>Kullanan</th><th>Oluşturan</th>${canManage?'<th>Sil</th>':''}
+        <th>Kod</th><th>Durum</th><th>Kullanan</th><th>Oluşturan</th>${canManage?'<th>Sil</th>':''}
       </tr></thead>
       <tbody>${benimKodlar.map(d=>{
         const did=d._id||d.id;
-        const kodGoster=d.kod&&d.kod!=='undefined'?d.kod:'—';
+        const kod=d.kod&&d.kod!=='undefined'?d.kod:'—';
         const aktif=d.aktif!==false;
         return`<tr>
-          <td style="font-family:monospace;font-size:13px;letter-spacing:2px;color:${aktif?'#fac775':'#555'}">${kodGoster}</td>
-          <td>${d.tur==='tek'?'Tek kullanım':'Çok kullanım'}</td>
+          <td style="font-family:monospace;font-size:13px;letter-spacing:2px;color:${aktif?'#fac775':'#666'}">${kod}</td>
           <td><span class="badge ${aktif?'badge-aktif':'badge-pasif'}">${aktif?'Aktif':'Kullanıldı'}</span></td>
           <td style="font-size:11px;color:#888">${d.kullanan||'—'}</td>
           <td style="font-size:11px;color:#888">${d.olusturan||'—'}</td>
