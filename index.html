@@ -1824,10 +1824,13 @@ async function sifreDegistir(){
   const kontData=await kontrol.json();
   if(!kontData.success){hata.textContent='Mevcut şifren hatalı.';hata.style.display='block';return}
 
-  // Şifreyi güncelle
-  await cmsYaz('USER_UPDATE',{_id:kontData.user?.id,sifre:yeniHash,varsayilanSifre:false});
+  // id'yi result'tan al
+  const userId=kontData.result?.id||kontData.result?._id;
+  if(!userId){hata.textContent='Kullanıcı bilgisi alınamadı.';hata.style.display='block';return}
 
-  // Oturumu güncelle
+  // Şifreyi güncelle - USER_UPDATE mevcut veriyi koruyarak günceller
+  await cmsYaz('USER_UPDATE',{_id:userId,sifre:yeniHash,varsayilanSifre:false});
+
   const saved=localStorage.getItem('qg_session');
   if(saved){const s=JSON.parse(saved);localStorage.setItem('qg_session',JSON.stringify({...s,zaman:Date.now()}))}
 
