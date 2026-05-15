@@ -720,7 +720,7 @@ const IZINLER = {
   Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:1},
   Teğmen:        {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:1},
   Üye:           {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:0},
-  Gözlemci: {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:0}
+  Gözlemci:      {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:0}
 };
 
 function cikisYap(){
@@ -737,14 +737,28 @@ async function hashSifre(s){
 
 let SESSION={rumuz:'Ziyaretçi',rol:'Gözlemci',girisZamani:new Date().toISOString()};
 function izin(key){
-  const rol=SESSION.rol;
-  const izinler=IZINLER[rol];
-  if(!izinler){
-    // CMS'den gelen izinleri kontrol et
-    if(aktifIzinler&&aktifIzinler[rol])return !!(aktifIzinler[rol][key]);
-    return false;
+  const rol=SESSION.rol||'Gozlemci';
+  // Direkt eşleşme
+  if(IZINLER[rol]) return !!(IZINLER[rol][key]);
+  // Normalize edilmiş eşleşme (Unicode farklılıklarına karşı)
+  const normalize=function(s){
+    return s.replace(/ç/g,'c').replace(/ş/g,'s').replace(/ğ/g,'g')
+             .replace(/ü/g,'u').replace(/ö/g,'o').replace(/ı/g,'i')
+             .replace(/ä/g,'a').replace(/Ü/g,'U').replace(/Ö/g,'O')
+             .replace(/Ç/g,'C').replace(/Ş/g,'S').replace(/Ğ/g,'G')
+             .replace(/İ/g,'I');
+  };
+  const rolN=normalize(rol);
+  for(const k in IZINLER){
+    if(normalize(k)===rolN) return !!(IZINLER[k][key]);
   }
-  return !!(izinler[key]);
+  // CMS'den gelen özel izinler
+  if(aktifIzinler){
+    for(const k in aktifIzinler){
+      if(k===rol||normalize(k)===rolN) return !!(aktifIzinler[k][key]);
+    }
+  }
+  return false;
 }
 
 //
@@ -914,7 +928,7 @@ async function panelAc(rumuz,rol){
 
   uiAyarla();
   addLog('Giriş',rumuz+' — '+rol);
-  renderDashboard();renderDuyuruBanner();
+  renderDashboard();renderDuyuruBanner();setTimeout(function(){renderDashboard();},500);
   onlineSistemiBaslat();
   if(izin('basvuruGor')){
     basvuruSayisiniGuncelle();
@@ -1011,21 +1025,35 @@ function parseKat(k){
 }
 
 function uiAyarla(){
-  if(izin('uyeEkle')) document.getElementById('btnUyeEkle').style.display='';
-  if(izin('etkinlikEkle')) document.getElementById('btnEtkinlikEkle').style.display='';
-  if(izin('kodUret')) document.getElementById('btnKodUret').style.display='';
-  if(izin('logSil')) document.getElementById('btnLogTemizle').style.display='';
-  if(izin('duyuruEkle')) document.getElementById('btnDuyuruEkle').style.display='';
-  if(izin('disiplinUygula')) document.getElementById('btnDisiplinEkle').style.display='';
-  if(!izin('butceGor')) document.getElementById('navButceDD').style.display='none';
-  if(!izin('logGor')) document.getElementById('navLog').style.display='none';
-  if(izin('oylamaEkle')){const ob=document.getElementById('btnOylamaEkle');if(ob)ob.style.display='';}
-  if(SESSION.rol==='Lider'||SESSION.rol==='Vekilharç'){
+  // Lider her şeyi görebilir - direkt açık
+  const lider=SESSION.rol==='Lider';
+  
+  function showIfIzin(id,key){
+    const el=document.getElementById(id);
+    if(el&&(izin(key)||lider)) el.style.display='';
+  }
+  
+  showIfIzin('btnUyeEkle','uyeEkle');
+  showIfIzin('btnEtkinlikEkle','etkinlikEkle');
+  showIfIzin('btnKodUret','kodUret');
+  showIfIzin('btnLogTemizle','logSil');
+  showIfIzin('btnDuyuruEkle','duyuruEkle');
+  showIfIzin('btnDisiplinEkle','disiplinUygula');
+  showIfIzin('btnOylamaEkle','oylamaEkle');
+  
+  if(!izin('butceGor')&&!lider){const nb=document.getElementById('navButceDD');if(nb)nb.style.display='none';}
+  if(!izin('logGor')&&!lider){const nl=document.getElementById('navLog');if(nl)nl.style.display='none';}
+  
+  const rolN2=SESSION.rol||'';
+  if(lider||rolN2.includes('Vekil')){
     const navBasvuru=document.getElementById('navBasvuruDD');
     if(navBasvuru) navBasvuru.style.display='';
     basvuruSayisiniGuncelle();
   }
-  if(SESSION.rol==='Lider') document.getElementById('navErisimDD').style.display='';
+  if(lider){
+    const navEr=document.getElementById('navErisimDD');
+    if(navEr) navEr.style.display='';
+  }
 }
 
 //
@@ -1206,47 +1234,105 @@ function renderMembers(){
 // PUAN
 //
 function renderPuan(){
-  const sorted=[...members].sort((a,b)=>(b.puan||0)-(a.puan||0)),maxP=Math.max(...sorted.map(m=>m.puan||0),1);
-  document.getElementById('puanList').innerHTML=sorted.map((m,i)=>`<div class="puan-row">
-    <div style="width:18px;font-size:11px;color:#555">${i+1}</div>
-    <div style="width:95px;font-size:12px;font-weight:500;color:#d3d1c7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.rumuz}</div>
-    <div class="puan-bar-bg"><div class="puan-bar" style="width:${Math.round((m.puan||0)/maxP*100)}%"></div></div>
-    <div style="width:32px;font-size:12px;font-weight:500;color:#d3d1c7;text-align:right">${m.puan||0}</div>
-    <div style="width:65px">${rutbeBadge(m.rutbe)}</div></div>`).join('');
-  document.getElementById('puanEditor').innerHTML=izin('puanDuzenle')?`
-    <hr class="sep"><div class="section-title">Puan ekle / çıkar</div>
-    <div class="card">
-      <div class="form-row">
-        <div class="form-group"><label>Üye</label><select id="puanUye">${[...members].sort((a,b)=>((rutbeSira[a.rutbe]!==undefined?rutbeSira[a.rutbe]:9))-((rutbeSira[b.rutbe]!==undefined?rutbeSira[b.rutbe]:9))).map(m=>`<option value="${m._id||m.id}">${m.rumuz} (${m.rutbe})</option>`).join('')}</select></div>
-        <div class="form-group"><label>Miktar</label><input type="number" id="puanMiktar" value="10" step="1"></div>
-        <div class="form-group"><label>Gerekçe *</label><input type="text" id="puanSebep" placeholder="Gerekçe..."></div>
-      </div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">
-        <button class="btn btn-success" onclick="reqPuan()"><i class="ti ti-plus"></i> Uygula</button>
-        <button class="btn btn-primary" onclick="document.getElementById('puanMiktar').value=10;document.getElementById('puanSebep').value='Etkinlik katılımı';reqPuan()">+10 Etkinlik</button>
-        <button class="btn btn-danger" onclick="document.getElementById('puanMiktar').value=-20;document.getElementById('puanSebep').value='Pasiflik';reqPuan()">-20 Pasiflik</button>
-      </div>
-    </div>`:'';
+  const rutbeSiraPuan={Lider:0,Vekilharc:1,Kaptan:2,Tegmen:3,Uye:4,Gozlemci:5};
+  function getRutbeSira(m){
+    const r=m.rutbe||'';
+    if(r==='Lider')return 0;
+    if(r.includes('Vekil'))return 1;
+    if(r==='Kaptan')return 2;
+    if(r.includes('Te'))return 3;
+    if(r.includes('ye'))return 4;
+    return 5;
+  }
 
-  // Arsiv bolumu
-  const rutbeSiraArsiv={'Lider':0,'Vekilharç':1,'Kaptan':2,'Teğmen':3,'Üye':4,'Gözlemci':5};
-  const siraliArsiv=[...members].sort(function(a,b){
-    const ra=rutbeSiraArsiv[a.rutbe]!==undefined?rutbeSiraArsiv[a.rutbe]:9;
-    const rb=rutbeSiraArsiv[b.rutbe]!==undefined?rutbeSiraArsiv[b.rutbe]:9;
-    return ra-rb;
+  // Puan tablosu
+  const sorted=[...members].sort(function(a,b){return (Number(b.puan)||0)-(Number(a.puan)||0);});
+  const maxP=sorted.reduce(function(acc,m){return Math.max(acc,Number(m.puan)||0);},1);
+  const puanEl=document.getElementById('puanList');
+  puanEl.innerHTML='';
+  sorted.forEach(function(m,i){
+    const puan=Number(m.puan)||0;
+    const yuzde=Math.round(puan/maxP*100);
+    const div=document.createElement('div');div.className='puan-row';
+    div.innerHTML='<div style="width:18px;font-size:11px;color:#555">'+(i+1)+'</div>'
+      +'<div style="width:95px;font-size:12px;font-weight:500;color:#d3d1c7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+m.rumuz+'</div>'
+      +'<div class="puan-bar-bg"><div class="puan-bar" style="width:'+yuzde+'%"></div></div>'
+      +'<div style="width:32px;font-size:12px;font-weight:500;color:#d3d1c7;text-align:right">'+puan+'</div>'
+      +'<div style="width:65px">'+rutbeBadge(m.rutbe)+'</div>';
+    puanEl.appendChild(div);
   });
+
+  // Puan düzenleme editörü
+  const editor=document.getElementById('puanEditor');
+  editor.innerHTML='';
+  if(!izin('puanDuzenle')&&SESSION.rol!=='Lider') return;
+
+  const hr=document.createElement('hr');hr.className='sep';editor.appendChild(hr);
+  const title=document.createElement('div');title.className='section-title';title.textContent='Puan ekle / çıkar';editor.appendChild(title);
+  const card=document.createElement('div');card.className='card';
+
+  // Üye sırası (rütbeye göre)
+  const siraliUyeler=[...members].sort(function(a,b){return getRutbeSira(a)-getRutbeSira(b);});
+
+  const formRow=document.createElement('div');formRow.className='form-row';
+
+  const uyeGrp=document.createElement('div');uyeGrp.className='form-group';
+  const uyeLbl=document.createElement('label');uyeLbl.textContent='Üye';uyeGrp.appendChild(uyeLbl);
+  const uyeSel=document.createElement('select');uyeSel.id='puanUye';
+  siraliUyeler.forEach(function(m){
+    const opt=document.createElement('option');opt.value=m._id||m.id;opt.textContent=m.rumuz+' ('+m.rutbe+')';uyeSel.appendChild(opt);
+  });
+  uyeGrp.appendChild(uyeSel);formRow.appendChild(uyeGrp);
+
+  const miktarGrp=document.createElement('div');miktarGrp.className='form-group';
+  const miktarLbl=document.createElement('label');miktarLbl.textContent='Miktar';miktarGrp.appendChild(miktarLbl);
+  const miktarInp=document.createElement('input');miktarInp.type='number';miktarInp.id='puanMiktar';miktarInp.value='10';miktarInp.step='1';
+  miktarGrp.appendChild(miktarInp);formRow.appendChild(miktarGrp);
+
+  const sebepGrp=document.createElement('div');sebepGrp.className='form-group';
+  const sebepLbl=document.createElement('label');sebepLbl.innerHTML='Gerekçe *';sebepGrp.appendChild(sebepLbl);
+  const sebepInp=document.createElement('input');sebepInp.type='text';sebepInp.id='puanSebep';sebepInp.placeholder='Gerekçe...';
+  sebepGrp.appendChild(sebepInp);formRow.appendChild(sebepGrp);
+
+  card.appendChild(formRow);
+
+  const btnRow=document.createElement('div');btnRow.style.cssText='display:flex;gap:6px;flex-wrap:wrap';
+  const btnUygula=document.createElement('button');btnUygula.className='btn btn-success';
+  btnUygula.innerHTML='<i class="ti ti-plus"></i> Uygula';btnUygula.onclick=reqPuan;
+  btnRow.appendChild(btnUygula);
+  const btnEtkinlik=document.createElement('button');btnEtkinlik.className='btn btn-primary';
+  btnEtkinlik.innerHTML='+10 Etkinlik';
+  btnEtkinlik.onclick=function(){
+    document.getElementById('puanMiktar').value=10;
+    document.getElementById('puanSebep').value='Etkinlik katılımı';
+    reqPuan();
+  };
+  btnRow.appendChild(btnEtkinlik);
+  const btnPasif=document.createElement('button');btnPasif.className='btn btn-danger';
+  btnPasif.innerHTML='-20 Pasiflik';
+  btnPasif.onclick=function(){
+    document.getElementById('puanMiktar').value=-20;
+    document.getElementById('puanSebep').value='Pasiflik';
+    reqPuan();
+  };
+  btnRow.appendChild(btnPasif);
+  card.appendChild(btnRow);
+  editor.appendChild(card);
+
+  // Arsiv bolumu - DOM API ile
   const arsivWrap=document.getElementById('puanArsivWrap');
   arsivWrap.innerHTML='';
+  const arsivHr=document.createElement('hr');arsivHr.className='sep';arsivWrap.appendChild(arsivHr);
   const arsivBaslik=document.createElement('div');
   arsivBaslik.className='section-title';arsivBaslik.style.marginBottom='.6rem';
   arsivBaslik.innerHTML='<i class="ti ti-history"></i> Puan Arşivi';
   arsivWrap.appendChild(arsivBaslik);
   const arsivFiltreSatir=document.createElement('div');
   arsivFiltreSatir.style.cssText='display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;align-items:center';
-  const arsivSel=document.createElement('select');
-  arsivSel.id='arsivFilter';
+  const arsivSel=document.createElement('select');arsivSel.id='arsivFilter';
   arsivSel.style.cssText='padding:6px 10px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:12px';
   const bosOpt=document.createElement('option');bosOpt.value='';bosOpt.textContent='Tüm üyeler';arsivSel.appendChild(bosOpt);
+  const siraliArsiv=[...members].sort(function(a,b){return getRutbeSira(a)-getRutbeSira(b);});
   siraliArsiv.forEach(function(m){
     const opt=document.createElement('option');opt.value=m.rumuz;opt.textContent=m.rumuz;arsivSel.appendChild(opt);
   });
@@ -1261,50 +1347,6 @@ function renderPuan(){
   arsivWrap.appendChild(arsivListe);
 }
 
-async function arsivFiltrele(){
-  const rumuz=document.getElementById('arsivFilter').value;
-  const el=document.getElementById('arsivListe');
-  el.innerHTML='<div style="font-size:12px;color:#555;padding:8px">Yükleniyor...</div>';
-  const liste=await renderPuanArsiv(rumuz);
-  if(!liste.length){el.innerHTML='<div style="font-size:12px;color:#555;padding:8px">Kayıt bulunamadı.</div>';return;}
-  const wrap=document.createElement('div');wrap.className='table-wrap';
-  const tbl=document.createElement('table');
-  tbl.innerHTML='<thead><tr><th>Tarih</th><th>Üye</th><th>Miktar</th><th>Gerekçe</th><th>Tür</th><th>Ekleyen</th></tr></thead>';
-  const tb=document.createElement('tbody');
-  liste.forEach(function(a){
-    const tr=document.createElement('tr');
-    const renk=a.miktar>0?'#4caf7d':'#e24b4a';
-    const isaret=a.miktar>0?'+':'';
-    const turClass=a.tur==='etkinlik'?'badge-mavi':'badge-sari';
-    tr.innerHTML='<td style="font-size:11px;color:#555">'+(a.tarih||'—')+'</td>'
-      +'<td style="font-size:12px">'+(a.rumuz||'')+'</td>'
-      +'<td style="font-weight:600;color:'+renk+'">'+isaret+(a.miktar||0)+'</td>'
-      +'<td style="font-size:12px;color:#888">'+(a.gerekce||'—')+'</td>'
-      +'<td><span class="badge '+turClass+'" style="font-size:10px">'+(a.tur||'manuel')+'</span></td>'
-      +'<td style="font-size:11px;color:#555">'+(a.ekleyen||'—')+'</td>';
-    tb.appendChild(tr);
-  });
-  tbl.appendChild(tb);
-  wrap.appendChild(tbl);
-  el.innerHTML='';
-  el.appendChild(wrap);
-}
-
-function reqPuan(){
-  const id=document.getElementById('puanUye').value;
-  const miktar=parseInt(document.getElementById('puanMiktar').value)||0;
-  const sebep=document.getElementById('puanSebep').value.trim();
-  if(!sebep){alert('Gerekçe zorunlu.');return;}
-  const m=members.find(m=>String(m._id)===String(id)||String(m.id)===String(id));if(!m)return;
-  const sign=miktar>=0?'+':'';
-  confirm2('Puan değişikliği','<strong>'+m.rumuz+'</strong> — '+sign+miktar+' puan<br><span style="font-size:12px;color:#888">Gerekçe: '+sebep+'</span>',async()=>{
-    m.puan=Math.max(0,(m.puan||0)+miktar);
-    addLog('Puan değişimi',m.rumuz+': '+sign+miktar+' — '+sebep);save();
-    await cmsYaz('MEMBER_UPDATE',{...m,_id:m._id||m.id});
-    await puanArsivEkle(m.rumuz,miktar,sebep,'manuel');
-    renderPuan();renderDashboard();
-  });
-}
 
 //
 // GOREV
@@ -1903,7 +1945,7 @@ async function renderOylama(){
     const oylar=oy.oylar?JSON.parse(oy.oylar):{};
     const secenekler=oy.secenekler?JSON.parse(oy.secenekler):[];
     const benimOyum=oylar[SESSION.rumuz];
-    const secimMi=oy.tur==='Secim';
+    const secimMi=oy.tur==='Seçim'||oy.tur==='Secim';
     const katilabilir=!secimMi||secimYetkisi;
     const oySayilari={};
     secenekler.forEach(function(s){oySayilari[s]=0;});
