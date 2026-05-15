@@ -1265,20 +1265,17 @@ function renderPuan(){
   // Puan düzenleme editörü
   const editor=document.getElementById('puanEditor');
   editor.innerHTML='';
-  if(!izin('puanDuzenle')&&SESSION.rol!=='Lider') return;
+  const canEdit=izin('puanDuzenle')||SESSION.rol==='Lider';
 
-  const hr=document.createElement('hr');hr.className='sep';editor.appendChild(hr);
-  const title=document.createElement('div');title.className='section-title';title.textContent='Puan Düzenleme';editor.appendChild(title);
-  const card=document.createElement('div');card.className='card';
-
-  // Üye sırası (rütbeye göre)
-  const siraliUyeler=[...members].sort(function(a,b){return getRutbeSira(a)-getRutbeSira(b);});
-
-  const formRow=document.createElement('div');formRow.className='form-row';
-
-  const uyeGrp=document.createElement('div');uyeGrp.className='form-group';
-  const uyeLbl=document.createElement('label');uyeLbl.textContent='Üye';uyeGrp.appendChild(uyeLbl);
-  const uyeSel=document.createElement('select');uyeSel.id='puanUye';
+  if(canEdit){
+    const hr=document.createElement('hr');hr.className='sep';editor.appendChild(hr);
+    const title=document.createElement('div');title.className='section-title';title.textContent='Puan Düzenleme';editor.appendChild(title);
+    const card=document.createElement('div');card.className='card';
+    const siraliUyeler=[...members].sort(function(a,b){return getRutbeSira(a)-getRutbeSira(b);});
+    const formRow=document.createElement('div');formRow.className='form-row';
+    const uyeGrp=document.createElement('div');uyeGrp.className='form-group';
+    const uyeLbl=document.createElement('label');uyeLbl.textContent='Üye';uyeGrp.appendChild(uyeLbl);
+    const uyeSel=document.createElement('select');uyeSel.id='puanUye';
   siraliUyeler.forEach(function(m){
     const opt=document.createElement('option');opt.value=m._id||m.id;opt.textContent=m.rumuz+' ('+m.rutbe+')';uyeSel.appendChild(opt);
   });
@@ -1316,8 +1313,9 @@ function renderPuan(){
     reqPuan();
   };
   btnRow.appendChild(btnPasif);
-  card.appendChild(btnRow);
-  editor.appendChild(card);
+    card.appendChild(btnRow);
+    editor.appendChild(card);
+  } // end canEdit
 
   // Arsiv bolumu - DOM API ile
   const arsivWrap=document.getElementById('puanArsivWrap');
@@ -1594,14 +1592,28 @@ function reqDeleteDuyuru(id){
 // ERISIM YONETIMI BOARD
 //
 const IZIN_ETIKETLER = {
-  uyeEkle:'Üye Ekle', uyeSil:'Üye Sil', uyeDuzenle:'Üye Düzenle',
-  rutbeDegistir:'Rütbe Değiştir', puanDuzenle:'Puan Düzenle',
-  gorevAta:'Görev Ata', etkinlikEkle:'Etkinlik Ekle', etkinlikSil:'Etkinlik Sil',
-  butceGor:'Bütçe Gör', butceDuzenle:'Bütçe Düzenle',
-  logGor:'Log Gör', logSil:'Log Temizle', kodUret:'Davet Kodu Üret', kodGor:'Davet Kodlarını Gör',
-  duyuruEkle:'Duyuru Ekle', duyuruSil:'Duyuru Sil',
-  basvuruGor:'Başvuru Gör', basvuruOnayla:'Başvuru Onayla/Reddet', davetYonet:'Davet Yönet',
-  disiplinUygula:'Disiplin Uygula', tuzukDuzenle:'Tüzük Düzenle', oylamaEkle:'Oylama Oluştur'
+  tuzukDuzenle:'Tüzük Düzenle',
+  davetYonet:'Davet Yönet',
+  disiplinUygula:'Disiplin Uygula',
+  basvuruOnayla:'Başvuru Onayla / Reddet',
+  uyeEkle:'Üye Ekle',
+  uyeSil:'Üye Sil',
+  rutbeDegistir:'Rütbe Değiştir',
+  butceDuzenle:'Bütçe Düzenle',
+  logSil:'Log Temizle',
+  uyeDuzenle:'Üye Düzenle',
+  puanDuzenle:'Puan Düzenle',
+  gorevAta:'Görev Ata',
+  etkinlikEkle:'Etkinlik Ekle',
+  etkinlikSil:'Etkinlik Sil',
+  duyuruEkle:'Duyuru Ekle',
+  duyuruSil:'Duyuru Sil',
+  oylamaEkle:'Oylama Oluştur',
+  kodUret:'Davet Kodu Üret',
+  basvuruGor:'Başvuru Gör',
+  butceGor:'Bütçe Gör',
+  logGor:'Log Gör',
+  kodGor:'Davet Kodlarını Gör'
 };
 
 const ROLLER_LISTE = ['Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
@@ -2260,54 +2272,96 @@ const CEZA_RENK={Uyarı:'badge-sari',Uzaklaştırma:'badge-kirmizi',İhraç:'bad
 
 function renderDisiplin(){
   const el=document.getElementById('disiplinList');
-  if(!disiplin.length){el.innerHTML='<div style="font-size:12px;color:#555;padding:8px">Henüz disiplin kaydı yok.</div>';return}
+  el.innerHTML='';
+  
+  if(!disiplin.length){
+    el.innerHTML='<div style="font-size:12px;color:#555;padding:8px">Henuz disiplin kaydi yok.</div>';
+    return;
+  }
 
-  // Uye bazli gruplandir
+  // Arama inputu
+  const araDiv=document.createElement('div');araDiv.style.marginBottom='10px';
+  const araInput=document.createElement('input');araInput.type='text';araInput.id='disiplinAra';
+  araInput.placeholder='Üye ara...';araInput.oninput=disiplinFiltrele;
+  araInput.style.cssText='padding:6px 10px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:12px;width:200px';
+  araDiv.appendChild(araInput);el.appendChild(araDiv);
+
+  const gruplarDiv=document.createElement('div');gruplarDiv.id='disiplinGruplar';
+
+  // Gruplama
   const gruplar={};
-  disiplin.forEach(d=>{
-    if(!gruplar[d.uye]) gruplar[d.uye]=[];
+  disiplin.forEach(function(d){
+    if(!gruplar[d.uye])gruplar[d.uye]=[];
     gruplar[d.uye].push(d);
   });
+  const siraliUyeler=Object.keys(gruplar).sort(function(a,b){return a.localeCompare(b,'tr');});
 
-  // Alfabetik sirala
-  const siraliUyeler=Object.keys(gruplar).sort((a,b)=>a.localeCompare(b,'tr'));
+  siraliUyeler.forEach(function(uye){
+    const kayitlar=gruplar[uye];
+    const aktifSayi=kayitlar.filter(function(k){return k.durum!=='Kaldirildi'&&k.durum!=='Kaldırıldı';}).length;
+    const canAct=izin('disiplinUygula')||SESSION.rol==='Lider';
 
-  el.innerHTML=`
-    <div style="margin-bottom:10px">
-      <input type="text" id="disiplinAra" placeholder="Üye ara..." oninput="disiplinFiltrele()"
-        style="padding:6px 10px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:12px;width:200px">
-    </div>
-    <div id="disiplinGruplar">
-    ${siraliUyeler.map(uye=>{
-      const kayitlar=gruplar[uye];
-      const aktifSayi=kayitlar.filter(k=>k.durum!=='Kaldırıldı').length;
-      return`<div class="disiplin-grup" data-uye="${uye.toLowerCase()}">
-        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#222;border-radius:8px;margin-bottom:4px;cursor:pointer" onclick="this.nextElementSibling.classList.toggle('open')">
-          <span style="font-size:13px;font-weight:500;color:#d3d1c7">${uye}</span>
-          ${aktifSayi?`<span class="badge badge-cezali" style="font-size:10px">${aktifSayi} aktif</span>`:'<span style="font-size:10px;color:#555">temiz</span>'}
-          <i class="ti ti-chevron-down" style="margin-left:auto;color:#555;font-size:12px"></i>
-        </div>
-        <div class="disiplin-detay" style="display:none;padding:0 6px 8px">
-          ${kayitlar.map(d=>{
-            const did=d._id||d.id;
-            return`<div class="card" style="margin-bottom:6px;padding:.7rem">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:4px">
-                <div style="display:flex;align-items:center;gap:6px">
-                  <span class="badge ${CEZA_RENK[d.cezaTuru]||'badge-sari'}">${d.cezaTuru}</span>
-                  ${d.durum==='Kaldırıldı'?'<span class="badge badge-pasif" style="font-size:10px">Kaldırıldı</span>':''}
-                </div>
-                <div style="display:flex;gap:4px">
-                  ${izin('disiplinUygula')&&d.durum!=='Kaldırıldı'?`<button class="btn btn-sm" onclick="reqDisiplinKaldir('${did}')"><i class="ti ti-x"></i> Kaldır</button>`:''}
-                  ${izin('disiplinUygula')?`<button class="btn btn-danger btn-sm" onclick="reqDisiplinSil('${did}')"><i class="ti ti-trash"></i></button>`:''}
-                </div>
-              </div>
-              <div style="font-size:12px;color:#d3d1c7;margin-bottom:4px">${d.gerekce||'—'}</div>
-              ${d.tuzukMaddesi?`<div style="font-size:11px;color:#555;margin-bottom:4px">Tüzük: ${d.tuzukMaddesi}</div>`:''}
-              <div style="font-size:10px;color:#555">${d.tarih||''} · ${d.uygulayan||'—'}</div>
-            </div>`}).join('')}
-        </div>
-      </div>`}).join('')}
-    </div>`;
+    const grup=document.createElement('div');grup.className='disiplin-grup';
+    grup.dataset.uye=uye.toLowerCase();
+
+    // Başlık
+    const baslik=document.createElement('div');
+    baslik.style.cssText='display:flex;align-items:center;gap:8px;padding:8px 10px;background:#222;border-radius:8px;margin-bottom:4px;cursor:pointer';
+    const uyeAd=document.createElement('span');uyeAd.style.cssText='font-size:13px;font-weight:500;color:#d3d1c7';uyeAd.textContent=uye;
+    baslik.appendChild(uyeAd);
+    if(aktifSayi>0){
+      const badge=document.createElement('span');badge.className='badge badge-cezali';badge.style.fontSize='10px';badge.textContent=aktifSayi+' aktif';baslik.appendChild(badge);
+    } else {
+      const temiz=document.createElement('span');temiz.style.cssText='font-size:10px;color:#555';temiz.textContent='temiz';baslik.appendChild(temiz);
+    }
+    const chev=document.createElement('i');chev.className='ti ti-chevron-down';chev.style.cssText='margin-left:auto;color:#555;font-size:12px';
+    baslik.appendChild(chev);
+    
+    const detay=document.createElement('div');detay.className='disiplin-detay';detay.style.cssText='display:none;padding:0 6px 8px';
+    baslik.onclick=function(){detay.classList.toggle('open');detay.style.display=detay.style.display==='none'?'block':'none';};
+    grup.appendChild(baslik);
+
+    // Kayıtlar
+    kayitlar.forEach(function(d){
+      const did=d._id||d.id;
+      const kart=document.createElement('div');kart.className='card';kart.style.cssText='margin-bottom:6px;padding:.7rem';
+
+      const ust=document.createElement('div');ust.style.cssText='display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:4px';
+      
+      const solKism=document.createElement('div');solKism.style.cssText='display:flex;align-items:center;gap:6px';
+      const cezaBadge=document.createElement('span');
+      cezaBadge.className='badge '+(CEZA_RENK[d.cezaTuru]||'badge-sari');cezaBadge.textContent=d.cezaTuru;solKism.appendChild(cezaBadge);
+      if(d.durum==='Kaldırıldı'||d.durum==='Kaldirildi'){
+        const kb=document.createElement('span');kb.className='badge badge-pasif';kb.style.fontSize='10px';kb.textContent='Kaldirildi';solKism.appendChild(kb);
+      }
+      ust.appendChild(solKism);
+
+      const btnGrp=document.createElement('div');btnGrp.style.cssText='display:flex;gap:4px';
+      if(canAct&&d.durum!=='Kaldırıldı'&&d.durum!=='Kaldirildi'){
+        const kaldirBtn=document.createElement('button');kaldirBtn.className='btn btn-sm';
+        kaldirBtn.innerHTML='<i class="ti ti-x"></i> Kaldir';
+        (function(id){kaldirBtn.onclick=function(){reqDisiplinKaldir(id);};})(did);
+        btnGrp.appendChild(kaldirBtn);
+      }
+      if(canAct){
+        const silBtn=document.createElement('button');silBtn.className='btn btn-danger btn-sm';
+        silBtn.innerHTML='<i class="ti ti-trash"></i>';
+        (function(id){silBtn.onclick=function(){reqDisiplinSil(id);};})(did);
+        btnGrp.appendChild(silBtn);
+      }
+      ust.appendChild(btnGrp);
+      kart.appendChild(ust);
+
+      const gerekceEl=document.createElement('div');gerekceEl.style.cssText='font-size:12px;color:#d3d1c7;margin-bottom:4px';gerekceEl.textContent=d.gerekce||'—';kart.appendChild(gerekceEl);
+      if(d.tuzukMaddesi){const tmEl=document.createElement('div');tmEl.style.cssText='font-size:11px;color:#555;margin-bottom:4px';tmEl.textContent='Tuzuk: '+d.tuzukMaddesi;kart.appendChild(tmEl);}
+      const altEl=document.createElement('div');altEl.style.cssText='font-size:10px;color:#555';altEl.textContent=(d.tarih||'')+' - '+(d.uygulayan||'—');kart.appendChild(altEl);
+
+      detay.appendChild(kart);
+    });
+    grup.appendChild(detay);
+    gruplarDiv.appendChild(grup);
+  });
+  el.appendChild(gruplarDiv);
 }
 
 function disiplinFiltrele(){
@@ -2353,13 +2407,18 @@ function reqDisiplinSil(id){
 
 //
 function renderLog(){
-  if(!izin('logGor')){document.getElementById('logList').innerHTML=engelEkrani();return}
-  const logHtml=logs.length?logs.map(l=>{
-    return '<div class="log-item"><div class="log-time">'+fmtDateTime(l.time)+'</div>'
+  if(!izin('logGor')&&SESSION.rol!=='Lider'){document.getElementById('logList').innerHTML=engelEkrani();return;}
+  const el=document.getElementById('logList');
+  if(!logs.length){el.innerHTML='<div style="font-size:12px;color:#555;padding:1rem;text-align:center">Henüz log yok</div>';return;}
+  el.innerHTML='';
+  logs.forEach(function(l){
+    const div=document.createElement('div');div.className='log-item';
+    div.innerHTML='<div class="log-time">'+fmtDateTime(l.time)+'</div>'
       +'<div><span class="log-who">'+(l.who||'?')+'</span> <span style="font-size:10px;color:#555">('+(l.rol||'?')+')</span></div>'
-      +'<div class="log-action">'+l.action+'</div>'
-      +'<div class="log-detail">'+l.detail+'</div></div>';
-  }).join(''):'<div style="font-size:12px;color:#555;padding:1rem;text-align:center">Henüz log yok</div>';
+      +'<div class="log-action">'+(l.action||'')+'</div>'
+      +'<div class="log-detail">'+(l.detail||'')+'</div>';
+    el.appendChild(div);
+  });
 }
 
 //
