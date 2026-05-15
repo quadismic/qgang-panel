@@ -2788,7 +2788,24 @@ function renderOrg(){
 function orgKodUret(){
   if(!izin('kodUret'))return;
   const svgCode=buildOrgSVG(false);
-  const styles=`<style>.org-lider rect{fill:#2c2c2a;stroke:#888780;stroke-width:0.5}.org-lider text.t1{fill:#d3d1c7;font-size:12px;font-weight:600;font-family:Arial,sans-serif}.org-lider text.t2{fill:#888780;font-size:10px;font-family:Arial,sans-serif}.org-yonetici rect{fill:none;stroke:#a32d2d;stroke-width:0.5;stroke-dasharray:5 3}.org-yonetici text{fill:#e24b4a;font-size:10px;font-family:Arial,sans-serif;opacity:.7}.org-yetkili rect{fill:#042c53;stroke:#185fa5;stroke-width:0.5}.org-yetkili text.t1{fill:#b5d4f4;font-size:12px;font-weight:600;font-family:Arial,sans-serif}.org-yetkili text.t2{fill:#378add;font-size:10px;font-family:Arial,sans-serif}.org-yardimci rect{fill:#04342c;stroke:#0f6e56;stroke-width:0.5}.org-yardimci text.t1{fill:#9fe1cb;font-size:12px;font-weight:600;font-family:Arial,sans-serif}.org-yardimci text.t2{fill:#1d9e75;font-size:10px;font-family:Arial,sans-serif}.org-uye rect{fill:#412402;stroke:#854f0b;stroke-width:0.5}.org-uye text.t1{fill:#fac775;font-size:10px;font-weight:600;font-family:Arial,sans-serif}.org-uye text.t2{fill:#ba7517;font-size:9px;font-family:Arial,sans-serif}.org-conn{stroke:#444;stroke-width:0.5;fill:none}.org-conn-dash{stroke:#444;stroke-width:0.5;fill:none;stroke-dasharray:4 3}</style>`;
+  const styles=`<style>.org-lider rect{fill:#2c2c2a;stroke:#888780;stroke-width:0.5}.org-lider text.t1{fill:#d3d1c7;font-size:12px;font-weight:600;font-family:Arial,sans-serif}.org-lider text.t2{fill:#888780;font-size:10px;font-family:Arial,sans-serif}.org-yonetici rect{fill:none;stroke:#a32d2d;stroke-width:0.5;stroke-dasharray:5 3}.org-yonetici text{fill:#e24b4a;font-size:10px;font-family:Arial,sans-serif;opacity:.7}.org-yetkili rect{fill:#042c53;stroke:#185fa5;stroke-width:0.5}.org-yetkili text.t1{fill:#b5d4f4;font-size:12px;font-weight:600;font-family:Arial,sans-serif}.org-yetkili text.t2{fill:#378add;font-size:10px;font-family:Arial,sans-serif}.org-yardimci rect{fill:#04342c;stroke:#0f6e56;stroke-width:0.5}.org-yardimci text.t1{fill:#9fe1cb;font-size:12px;font-weight:600;font-family:Arial,sans-serif}.org-yardimci text.t2{fill:#1d9e75;font-size:10px;font-family:Arial,sans-serif}.org-uye rect{fill:#412402;stroke:#854f0b;stroke-width:0.5}.org-uye text.t1{fill:#fac775;font-size:10px;font-weight:600;font-family:Arial,sans-serif}.org-uye text.t2{fill:#ba7517;font-size:9px;font-family:Arial,sans-serif}.org-conn{stroke:#444;stroke-width:0.5;fill:none}.org-conn-dash{stroke:#444;stroke-width:0.5;fill:none;stroke-dasharray:4 3}
+/* PANEL GIRIS ANIMASYONU */
+@keyframes panelBlurIn {
+  0%   { opacity: 0; filter: blur(16px); transform: scale(1.03); }
+  60%  { opacity: 1; filter: blur(2px);  transform: scale(1.005); }
+  100% { opacity: 1; filter: blur(0);    transform: scale(1); }
+}
+@keyframes panelAsagi {
+  0%   { opacity: 0; transform: translateY(20px); filter: blur(4px); }
+  100% { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+
+#authScreen { animation: panelBlurIn .9s cubic-bezier(.22,.61,.36,1) both; }
+#mainPanel  { animation: panelBlurIn .7s cubic-bezier(.22,.61,.36,1) both; }
+
+.nav-bar    { animation: panelAsagi .5s ease both; animation-delay: .3s; opacity: 0; }
+.panel-body { animation: panelAsagi .6s ease both; animation-delay: .5s; opacity: 0; }
+</style>`;
   const fullCode=`<div style="background:#111;padding:20px;text-align:center;overflow-x:auto">\n${styles}\n${svgCode}\n</div>`;
   const mc=document.getElementById('modalContainer');
   mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
