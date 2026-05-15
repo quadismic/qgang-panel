@@ -1268,54 +1268,39 @@ function renderPuan(){
   const canEdit=izin('puanDuzenle')||SESSION.rol==='Lider';
 
   if(canEdit){
-    const hr=document.createElement('hr');hr.className='sep';editor.appendChild(hr);
-    const title=document.createElement('div');title.className='section-title';title.textContent='Puan Düzenleme';editor.appendChild(title);
-    const card=document.createElement('div');card.className='card';
-    const siraliUyeler=[...members].sort(function(a,b){return getRutbeSira(a)-getRutbeSira(b);});
-    const formRow=document.createElement('div');formRow.className='form-row';
-    const uyeGrp=document.createElement('div');uyeGrp.className='form-group';
-    const uyeLbl=document.createElement('label');uyeLbl.textContent='Üye';uyeGrp.appendChild(uyeLbl);
-    const uyeSel=document.createElement('select');uyeSel.id='puanUye';
-  siraliUyeler.forEach(function(m){
-    const opt=document.createElement('option');opt.value=m._id||m.id;opt.textContent=m.rumuz+' ('+m.rutbe+')';uyeSel.appendChild(opt);
-  });
-  uyeGrp.appendChild(uyeSel);formRow.appendChild(uyeGrp);
-
-  const miktarGrp=document.createElement('div');miktarGrp.className='form-group';
-  const miktarLbl=document.createElement('label');miktarLbl.textContent='Miktar';miktarGrp.appendChild(miktarLbl);
-  const miktarInp=document.createElement('input');miktarInp.type='number';miktarInp.id='puanMiktar';miktarInp.value='10';miktarInp.step='1';
-  miktarGrp.appendChild(miktarInp);formRow.appendChild(miktarGrp);
-
-  const sebepGrp=document.createElement('div');sebepGrp.className='form-group';
-  const sebepLbl=document.createElement('label');sebepLbl.innerHTML='Gerekçe *';sebepGrp.appendChild(sebepLbl);
-  const sebepInp=document.createElement('input');sebepInp.type='text';sebepInp.id='puanSebep';sebepInp.placeholder='Gerekçe...';
-  sebepGrp.appendChild(sebepInp);formRow.appendChild(sebepGrp);
-
-  card.appendChild(formRow);
-
-  const btnRow=document.createElement('div');btnRow.style.cssText='display:flex;gap:6px;flex-wrap:wrap';
-  const btnUygula=document.createElement('button');btnUygula.className='btn btn-success';
-  btnUygula.innerHTML='<i class="ti ti-plus"></i> Uygula';btnUygula.onclick=reqPuan;
-  btnRow.appendChild(btnUygula);
-  const btnEtkinlik=document.createElement('button');btnEtkinlik.className='btn btn-primary';
-  btnEtkinlik.innerHTML='+10 Etkinlik';
-  btnEtkinlik.onclick=function(){
-    document.getElementById('puanMiktar').value=10;
-    document.getElementById('puanSebep').value='Etkinlik katılımı';
-    reqPuan();
-  };
-  btnRow.appendChild(btnEtkinlik);
-  const btnPasif=document.createElement('button');btnPasif.className='btn btn-danger';
-  btnPasif.innerHTML='-20 Pasiflik';
-  btnPasif.onclick=function(){
-    document.getElementById('puanMiktar').value=-20;
-    document.getElementById('puanSebep').value='Pasiflik';
-    reqPuan();
-  };
-  btnRow.appendChild(btnPasif);
-    card.appendChild(btnRow);
-    editor.appendChild(card);
-  } // end canEdit
+    const hr2=document.createElement('hr');hr2.className='sep';editor.appendChild(hr2);
+    const title2=document.createElement('div');title2.className='section-title';title2.textContent='Puan Düzenleme';editor.appendChild(title2);
+    const card2=document.createElement('div');card2.className='card';
+    const siraliU=[...members].sort(function(a,b){return getRutbeSira(a)-getRutbeSira(b);});
+    const fRow=document.createElement('div');fRow.className='form-row';
+    const uGrp=document.createElement('div');uGrp.className='form-group';
+    const uLbl=document.createElement('label');uLbl.textContent='Üye';uGrp.appendChild(uLbl);
+    const uSel=document.createElement('select');uSel.id='puanUye';
+    siraliU.forEach(function(m){
+      const opt=document.createElement('option');opt.value=m._id||m.id;opt.textContent=m.rumuz+' ('+m.rutbe+')';uSel.appendChild(opt);
+    });
+    uGrp.appendChild(uSel);fRow.appendChild(uGrp);
+    const mGrp=document.createElement('div');mGrp.className='form-group';
+    const mLbl=document.createElement('label');mLbl.textContent='Miktar';mGrp.appendChild(mLbl);
+    const mInp=document.createElement('input');mInp.type='number';mInp.id='puanMiktar';mInp.value='10';mInp.step='1';
+    mGrp.appendChild(mInp);fRow.appendChild(mGrp);
+    const sGrp=document.createElement('div');sGrp.className='form-group';
+    const sLbl=document.createElement('label');sLbl.textContent='Gerekçe *';sGrp.appendChild(sLbl);
+    const sInp=document.createElement('input');sInp.type='text';sInp.id='puanSebep';sInp.placeholder='Gerekçe...';
+    sGrp.appendChild(sInp);fRow.appendChild(sGrp);
+    card2.appendChild(fRow);
+    const bRow=document.createElement('div');bRow.style.cssText='display:flex;gap:6px;flex-wrap:wrap;margin-top:8px';
+    const bUygula=document.createElement('button');bUygula.className='btn btn-success';
+    bUygula.innerHTML='<i class="ti ti-check"></i> Uygula';bUygula.onclick=reqPuan;bRow.appendChild(bUygula);
+    const bEtkinlik=document.createElement('button');bEtkinlik.className='btn btn-primary';bEtkinlik.innerHTML='+10 Etkinlik';
+    bEtkinlik.onclick=function(){document.getElementById('puanMiktar').value=10;document.getElementById('puanSebep').value='Etkinlik katilimi';reqPuan();};
+    bRow.appendChild(bEtkinlik);
+    const bPasif=document.createElement('button');bPasif.className='btn btn-danger';bPasif.innerHTML='-20 Pasiflik';
+    bPasif.onclick=function(){document.getElementById('puanMiktar').value=-20;document.getElementById('puanSebep').value='Pasiflik';reqPuan();};
+    bRow.appendChild(bPasif);
+    card2.appendChild(bRow);
+    editor.appendChild(card2);
+  }
 
   // Arsiv bolumu - DOM API ile
   const arsivWrap=document.getElementById('puanArsivWrap');
