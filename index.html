@@ -480,7 +480,7 @@ svg.org{display:inline-block}
       <div class="nav-dd-item" onclick="showTabDD('members','ddTopluluk','navToplulukBtn')"><i class="ti ti-users"></i> Üyeler</div>
       <div class="nav-dd-item" onclick="showTabDD('puan','ddTopluluk','navToplulukBtn')"><i class="ti ti-star"></i> Puanlar</div>
       <div class="nav-dd-item" onclick="showTabDD('gorev','ddTopluluk','navToplulukBtn')"><i class="ti ti-check"></i> Görevler</div>
-      <div class="nav-dd-item" onclick="showTabDD('oylama','ddTopluluk','navToplulukBtn')"><i class="ti ti-ballot"></i> Oylamalar</div>
+      <div class="nav-dd-item" onclick="showTabDD('oylama','ddTopluluk','navToplulukBtn')"><i class="ti ti-checkup-list"></i> Oylamalar</div>
       <div class="nav-dd-item" onclick="showTabDD('org','ddTopluluk','navToplulukBtn')"><i class="ti ti-hierarchy"></i> Organizasyon</div>
     </div>
   </div>
@@ -736,7 +736,16 @@ async function hashSifre(s){
 }
 
 let SESSION={rumuz:'Ziyaretçi',rol:'Gözlemci',girisZamani:new Date().toISOString()};
-function izin(key){return !!(IZINLER[SESSION.rol]||IZINLER['Gözlemci'])[key]}
+function izin(key){
+  const rol=SESSION.rol;
+  const izinler=IZINLER[rol];
+  if(!izinler){
+    // CMS'den gelen izinleri kontrol et
+    if(aktifIzinler&&aktifIzinler[rol])return !!(aktifIzinler[rol][key]);
+    return false;
+  }
+  return !!(izinler[key]);
+}
 
 //
 // CMS KOPRUSU — HTTP API
@@ -878,16 +887,33 @@ async function hashStr(s){
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-function panelAc(rumuz,rol){
+async function panelAc(rumuz,rol){
   document.getElementById('authScreen').style.display='none';
   document.getElementById('mainPanel').style.display='block';
-  const rolClass={Lider:'lider',Vekilharç:'vekilharc',Kaptan:'kaptan',Teğmen:'tegmen',Üye:'uye',Gözlemci:'goruntüleyici'};
-  document.getElementById('userRolBadge').innerHTML=`<span class="rol-badge rol-${rolClass[rol]||'uye'}">${rol}</span>`;
+  const rolClass={'Lider':'lider','Vekilharç':'vekilharc','Kaptan':'kaptan','Teğmen':'tegmen','Üye':'uye','Gözlemci':'goruntüleyici'};
+  document.getElementById('userRolBadge').innerHTML='<span class="rol-badge rol-'+(rolClass[rol]||'uye')+'">'+rol+'</span>';
   document.getElementById('userRumuz').textContent=rumuz;
-  SESSION.rumuz=rumuz;SESSION.rol=ROL_SIRASI.includes(rol)?rol:'Gözlemci';
+  SESSION.rumuz=rumuz;
+  SESSION.rol=ROL_SIRASI.includes(rol)?rol:'Gözlemci';
   SESSION.girisZamani=new Date().toISOString();
+
+  // Veri henüz yüklenmediyse çek
+  if(!members.length||!events.length){
+    cmsStatusGoster('loading','<i class="ti ti-loader"></i> Veriler yükleniyor...');
+    const veri=await cmsOku();
+    if(veri){
+      if(veri.members&&veri.members.length)members=veri.members.map(m=>({...m,id:m._id||m.id,katilimcilar:parseKat(m.katilimcilar)}));
+      if(veri.events&&veri.events.length)events=veri.events.map(e=>({...e,id:e._id||e.id,katilimcilar:parseKat(e.katilimcilar)}));
+      if(veri.budget&&veri.budget.length)butce=veri.budget.map(b=>({...b,id:b._id||b.id}));
+      if(veri.duyurular&&veri.duyurular.length)duyurular=veri.duyurular.map(d=>({...d,id:d._id||d.id}));
+      if(veri.disiplin&&veri.disiplin.length)disiplin=veri.disiplin.map(d=>({...d,id:d._id||d.id}));
+      if(veri.tuzuk)tuzuk=veri.tuzuk;
+      cmsStatusGoster('ok','<i class="ti ti-check"></i> Hazır');
+    }
+  }
+
   uiAyarla();
-  addLog('Giriş',`${rumuz} — ${rol}`);
+  addLog('Giriş',rumuz+' — '+rol);
   renderDashboard();renderDuyuruBanner();
   onlineSistemiBaslat();
   if(izin('basvuruGor')){
@@ -1203,18 +1229,36 @@ function renderPuan(){
     </div>`:'';
 
   // Arsiv bolumu
-  const rutbeSiraArsiv={Lider:0,Vekilharç:1,Kaptan:2,Teğmen:3,Üye:4,Gözlemci:5};
-  const siraliArsiv=[...members].sort((a,b)=>{const ra=rutbeSiraArsiv[a.rutbe]!==undefined?rutbeSiraArsiv[a.rutbe]:9;const rb=rutbeSiraArsiv[b.rutbe]!==undefined?rutbeSiraArsiv[b.rutbe]:9;return ra-rb;});
-  document.getElementById('puanArsivWrap').innerHTML=`
-    <div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-history"></i> Puan Arşivi</div>
-    <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;align-items:center">
-      <select id="arsivFilter" style="padding:6px 10px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:12px">
-        <option value="">Tüm üyeler</option>
-        ${siraliArsiv.map(m=>`<option value="${m.rumuz}">${m.rumuz}</option>`).join('')}
-      </select>
-      <button class="btn btn-sm" onclick="arsivFiltrele()"><i class="ti ti-search"></i> Sorgula</button>
-    </div>
-    <div id="arsivListe"><div style="font-size:12px;color:#555;padding:8px">Üye seçin veya "Sorgula"ya basın...</div></div>`;
+  const rutbeSiraArsiv={'Lider':0,'Vekilharç':1,'Kaptan':2,'Teğmen':3,'Üye':4,'Gözlemci':5};
+  const siraliArsiv=[...members].sort(function(a,b){
+    const ra=rutbeSiraArsiv[a.rutbe]!==undefined?rutbeSiraArsiv[a.rutbe]:9;
+    const rb=rutbeSiraArsiv[b.rutbe]!==undefined?rutbeSiraArsiv[b.rutbe]:9;
+    return ra-rb;
+  });
+  const arsivWrap=document.getElementById('puanArsivWrap');
+  arsivWrap.innerHTML='';
+  const arsivBaslik=document.createElement('div');
+  arsivBaslik.className='section-title';arsivBaslik.style.marginBottom='.6rem';
+  arsivBaslik.innerHTML='<i class="ti ti-history"></i> Puan Arşivi';
+  arsivWrap.appendChild(arsivBaslik);
+  const arsivFiltreSatir=document.createElement('div');
+  arsivFiltreSatir.style.cssText='display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;align-items:center';
+  const arsivSel=document.createElement('select');
+  arsivSel.id='arsivFilter';
+  arsivSel.style.cssText='padding:6px 10px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:12px';
+  const bosOpt=document.createElement('option');bosOpt.value='';bosOpt.textContent='Tüm üyeler';arsivSel.appendChild(bosOpt);
+  siraliArsiv.forEach(function(m){
+    const opt=document.createElement('option');opt.value=m.rumuz;opt.textContent=m.rumuz;arsivSel.appendChild(opt);
+  });
+  arsivFiltreSatir.appendChild(arsivSel);
+  const arsivBtn=document.createElement('button');arsivBtn.className='btn btn-sm';
+  arsivBtn.innerHTML='<i class="ti ti-search"></i> Sorgula';
+  arsivBtn.onclick=arsivFiltrele;
+  arsivFiltreSatir.appendChild(arsivBtn);
+  arsivWrap.appendChild(arsivFiltreSatir);
+  const arsivListe=document.createElement('div');arsivListe.id='arsivListe';
+  arsivListe.innerHTML='<div style="font-size:12px;color:#555;padding:8px">Üye seçin veya "Sorgula"ya basın...</div>';
+  arsivWrap.appendChild(arsivListe);
 }
 
 async function arsivFiltrele(){
@@ -1255,7 +1299,7 @@ function reqPuan(){
   const sign=miktar>=0?'+':'';
   confirm2('Puan değişikliği','<strong>'+m.rumuz+'</strong> — '+sign+miktar+' puan<br><span style="font-size:12px;color:#888">Gerekçe: '+sebep+'</span>',async()=>{
     m.puan=Math.max(0,(m.puan||0)+miktar);
-    addLog('Puan değişimi',`${m.rumuz}: ${sign}${miktar} — ${sebep}`);save();
+    addLog('Puan değişimi',m.rumuz+': '+sign+miktar+' — '+sebep);save();
     await cmsYaz('MEMBER_UPDATE',{...m,_id:m._id||m.id});
     await puanArsivEkle(m.rumuz,miktar,sebep,'manuel');
     renderPuan();renderDashboard();
@@ -1590,7 +1634,14 @@ function izinSifirla(){
 
 // Varsayilan tuzuk HTML
 const VARSAYILAN_TUZUK_B64 = 'PGRpdiBjbGFzcz0icGFnZSI+CiAgPGRpdiBjbGFzcz0idHV6dWstc2VjdGlvbiIgZGF0YS1kZWxheT0iMCI+CiAgICA8ZGl2IGNsYXNzPSJ0dXp1ay1zZWN0aW9uLWhlYWRlciI+CiAgICAgIDxzcGFuIGNsYXNzPSJ0dXp1ay1zZWN0aW9uLW51bSI+STwvc3Bhbj4KICAgICAgPHNwYW4gY2xhc3M9InR1enVrLXNlY3Rpb24tdGl0bGUiPkJhxZ9sYW5nxLHDpzwvc3Bhbj4KICAgIDwvZGl2PgogICAgPGRpdiBjbGFzcz0idHV6dWstc2VjdGlvbi1ib2R5Ij4KICAgICAgUS1HQU5HOyBiaXJsaWt0ZSBveXVuIG95bmFtYSB2ZSBzb3N5YWwgZGF5YW7EscWfbWEgYWxhbmxhcsSxbmRhIGZhYWxpeWV0IGfDtnN0ZXJlbiBiaXIgZcSfbGVuY2UgdmUga2FyZGXFn2xpayB0b3BsdWx1xJ91ZHVyLgogICAgICA8YnI+PGJyPgogICAgICBMaWRlciwgdG9wbHVsdcSfdW4gZW4geWV0a2lsaSB5w7ZuZXRpY2lzaWRpci4gTGlkZXIgdGFyYWbEsW5kYW4gYWzEsW5hbiB0w7xtIGthcmFybGFyIGtlc2luIHZlIGJhxJ9sYXnEsWPEsWTEsXIuIFTDvHrDvGt0ZSBhw6fEsWvDp2EgZMO8emVubGVubWV5ZW4gaHVzdXNsYXIsIHRvcGx1bHVrIGlsa2VsZXJpIHZlIGthcmRlxZ9saWsgcnVodSBlc2FzIGFsxLFuYXJhayBMaWRlciB0YXJhZsSxbmRhbiBiZWxpcmxlbmlyLgogICAgICA8YnI+PGJyPgogICAgICBUw7x6w7xrIGdlcmVrbGkgZ8O2csO8bGTDvMSfw7xuZGUgTGlkZXIgdGFyYWbEsW5kYW4gZ8O8bmNlbGxlbmViaWxpci4gVG9wbHVsdcSfYSBiYcSfbMSxIG9sYW4gaGVya2VzLCB0w7x6w7zEn8O8biBnw7xuY2VsIGjDomxpbmkgYmlsbWVrIHZlIGJ1bmEgdXltYWtsYSBzb3J1bWx1ZHVyLgogICAgPC9kaXY+CiAgPC9kaXY+CiAgPGRpdiBjbGFzcz0idHV6dWstc2VjdGlvbiIgZGF0YS1kZWxheT0iMSI+CiAgICA8ZGl2IGNsYXNzPSJ0dXp1ay1zZWN0aW9uLWhlYWRlciI+CiAgICAgIDxzcGFuIGNsYXNzPSJ0dXp1ay1zZWN0aW9uLW51bSI+SUk8L3NwYW4+CiAgICAgIDxzcGFuIGNsYXNzPSJ0dXp1ay1zZWN0aW9uLXRpdGxlIj7EsGxrZWxlcjwvc3Bhbj4KICAgIDwvZGl2PgogICAgPGRpdiBjbGFzcz0idHV6dWstc2VjdGlvbi1ib2R5Ij4KICAgICAgPGRpdiBjbGFzcz0idHV6dWstcnVsZSI+CiAgICAgICAgPHNwYW4gY2xhc3M9InR1enVrLXJ1bGUtbnVtIj4xPC9zcGFuPgogICAgICAgIDxkaXY+PGRpdiBjbGFzcz0idHV6dWstcnVsZS10aXRsZSI+SHV6dXIgZXNhc3TEsXI8L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJ0dXp1ay1ydWxlLXRleHQiPkhlcmtlcyB0b3BsdWx1xJ91biBodXp1cnVudSBrb3J1bWFrbGEgecO8a8O8bWzDvGTDvHIuIEdlcmVrc2l6IGdlcmdpbmxpaywgc2VydCB0YXJ0xLHFn21hIHZlIGh1enVyIGJvenVjdSB0dXR1bWxhcmEgeWVyIHlva3R1ci48L2Rpdj48L2Rpdj4KICAgICAgPC9kaXY+CiAgICAgIDxkaXYgY2xhc3M9InR1enVrLXJ1bGUiPgogICAgICAgIDxzcGFuIGNsYXNzPSJ0dXp1ay1ydWxlLW51bSI+Mjwvc3Bhbj4KICAgICAgICA8ZGl2PjxkaXYgY2xhc3M9InR1enVrLXJ1bGUtdGl0bGUiPlNheWfEsSB2YXpnZcOnaWxtZXpkaXI8L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJ0dXp1ay1ydWxlLXRleHQiPkZpa2lyIGF5csSxbMSxa2xhcsSxIGRvxJ9hbGTEsXIuIEFuY2FrIGhha2FyZXQsIGHFn2HEn8SxbGFtYSwgZMSxxZ9sYW1hIHZlIGJlbnplcmkgZGF2cmFuxLHFn2xhcmEgYXNsYSBtw7xzYW1haGEgZ8O2c3RlcmlsbWV6LjwvZGl2PjwvZGl2PgogICAgICA8L2Rpdj4KICAgICAgPGRpdiBjbGFzcz0idHV6dWstcnVsZSI+CiAgICAgICAgPHNwYW4gY2xhc3M9InR1enVrLXJ1bGUtbnVtIj4zPC9zcGFuPgogICAgICAgIDxkaXY+PGRpdiBjbGFzcz0idHV6dWstcnVsZS10aXRsZSI+S2FyZGXFn2xpayBlbWVrIGlzdGVyPC9kaXY+CiAgICAgICAgPGRpdiBjbGFzcz0idHV6dWstcnVsZS10ZXh0Ij5Ub3BsdWx1xJ91biBiaXIgcGFyw6dhc8SxIG9sbWFrLCBpbWvDom5sYXIgZMOiaGlsaW5kZSBha3RpZiBrYXTEsWzEsW3EsSB2ZXlhIGthdMSxbGFtYWTEscSfxLFuZGEgZGFoaSBidSBiYcSfYSDDtnplbiBnw7ZzdGVybWV5aSBnZXJla3RpcmlyLjwvZGl2PjwvZGl2PgogICAgICA8L2Rpdj4KICAgICAgPGRpdiBjbGFzcz0idHV6dWstcnVsZSI+CiAgICAgICAgPHNwYW4gY2xhc3M9InR1enVrLXJ1bGUtbnVtIj40PC9zcGFuPgogICAgICAgIDxkaXY+PGRpdiBjbGFzcz0idHV6dWstcnVsZS10aXRsZSI+S8SxcmfEsW5sxLFrbGFyIMOnw7Z6w7xsw7xyLCB0YcWfxLFubWF6PC9kaXY+CiAgICAgICAgPGRpdiBjbGFzcz0idHV6dWstcnVsZS10ZXh0Ij5UYXJ0xLHFn21hIHZlIGRhcmfEsW5sxLFrbGFyIGl5aSBuaXlldCwgZW1wYXRpIHZlIGfDtm7DvGwgYWxtYSBpcmFkZXNpeWxlIMOnw7Z6w7xsw7xyLiBLw7xzbMO8ayBRLUdBTkcnZGUga2FsxLFjxLEgb2xhbWF6LjwvZGl2PjwvZGl2PgogICAgICA8L2Rpdj4KICAgIDwvZGl2PgogIDwvZGl2PgogIDxkaXYgY2xhc3M9InR1enVrLXNlY3Rpb24iIGRhdGEtZGVsYXk9IjIiPgogICAgPGRpdiBjbGFzcz0idHV6dWstc2VjdGlvbi1oZWFkZXIiPgogICAgICA8c3BhbiBjbGFzcz0idHV6dWstc2VjdGlvbi1udW0iPklJSTwvc3Bhbj4KICAgICAgPHNwYW4gY2xhc3M9InR1enVrLXNlY3Rpb24tdGl0bGUiPkRpc2lwbGluIHZlIFlhcHTEsXLEsW1sYXI8L3NwYW4+CiAgICA8L2Rpdj4KICAgIDxkaXYgY2xhc3M9InR1enVrLXNlY3Rpb24tYm9keSI+CiAgICAgIDxkaXYgY2xhc3M9InNhbmN0aW9uLWdyaWQiPgogICAgICAgIDxkaXYgY2xhc3M9InNhbmN0aW9uLWNhcmQiPjxkaXYgY2xhc3M9InNhbmN0aW9uLWxhYmVsIHV5YXJpIj5VeWFyxLE8L2Rpdj48ZGl2IGNsYXNzPSJzYW5jdGlvbi1kZXNjIj5IYWZpZiBpaGxhbGxlciwgaWxrIHRla3JhcjwvZGl2PjwvZGl2PgogICAgICAgIDxkaXYgY2xhc3M9InNhbmN0aW9uLWNhcmQiPjxkaXYgY2xhc3M9InNhbmN0aW9uLWxhYmVsIHV6YWtsYXN0aXJtYSI+VXpha2xhxZ90xLFybWE8L2Rpdj48ZGl2IGNsYXNzPSJzYW5jdGlvbi1kZXNjIj5PcnRhIGHEn8SxcmzEsWtsxLEgaWhsYWxsZXI8L2Rpdj48L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJzYW5jdGlvbi1jYXJkIj48ZGl2IGNsYXNzPSJzYW5jdGlvbi1sYWJlbCBpaHJhYyI+xLBocmHDpzwvZGl2PjxkaXYgY2xhc3M9InNhbmN0aW9uLWRlc2MiPkHEn8SxciB2ZXlhIHRla3JhcmxheWFuIGlobGFsbGVyPC9kaXY+PC9kaXY+CiAgICAgIDwvZGl2PgogICAgICA8ZGl2IGNsYXNzPSJzYW5jdGlvbi1ub3RlIj7EsGhsYWxpbiBhxJ/EsXJsxLHEn8SxLCBracWfaW5pbiB0dXR1bXUsIHBpxZ9tYW5sxLHEn8SxLCB0ZWxhZmkgaXJhZGVzaSB2ZSB0ZWtyYXIgZHVydW11IGRpa2thdGUgYWzEsW5hcmFrIHlhcHTEsXLEsW0gYmVsaXJsZW5pci4gS2FyYXIsIGlsZ2lsaW5pbiBzYXZ1bm1hc8SxIGFsxLFuZMSxa3RhbiBzb25yYSB2ZXJpbGlyIHZlIHV5Z3VsYW1hIHNvbnJhc8SxbmRhIHRvcGx1bHXEn2EgZHV5dXJ1bHVyLjwvZGl2PgogICAgPC9kaXY+CiAgPC9kaXY+CjwvZGl2Pg==';
-const VARSAYILAN_TUZUK = atob(VARSAYILAN_TUZUK_B64);
+try{
+  const b64=VARSAYILAN_TUZUK_B64;
+  const bin=atob(b64);
+  const bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+  const VARSAYILAN_TUZUK=new TextDecoder('utf-8').decode(bytes);
+  window.VARSAYILAN_TUZUK=VARSAYILAN_TUZUK;
+}catch(e){window.VARSAYILAN_TUZUK='<p>Tüzük yüklenemedi.</p>';}
 
 function renderTuzuk(){
   const gorunum=document.getElementById('tuzukGorunum');
@@ -2789,7 +2840,7 @@ function reqSaveEvent(){
       if(m){
         m.puan=(m.puan||0)+puan;
         await cmsYaz('MEMBER_UPDATE',{...m,_id:m._id||m.id});
-        await puanArsivEkle(r,puan,`${tur} — ${fmtDate(date)}`,'etkinlik',eventId);
+        await puanArsivEkle(r,puan,tur+' — '+fmtDate(date),'etkinlik',eventId);
       }
     }
     addLog('Etkinlik eklendi',`${tur} — ${fmtDate(date)}, ${katilimcilar.length} katılımcı, +${puan} puan`);
