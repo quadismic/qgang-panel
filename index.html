@@ -1490,7 +1490,10 @@ function renderButce(){
     const renk=b.tur==='gelir'?'#9fe1cb':'#e24b4a';
     const isaret=b.tur==='gider'?'-':'';
     const bid=b._id||b.id;
-    const silBtn=izin('butceDuzenle')?('<td><button class="btn btn-danger btn-sm" onclick="reqDeleteButce(\'' + bid + '\')"><i class="ti ti-trash"></i></button></td>'):'';
+    const silBtn=izin('butceDuzenle')||SESSION.rol==='Lider'
+      ?'<td><button class="btn btn-danger btn-sm" onclick="reqDeleteButce(\''+bid+'\')"><i class="ti ti-trash"></i></button></td>':'';
+    tbody+='<tr>'
+      +'<td style="font-size:11px;color:#888">'+fmtDate(b.tarih)+'</td>'
       +'<td>'+(b.aciklama||'-')+'</td>'
       +'<td style="font-size:11px;color:#888">'+(b.kategori||'Diğer')+'</td>'
       +'<td><span class="badge badge-'+turClass+'">'+turYazi+'</span></td>'
@@ -1519,9 +1522,10 @@ function reqButce(){
   const aciklama=document.getElementById('b_aciklama').value.trim();
   const kategori=document.getElementById('b_kategori').value;
   if(!tutar||!aciklama){alert('Tutar ve açıklama zorunlu.');return}
-  confirm2('İşlem ekle',`<strong>${tur==='gelir'?'Gelir':'Gider'}</strong>: ${fmtTL(tutar)}<br>${aciklama}`,async()=>{
+  const turYaziReq=tur==='gelir'?'Gelir':'Gider';
+  confirm2('İşlem ekle','<strong>'+turYaziReq+'</strong>: '+fmtTL(tutar)+'<br>'+aciklama,async()=>{
     const yeni={tur,tarih,tutar,aciklama,kategori};
-    addLog('Bütçe işlemi',`${tur==='gelir'?'Gelir':'Gider'}: ${fmtTL(tutar)} — ${aciklama}`);save();
+    addLog('Bütçe işlemi',turYaziReq+': '+fmtTL(tutar)+' — '+aciklama);save();
     await cmsYaz('BUDGET_ADD',yeni);
     renderButce();renderDashboard();
     document.getElementById('b_tutar').value='';document.getElementById('b_aciklama').value='';
@@ -2735,7 +2739,17 @@ function buildOrgSVG(animated){
   return svg;
 }
 
-function renderOrg(){document.getElementById('orgWrap').innerHTML=buildOrgSVG(true)}
+function renderOrg(){
+  // CMS'den taze veri çek, sonra org şemasını güncelle
+  cmsOku().then(function(veri){
+    if(veri&&veri.members&&veri.members.length){
+      members=veri.members.map(function(m){return Object.assign({},m,{id:m._id||m.id});});
+    }
+    document.getElementById('orgWrap').innerHTML=buildOrgSVG(true);
+  }).catch(function(){
+    document.getElementById('orgWrap').innerHTML=buildOrgSVG(true);
+  });
+}
 function orgKodUret(){
   if(!izin('kodUret'))return;
   const svgCode=buildOrgSVG(false);
