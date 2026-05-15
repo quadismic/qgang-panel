@@ -198,6 +198,8 @@ tr:hover td{background:#1a1a1a}
 svg.org{display:inline-block}
 @keyframes orgFadeIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
 .org-node-anim{opacity:0;animation:orgFadeIn .4s ease forwards}
+.org-gozlemci rect{fill:#111;stroke:#2a2a2a;stroke-width:0.5}
+.org-gozlemci .t1{fill:#555;font-size:10px;font-weight:400}
 .org-lider rect{fill:#2c2c2a;stroke:#888780;stroke-width:0.5}
 .org-lider text.t1{fill:#d3d1c7;font-size:12px;font-weight:600}
 .org-lider text.t2{fill:#888780;font-size:10px}
@@ -2617,15 +2619,23 @@ async function yedegiAl(){
 // ORG SEMA
 //
 function buildOrgSVG(animated){
-  const W=700,NW=130,NH=44,UW=95,UH=36,GAP=12;
-  const lider=members.find(m=>m.rutbe==='Lider');
-  const vekilharclar=members.filter(m=>m.rutbe==='Vekilharç');
-  const kaptanlar=members.filter(m=>m.rutbe==='Kaptan');
-  const tegmenler=members.filter(m=>m.rutbe==='Teğmen');
-  const uyeler=members.filter(m=>m.rutbe==='Üye'||m.rutbe==='Gözlemci');
+  const aktifUyeler=members.filter(function(m){
+    const d=m.durum||'Aktif';
+    return d!=='Arşiv'&&d!=='Arsiv'&&d!=='Pasif';
+  });
+  const lider=aktifUyeler.find(function(m){return m.rutbe==='Lider';});
+  const vekilharclar=aktifUyeler.filter(function(m){return m.rutbe==='Vekilharç';});
+  const kaptanlar=aktifUyeler.filter(function(m){return m.rutbe==='Kaptan';});
+  const tegmenler=aktifUyeler.filter(function(m){return m.rutbe==='Teğmen';});
+  const uyeler=aktifUyeler.filter(function(m){return m.rutbe==='Üye';});
+  const gozlemciler=aktifUyeler.filter(function(m){return m.rutbe==='Gözlemci';});
+
+  const W=700,NW=130,NH=44,UW=95,UH=36,GZW=85,GZH=30,GAP=12;
 
   const UCOLS=Math.min(uyeler.length||1,6);
   const uRows=uyeler.length?Math.ceil(uyeler.length/UCOLS):0;
+  const GZCOLS=Math.min(gozlemciler.length||1,7);
+  const gzRows=gozlemciler.length?Math.ceil(gozlemciler.length/GZCOLS):0;
 
   // Yukseklik hesapla
   let svgH=20;
@@ -2633,7 +2643,8 @@ function buildOrgSVG(animated){
   const VY=svgH; svgH+=vekilharclar.length?NH+40:50;
   const KY=svgH; svgH+=kaptanlar.length?NH+40:0;
   const TY=svgH; svgH+=tegmenler.length?NH+40:0;
-  const UY=svgH; if(uyeler.length) svgH+=uRows*(UH+8)+20;
+  const UY=svgH; if(uyeler.length) svgH+=uRows*(UH+8)+30;
+  const GZY=svgH; if(gozlemciler.length) svgH+=gzRows*(GZH+6)+20;
 
   const cx=W/2;
   let animDelay=0;
@@ -2731,6 +2742,30 @@ function buildOrgSVG(animated){
         if(row===0) svg+=line(ncx,UY-10,ncx,ny,false,animDelay);
         svg+=nodeG('org-uye',nx,ny,UW,UH,m.rumuz,'Üye',animDelay+30);
         animDelay+=30;
+      });
+    }
+  }
+
+  // GOZLEMCILER - ayri blok, daha kucuk nodlar
+  if(gozlemciler.length){
+    const prevY=uyeler.length?UY+uRows*(UH+8):tegmenler.length?TY+NH:kaptanlar.length?KY+NH:vekilharclar.length?VY+NH:LY+NH;
+    svg+=line(cx,prevY,cx,GZY-8,true,animDelay);
+    const gzLbl='<text style="fill:#555;font-size:10px;font-family:inherit" text-anchor="middle" x="'+cx+'" y="'+(GZY-12)+'">Gözlemciler</text>';
+    svg+=gzLbl;
+    for(let row=0;row<gzRows;row++){
+      const rowItems=gozlemciler.slice(row*GZCOLS,(row+1)*GZCOLS);
+      const sx=rowCX(rowItems.length,GZW);
+      const ny=GZY+row*(GZH+6);
+      if(row===0){
+        const left=sx+GZW/2, right=sx+(rowItems.length-1)*(GZW+GAP)+GZW/2;
+        if(rowItems.length>1) svg+=line(left,GZY-8,right,GZY-8,true,animDelay);
+      }
+      rowItems.forEach(function(m,i){
+        const nx=sx+i*(GZW+GAP), ncx=nx+GZW/2;
+        if(row===0) svg+=line(ncx,GZY-8,ncx,ny,true,animDelay);
+        const anim2=animated?'class="org-node-anim" style="animation-delay:'+animDelay+'ms"':'';
+        svg+='<g '+anim2+'><g class="org-node org-gozlemci"><rect x="'+nx+'" y="'+ny+'" width="'+GZW+'" height="'+GZH+'" rx="5"/><text class="t1" style="font-size:10px" x="'+(nx+GZW/2)+'" y="'+(ny+GZH/2)+'" text-anchor="middle" dominant-baseline="central">'+m.rumuz+'</text></g></g>';
+        animDelay+=20;
       });
     }
   }
