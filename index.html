@@ -1268,7 +1268,7 @@ function renderPuan(){
   if(!izin('puanDuzenle')&&SESSION.rol!=='Lider') return;
 
   const hr=document.createElement('hr');hr.className='sep';editor.appendChild(hr);
-  const title=document.createElement('div');title.className='section-title';title.textContent='Puan ekle / çıkar';editor.appendChild(title);
+  const title=document.createElement('div');title.className='section-title';title.textContent='Puan Düzenleme';editor.appendChild(title);
   const card=document.createElement('div');card.className='card';
 
   // Üye sırası (rütbeye göre)
@@ -1625,14 +1625,13 @@ async function renderErisimBoard(){
   });
   thHtml+='</tr>';
 
-  const tblEl=document.createElement('table');tblEl.style.cssText='width:100%;border-collapse:collapse;font-size:12px';
-  const theadEl=document.createElement('thead');theadEl.innerHTML='<tr>'+thHtml+'</tr>';tblEl.appendChild(theadEl);
-  const tbodyEl=document.createElement('tbody');
+  const tbl=document.createElement('table');tbl.style.cssText='width:100%;border-collapse:collapse;font-size:12px';
+  const thead=document.createElement('thead');thead.innerHTML='<tr>'+thHtml+'</tr>';tbl.appendChild(thead);
+  const tbody=document.createElement('tbody');
   izinler.forEach(function(key){
     const tr=document.createElement('tr');
     const lbl=document.createElement('td');lbl.style.cssText='padding:7px 8px;border-bottom:0.5px solid #222;color:#d3d1c7';lbl.textContent=IZIN_ETIKETLER[key];tr.appendChild(lbl);
     ROLLER_LISTE.forEach(function(rol){
-      const checked=(aktifIzinler[rol]&&aktifIzinler[rol][key])?'checked':'';
       const td=document.createElement('td');
       td.style.cssText='text-align:center;padding:7px 8px;border-bottom:0.5px solid #222';
       const inp=document.createElement('input');
@@ -1646,8 +1645,8 @@ async function renderErisimBoard(){
     tbody.appendChild(tr);
   });
   tbl.appendChild(tbody);
-  const wrapEl=document.createElement('div');wrapEl.style.overflowX='auto';wrapEl.appendChild(tbl);
-  const board=document.getElementById('izinBoard');board.innerHTML='';board.appendChild(wrapEl);
+  const wrap=document.createElement('div');wrap.style.overflowX='auto';wrap.appendChild(tbl);
+  const board=document.getElementById('izinBoard');board.innerHTML='';board.appendChild(wrap);
 }
 
 function izinDegistir(rol,key,deger){
@@ -2046,6 +2045,66 @@ async function reqOylamaSil(id){
   confirm2('Oylamayı sil','Bu oylama kalıcı olarak silinecek.',async()=>{
     await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'OYLAMA_DELETE',id})});
+    addLog('Oylama silindi','');save();
+    renderOylama();
+  });
+}
+
+async function reqOylamaOlustur(){
+  const turEl=document.getElementById('oy_tur');
+  const baslikEl=document.getElementById('oy_baslik');
+  const aciklamaEl=document.getElementById('oy_aciklama');
+  const secEl=document.getElementById('oy_secenekler');
+  if(!baslikEl||!secEl){alert('Form alanları bulunamadı.');return;}
+  const tur=turEl?turEl.value:'Anket';
+  const baslik=baslikEl.value.trim();
+  const aciklama=aciklamaEl?aciklamaEl.value.trim():'';
+  const secStr=secEl.value.trim();
+  if(!baslik||!secStr){alert('Başlık ve seçenekler zorunlu.');return;}
+  const secenekler=secStr.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+  if(secenekler.length<2){alert('En az 2 seçenek gerekli.');return;}
+  const yeni={baslik:baslik,aciklama:aciklama,tur:tur,
+    secenekler:JSON.stringify(secenekler),oylar:'{}',
+    olusturan:SESSION.rumuz,
+    tarih:new Date().toLocaleDateString('tr-TR'),aktif:true};
+  try{
+    const res=await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'OYLAMA_ADD',item:yeni})});
+    const data=await res.json();
+    if(!data.success)throw new Error(data.error||'Sunucu hatası');
+    addLog('Oylama oluşturuldu',baslik);save();
+    closeModal();
+    renderOylama();
+  }catch(e){alert('Hata: '+e.message);}
+}
+
+async function reqOyVer(oylamaId,secim){
+  const oy=oylamalar.find(function(o){return (o._id||o.id)===oylamaId;});
+  if(!oy||oy.aktif===false){alert('Bu oylama kapalı.');return;}
+  if(oy.tur==='Seçim'||oy.tur==='Secim'){
+    const rutbeSiraOy={Lider:0,'Vekilharç':1,Kaptan:2,'Teğmen':3,'Üye':4,'Gözlemci':5};
+    const rSira=rutbeSiraOy[SESSION.rol]!==undefined?rutbeSiraOy[SESSION.rol]:9;
+    if(rSira>4){alert('Seçimlere yalnızca Üye ve üstü rütbeler katılabilir.');return;}
+  }
+  try{
+    await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'OY_VER',id:oylamaId,item:{rumuz:SESSION.rumuz,secim:secim}})});
+    addLog('Oy verildi',oy.baslik+' - '+secim);save();
+    renderOylama();
+  }catch(e){alert('Hata: '+e.message);}
+}
+
+async function reqOylakapat(id,aktif){
+  const oy=oylamalar.find(function(o){return (o._id||o.id)===id;});if(!oy)return;
+  await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'OYLAMA_UPDATE',item:{...oy,_id:id,aktif:aktif}})});
+  renderOylama();
+}
+
+async function reqOylamaSil(id){
+  confirm2('Oylamayı sil','Bu oylama kalıcı olarak silinecek.',async function(){
+    await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'OYLAMA_DELETE',id:id})});
     addLog('Oylama silindi','');save();
     renderOylama();
   });
@@ -2722,8 +2781,8 @@ function openModal(type,data){
         <div class="form-group" style="margin-bottom:8px">
           <label>Tür</label>
           <select id="oy_tur">
-            <option value="Anket">Anket — Genel istişare</option>
-            <option value="Seçim">Seçim — Önemli karar (Üye+ katılır)</option>
+            <option value="Anket">Anket</option>
+            <option value="Seçim">Seçim</option>
           </select>
         </div>
         <div class="form-group" style="margin-bottom:8px"><label>Başlık *</label><input id="oy_baslik" placeholder="Oylama konusu..."></div>
@@ -2773,29 +2832,34 @@ async function reqDavetEkle(){
 }
 
 async function reqDisiplinKaydet(){
-  if(!izin('disiplinUygula'))return;
-  const uye=document.getElementById('dis_uye').value;
-  const cezaTuru=document.getElementById('dis_ceza').value;
-  const gerekce=document.getElementById('dis_gerekce').value.trim();
-  const tuzukMaddesi=document.getElementById('dis_madde').value.trim();
-  const tarih=document.getElementById('dis_tarih').value;
+  if(!izin('disiplinUygula')&&SESSION.rol!=='Lider'){alert('Bu işlem için yetkiniz yok.');return}
+  const uyeEl=document.getElementById('dis_uye');
+  const cezaEl=document.getElementById('dis_ceza');
+  const gerekceEl=document.getElementById('dis_gerekce');
+  const maddeEl=document.getElementById('dis_madde');
+  const tarihEl=document.getElementById('dis_tarih');
+  if(!uyeEl||!cezaEl||!gerekceEl){alert('Form alanları bulunamadı.');return}
+  const uye=uyeEl.value;
+  const cezaTuru=cezaEl.value;
+  const gerekce=gerekceEl.value.trim();
+  const tuzukMaddesi=maddeEl?maddeEl.value.trim():'';
+  const tarih=tarihEl?tarihEl.value:'';
   if(!gerekce){alert('Gerekçe zorunlu.');return}
-  confirm2('Disiplin uygula',`<strong>${uye}</strong> — ${cezaTuru}<br><span style="font-size:12px">${gerekce}</span>`,async()=>{
+  confirm2('Disiplin uygula','<strong>'+uye+'</strong> — '+cezaTuru+'<br><span style="font-size:12px">'+gerekce+'</span>',async()=>{
     const yeni={uye,cezaTuru,gerekce,tuzukMaddesi,tarih,uygulayan:SESSION.rumuz,durum:'Aktif'};
-    addLog('Disiplin uygulandı',`${uye} — ${cezaTuru}`);save();
+    disiplin.unshift(yeni);
+    addLog('Disiplin uygulandı',uye+' — '+cezaTuru);save();
     closeModal();
-    await cmsYaz('DISIPLIN_ADD',yeni);
-
+    const result=await cmsYaz('DISIPLIN_ADD',yeni);
+    if(result&&result.result){disiplin[0]={...yeni,...result.result};}
     // Uzaklastirma veya Ihrac → uyeyi Cezali yap
-    if(cezaTuru==='Uzaklaştırma'||cezaTuru==='İhraç'){
-      const m=members.find(m=>m.rumuz===uye);
+    if(cezaTuru==='Uzaklaştırma'||cezaTuru==='İhraç'||cezaTuru==='Uzaklastrma'||cezaTuru==='Ihrac'){
+      const m=members.find(function(m){return m.rumuz===uye;});
       if(m){
-        const yeniDurum=cezaTuru==='İhraç'?'Arşiv':'Cezalı';
+        const yeniDurum=(cezaTuru==='İhraç'||cezaTuru==='Ihrac')?'Arşiv':'Cezalı';
         m.durum=yeniDurum;
         await cmsYaz('MEMBER_UPDATE',{...m,_id:m._id||m.id,durum:yeniDurum});
-        // QKullanicilar'da da engelle
         await cmsYaz('USER_RUTBE_SYNC',{rumuz:uye,rol:m.rutbe,durum:yeniDurum==='Arşiv'?'engelli':'cezali'});
-        addLog('Otomatik durum',`${uye} → ${yeniDurum} (${cezaTuru} nedeniyle)`);
       }
     }
     renderDisiplin();renderMembers();renderDashboard();
