@@ -795,7 +795,17 @@ function adimIleri(mevcut){
     const dogum=document.getElementById('k_dogum').value;
     const sehir=document.getElementById('k_sehir').value.trim();
     const whatsapp=document.getElementById('k_whatsapp').value.trim();
-    if(!rumuz||!adSoyad||!email||!dogum||!sehir||!whatsapp){hata.textContent='Tüm alanları doldurun.';hata.style.display='block';return}
+    if(!rumuz||!adSoyad||!email||!dogum||!sehir||!whatsapp){hata.textContent='Tüm alanları doldurun.';hata.style.display='block';return;}
+    if(!/^[a-zA-Z0-9_\-]{3,20}$/.test(rumuz)){
+      hata.textContent='Rumuz 3-20 karakter olmalı; yalnızca harf, rakam, _ veya - içerebilir.';
+      hata.style.display='block';return;
+    }
+    // Anlık rumuz çakışma kontrolü
+    const mevcutRumuzlar=members.map(function(m){return (m.rumuz||'').toLowerCase();});
+    if(mevcutRumuzlar.includes(rumuz.toLowerCase())){
+      hata.textContent='Bu rumuz zaten kullanılıyor. Lütfen farklı bir rumuz seç.';
+      hata.style.display='block';return;
+    }
     adimGoster(3);
   } else if(mevcut===3){
     const gunluk=document.querySelector('input[name="gunlukDurum"]:checked');
