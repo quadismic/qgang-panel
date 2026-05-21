@@ -494,10 +494,6 @@ svg.org{display:inline-block}
     </button>
   </div>
 
-
-    </div>
-  </div>
-
   <!-- Yönetim dropdown -->
   <div class="nav-item">
     <button class="nav-btn" onclick="toggleDropdown('ddYonetim',this)" id="navYonetimBtn">
@@ -528,8 +524,7 @@ svg.org{display:inline-block}
       <div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-alert-circle" style="color:#fac775"></i> Uyarılar</div>
       <div id="basvuruUyari"></div>
       <div id="alertsBox"></div>
-      <!-- Gorev talebi butonu - Uye ve uzeri -->
-      <div id="gorevTalepBtnWrap" style="margin-bottom:10px"></div>
+
     </div>
     <div class="card" style="padding:.9rem">
       <div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-calendar-event" style="color:#9fe1cb"></i> Yaklaşan Etkinlikler</div>
@@ -584,9 +579,13 @@ svg.org{display:inline-block}
 
 <!-- GÖREVLER -->
 <div id="tab-gorev" class="tab">
+  <!-- Görev Talebi - Üye ve üzeri rütbeler için -->
+  <div id="gorevTalepBtnWrap" style="margin-bottom:10px"></div>
+  <!-- Bekleyen Talepler (Yönetim için) -->
   <div id="gorevTalepListesi"></div>
+  <!-- Görev Atama -->
   <div id="gorevEditor"></div>
-  <div class="section-title">Görev dağılımı</div>
+  <div class="section-title">Görev Dağılımı</div>
   <div id="gorevList"></div>
 </div>
 
@@ -1148,11 +1147,11 @@ function rutbeBadge(r){
     Lider:'siyah', Vekilharç:'kirmizi', Kaptan:'mavi',
     Teğmen:'yesil', Üye:'sari', Gözlemci:'beyaz'
   };
-  return`<span class="badge badge-${m[r]||'beyaz'}">${r||'—'}</span>`
+  return'<span class="badge badge-'+(m[r]||'beyaz')+'">'+(r||'—')+'</span>'
 }
 function durumBadge(d){const m={Aktif:'aktif',Pasif:'pasif',Riskli:'riskli',Cezalı:'cezali',İzinde:'izinde',Arşiv:'arsiv'};return`<span class="badge badge-${m[d]||'pasif'}">${d}</span>`}
 function fmtTL(v){return Number(v).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₺'}
-function fmtDate(s){if(!s)return'-';try{const[y,mo,d]=s.split('-');return`${d}.${mo}.${y}`}catch{return s}}
+function fmtDate(s){if(!s)return'-';try{var p=s.split('-');return p[2]+'.'+p[1]+'.'+p[0];}catch(e){return s;}}
 function fmtDateTime(s){if(!s)return'-';const d=new Date(s);return d.toLocaleDateString('tr-TR')+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}
 function daysUntil(s){if(!s)return null;const n=new Date();n.setHours(0,0,0,0);const d=new Date(s);d.setHours(0,0,0,0);return Math.ceil((d-n)/(864e5))}
 function engelEkrani(){return`<div class="erisim-engel"><i class="ti ti-lock"></i>Bu bölüme erişim yetkiniz yok.</div>`}
@@ -1182,7 +1181,7 @@ function showTabDD(name, ddId, btnId){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById(btnId).classList.add('active');
   // Dropdown item'larini guncelle
-  document.querySelectorAll(`#${ddId} .nav-dd-item`).forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('#'+ddId+' .nav-dd-item').forEach(function(i){i.classList.remove('active');});
   // Sekmeyi goster
   _showTabContent(name);
 }
@@ -1210,13 +1209,13 @@ function _showTabContent(name){
 
 function confirm2(title,desc,onOk){
   const mc=document.getElementById('modalContainer');
-  mc.innerHTML=`<div class="modal-overlay"><div class="confirm-box">
-    <h3><i class="ti ti-alert-circle"></i> ${title}</h3>
-    <p>${desc}</p>
-    <div style="display:flex;gap:8px;justify-content:flex-end">
-      <button class="btn" onclick="closeModal()">İptal</button>
-      <button class="btn btn-warn" id="confirmOkBtn">Onayla</button>
-    </div></div></div>`;
+  mc.innerHTML='<div class="modal-overlay"><div class="confirm-box">'
+    +'<h3><i class="ti ti-alert-circle"></i> '+title+'</h3>'
+    +'<p>'+desc+'</p>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
+    +'<button class="btn" onclick="closeModal()">İptal</button>'
+    +'<button class="btn btn-warn" id="confirmOkBtn">Onayla</button>'
+    +'</div></div></div>';
   document.getElementById('confirmOkBtn').onclick=()=>{closeModal();onOk()};
 }
 
@@ -1234,9 +1233,9 @@ function renderDashboard(){
     <div class="stat-card"><div class="label">Görevsiz</div><div class="value" style="color:#fac775">${gorevSiz}</div></div>
     ${izin('butceGor')?`<div class="stat-card"><div class="label">Net kasa</div><div class="value" style="color:${net>=0?'#9fe1cb':'#e24b4a'};font-size:14px">${fmtTL(net)}</div></div>`:''}`;
   let alerts='';
-  if(riskli>0)alerts+=`<div class="alert-row alert-danger"><i class="ti ti-alert-triangle"></i> ${riskli} riskli üye</div>`;
-  if(pasif>0)alerts+=`<div class="alert-row alert-warn"><i class="ti ti-clock"></i> ${pasif} pasif üye</div>`;
-  if(gorevSiz>3)alerts+=`<div class="alert-row alert-info"><i class="ti ti-briefcase"></i> ${gorevSiz} üye görevsiz</div>`;
+  if(riskli>0)alerts+='<div class="alert-row alert-danger"><i class="ti ti-alert-triangle"></i> '+riskli+' riskli üye</div>';
+  if(pasif>0)alerts+='<div class="alert-row alert-warn"><i class="ti ti-clock"></i> '+pasif+' pasif üye</div>';
+  if(gorevSiz>3)alerts+='<div class="alert-row alert-info"><i class="ti ti-briefcase"></i> '+gorevSiz+' üye görevsiz</div>';
   const terfiBek=members.filter(m=>m.puan>=50&&m.rutbe!=='Siyah'&&m.rutbe!=='Mavi');
   if(terfiBek.length&&izin('uyeDuzenle'))alerts+=`<div class="alert-row alert-info"><i class="ti ti-arrow-up"></i> ${terfiBek.length} terfi adayı</div>`;
   if(net<0&&izin('butceGor'))alerts+='<div class="alert-row alert-danger"><i class="ti ti-currency-lira"></i> Kasa negatife düştü!</div>';
@@ -1774,7 +1773,7 @@ async function reqSifreSifirla(mid,rumuz){
 }
 
 // Gorev Talebi
-const GOREV_TALEP_TURLERI=['Klan','Sosyal Medya','Icerik Uretimi','Etkinlik Organizasyonu','Teknik Destek','Diger'];
+// GOREV_TALEP_TURLERI artık GOREVLER ile aynı - GOREVLER kullanılıyor
 let gorevTalepleri=[];
 
 async function yeniMesajGonder(){
@@ -1847,8 +1846,7 @@ async function renderGorevTalepleri(){
       if(uyariEl){
         const mevcutHtml=uyariEl.innerHTML;
         if(!mevcutHtml.includes('gorev-talep-uyari')){
-          uyariEl.innerHTML+=`<div id="gorev-talep-uyari" class="alert-row alert-warn" style="cursor:pointer;margin-top:6px" onclick="showTabDD('gorev','ddTopluluk','navToplulukBtn')">
-            <i class="ti ti-checkbox"></i> <strong>${bildirimSayisi} bekleyen gorev talebi</strong></div>`;
+          uyariEl.innerHTML+='<div id="gorev-talep-uyari" class="alert-row alert-warn" style="cursor:pointer;margin-top:6px" onclick="showTabDD(\'gorev\',\'ddTopluluk\',\'navToplulukBtn\')"><i class="ti ti-checkbox"></i> <strong>'+bildirimSayisi+' bekleyen gorev talebi</strong></div>';
         }
       }
     }
@@ -1856,20 +1854,40 @@ async function renderGorevTalepleri(){
 }
 //
 function renderGorev(){
-  const rutbeSira={Lider:0,Vekilharç:1,Kaptan:2,Teğmen:3,Üye:4,Gözlemci:5};
-  const siraliUyeler=[...members].sort((a,b)=>((rutbeSira[a.rutbe]!==undefined?rutbeSira[a.rutbe]:9))-((rutbeSira[b.rutbe]!==undefined?rutbeSira[b.rutbe]:9)));
-  document.getElementById('gorevEditor').innerHTML=izin('gorevAta')?`
-    <div class="section-title">Görev ata</div>
-    <div class="card">
-      <div class="form-row">
-        <div class="form-group"><label>Üye</label><select id="gorevUye">${siraliUyeler.map(m=>`<option value="${m._id||m.id}">${m.rumuz} (${m.rutbe})</option>`).join('')}</select></div>
-        <div class="form-group"><label>Görev</label><select id="gorevTip">${GOREVLER.map(g=>`<option>${g}</option>`).join('')}</select></div>
-      </div>
-      <button class="btn btn-primary" onclick="reqGorev()"><i class="ti ti-check"></i> Ata</button>
-    </div>`:'';
-  const byG={};GOREVLER.forEach(g=>byG[g]=[]);
-  members.forEach(m=>{if(byG[m.gorev||'Yok'])byG[m.gorev||'Yok'].push(m.rumuz)});
-  document.getElementById('gorevList').innerHTML=GOREVLER.filter(g=>g!=='Yok').map(g=>`<div class="card" style="padding:.65rem .9rem;margin-bottom:6px"><div style="font-size:12px;font-weight:500;margin-bottom:5px;color:#d3d1c7">${g}</div><div class="member-chips">${byG[g].length?byG[g].map(r=>`<span class="chip">${r}</span>`).join(''):'<span style="font-size:11px;color:#555">Atanmış üye yok</span>'}</div></div>`).join('');
+  // Gorev talebi butonu - Uyeler icin goster
+  const gtW=document.getElementById('gorevTalepBtnWrap');
+  if(gtW){
+    function getRolSiraGT2(r){
+      if(r==='Lider')return 0;if(r&&r.includes('Vekil'))return 1;
+      if(r==='Kaptan')return 2;if(r&&r.includes('Te'))return 3;
+      if(r&&r.includes('ye'))return 4;return 5;
+    }
+    if(getRolSiraGT2(SESSION.rol)<=4){
+      gtW.innerHTML='<button class="btn btn-warn btn-sm" onclick="openModal(\'gorevTalep\')">'
+        +'<i class="ti ti-checkbox"></i> Görev Talebi Gönder</button><hr class="sep">';
+    } else {gtW.innerHTML='';}
+  }
+  const rutbeSira={'Lider':0,'Vekilharç':1,'Kaptan':2,'Teğmen':3,'Üye':4,'Gözlemci':5};
+  const siraliUyeler=[...members].sort(function(a,b){
+    return ((rutbeSira[a.rutbe]!==undefined?rutbeSira[a.rutbe]:9))-((rutbeSira[b.rutbe]!==undefined?rutbeSira[b.rutbe]:9));
+  });
+  const geEl=document.getElementById('gorevEditor');
+  if(izin('gorevAta')||SESSION.rol==='Lider'){
+    const uOpts=siraliUyeler.map(function(m){return'<option value="'+(m._id||m.id)+'">'+m.rumuz+' ('+m.rutbe+')</option>';}).join('');
+    const gOpts=GOREVLER.map(function(g){return'<option>'+g+'</option>';}).join('');
+    geEl.innerHTML='<div class="section-title">Görev Ata</div>'
+      +'<div class="card"><div class="form-row">'
+      +'<div class="form-group"><label>Üye</label><select id="gorevUye">'+uOpts+'</select></div>'
+      +'<div class="form-group"><label>Görev</label><select id="gorevTip">'+gOpts+'</select></div>'
+      +'</div><button class="btn btn-primary" onclick="reqGorev()"><i class="ti ti-check"></i> Ata</button></div>';
+  } else {geEl.innerHTML='';}
+  const byG={};
+  GOREVLER.forEach(function(g){byG[g]=[];});
+  members.forEach(function(m){if(byG[m.gorev||'Yok'])byG[m.gorev||'Yok'].push(m.rumuz);});
+  document.getElementById('gorevList').innerHTML=GOREVLER.filter(function(g){return g!=='Yok';}).map(function(g){
+    return'<div class="card" style="padding:.65rem .9rem;margin-bottom:6px"><div style="font-size:12px;font-weight:500;margin-bottom:5px;color:#d3d1c7">'+g+'</div>'
+      +'<div class="member-chips">'+(byG[g].length?byG[g].map(function(r){return'<span class="chip">'+r+'</span>';}).join(''):'<span style="font-size:11px;color:#555">Atanmış üye yok</span>')+'</div></div>';
+  }).join('');
 }
 
 function reqGorev(){
@@ -1900,6 +1918,13 @@ function renderEvents(){
     const header=document.createElement('div');header.className='ev-header';
     const title=document.createElement('div');title.className='ev-title';title.textContent=e.tur;
     header.appendChild(title);
+    if(izin('etkinlikEkle')||SESSION.rol==='Lider'){
+      const editBtn=document.createElement('button');
+      editBtn.className='btn btn-sm';editBtn.style.marginRight='4px';
+      editBtn.innerHTML='<i class="ti ti-edit"></i>';
+      editBtn.onclick=function(){reqEditEvent(eid);};
+      header.appendChild(editBtn);
+    }
     if(izin('etkinlikSil')){
       const btn=document.createElement('button');
       btn.className='btn btn-danger btn-sm';
@@ -1917,6 +1942,13 @@ function renderEvents(){
     if(e.not){const n=document.createElement('div');n.style.cssText='font-size:11px;color:#888;margin-top:5px';n.textContent=e.not;div.appendChild(n);}
     el.appendChild(div);
   });
+}
+
+function reqEditEvent(id){
+  if(!izin('etkinlikEkle')&&SESSION.rol!=='Lider')return;
+  const e=events.find(function(ev){return String(ev._id)===String(id)||String(ev.id)===String(id);});
+  if(!e)return;
+  openModal('editEvent',id);
 }
 
 function reqDeleteEvent(id){
@@ -2398,18 +2430,17 @@ async function reqBasvuruOnayla(id,rumuz){
     // 1. QKullanicilar'da aktif yap
     await cmsYaz('USER_APPROVE',id);
 
-    // 2. CMS'den taze veri çek, çakışma olmadığından emin ol
+    // 2. Doğrudan QMembers'da bu rumuzu ara (API ile, local state'e güvenme)
+    const rumuzLower=rumuz.toLowerCase();
     const tazeVeri=await cmsOku();
+    let mevcutVar=false;
     if(tazeVeri&&tazeVeri.members){
       members=tazeVeri.members.map(function(m){return Object.assign({},m,{id:m._id||m.id});});
+      mevcutVar=members.some(function(m){return m.rumuz&&m.rumuz.toLowerCase()===rumuzLower;});
     }
 
-    // 3. QMembers'da büyük/küçük harf duyarsız kontrol
-    const mevcutUye=members.find(function(m){
-      return m.rumuz&&m.rumuz.toLowerCase()===rumuz.toLowerCase();
-    });
-
-    if(!mevcutUye){
+    // 3. Sadece gerçekten yoksa ekle
+    if(!mevcutVar){
       const yeniUye={
         rumuz:rumuz, rutbe:'Gözlemci', durum:'Aktif',
         gorev:'Yok', puan:0,
@@ -2420,9 +2451,11 @@ async function reqBasvuruOnayla(id,rumuz){
       if(result&&result.result){
         members.push(Object.assign({},yeniUye,{_id:result.result._id,id:result.result._id}));
       }
+      addLog('Başvuru onaylandı - üye oluşturuldu',rumuz);
+    } else {
+      addLog('Başvuru onaylandı - üye zaten vardı',rumuz);
     }
-
-    addLog('Başvuru onaylandı',rumuz);save();
+    save();
     const uyari=document.getElementById('basvuruUyari');
     if(uyari) uyari.innerHTML='';
     await renderDavet();
@@ -2614,6 +2647,74 @@ async function reqOylamaSil(id){
     addLog('Oylama silindi','');save();
     renderOylama();
   });
+}
+
+async function reqUpdateEvent(eid){
+  const turEl=document.getElementById('ee_tur');
+  const tarihEl=document.getElementById('ee_tarih');
+  const puanEl=document.getElementById('ee_puan');
+  const katEl=document.getElementById('ee_kat');
+  if(!turEl||!tarihEl||!katEl)return;
+  const yeniTur=turEl.value.trim();
+  const yeniTarih=tarihEl.value;
+  const yeniPuan=Number(puanEl.value)||10;
+  const secilenler=Array.from(katEl.selectedOptions).map(function(o){return o.value;});
+
+  const eskiEtk=events.find(function(ev){return String(ev._id)===String(eid)||String(ev.id)===String(eid);});
+  if(!eskiEtk)return;
+  const eskiKat=parseKat(eskiEtk.katilimcilar);
+  const eskiPuan=Number(eskiEtk.puan)||10;
+
+  confirm2('Etkinliği Güncelle',
+    secilenler.length+' katılımcı · +'+yeniPuan+' puan',
+    async function(){
+      // Puan farkları hesapla
+      const cikanlar=eskiKat.filter(function(r){return !secilenler.includes(r);});
+      const eklenenler=secilenler.filter(function(r){return !eskiKat.includes(r);});
+      const puanFarki=yeniPuan-eskiPuan;
+
+      // Eski katılımcılardan eskiPuan düş
+      for(const r of cikanlar){
+        const m=members.find(function(m){return m.rumuz===r;});
+        if(m){
+          m.puan=Math.max(0,(Number(m.puan)||0)-eskiPuan);
+          await cmsYaz('MEMBER_UPDATE',Object.assign({},m,{_id:m._id||m.id}));
+          await puanArsivEkle(r,-eskiPuan,'Etkinlik düzenlendi - çıkarıldı: '+yeniTur,'etkinlik',eid);
+        }
+      }
+      // Yeni katılımcılara yeniPuan ekle
+      for(const r of eklenenler){
+        const m=members.find(function(m){return m.rumuz===r;});
+        if(m){
+          m.puan=(Number(m.puan)||0)+yeniPuan;
+          await cmsYaz('MEMBER_UPDATE',Object.assign({},m,{_id:m._id||m.id}));
+          await puanArsivEkle(r,yeniPuan,'Etkinlik düzenlendi - eklendi: '+yeniTur,'etkinlik',eid);
+        }
+      }
+      // Kalan eski katılımcılara puan farkı uygula
+      if(puanFarki!==0){
+        const kalanlar=eskiKat.filter(function(r){return secilenler.includes(r);});
+        for(const r of kalanlar){
+          const m=members.find(function(m){return m.rumuz===r;});
+          if(m){
+            m.puan=Math.max(0,(Number(m.puan)||0)+puanFarki);
+            await cmsYaz('MEMBER_UPDATE',Object.assign({},m,{_id:m._id||m.id}));
+            if(puanFarki!==0) await puanArsivEkle(r,puanFarki,'Etkinlik puan güncellendi: '+yeniTur,'etkinlik',eid);
+          }
+        }
+      }
+
+      // Etkinliği güncelle
+      const guncEtk={_id:eid,tur:yeniTur,tarih:yeniTarih,puan:yeniPuan,katilimcilar:secilenler.join(','),not:eskiEtk.not||''};
+      await cmsYaz('EVENT_UPDATE',guncEtk);
+      const idx=events.findIndex(function(ev){return String(ev._id)===String(eid)||String(ev.id)===String(eid);});
+      if(idx>=0) events[idx]=Object.assign({},eskiEtk,guncEtk,{katilimcilar:secilenler});
+
+      addLog('Etkinlik güncellendi',yeniTur+' — '+yeniTarih);save();
+      closeModal();
+      renderEvents();renderPuan();renderDashboard();
+    }
+  );
 }
 
 async function reqOylamaOlustur(){
@@ -3389,8 +3490,54 @@ function openModal(type,data){
         </div>
       </div></div>`;
 
+  } else if(type==='editEvent'){
+    const eid=data;
+    const e=events.find(function(ev){return String(ev._id)===String(eid)||String(ev.id)===String(eid);});
+    if(!e)return;
+    function getRtbEtkE(r){
+      if(r==='Lider')return 0;if(r&&r.includes('Vekil'))return 1;
+      if(r==='Kaptan')return 2;if(r&&r.includes('Te'))return 3;
+      if(r&&r.includes('ye'))return 4;return 5;
+    }
+    const siraliEtkE=[...members].sort(function(a,b){
+      return getRtbEtkE(a.rutbe)-getRtbEtkE(b.rutbe)||a.rumuz.localeCompare(b.rumuz,'tr');
+    });
+    const mevcutKat=parseKat(e.katilimcilar);
+    const optsE=siraliEtkE.map(function(m){
+      const sec=mevcutKat.includes(m.rumuz)?'selected':'';
+      return'<option value="'+m.rumuz+'" '+sec+'>'+m.rumuz+' ('+m.rutbe+')</option>';
+    }).join('');
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3><i class="ti ti-edit"></i> Etkinliği Düzenle</h3>'
+      +'<div class="form-row">'
+      +'<div class="form-group"><label>Tür</label><input id="ee_tur" value="'+e.tur+'"></div>'
+      +'<div class="form-group"><label>Tarih</label><input type="date" id="ee_tarih" value="'+e.tarih+'"></div>'
+      +'<div class="form-group"><label>Puan</label><input type="number" id="ee_puan" value="'+(e.puan||10)+'" min="0"></div>'
+      +'</div>'
+      +'<div class="form-group" style="margin-bottom:8px">'
+      +'<label>Katılımcılar <span style="font-size:10px;color:#555">(Ctrl/Cmd ile çoklu seç)</span></label>'
+      +'<select id="ee_kat" multiple style="height:160px">'+optsE+'</select>'
+      +'</div>'
+      +'<div class="modal-footer">'
+      +'<button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" id="btnUpdateEvent"><i class="ti ti-check"></i> Güncelle</button>'
+      +'</div></div></div>';
+    // Onclick tırnak sorununu önlemek için event listener
+    setTimeout(function(){
+      const btn=document.getElementById('btnUpdateEvent');
+      if(btn)(function(id){btn.onclick=function(){reqUpdateEvent(id);};})(eid);
+    },50);
   } else if(type==='addEvent'&&izin('etkinlikEkle')){
-    const opts=members.map(m=>`<option value="${m.rumuz}">${m.rumuz}</option>`).join('');
+    function getRtbEtk(r){
+      if(r==='Lider')return 0;if(r&&r.includes('Vekil'))return 1;
+      if(r==='Kaptan')return 2;if(r&&r.includes('Te'))return 3;
+      if(r&&r.includes('ye'))return 4;return 5;
+    }
+    const siraliEtkUye=[...members].sort(function(a,b){
+      const ra=getRtbEtk(a.rutbe),rb=getRtbEtk(b.rutbe);
+      return ra!==rb?ra-rb:a.rumuz.localeCompare(b.rumuz,'tr');
+    });
+    const opts=siraliEtkUye.map(function(m){return'<option value="'+m.rumuz+'">'+m.rumuz+' ('+m.rutbe+')</option>';}).join('');
     mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
       <div class="modal-box"><h3>Yeni Etkinlik</h3>
         <div class="form-row">
@@ -3514,9 +3661,15 @@ function openModal(type,data){
         </div>
       </div></div>`;
   } else if(type==='yeniMesaj'){
+    const rutbeSiraMsg={Lider:0,'Vekilharç':1,Kaptan:2,'Teğmen':3,'Üye':4,'Gözlemci':5};
+    function getRtbMsg(r){
+      if(r==='Lider')return 0;if(r&&r.includes('Vekil'))return 1;
+      if(r==='Kaptan')return 2;if(r&&r.includes('Te'))return 3;
+      if(r&&r.includes('ye'))return 4;return 5;
+    }
     const uyeOpts=[...members].filter(function(m){return m.rumuz!==SESSION.rumuz;})
-      .sort(function(a,b){return a.rumuz.localeCompare(b.rumuz,'tr');})
-      .map(function(m){return'<option value="'+m.rumuz+'">'+m.rumuz+'</option>';}).join('');
+      .sort(function(a,b){const ra=getRtbMsg(a.rutbe),rb=getRtbMsg(b.rutbe);return ra!==rb?ra-rb:a.rumuz.localeCompare(b.rumuz,'tr');})
+      .map(function(m){return'<option value="'+m.rumuz+'">'+m.rumuz+' ('+m.rutbe+')</option>';}).join('');
     mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
       +'<div class="modal-box"><h3><i class="ti ti-message"></i> Yeni Mesaj</h3>'
       +'<div class="form-group" style="margin-bottom:8px"><label>Alıcı</label>'
@@ -3528,8 +3681,7 @@ function openModal(type,data){
       +'<button class="btn btn-warn" onclick="yeniMesajGonder()"><i class="ti ti-send"></i> Gönder</button>'
       +'</div></div></div>';
   } else if(type==='gorevTalep'){
-    const GTURL=GOREV_TALEP_TURLERI||['Klan','Sosyal Medya','Icerik Uretimi','Etkinlik','Teknik','Diger'];
-    const turOpts=GTURL.map(function(t){return'<option>'+t+'</option>';}).join('');
+    const turOpts=(GOREVLER||['Klan','Sosyal Medya','Yönetim','Özel','Yok']).map(function(t){return'<option>'+t+'</option>';}).join('');
     mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
       +'<div class="modal-box"><h3><i class="ti ti-checkbox"></i> Gorev Talebi</h3>'
       +'<p style="font-size:12px;color:#555;margin-bottom:12px">Ustlenmek istedigin gorevi ve aciklamani belirt. Yonetim inceleyecek.</p>'
