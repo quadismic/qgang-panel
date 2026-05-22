@@ -2430,23 +2430,14 @@ async function renderBasvurular(){
 
 async function reqBasvuruOnayla(id,rumuz){
   confirm2('Başvuruyu onayla','<strong>'+rumuz+'</strong> üyeliğe kabul edilecek ve Gözlemci olarak eklenecek.',async()=>{
-    // USER_APPROVE - artık API tarafı QMembers kontrolü yapıyor
-    const approveResult=await cmsYaz('USER_APPROVE',id);
-
-    // API zaten member oluşturmadıysa (eski kayıt vs) panel tarafı eklesin
-    if(approveResult&&approveResult.memberZatenVar){
-      // Zaten var, sadece local state'i güncelle
-      addLog('Başvuru onaylandı - üye zaten mevcut',rumuz);
-    } else {
-      // API ekledi veya hata - taze çek
-      const tazeVeri=await cmsOku();
-      if(tazeVeri&&tazeVeri.members){
-        members=tazeVeri.members.map(function(m){return Object.assign({},m,{id:m._id||m.id});});
-      }
-      addLog('Başvuru onaylandı',rumuz);
+    // USER_APPROVE - API tarafı QMembers kontrolü yapıyor
+    await cmsYaz('USER_APPROVE',id);
+    // Taze veri çek - push YOK
+    const tazeVeri=await cmsOku();
+    if(tazeVeri&&tazeVeri.members){
+      members=tazeVeri.members.map(function(m){return Object.assign({},m,{id:m._id||m.id});});
     }
-
-    save();
+    addLog('Başvuru onaylandı',rumuz);save();
     const uyari=document.getElementById('basvuruUyari');
     if(uyari) uyari.innerHTML='';
     await renderDavet();
@@ -3793,20 +3784,22 @@ function reqSaveMember(){
     katilim:katilim,dogum:dogum,ref:ref,not:not,wixMemberId:''};
   confirm2('Yeni üye ekle','<strong>'+rumuz+'</strong> — '+rutbe+' rütbesiyle ekleniyor.',async function(){
     closeModal();
-    // API'ye yazmadan önce son kez CMS'den kontrol et (race condition önlemi)
+    // CMS'den son kontrol - race condition önlemi
     const kontrol=await cmsOku();
     if(kontrol&&kontrol.members){
       members=kontrol.members.map(function(m){return Object.assign({},m,{id:m._id||m.id});});
       if(members.some(function(m){return m.rumuz&&m.rumuz.toLowerCase()===rumuz.toLowerCase();})){
-        alert(rumuz+' zaten kayıtlı, işlem iptal edildi.');
+        alert(rumuz+' zaten kayıtlı!');
         renderMembers();renderDashboard();
         return;
       }
     }
-    const result=await cmsYaz('MEMBER_ADD',yeni);
-    if(result&&result.result){
-      const eklenen=Object.assign({},yeni,{_id:result.result._id,id:result.result._id});
-      members.push(eklenen);
+    // Ekle
+    await cmsYaz('MEMBER_ADD',yeni);
+    // Push YOK - taze veri CMS'den çek
+    const tazeVeri=await cmsOku();
+    if(tazeVeri&&tazeVeri.members){
+      members=tazeVeri.members.map(function(m){return Object.assign({},m,{id:m._id||m.id});});
     }
     addLog('Üye eklendi',rumuz+' — '+rutbe);save();
     renderMembers();renderDashboard();
