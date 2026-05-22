@@ -2427,34 +2427,22 @@ async function renderBasvurular(){
 
 async function reqBasvuruOnayla(id,rumuz){
   confirm2('Başvuruyu onayla','<strong>'+rumuz+'</strong> üyeliğe kabul edilecek ve Gözlemci olarak eklenecek.',async()=>{
-    // 1. QKullanicilar'da aktif yap
-    await cmsYaz('USER_APPROVE',id);
+    // USER_APPROVE - artık API tarafı QMembers kontrolü yapıyor
+    const approveResult=await cmsYaz('USER_APPROVE',id);
 
-    // 2. Doğrudan QMembers'da bu rumuzu ara (API ile, local state'e güvenme)
-    const rumuzLower=rumuz.toLowerCase();
-    const tazeVeri=await cmsOku();
-    let mevcutVar=false;
-    if(tazeVeri&&tazeVeri.members){
-      members=tazeVeri.members.map(function(m){return Object.assign({},m,{id:m._id||m.id});});
-      mevcutVar=members.some(function(m){return m.rumuz&&m.rumuz.toLowerCase()===rumuzLower;});
-    }
-
-    // 3. Sadece gerçekten yoksa ekle
-    if(!mevcutVar){
-      const yeniUye={
-        rumuz:rumuz, rutbe:'Gözlemci', durum:'Aktif',
-        gorev:'Yok', puan:0,
-        katilim:new Date().toISOString().split('T')[0],
-        dogum:'', ref:'', not:'', wixMemberId:''
-      };
-      const result=await cmsYaz('MEMBER_ADD',yeniUye);
-      if(result&&result.result){
-        members.push(Object.assign({},yeniUye,{_id:result.result._id,id:result.result._id}));
-      }
-      addLog('Başvuru onaylandı - üye oluşturuldu',rumuz);
+    // API zaten member oluşturmadıysa (eski kayıt vs) panel tarafı eklesin
+    if(approveResult&&approveResult.memberZatenVar){
+      // Zaten var, sadece local state'i güncelle
+      addLog('Başvuru onaylandı - üye zaten mevcut',rumuz);
     } else {
-      addLog('Başvuru onaylandı - üye zaten vardı',rumuz);
+      // API ekledi veya hata - taze çek
+      const tazeVeri=await cmsOku();
+      if(tazeVeri&&tazeVeri.members){
+        members=tazeVeri.members.map(function(m){return Object.assign({},m,{id:m._id||m.id});});
+      }
+      addLog('Başvuru onaylandı',rumuz);
     }
+
     save();
     const uyari=document.getElementById('basvuruUyari');
     if(uyari) uyari.innerHTML='';
@@ -3467,28 +3455,30 @@ function openModal(type,data){
   const mData=data?members.find(m=>String(m._id)===String(data)||String(m.id)===String(data)):null;
   const dData=data?duyurular.find(d=>String(d._id)===String(data)||String(d.id)===String(data)):null;
 
-  if(type==='addMember'&&izin('uyeEkle')){
-    mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal-box"><h3>Yeni Üye</h3>
-        <div class="form-row">
-          <div class="form-group"><label>Rumuz</label><input id="m_rumuz" placeholder="Rumuz"></div>
-          <div class="form-group"><label>Rütbe</label><select id="m_rutbe">${RUTBELER.map(r=>`<option>${r}</option>`).join('')}</select></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Durum</label><select id="m_durum">${DURUMLAR.map(d=>`<option>${d}</option>`).join('')}</select></div>
-          <div class="form-group"><label>Görev</label><select id="m_gorev">${GOREVLER.map(g=>`<option>${g}</option>`).join('')}</select></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Katılım tarihi</label><input type="date" id="m_katilim" value="${today}"></div>
-          <div class="form-group"><label>Doğum tarihi</label><input type="date" id="m_dogum"></div>
-        </div>
-        <div class="form-group" style="margin-bottom:8px"><label>Referans</label><input id="m_ref" placeholder="Kim getirdi?"></div>
-        <div class="form-group" style="margin-bottom:8px"><label>Not</label><textarea id="m_not" placeholder="Lider notu..."></textarea></div>
-        <div class="modal-footer">
-          <button class="btn" onclick="closeModal()">İptal</button>
-          <button class="btn btn-warn" onclick="reqSaveMember()"><i class="ti ti-check"></i> Onayla & Kaydet</button>
-        </div>
-      </div></div>`;
+  if(type==='addMember'&&(izin('uyeEkle')||SESSION.rol==='Lider')){
+    const rOpts=RUTBELER.map(function(r){return'<option>'+r+'</option>';}).join('');
+    const dOpts=DURUMLAR.map(function(d){return'<option>'+d+'</option>';}).join('');
+    const gOpts=GOREVLER.map(function(g){return'<option>'+g+'</option>';}).join('');
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3>Yeni Üye</h3>'
+      +'<div class="form-row">'
+      +'<div class="form-group"><label>Rumuz</label><input id="m_rumuz" placeholder="Rumuz"></div>'
+      +'<div class="form-group"><label>Rütbe</label><select id="m_rutbe">'+rOpts+'</select></div>'
+      +'</div>'
+      +'<div class="form-row">'
+      +'<div class="form-group"><label>Durum</label><select id="m_durum">'+dOpts+'</select></div>'
+      +'<div class="form-group"><label>Görev</label><select id="m_gorev">'+gOpts+'</select></div>'
+      +'</div>'
+      +'<div class="form-row">'
+      +'<div class="form-group"><label>Katılım tarihi</label><input type="date" id="m_katilim" value="'+today+'"></div>'
+      +'<div class="form-group"><label>Doğum tarihi</label><input type="date" id="m_dogum"></div>'
+      +'</div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Referans</label><input id="m_ref" placeholder="Kim getirdi?"></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Not</label><textarea id="m_not" placeholder="Lider notu..."></textarea></div>'
+      +'<div class="modal-footer">'
+      +'<button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" onclick="reqSaveMember()"><i class="ti ti-check"></i> Kaydet</button>'
+      +'</div></div></div>';
 
   } else if(type==='editEvent'){
     const eid=data;
@@ -3538,76 +3528,85 @@ function openModal(type,data){
       return ra!==rb?ra-rb:a.rumuz.localeCompare(b.rumuz,'tr');
     });
     const opts=siraliEtkUye.map(function(m){return'<option value="'+m.rumuz+'">'+m.rumuz+' ('+m.rutbe+')</option>';}).join('');
-    mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal-box"><h3>Yeni Etkinlik</h3>
-        <div class="form-row">
-          <div class="form-group"><label>Etkinlik Türü</label><select id="e_tur">${ETK_TURLERI.map(t=>`<option>${t}</option>`).join('')}</select></div>
-          <div class="form-group"><label>Tarih</label><input type="date" id="e_date" value="${today}"></div>
-        </div>
-        <div class="form-group" style="margin-bottom:8px"><label>Verilecek puan</label><input type="number" id="e_puan" value="10"></div>
-        <div class="form-group" style="margin-bottom:8px"><label>Katılımcılar</label>
-          <select id="e_katilimcilar" multiple style="height:110px">${opts}</select>
-          <div style="font-size:10px;color:#555;margin-top:2px">Ctrl/Cmd ile çoklu seçim</div>
-        </div>
-        <div class="form-group" style="margin-bottom:8px"><label>Not</label><textarea id="e_not" placeholder="Notlar..."></textarea></div>
-        <div class="modal-footer">
-          <button class="btn" onclick="closeModal()">İptal</button>
-          <button class="btn btn-warn" onclick="reqSaveEvent()"><i class="ti ti-check"></i> Onayla & Kaydet</button>
-        </div>
-      </div></div>`;
+    const etkOpts=ETK_TURLERI.map(function(t){return'<option>'+t+'</option>';}).join('');
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3>Yeni Etkinlik</h3>'
+      +'<div class="form-row">'
+      +'<div class="form-group"><label>Etkinlik Türü</label><select id="e_tur">'+etkOpts+'</select></div>'
+      +'<div class="form-group"><label>Tarih</label><input type="date" id="e_date" value="'+today+'"></div>'
+      +'</div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Verilecek puan</label><input type="number" id="e_puan" value="10"></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Katılımcılar <span style="font-size:10px;color:#555">(Ctrl/Cmd ile çoklu seç)</span></label>'
+      +'<select id="e_katilimcilar" multiple style="height:140px">'+opts+'</select></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Not</label><textarea id="e_not" placeholder="Notlar..."></textarea></div>'
+      +'<div class="modal-footer">'
+      +'<button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" onclick="reqSaveEvent()"><i class="ti ti-check"></i> Kaydet</button>'
+      +'</div></div></div>';
 
-  } else if(type==='editMember'&&mData&&(izin('uyeDuzenle')||izin('rutbeDegistir'))){
-    mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal-box"><h3>${mData.rumuz} — Düzenle</h3>
-        ${izin('rutbeDegistir')?`<div class="form-group" style="margin-bottom:8px"><label>Rumuz</label><input id="e_rumuz" value="${mData.rumuz||''}" placeholder="Rumuz..."></div>`:''}
-        <div class="form-row">
-          <div class="form-group"><label>Rütbe</label><select id="e_rutbe" ${!izin('rutbeDegistir')?'disabled':''}>${RUTBELER.map(r=>`<option${r===mData.rutbe?' selected':''}>${r}</option>`).join('')}</select></div>
-          <div class="form-group"><label>Durum</label><select id="e_durum">${DURUMLAR.map(d=>`<option${d===mData.durum?' selected':''}>${d}</option>`).join('')}</select></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Görev</label><select id="e_gorev" ${!izin('gorevAta')?'disabled':''}>${GOREVLER.map(g=>`<option${g===mData.gorev?' selected':''}>${g}</option>`).join('')}</select></div>
-          <div class="form-group"><label>Puan</label><input type="number" id="e_puan" value="${mData.puan||0}" ${!izin('puanDuzenle')?'disabled':''}></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Katılım tarihi</label><input type="date" id="e_katilim" value="${mData.katilim||today}"></div>
-          <div class="form-group"><label>Doğum tarihi</label><input type="date" id="e_dogum" value="${mData.dogum||''}"></div>
-        </div>
-        <div class="form-group" style="margin-bottom:8px"><label>Referans</label><input id="e_ref" value="${mData.ref||''}" placeholder="Kim getirdi?"></div>
-        <div class="form-group" style="margin-bottom:8px"><label>Lider notu</label><textarea id="e_not">${mData.not||''}</textarea></div>
-        <div class="modal-footer">
-          <button class="btn" onclick="closeModal()">İptal</button>
-          <button class="btn btn-warn" onclick="reqUpdateMember('${mData._id||mData.id}')"><i class="ti ti-check"></i> Onayla & Güncelle</button>
-        </div>
-      </div></div>`;
+  } else if(type==='editMember'&&mData&&(izin('uyeDuzenle')||izin('rutbeDegistir')||SESSION.rol==='Lider')){
+    const mid2=mData._id||mData.id;
+    const rutbeOpts=RUTBELER.map(function(r){return'<option'+(r===mData.rutbe?' selected':'')+'>'+r+'</option>';}).join('');
+    const durumOpts=DURUMLAR.map(function(d){return'<option'+(d===mData.durum?' selected':'')+'>'+d+'</option>';}).join('');
+    const gorevOpts=GOREVLER.map(function(g){return'<option'+(g===mData.gorev?' selected':'')+'>'+g+'</option>';}).join('');
+    const rumuzRow=(izin('rutbeDegistir')||SESSION.rol==='Lider')?'<div class="form-group" style="margin-bottom:8px"><label>Rumuz</label><input id="e_rumuz" value="'+(mData.rumuz||'')+'" placeholder="Rumuz..."></div>':'';
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3>'+mData.rumuz+' — Düzenle</h3>'
+      +rumuzRow
+      +'<div class="form-row">'
+      +'<div class="form-group"><label>Rütbe</label><select id="e_rutbe"'+(!izin('rutbeDegistir')&&SESSION.rol!=='Lider'?' disabled':'')+'>'+rutbeOpts+'</select></div>'
+      +'<div class="form-group"><label>Durum</label><select id="e_durum">'+durumOpts+'</select></div>'
+      +'</div>'
+      +'<div class="form-row">'
+      +'<div class="form-group"><label>Görev</label><select id="e_gorev"'+(!izin('gorevAta')&&SESSION.rol!=='Lider'?' disabled':'')+'>'+gorevOpts+'</select></div>'
+      +'<div class="form-group"><label>Puan</label><input type="number" id="e_puan" value="'+(mData.puan||0)+'"'+(!izin('puanDuzenle')&&SESSION.rol!=='Lider'?' disabled':'')+' ></div>'
+      +'</div>'
+      +'<div class="form-row">'
+      +'<div class="form-group"><label>Katılım tarihi</label><input type="date" id="e_katilim" value="'+(mData.katilim||today)+'"></div>'
+      +'<div class="form-group"><label>Doğum tarihi</label><input type="date" id="e_dogum" value="'+(mData.dogum||'')+'"></div>'
+      +'</div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Referans</label><input id="e_ref" value="'+(mData.ref||'')+'" placeholder="Kim getirdi?"></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Lider notu</label><textarea id="e_not">'+(mData.not||'')+'</textarea></div>'
+      +'<div class="modal-footer">'
+      +'<button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" id="btnUpdateMemberConfirm"><i class="ti ti-check"></i> Güncelle</button>'
+      +'</div></div></div>';
+    setTimeout(function(){
+      const btn=document.getElementById('btnUpdateMemberConfirm');
+      if(btn)(function(id){btn.onclick=function(){reqUpdateMember(id);};})(mid2);
+    },50);
 
-  } else if(type==='addDuyuru'&&izin('duyuruEkle')){
-    mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal-box"><h3>Yeni Duyuru</h3>
-        <div class="form-group" style="margin-bottom:8px"><label>Başlık</label><input id="d_baslik" placeholder="Duyuru başlığı..."></div>
-        <div class="form-group" style="margin-bottom:8px"><label>İçerik</label><textarea id="d_icerik" placeholder="Duyuru içeriği..." style="min-height:80px"></textarea></div>
-        <div class="form-group" style="margin-bottom:8px"><label>
-          <input type="checkbox" id="d_aktif" checked style="width:auto;margin-right:6px">Bankerde göster (banner'da yayınla)
-        </label></div>
-        <div class="modal-footer">
-          <button class="btn" onclick="closeModal()">İptal</button>
-          <button class="btn btn-warn" onclick="reqSaveDuyuru()"><i class="ti ti-check"></i> Yayınla</button>
-        </div>
-      </div></div>`;
+  } else if(type==='addDuyuru'&&(izin('duyuruEkle')||SESSION.rol==='Lider')){
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3>Yeni Duyuru</h3>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Başlık</label><input id="d_baslik" placeholder="Duyuru başlığı..."></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>İçerik</label><textarea id="d_icerik" placeholder="Duyuru içeriği..." style="min-height:80px"></textarea></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>'
+      +'<input type="checkbox" id="d_aktif" checked style="width:auto;margin-right:6px">Bannerde yayinla'
+      +'</label></div>'
+      +'<div class="modal-footer">'
+      +'<button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" onclick="reqSaveDuyuru()"><i class="ti ti-check"></i> Yayınla</button>'
+      +'</div></div></div>';
 
-  } else if(type==='editDuyuru'&&dData&&izin('duyuruEkle')){
+  } else if(type==='editDuyuru'&&dData&&(izin('duyuruEkle')||SESSION.rol==='Lider')){
     const did=dData._id||dData.id;
-    mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal-box"><h3>Duyuruyu Düzenle</h3>
-        <div class="form-group" style="margin-bottom:8px"><label>Başlık</label><input id="d_baslik" value="${dData.baslik||''}"></div>
-        <div class="form-group" style="margin-bottom:8px"><label>İçerik</label><textarea id="d_icerik" style="min-height:80px">${dData.icerik||''}</textarea></div>
-        <div class="form-group" style="margin-bottom:8px"><label>
-          <input type="checkbox" id="d_aktif" ${dData.aktif!==false?'checked':''} style="width:auto;margin-right:6px">Banner'da göster
-        </label></div>
-        <div class="modal-footer">
-          <button class="btn" onclick="closeModal()">İptal</button>
-          <button class="btn btn-warn" onclick="reqUpdateDuyuru('${did}')"><i class="ti ti-check"></i> Güncelle</button>
-        </div>
-      </div></div>`;
+    const aktifChk=dData.aktif!==false?'checked':'';
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3>Duyuruyu Düzenle</h3>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Başlık</label><input id="d_baslik" value="'+(dData.baslik||'')+'"></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>İçerik</label><textarea id="d_icerik" style="min-height:80px">'+(dData.icerik||'')+'</textarea></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>'
+      +'<input type="checkbox" id="d_aktif" '+aktifChk+' style="width:auto;margin-right:6px">Bannerde yayinla'
+      +'</label></div>'
+      +'<div class="modal-footer">'
+      +'<button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" id="btnEditDuyuruSave"><i class="ti ti-check"></i> Güncelle</button>'
+      +'</div></div></div>';
+    setTimeout(function(){
+      const btn=document.getElementById('btnEditDuyuruSave');
+      if(btn)(function(id){btn.onclick=function(){reqUpdateDuyuru(id);};})(did);
+    },50);
   } else if(type==='sifreDegistir'){
     mc.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
       <div class="modal-box"><h3><i class="ti ti-key"></i> Şifre Değiştir</h3>
