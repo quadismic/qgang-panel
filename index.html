@@ -3763,57 +3763,83 @@ async function reqDisiplinKaydet(){
 }
 
 function reqSaveMember(){
-  if(!izin('uyeEkle'))return;
-  const rumuz=document.getElementById('m_rumuz').value.trim();if(!rumuz)return;
-  const rutbe=document.getElementById('m_rutbe').value,durum=document.getElementById('m_durum').value,gorev=document.getElementById('m_gorev').value;
-  confirm2('Yeni üye ekle',`<strong>${rumuz}</strong> — ${rutbe} rütbesiyle ekleniyor.`,async()=>{
-    const yeni={rumuz,rutbe,durum,gorev,puan:0,
-      katilim:document.getElementById('m_katilim').value,
-      dogum:document.getElementById('m_dogum').value,
-      ref:document.getElementById('m_ref').value,
-      not:document.getElementById('m_not').value,
-      wixMemberId:''
-    };
-    addLog('Üye eklendi',`${rumuz} — ${rutbe}`);save();
+  if(!izin('uyeEkle')&&SESSION.rol!=='Lider'){alert('Bu işlem için yetkiniz yok.');return;}
+  const rumuzEl=document.getElementById('m_rumuz');
+  const rutbeEl=document.getElementById('m_rutbe');
+  const durumEl=document.getElementById('m_durum');
+  const gorevEl=document.getElementById('m_gorev');
+  const katilimEl=document.getElementById('m_katilim');
+  const dogumEl=document.getElementById('m_dogum');
+  const refEl=document.getElementById('m_ref');
+  const notEl=document.getElementById('m_not');
+  if(!rumuzEl||!rutbeEl){alert('Form elementleri bulunamadı.');return;}
+  const rumuz=rumuzEl.value.trim();
+  if(!rumuz){alert('Rumuz zorunlu!');return;}
+  const rutbe=rutbeEl.value;
+  const durum=durumEl?durumEl.value:'Aktif';
+  const gorev=gorevEl?gorevEl.value:'Yok';
+  const katilim=katilimEl?katilimEl.value:'';
+  const dogum=dogumEl?dogumEl.value:'';
+  const ref=refEl?refEl.value:'';
+  const not=notEl?notEl.value:'';
+  // Çakışma kontrolü
+  if(members.some(function(m){return m.rumuz&&m.rumuz.toLowerCase()===rumuz.toLowerCase();})){
+    alert('Bu rumuz zaten kullanılıyor!');return;
+  }
+  const yeni={rumuz:rumuz,rutbe:rutbe,durum:durum,gorev:gorev,puan:0,
+    katilim:katilim,dogum:dogum,ref:ref,not:not,wixMemberId:''};
+  confirm2('Yeni üye ekle','<strong>'+rumuz+'</strong> — '+rutbe+' rütbesiyle ekleniyor.',async function(){
     closeModal();
     const result=await cmsYaz('MEMBER_ADD',yeni);
+    if(result&&result.result){
+      const eklenen=Object.assign({},yeni,{_id:result.result._id,id:result.result._id});
+      members.push(eklenen);
+    } else {
+      // Taze veri çek
+      const tazeVeri=await cmsOku();
+      if(tazeVeri&&tazeVeri.members){
+        members=tazeVeri.members.map(function(m){return Object.assign({},m,{id:m._id||m.id});});
+      }
+    }
+    addLog('Üye eklendi',rumuz+' — '+rutbe);save();
     renderMembers();renderDashboard();
   });
 }
 
 function reqUpdateMember(id){
-  const m=members.find(m=>String(m._id)===String(id)||String(m.id)===String(id));if(!m)return;
-  const eRumuz=document.getElementById('e_rumuz');const newRumuz=izin('rutbeDegistir')?((eRumuz&&eRumuz.value.trim())||m.rumuz):m.rumuz;
-  const newRutbe=izin('rutbeDegistir')?document.getElementById('e_rutbe').value:m.rutbe;
+  const m=members.find(function(m){return String(m._id)===String(id)||String(m.id)===String(id);});if(!m)return;
+  const eRumuz=document.getElementById('e_rumuz');
+  const canRutbe=izin('rutbeDegistir')||SESSION.rol==='Lider';
+  const canGorev=izin('gorevAta')||SESSION.rol==='Lider';
+  const canPuan=izin('puanDuzenle')||SESSION.rol==='Lider';
+  const newRumuz=canRutbe?((eRumuz&&eRumuz.value.trim())||m.rumuz):m.rumuz;
+  const newRutbe=canRutbe?document.getElementById('e_rutbe').value:m.rutbe;
   const newDurum=document.getElementById('e_durum').value;
-  const newGorev=izin('gorevAta')?document.getElementById('e_gorev').value:m.gorev;
-  const newPuan=izin('puanDuzenle')?Number(document.getElementById('e_puan').value)||0:m.puan;
+  const newGorev=canGorev?document.getElementById('e_gorev').value:m.gorev;
+  const newPuan=canPuan?Number(document.getElementById('e_puan').value)||0:m.puan;
   const newKatilim=document.getElementById('e_katilim').value||m.katilim||'';
   const newDogum=document.getElementById('e_dogum').value||'';
   const newRef=document.getElementById('e_ref').value||'';
   const newNot=document.getElementById('e_not').value||'';
   const oldPuan=Number(m.puan)||0;
   const changes=[];
-  if(m.rumuz!==newRumuz)changes.push(`Rumuz: ${m.rumuz} → ${newRumuz}`);
-  if(m.rutbe!==newRutbe)changes.push(`Rütbe: ${m.rutbe} → ${newRutbe}`);
-  if(m.durum!==newDurum)changes.push(`Durum: ${m.durum} → ${newDurum}`);
-  if(m.gorev!==newGorev)changes.push(`Görev: ${m.gorev} → ${newGorev}`);
-  if(oldPuan!==newPuan)changes.push(`Puan: ${oldPuan} → ${newPuan}`);
-  if((m.katilim||'')!==newKatilim)changes.push('Katılım tarihi güncellendi');
-  if((m.dogum||'')!==newDogum)changes.push('Doğum tarihi güncellendi');
-  if((m.ref||'')!==newRef)changes.push('Referans güncellendi');
-  if((m.not||'')!==newNot)changes.push('Not güncellendi');
-  confirm2('Üye güncelle',`<strong>${m.rumuz}</strong><br>${changes.length?changes.join('<br>'):'<span style="color:#888;font-size:12px">Değişiklik yok</span>'}`,async()=>{
+  if(m.rumuz!==newRumuz)changes.push('Rumuz: '+m.rumuz+' → '+newRumuz);
+  if(m.rutbe!==newRutbe)changes.push('Rütbe: '+m.rutbe+' → '+newRutbe);
+  if(m.durum!==newDurum)changes.push('Durum: '+m.durum+' → '+newDurum);
+  if(m.gorev!==newGorev)changes.push('Görev: '+m.gorev+' → '+newGorev);
+  if(oldPuan!==newPuan)changes.push('Puan: '+oldPuan+' → '+newPuan);
+  const changesHtml=changes.length?changes.join('<br>'):'<span style="color:#888;font-size:12px">Değişiklik yok</span>';
+  confirm2('Üye güncelle','<strong>'+m.rumuz+'</strong><br>'+changesHtml,async function(){
     const gunc={
       ...m,
       _id:m._id||m.id,
       rumuz:newRumuz,rutbe:newRutbe,durum:newDurum,gorev:newGorev,puan:newPuan,
       katilim:newKatilim,dogum:newDogum,ref:newRef,not:newNot
     };
-    const idx=members.findIndex(x=>String(x._id)===String(id)||String(x.id)===String(id));
-    if(idx>-1)members[idx]={...members[idx],...gunc};
-    if(changes.length)addLog('Üye güncellendi',`${m.rumuz}: ${changes.join(' | ')}`);
-    else addLog('Üye düzenlendi',`${m.rumuz} — kaydedildi`);
+    const idx=members.findIndex(function(x){return String(x._id)===String(id)||String(x.id)===String(id);});
+    if(idx>-1)members[idx]=Object.assign({},members[idx],gunc);
+    if(changes.length)addLog('Üye güncellendi',m.rumuz+': '+changes.join(' | '));
+    else addLog('Üye düzenlendi',m.rumuz+' — kaydedildi');
     save();closeModal();
     await cmsYaz('MEMBER_UPDATE',gunc);
     // Rutbe degisince QKullanicilar'daki rolu de guncelle + gecmise kaydet
