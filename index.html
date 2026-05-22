@@ -764,12 +764,12 @@ svg.org{display:inline-block}
 const ROL_SIRASI = ['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
 
 const IZINLER = {
-  Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,kodGor:1,duyuruEkle:1,duyuruSil:1,basvuruGor:1,basvuruOnayla:1,davetYonet:1,disiplinUygula:1,tuzukDuzenle:1,oylamaEkle:1,sifreSifirla:1,portfolyoGor:1,sezonKapat:1},
-  'Vekilharç':   {uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:1,kodGor:1,duyuruEkle:1,duyuruSil:0,basvuruGor:1,basvuruOnayla:1,davetYonet:0,disiplinUygula:1,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:1,portfolyoGor:1,sezonKapat:0},
-  Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:0,portfolyoGor:1,sezonKapat:0},
-  'Teğmen':      {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:0,portfolyoGor:1,sezonKapat:0},
-  'Üye':         {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:0,sifreSifirla:0,portfolyoGor:1,sezonKapat:0},
-  'Gözlemci':    {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:0,sifreSifirla:0,portfolyoGor:0,sezonKapat:0}
+  Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,kodGor:1,duyuruEkle:1,duyuruSil:1,basvuruGor:1,basvuruOnayla:1,davetYonet:1,disiplinUygula:1,tuzukDuzenle:1,oylamaEkle:1,sifreSifirla:1,portfolyoGor:1,sezonKapat:1,rutbeGecmisiSifirla:1},
+  'Vekilharç':   {uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:1,kodGor:1,duyuruEkle:1,duyuruSil:0,basvuruGor:1,basvuruOnayla:1,davetYonet:0,disiplinUygula:1,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:1,portfolyoGor:1,sezonKapat:0,rutbeGecmisiSifirla:1},
+  Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:0,portfolyoGor:1,sezonKapat:0,rutbeGecmisiSifirla:1},
+  'Teğmen':      {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:0,portfolyoGor:1,sezonKapat:0,rutbeGecmisiSifirla:1},
+  'Üye':         {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:0,sifreSifirla:0,portfolyoGor:1,sezonKapat:0,rutbeGecmisiSifirla:1},
+  'Gözlemci':    {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:0,sifreSifirla:0,portfolyoGor:0,sezonKapat:0,rutbeGecmisiSifirla:0}
 };
 
 function cikisYap(){
@@ -989,6 +989,11 @@ async function panelAc(rumuz,rol){
   addLog('Giriş',rumuz+' — '+rol);
   renderDashboard();renderDuyuruBanner();setTimeout(function(){renderDashboard();},500);
   onlineSistemiBaslat();
+  // Online bar'ı göster
+  setTimeout(function(){
+    var ob=document.getElementById('onlineBar');
+    if(ob) ob.style.display='flex';
+  }, 1000);
   renderSezon(); // Sezon efekti
   sezonDegisimKontrol(); // Yeni mevsim kontrolü
   if(izin('basvuruGor')){
@@ -1100,6 +1105,7 @@ function uiAyarla(){
   }
   
   showIfIzin('btnUyeEkle','uyeEkle');
+  showIfIzin('btnButceEkle','butceDuzenle');
   showIfIzin('btnEtkinlikEkle','etkinlikEkle');
   showIfIzin('btnKodUret','kodUret');
   showIfIzin('btnLogTemizle','logSil');
@@ -1199,9 +1205,13 @@ function showTab(name, btn){
 }
 
 function _showTabContent(name){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active','tab-animating');});
   const tab=document.getElementById('tab-'+name);
-  if(tab) tab.classList.add('active');
+  if(tab){
+    tab.classList.add('active');
+    void tab.offsetWidth; // reflow
+    tab.classList.add('tab-animating');
+  }
   const fns={
     dashboard:renderDashboard, members:renderMembers, puan:renderPuan,
     gorev:renderGorev, etkinlik:renderEvents, butce:renderButce,
@@ -1253,7 +1263,17 @@ function renderDashboard(){
         +adaylar.map(function(a){return a.rumuz;}).join(', ')+'</div>';
     }
   }
+  // Aktif oylama bildirimi
+  if(typeof oylamalar!=='undefined'&&oylamalar.length){
+    var aktifOy=oylamalar.filter(function(o){return o.aktif!==false;});
+    if(aktifOy.length){
+      alerts+='<div class="alert-row alert-info" style="cursor:pointer" id="oylamaBildirimAlert"><i class="ti ti-checkup-list"></i> <strong>'+aktifOy.length+' aktif oylama</strong> devam ediyor</div>';
+    }
+  }
   document.getElementById('alertsBox').innerHTML=alerts||'<div style="font-size:12px;color:#555">Uyarı yok</div>';
+  // Oylama alert onclick - tırnak sorunu DOM API ile çöz
+  var oyAlert=document.getElementById('oylamaBildirimAlert');
+  if(oyAlert)oyAlert.onclick=function(){showTabDD('oylama','ddTopluluk','navToplulukBtn');};
   // Gorev talebi butonu - Uye ve uzeri
   const gtWrap=document.getElementById('gorevTalepBtnWrap');
   if(gtWrap){
@@ -1304,7 +1324,7 @@ function renderMembers(){
     const editBtnHtml=editBtn?('<button class="btn btn-sm" onclick="openModal(\'editMember\',\''+mid+'\')"><i class="ti ti-edit"></i></button>'):'';
     const silBtnHtml=silBtn?('<button class="btn btn-danger btn-sm" onclick="reqDeleteMember(\''+mid+'\')"><i class="ti ti-trash"></i></button>'):'';
     const sifreBtnHtml=(izin('sifreSifirla')||SESSION.rol==='Lider')?('<button class="btn btn-sm" title="Şifreyi sıfırla" onclick="reqSifreSifirla(\''+mid+'\',\''+m.rumuz+'\')"><i class="ti ti-key"></i></button>'):'';
-    const emptyHtml=(!editBtn&&!silBtn&&!sifreBtnHtml)?'<span style="font-size:10px;color:#555">—</span>':'';
+    const portfolyoBtnHtml=(izin('portfolyoGor')||SESSION.rol==='Lider')?('<button class="btn btn-sm" title="Portfolyo" onclick="portfolyoAc(\''+m.rumuz+'\')" style="color:#5a9d5a"><i class="ti ti-eye"></i></button>'):'';const emptyHtml=(!editBtn&&!silBtn&&!sifreBtnHtml&&!portfolyoBtnHtml)?'<span style="font-size:10px;color:#555">—</span>':'';
     tbody+='<tr>'
       +'<td>'+(i+1)+'</td>'
       +'<td style="font-weight:500;cursor:pointer;color:#fac775" onclick="portfolyoAc(\''+m.rumuz+'\')">'+m.rumuz+'</td>'
@@ -1313,7 +1333,7 @@ function renderMembers(){
       +'<td style="font-size:11px;color:#888">'+(m.gorev||'Yok')+'</td>'
       +'<td style="font-weight:500">'+(m.puan||0)+'</td>'
       +'<td style="font-size:11px;color:#555">'+(m.katilim?fmtDate(m.katilim):'-')+'</td>'
-      +'<td><div class="action-row">'+editBtnHtml+silBtnHtml+sifreBtnHtml+emptyHtml+'</div></td></tr>';
+      +'<td><div class="action-row">'+portfolyoBtnHtml+editBtnHtml+silBtnHtml+sifreBtnHtml+emptyHtml+'</div></td></tr>';
   });
   document.getElementById('memberTableBody').innerHTML=tbody;
 }
@@ -1486,34 +1506,35 @@ async function portfolyoAc(rumuz){
   const m=members.find(function(x){return x.rumuz===rumuz;});
   if(!m) return;
 
-  // Rütbe geçmişini çek
+  // Önce temel verilerle hızlı render et, async veriler gelince güncelle
   var rutbeGecmisiData=[];
-  try{
-    const rg=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'RUTBE_GECMISI_LIST',item:{rumuz:rumuz}})});
-    const rgData=await rg.json();
-    rutbeGecmisiData=rgData.result||[];
-  }catch(e){}
-
-  // Puan arşivini çek
   var puanArsivData=[];
-  try{
-    const pa=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'PUAN_ARSIV_LIST',item:{rumuz:rumuz}})});
-    const paData=await pa.json();
-    puanArsivData=paData.result||[];
-  }catch(e){}
-
-  // Katıldığı etkinlikler
   var katilinanEtkinlikler=events.filter(function(e){
     return parseKat(e.katilimcilar).includes(rumuz);
   }).sort(function(a,b){return new Date(b.tarih)-new Date(a.tarih);});
-
-  // Disiplin (sadece yöneticiler görebilir)
   var disiplinData=[];
   if(izin('disiplinUygula')||SESSION.rol==='Lider'){
     disiplinData=disiplin.filter(function(d){return d.uye===rumuz;});
   }
+
+  // Async veriler
+  var TIMEOUT=5000;
+  function fetchWithTimeout(url,opts){
+    return Promise.race([
+      fetch(url,opts),
+      new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},TIMEOUT);})
+    ]);
+  }
+  try{
+    var rgRes=await fetchWithTimeout(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'RUTBE_GECMISI_LIST',item:{rumuz:rumuz}})});
+    rutbeGecmisiData=(await rgRes.json()).result||[];
+  }catch(e){rutbeGecmisiData=[];}
+  try{
+    var paRes=await fetchWithTimeout(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'PUAN_ARSIV_LIST',item:{rumuz:rumuz}})});
+    puanArsivData=(await paRes.json()).result||[];
+  }catch(e){puanArsivData=[];}
 
   // Toplam kazanılan puan
   const toplamKazanilan=puanArsivData
@@ -1550,9 +1571,11 @@ async function portfolyoAc(rumuz){
     +'</div>';
 
   // Rütbe yolculuğu
+  var canSifirlaRutbe=izin('rutbeGecmisiSifirla')||SESSION.rol==='Lider';
   var rutbeHtml='';
   if(rutbeGecmisiData.length){
-    rutbeHtml='<div class="portfolyo-section"><div class="portfolyo-section-title"><i class="ti ti-arrow-up"></i> Rütbe Yolculuğu</div>'
+    var sifirlaBtn=canSifirlaRutbe?'<button class="btn btn-danger btn-sm" style="margin-left:auto;font-size:10px" id="btnRutbeSifirla"><i class="ti ti-refresh"></i> Sifirla</button>':'';
+    rutbeHtml='<div class="portfolyo-section"><div class="portfolyo-section-title" style="display:flex;align-items:center"><i class="ti ti-arrow-up"></i> Rütbe Yolculuğu '+sifirlaBtn+'</div>'
       +'<div class="rutbe-timeline">';
     rutbeGecmisiData.forEach(function(r){
       rutbeHtml+='<div class="rt-item"><div class="rt-dot"></div><div class="rt-line"></div>'
@@ -1631,6 +1654,22 @@ async function portfolyoAc(rumuz){
 
   document.body.appendChild(overlay);
   document.body.style.overflow='hidden';
+  // Rütbe sıfırlama butonu onclick (tırnak sorunu önlemi)
+  var brs=document.getElementById('btnRutbeSifirla');
+  if(brs)(function(r){brs.onclick=function(){rutbeGecmisiSifirla(r);};})(rumuz);
+}
+
+
+async function rutbeGecmisiSifirla(rumuz){
+  confirm2('Rütbe Geçmişi Sıfırla','<strong>'+rumuz+'</strong> için tüm rütbe geçmişi silinecek.',async function(){
+    try{
+      await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'RUTBE_GECMISI_SIFIRLA',item:{rumuz:rumuz}})});
+      addLog('Rütbe geçmişi sıfırlandı',rumuz);save();
+      portfolyoKapat();
+      setTimeout(function(){portfolyoAc(rumuz);},300);
+    }catch(e){alert('Hata: '+e.message);}
+  });
 }
 
 function portfolyoKapat(){
@@ -1710,7 +1749,7 @@ function renderPuanSezon(){
       });
     }
     wrap.appendChild(listeDiv);
-    var hr3=document.createElement('hr');hr3.className='sep';hr3.style.marginTop='16px';wrap.appendChild(hr3);
+    var sepEl=document.getElementById('puanSezonSep');if(sepEl)sepEl.style.display='';
   }).catch(function(){});
 }
 
@@ -1766,8 +1805,15 @@ function getSeason(){
   // Doğum günü kontrolü
   const bugunDogum=members.some(function(m){
     if(!m.dogum)return false;
-    const d=new Date(m.dogum);
-    return d.getMonth()+1===ay&&d.getDate()===gun;
+    var dStr=m.dogum;
+    // Farklı format desteği: YYYY-MM-DD veya DD.MM.YYYY
+    var parts;
+    if(dStr.includes('-')) parts=dStr.split('-');
+    else if(dStr.includes('.')) { var p=dStr.split('.'); parts=[p[2],p[1],p[0]]; }
+    else return false;
+    var dAy=parseInt(parts[1],10);
+    var dGun=parseInt(parts[2],10);
+    return dAy===ay&&dGun===gun;
   });
   if(bugunDogum)return'dogumgunu';
   if(ay>=3&&ay<=5)return'ilkbahar';
@@ -1922,6 +1968,8 @@ async function renderMesajlar(){
 
   const liste=document.getElementById('konusmaListesi');
   if(!liste)return;
+  liste.innerHTML='<div style="padding:8px;font-size:11px;color:#555">Yükleniyor...</div>';
+  await new Promise(function(r){setTimeout(r,50);});
   liste.innerHTML='';
   if(!ortaklar.size){
     liste.innerHTML='<div style="font-size:11px;color:#555;padding:8px">Henüz mesaj yok</div>';
@@ -1944,6 +1992,7 @@ async function renderMesajlar(){
     div.onmouseover=function(){if(aktifKonusma!==ortak)div.style.background='#141414';};
     div.onmouseout=function(){if(aktifKonusma!==ortak)div.style.background='';};
     (function(o){div.onclick=function(){konusmayiAc(o);};})(ortak);
+    div.className='konusma-item-anim';
     liste.appendChild(div);
   });
 }
@@ -2240,7 +2289,7 @@ async function gorevTalebiGonder(){
   mc2.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()" style="background:rgba(0,0,0,.85)">'
     +'<div class="modal-box" style="text-align:center;max-width:380px;padding:2.5rem 2rem">'
     +'<div style="font-size:40px;margin-bottom:12px">✅</div>'
-    +'<div style="font-family:Vanilla Whale,monospace;font-size:18px;color:#fac775;letter-spacing:1px;margin-bottom:8px">Talep İletildi</div>'
+    +'<div style="font-size:16px;font-weight:600;color:#fac775;margin-bottom:8px">Talep İletildi</div>'
     +'<div style="font-size:13px;color:#888;line-height:1.7;margin-bottom:20px">Görev talebiniz yönetim ekibine iletildi.<br>En kısa sürede değerlendirilecek.</div>'
     +'<div style="font-size:11px;color:#444;margin-bottom:20px"><strong style="color:#d3d1c7">'+SESSION.rumuz+'</strong> — '+turEl.value+'</div>'
     +'<button class="btn btn-warn" onclick="closeModal()" style="width:100%">Tamam</button>'
@@ -2619,6 +2668,7 @@ function reqDeleteDuyuru(id){
 const IZIN_ETIKETLER = {
   // === KRİTİK YÖNETİM ===
   tuzukDuzenle:'Tüzük Düzenle',
+  rutbeGecmisiSifirla:'Rütbe Geçmişi Sıfırla',
   davetYonet:'Davet Yönet',
   sezonKapat:'Sezon Kapat/Başlat',
   disiplinUygula:'Disiplin Uygula',
@@ -3685,7 +3735,7 @@ async function yedegiAl(){
 
   // CSV indir (Excel uyumlu)
   const BOM='\uFEFF';
-  let csv='SEP=,\n=== Q-GANG TAM YEDEGi ===\n';
+  let csv='SEP=,\n\uFEFF=== Q-GANG TAM YEDEGI ===\n';
   csv+='Tarih:,"'+new Date().toLocaleString('tr-TR')+'"\n';
   csv+='Olusturan:,"'+SESSION.rumuz+'"\n\n';
 
@@ -4318,6 +4368,9 @@ function reqSaveMember(){
 
 function reqUpdateMember(id){
   const m=members.find(function(m){return String(m._id)===String(id)||String(m.id)===String(id);});if(!m)return;
+  // GUVENLIK: kendi rutbesi veya uzeri duzenlenemez
+  function getRtbSec2(r){if(r==='Lider')return 0;if(r&&r.includes('Vekil'))return 1;if(r==='Kaptan')return 2;if(r&&r.includes('Te'))return 3;if(r&&r.includes('ye'))return 4;return 5;}
+  if(SESSION.rol!=='Lider'&&getRtbSec2(m.rutbe)<=getRtbSec2(SESSION.rol)){alert('Kendi rütbeniz veya üzeri rütbedeki üyeleri düzenleyemezsiniz.');return;}
   const eRumuz=document.getElementById('e_rumuz');
   const canRutbe=izin('rutbeDegistir')||SESSION.rol==='Lider';
   const canGorev=izin('gorevAta')||SESSION.rol==='Lider';
