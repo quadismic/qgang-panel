@@ -471,6 +471,14 @@ svg.org{display:inline-block}
     </button>
   </div>
 
+  <!-- Mesajlar nav -->
+  <div class="nav-item">
+    <button class="nav-btn" id="navMesajlar" onclick="showTab('mesajlar',this)">
+      <i class="ti ti-message"></i> Mesajlar
+      <span id="mesajBadge" style="display:none;background:#e24b4a;color:#fff;border-radius:10px;font-size:10px;padding:1px 6px;margin-left:4px"></span>
+    </button>
+  </div>
+
   <!-- Topluluk dropdown -->
   <div class="nav-item">
     <button class="nav-btn" onclick="toggleDropdown('ddTopluluk',this)" id="navToplulukBtn">
@@ -484,14 +492,6 @@ svg.org{display:inline-block}
       <div class="nav-dd-item" onclick="showTabDD('oylama','ddTopluluk','navToplulukBtn')"><i class="ti ti-checkup-list"></i> Oylamalar</div>
       <div class="nav-dd-item" onclick="showTabDD('org','ddTopluluk','navToplulukBtn')"><i class="ti ti-hierarchy"></i> Organizasyon</div>
     </div>
-  </div>
-
-  <!-- Mesajlar nav -->
-  <div class="nav-item">
-    <button class="nav-btn" id="navMesajlar" onclick="showTab('mesajlar',this)">
-      <i class="ti ti-message"></i> Mesajlar
-      <span id="mesajBadge" style="display:none;background:#e24b4a;color:#fff;border-radius:10px;font-size:10px;padding:1px 6px;margin-left:4px"></span>
-    </button>
   </div>
 
   <!-- Yönetim dropdown -->
@@ -1399,7 +1399,10 @@ function renderPuan(){
   const arsivSel=document.createElement('select');arsivSel.id='arsivFilter';
   arsivSel.style.cssText='padding:6px 10px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:12px';
   const bosOpt=document.createElement('option');bosOpt.value='';bosOpt.textContent='Tüm üyeler';arsivSel.appendChild(bosOpt);
-  const siraliArsiv=[...members].sort(function(a,b){return getRutbeSira(a)-getRutbeSira(b);});
+  const siraliArsiv=[...members].sort(function(a,b){
+    const ra=getRutbeSira(a),rb=getRutbeSira(b);
+    return ra!==rb?ra-rb:a.rumuz.localeCompare(b.rumuz,'tr');
+  });
   siraliArsiv.forEach(function(m){
     const opt=document.createElement('option');opt.value=m.rumuz;opt.textContent=m.rumuz;arsivSel.appendChild(opt);
   });
@@ -1874,7 +1877,7 @@ function renderGorev(){
   const geEl=document.getElementById('gorevEditor');
   if(izin('gorevAta')||SESSION.rol==='Lider'){
     const uOpts=siraliUyeler.map(function(m){return'<option value="'+(m._id||m.id)+'">'+m.rumuz+' ('+m.rutbe+')</option>';}).join('');
-    const gOpts=GOREVLER.map(function(g){return'<option>'+g+'</option>';}).join('');
+    const gOpts=GOREVLER.map(function(g){return'<option'+(g==='Yok'?' selected':'')+'>'+g+'</option>';}).join('');
     geEl.innerHTML='<div class="section-title">Görev Ata</div>'
       +'<div class="card"><div class="form-row">'
       +'<div class="form-group"><label>Üye</label><select id="gorevUye">'+uOpts+'</select></div>'
@@ -2168,7 +2171,6 @@ function reqDeleteDuyuru(id){
 // ERISIM YONETIMI BOARD
 //
 const IZIN_ETIKETLER = {
-  sifreSifirla:'Üye Şifresi Sıfırla',
   tuzukDuzenle:'Tüzük Düzenle',
   davetYonet:'Davet Yönet',
   disiplinUygula:'Disiplin Uygula',
@@ -2176,6 +2178,7 @@ const IZIN_ETIKETLER = {
   uyeEkle:'Üye Ekle',
   uyeSil:'Üye Sil',
   rutbeDegistir:'Rütbe Değiştir',
+  sifreSifirla:'Üye Şifresi Sıfırla',
   butceDuzenle:'Bütçe Düzenle',
   logSil:'Log Temizle',
   uyeDuzenle:'Üye Düzenle',
@@ -3456,8 +3459,8 @@ function openModal(type,data){
   const dData=data?duyurular.find(d=>String(d._id)===String(data)||String(d.id)===String(data)):null;
 
   if(type==='addMember'&&(izin('uyeEkle')||SESSION.rol==='Lider')){
-    const rOpts=RUTBELER.map(function(r){return'<option>'+r+'</option>';}).join('');
-    const dOpts=DURUMLAR.map(function(d){return'<option>'+d+'</option>';}).join('');
+    const rOpts=RUTBELER.map(function(r){return'<option'+(r==='Gözlemci'?' selected':'')+'>'+r+'</option>';}).join('');
+    const dOpts=DURUMLAR.map(function(d){return'<option'+(d==='Aktif'?' selected':'')+'>'+d+'</option>';}).join('');
     const gOpts=GOREVLER.map(function(g){return'<option>'+g+'</option>';}).join('');
     mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
       +'<div class="modal-box"><h3>Yeni Üye</h3>'
@@ -3790,16 +3793,20 @@ function reqSaveMember(){
     katilim:katilim,dogum:dogum,ref:ref,not:not,wixMemberId:''};
   confirm2('Yeni üye ekle','<strong>'+rumuz+'</strong> — '+rutbe+' rütbesiyle ekleniyor.',async function(){
     closeModal();
+    // API'ye yazmadan önce son kez CMS'den kontrol et (race condition önlemi)
+    const kontrol=await cmsOku();
+    if(kontrol&&kontrol.members){
+      members=kontrol.members.map(function(m){return Object.assign({},m,{id:m._id||m.id});});
+      if(members.some(function(m){return m.rumuz&&m.rumuz.toLowerCase()===rumuz.toLowerCase();})){
+        alert(rumuz+' zaten kayıtlı, işlem iptal edildi.');
+        renderMembers();renderDashboard();
+        return;
+      }
+    }
     const result=await cmsYaz('MEMBER_ADD',yeni);
     if(result&&result.result){
       const eklenen=Object.assign({},yeni,{_id:result.result._id,id:result.result._id});
       members.push(eklenen);
-    } else {
-      // Taze veri çek
-      const tazeVeri=await cmsOku();
-      if(tazeVeri&&tazeVeri.members){
-        members=tazeVeri.members.map(function(m){return Object.assign({},m,{id:m._id||m.id});});
-      }
     }
     addLog('Üye eklendi',rumuz+' — '+rutbe);save();
     renderMembers();renderDashboard();
