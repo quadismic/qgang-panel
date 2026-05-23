@@ -773,7 +773,9 @@ function confirm2(title,desc,onOk){
 //
 function renderDashboard(){
   const total=members.length,aktif=members.filter(function(m){return m.durum==='Aktif';}).length,pasif=members.filter(function(m){return m.durum==='Pasif';}). length,riskli=members.filter(function(m){return m.durum==='Riskli';}).length,gorevSiz=members.filter(function(m){return (m.gorev==='Yok'||!m.gorev)&&m.rutbe!=='Gözlemci';}).length;
-  const gelir=butce.filter(function(b){return b.tur==='gelir';}).reduce(function(s,b){return s+Number(b.tutar);},0),gider_REPLACE=butce.filter(b=>b.tur==='gider').reduce((s,b)=>s+Number(b.tutar),0),net=gelir-gider;
+  const gelir=butce.filter(function(b){return b.tur==='gelir';}).reduce(function(s,b){return s+Number(b.tutar);},0);
+  const gider=butce.filter(function(b){return b.tur==='gider';}).reduce(function(s,b){return s+Number(b.tutar);},0);
+  const net=gelir-gider;
   document.getElementById('statsGrid').innerHTML=
 
     '<div class="stat-card"><div class="label">Toplam üye</div><div class="value">'+total+'</div></div>'
