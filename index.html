@@ -242,6 +242,14 @@ svg.org{display:inline-block}
   .nav button{font-size:11px;padding:5px 9px}
   table{font-size:11px}th,td{padding:5px 6px}
 }
+
+/* QGANG_LAYOUT_FIX */
+html,body{min-height:100%;}
+body{overflow-x:hidden;}
+#sezonCanvas{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;pointer-events:none!important;z-index:0!important;display:block!important;}
+.auth-screen,.panel{position:relative!important;z-index:1!important;}
+.panel{max-width:900px!important;margin:36px auto 48px auto!important;padding-bottom:36px!important;}
+@media(max-width:700px){.panel{margin:12px auto 36px auto!important;}}
 </style>
 </head>
 <body>
@@ -2862,6 +2870,331 @@ function renderDogumgunuBanner(){
 })();
 /* QGANG_STABIL_HOTFIX_END */
 
+
+/* QGANG_FULL_CHECKUP_HOTFIX_START */
+(function(){
+  'use strict';
+
+  function $(id){ return document.getElementById(id); }
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>'"]/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];
+    });
+  }
+  function arrKat(v){
+    if (typeof parseKat === 'function') return parseKat(v);
+    if (Array.isArray(v)) return v;
+    if (!v) return [];
+    return String(v).split(',').map(function(x){return x.trim();}).filter(Boolean);
+  }
+  function currentUser(){ return (typeof SESSION !== 'undefined' && SESSION) ? SESSION.rumuz : ''; }
+  function can(key){
+    try { return (typeof izin === 'function' && izin(key)) || (typeof SESSION !== 'undefined' && SESSION && SESSION.rol === 'Lider'); }
+    catch(e){ return false; }
+  }
+  function refreshAll(){
+    try { if (typeof renderDashboard === 'function') renderDashboard(); } catch(e){}
+    try { if (typeof renderDuyuruBanner === 'function') renderDuyuruBanner(); } catch(e){}
+    try { if (typeof renderEvents === 'function') renderEvents(); } catch(e){}
+    try { if (typeof renderDuyurular === 'function') renderDuyurular(); } catch(e){}
+  }
+  function modalBox(title, body, footer){
+    var mc = $('modalContainer');
+    if(!mc) return;
+    mc.innerHTML = '<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      + '<div class="modal-box">'
+      + '<h3>'+esc(title)+'</h3>'
+      + body
+      + '<div class="modal-footer">'+(footer || '<button class="btn" onclick="closeModal()">Kapat</button>')+'</div>'
+      + '</div></div>';
+  }
+
+  window.closeModal = function(){
+    var mc = $('modalContainer');
+    if(mc) mc.innerHTML = '';
+  };
+
+  window.renderDuyurular = function(){
+    var el = $('duyuruList');
+    if(!el) return;
+    var list = Array.isArray(duyurular) ? duyurular.slice() : [];
+    list.sort(function(a,b){ return new Date(b.tarih || b._createdDate || 0) - new Date(a.tarih || a._createdDate || 0); });
+    if(!list.length){
+      el.innerHTML = '<div style="font-size:12px;color:#555">Henüz duyuru yok.</div>';
+      return;
+    }
+    el.innerHTML = list.map(function(d){
+      var id = d._id || d.id;
+      var aktif = d.aktif !== false;
+      return '<div class="duyuru-kart">'
+        + '<div class="dk-header">'
+        + '<div><div class="dk-baslik">'+esc(d.baslik || 'Duyuru')+'</div>'
+        + '<div class="dk-meta">'+esc(d.yazar || '-')+' · '+esc(typeof fmtDateTime === 'function' ? fmtDateTime(d.tarih || d._createdDate) : (d.tarih || ''))+' · '+(aktif ? 'Aktif' : 'Pasif')+'</div></div>'
+        + '<div style="display:flex;gap:4px">'
+        + (can('duyuruEkle') ? '<button class="btn btn-sm" onclick="openModal(\'editDuyuru\',\''+esc(id)+'\')"><i class="ti ti-edit"></i></button>' : '')
+        + (can('duyuruSil') || (typeof SESSION !== 'undefined' && SESSION.rol === 'Lider') ? '<button class="btn btn-danger btn-sm" onclick="reqDeleteDuyuru(\''+esc(id)+'\')"><i class="ti ti-trash"></i></button>' : '')
+        + '</div></div>'
+        + '<div class="dk-icerik">'+esc(d.icerik || '')+'</div>'
+        + '</div>';
+    }).join('');
+  };
+
+  window.reqDeleteDuyuru = async function(id){
+    var d = (duyurular || []).find(function(x){ return String(x._id || x.id) === String(id); });
+    if(!d) return;
+    if(!confirm('Duyuru silinsin mi?')) return;
+    duyurular = (duyurular || []).filter(function(x){ return String(x._id || x.id) !== String(id); });
+    await cmsYaz('DUYURU_DELETE', id);
+    refreshAll();
+  };
+
+  function memberOptions(selected){
+    return (members || []).map(function(m){
+      var r = m.rumuz || '';
+      return '<option value="'+esc(r)+'" '+(r===selected?'selected':'')+'>'+esc(r)+'</option>';
+    }).join('');
+  }
+  function memberCheckboxes(selectedList){
+    selectedList = selectedList || [];
+    return '<div style="max-height:210px;overflow:auto;border:0.5px solid #333;border-radius:8px;padding:8px;background:#111">'
+      + (members || []).map(function(m){
+        var r = m.rumuz || '';
+        var checked = selectedList.indexOf(r) >= 0 ? 'checked' : '';
+        return '<label style="display:inline-flex;align-items:center;gap:6px;margin:4px 8px 4px 0;font-size:12px;color:#c9c7bf">'
+          + '<input type="checkbox" class="evKat" value="'+esc(r)+'" '+checked+' style="width:auto"> '+esc(r)+'</label>';
+      }).join('') + '</div>';
+  }
+
+  window.openModal = function(type, id){
+    if(type === 'addEvent' || type === 'editEvent'){
+      var edit = type === 'editEvent';
+      var ev = edit ? (events || []).find(function(e){ return String(e._id || e.id) === String(id); }) : null;
+      var kats = ev ? arrKat(ev.katilimcilar) : [];
+      var turler = (typeof ETK_TURLERI !== 'undefined' ? ETK_TURLERI : ['GANG-UP','OP-NIGHT','BBQ-GANG','Q-NITY','B-DAY & S-DAY','Diğer']);
+      var body = '<div class="form-row">'
+        + '<div class="form-group"><label>Tür</label><select id="ev_tur">'+turler.map(function(t){return '<option '+(ev&&ev.tur===t?'selected':'')+'>'+esc(t)+'</option>';}).join('')+'</select></div>'
+        + '<div class="form-group"><label>Tarih</label><input type="date" id="ev_tarih" value="'+esc(ev ? ev.tarih : (typeof todayStr === 'function' ? todayStr() : ''))+'"></div>'
+        + '<div class="form-group"><label>Puan</label><input type="number" id="ev_puan" value="'+esc(ev ? (ev.puan || 0) : 10)+'"></div>'
+        + '</div>'
+        + '<div class="form-group"><label>Katılımcılar</label>'+memberCheckboxes(kats)+'</div>'
+        + '<div class="form-group"><label>Not</label><textarea id="ev_not">'+esc(ev ? (ev.not || '') : '')+'</textarea></div>';
+      var footer = '<button class="btn" onclick="closeModal()">İptal</button>'
+        + '<button class="btn btn-success" onclick="reqSaveEvent('+ (edit ? '\''+esc(id)+'\'' : 'null') +')"><i class="ti ti-check"></i> Kaydet</button>';
+      modalBox(edit ? 'Etkinlik Düzenle' : 'Yeni Etkinlik', body, footer);
+      return;
+    }
+
+    if(type === 'addDuyuru' || type === 'editDuyuru'){
+      var editD = type === 'editDuyuru';
+      var du = editD ? (duyurular || []).find(function(d){ return String(d._id || d.id) === String(id); }) : null;
+      var bodyD = '<div class="form-group"><label>Başlık</label><input id="du_baslik" value="'+esc(du ? du.baslik : '')+'"></div>'
+        + '<div class="form-group"><label>İçerik</label><textarea id="du_icerik">'+esc(du ? du.icerik : '')+'</textarea></div>'
+        + '<div class="form-group"><label>Yazar</label><input id="du_yazar" value="'+esc(du ? du.yazar : currentUser())+'"></div>'
+        + '<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#c9c7bf;margin-top:8px"><input type="checkbox" id="du_aktif" style="width:auto" '+(!du || du.aktif !== false ? 'checked' : '')+'> Aktif</label>';
+      var footerD = '<button class="btn" onclick="closeModal()">İptal</button>'
+        + '<button class="btn btn-success" onclick="reqSaveDuyuru('+ (editD ? '\''+esc(id)+'\'' : 'null') +')"><i class="ti ti-check"></i> Kaydet</button>';
+      modalBox(editD ? 'Duyuru Düzenle' : 'Yeni Duyuru', bodyD, footerD);
+      return;
+    }
+
+    if(type === 'yeniMesaj'){
+      var bodyM = '<div class="form-group"><label>Alıcı</label><select id="mesajAlici">'
+        + (members || []).filter(function(m){return m.rumuz !== currentUser();}).map(function(m){return '<option value="'+esc(m.rumuz)+'">'+esc(m.rumuz)+'</option>';}).join('')
+        + '</select></div>'
+        + '<div class="form-group"><label>Mesaj</label><textarea id="yeniMesajIcerik" placeholder="Mesajınızı yazın..."></textarea></div>';
+      var footerM = '<button class="btn" onclick="closeModal()">İptal</button>'
+        + '<button class="btn btn-warn" onclick="yeniMesajGonder()"><i class="ti ti-send"></i> Gönder</button>';
+      modalBox('Yeni Mesaj', bodyM, footerM);
+      return;
+    }
+
+    if(type === 'sifreDegistir'){
+      var bodyS = '<div class="form-group"><label>Yeni şifre</label><input id="newPass1" type="password"></div>'
+        + '<div class="form-group"><label>Tekrar</label><input id="newPass2" type="password"></div>'
+        + '<div style="font-size:11px;color:#555;margin-top:6px">Şifre değiştirme backend aksiyonu bu sürümde bağlı değilse bu ekran sadece hazırlık olarak görünür.</div>';
+      modalBox('Şifre Değiştir', bodyS, '<button class="btn" onclick="closeModal()">Kapat</button>');
+      return;
+    }
+
+    modalBox('Bilgi', '<div style="font-size:13px;color:#888">Bu işlem için modal bu stabil sürümde henüz bağlanmadı: <strong>'+esc(type)+'</strong></div>', '<button class="btn" onclick="closeModal()">Kapat</button>');
+  };
+
+  window.reqSaveEvent = async function(id){
+    var kat = Array.prototype.slice.call(document.querySelectorAll('.evKat:checked')).map(function(x){return x.value;});
+    var item = {
+      tur: $('ev_tur') ? $('ev_tur').value : 'GANG-UP',
+      tarih: $('ev_tarih') ? $('ev_tarih').value : '',
+      puan: Number($('ev_puan') ? $('ev_puan').value : 0),
+      katilimcilar: kat.join(','),
+      not: $('ev_not') ? $('ev_not').value : ''
+    };
+    if(!item.tarih){ alert('Tarih zorunlu.'); return; }
+    if(id){
+      var old = (events || []).find(function(e){return String(e._id || e.id) === String(id);});
+      item = Object.assign({}, old || {}, item, { _id: id, id: id });
+      await cmsYaz('EVENT_UPDATE', item);
+      var i = events.findIndex(function(e){return String(e._id || e.id) === String(id);});
+      if(i > -1) events[i] = Object.assign({}, events[i], item, { katilimcilar: kat });
+    } else {
+      var res = await cmsYaz('EVENT_ADD', item);
+      if(res && res.result){
+        var saved = Object.assign({}, res.result, { id: res.result._id || res.result.id, katilimcilar: kat });
+        if(!(events || []).some(function(e){return String(e._id || e.id) === String(saved._id || saved.id);})) events.push(saved);
+      }
+    }
+    closeModal();
+    refreshAll();
+    try { etkinlikGorunum(takvimGorunumu || 'liste'); } catch(e){}
+  };
+
+  window.reqSaveDuyuru = async function(id){
+    var item = {
+      baslik: $('du_baslik') ? $('du_baslik').value.trim() : '',
+      icerik: $('du_icerik') ? $('du_icerik').value.trim() : '',
+      yazar: $('du_yazar') ? $('du_yazar').value.trim() : currentUser(),
+      aktif: $('du_aktif') ? $('du_aktif').checked : true,
+      tarih: new Date().toISOString()
+    };
+    if(!item.baslik || !item.icerik){ alert('Başlık ve içerik zorunlu.'); return; }
+    if(id){
+      var old = (duyurular || []).find(function(d){return String(d._id || d.id) === String(id);});
+      item = Object.assign({}, old || {}, item, { _id: id, id: id });
+      await cmsYaz('DUYURU_UPDATE', item);
+      var i = duyurular.findIndex(function(d){return String(d._id || d.id) === String(id);});
+      if(i > -1) duyurular[i] = Object.assign({}, duyurular[i], item);
+    } else {
+      var res = await cmsYaz('DUYURU_ADD', item);
+      if(res && res.result){
+        var saved = Object.assign({}, res.result, { id: res.result._id || res.result.id });
+        if(!(duyurular || []).some(function(d){return String(d._id || d.id) === String(saved._id || saved.id);})) duyurular.unshift(saved);
+      }
+    }
+    closeModal();
+    refreshAll();
+  };
+
+  window.renderEvents = function(){
+    var el = $('eventList');
+    if(!el) return;
+    var sorted = (Array.isArray(events) ? events.slice() : []).sort(function(a,b){return new Date(b.tarih)-new Date(a.tarih);});
+    if(!sorted.length){ el.innerHTML='<div style="font-size:12px;color:#555">Henüz etkinlik yok.</div>'; return; }
+    el.innerHTML = sorted.map(function(e){
+      var eid = e._id || e.id;
+      var kats = arrKat(e.katilimcilar);
+      return '<div class="event-card">'
+        + '<div class="ev-header"><div><div class="ev-title">'+esc(e.tur || 'Etkinlik')+'</div>'
+        + '<div class="ev-meta"><i class="ti ti-calendar"></i> '+esc(typeof fmtDate === 'function' ? fmtDate(e.tarih) : e.tarih)+' &nbsp;|&nbsp; +'+esc(e.puan || 0)+' puan &nbsp;|&nbsp; '+kats.length+' katılımcı</div></div>'
+        + '<div style="display:flex;gap:4px">'
+        + (can('etkinlikEkle') ? '<button class="btn btn-sm" onclick="openModal(\'editEvent\',\''+esc(eid)+'\')"><i class="ti ti-edit"></i></button>' : '')
+        + (can('etkinlikSil') ? '<button class="btn btn-danger btn-sm" onclick="reqDeleteEvent(\''+esc(eid)+'\')"><i class="ti ti-trash"></i></button>' : '')
+        + '</div></div>'
+        + '<div class="member-chips">'+kats.map(function(r){return '<span class="chip">'+esc(r)+'</span>';}).join('')+'</div>'
+        + (e.not ? '<div style="font-size:11px;color:#888;margin-top:5px">'+esc(e.not)+'</div>' : '')
+        + '</div>';
+    }).join('');
+  };
+
+  window.renderMesajlar = async function(){
+    try{
+      await mesajBadgeGuncelle();
+      var liste = $('konusmaListesi');
+      if(!liste) return;
+      liste.innerHTML = '<div style="font-size:11px;color:#555;padding:8px">Yükleniyor...</div>';
+      var res = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'MESAJ_LIST',item:{rumuz:currentUser()}})});
+      var data = await res.json();
+      var result = data.result || data || {};
+      var gelen = result.gelen || [];
+      var giden = result.giden || [];
+      tumMesajlar = gelen.concat(giden);
+      var ortaklar = [];
+      function add(o){ if(o && ortaklar.indexOf(o) < 0 && o !== currentUser()) ortaklar.push(o); }
+      gelen.forEach(function(m){ add(m.gonderen); });
+      giden.forEach(function(m){ add(m.alici); });
+      if(!ortaklar.length){
+        liste.innerHTML = '<div style="font-size:11px;color:#555;padding:8px">Henüz mesaj yok.<br><br><button class="btn btn-warn btn-sm" onclick="openModal(\'yeniMesaj\')">İlk mesajı gönder</button></div>';
+        return;
+      }
+      liste.innerHTML = ortaklar.map(function(o){
+        var unread = gelen.filter(function(m){return m.gonderen===o && !m.okundu;}).length;
+        var related = tumMesajlar.filter(function(m){return (m.gonderen===o&&m.alici===currentUser())||(m.gonderen===currentUser()&&m.alici===o);});
+        related.sort(function(a,b){return new Date(b._createdDate || b.tarih || 0)-new Date(a._createdDate || a.tarih || 0);});
+        var son = related[0];
+        return '<div class="konusma-row" onclick="konusmayiAc(\''+esc(o)+'\')" style="padding:8px 10px;cursor:pointer;border-radius:8px;margin-bottom:2px;'+(aktifKonusma===o?'background:#1a1a1a':'')+'">'
+          + '<div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:#d3d1c7">'+esc(o)+'</span>'+(unread?'<span style="background:#e24b4a;color:#fff;border-radius:10px;font-size:10px;padding:1px 5px">'+unread+'</span>':'')+'</div>'
+          + (son?'<div style="font-size:11px;color:#555;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc((son.gonderen===currentUser()?'Sen: ':'')+(son.mesaj||'').slice(0,38))+'</div>':'')
+          + '</div>';
+      }).join('');
+    }catch(e){
+      console.error('[QGANG] Mesaj listesi hatası', e);
+      var l = $('konusmaListesi'); if(l) l.innerHTML='<div style="font-size:11px;color:#e24b4a;padding:8px">Mesajlar alınamadı.</div>';
+    }
+  };
+
+  window.konusmayiAc = async function(ortak){
+    try{
+      aktifKonusma = ortak;
+      var bas = $('mesajBaslik'); if(bas) bas.innerHTML = '<i class="ti ti-user"></i> '+esc(ortak);
+      var wrap = $('mesajGonderWrap'); if(wrap) wrap.style.display = 'block';
+      var ic = $('mesajIcerik'); if(ic) ic.innerHTML = '<div style="font-size:11px;color:#555">Yükleniyor...</div>';
+      var res = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'MESAJ_KONUSMA',item:{rumuz1:currentUser(),rumuz2:ortak}})});
+      var data = await res.json();
+      var mesajlar = data.result || [];
+      if(!ic) return;
+      ic.innerHTML = '';
+      if(!mesajlar.length){ ic.innerHTML='<div style="font-size:11px;color:#555">Bu konuşmada henüz mesaj yok.</div>'; }
+      mesajlar.forEach(function(m){
+        var benim = m.gonderen === currentUser();
+        var div = document.createElement('div');
+        div.style.cssText = 'max-width:75%;padding:8px 12px;border-radius:12px;font-size:12px;line-height:1.6;'
+          +(benim?'align-self:flex-end;background:#2a1800;color:#fac775;border-bottom-right-radius:2px;':'align-self:flex-start;background:#141414;color:#c9c7bf;border-bottom-left-radius:2px;');
+        div.textContent = m.mesaj || '';
+        ic.appendChild(div);
+        if(!benim && !m.okundu){
+          fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'MESAJ_OKU',id:m._id||m.id})}).catch(function(){});
+        }
+      });
+      ic.scrollTop = ic.scrollHeight;
+      await renderMesajlar();
+    }catch(e){ console.error('[QGANG] Konuşma açma hatası', e); }
+  };
+
+  window.mesajGonder = async function(){
+    var inp = $('mesajInput');
+    if(!inp || !aktifKonusma || !inp.value.trim()) return;
+    var txt = inp.value.trim(); inp.value = '';
+    await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'MESAJ_GONDER',item:{gonderen:currentUser(),alici:aktifKonusma,mesaj:txt,tarih:new Date().toISOString(),okundu:false}})});
+    await konusmayiAc(aktifKonusma);
+  };
+
+  window.yeniMesajGonder = async function(){
+    var a = $('mesajAlici'); var m = $('yeniMesajIcerik');
+    if(!a || !m || !m.value.trim()) return;
+    await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'MESAJ_GONDER',item:{gonderen:currentUser(),alici:a.value,mesaj:m.value.trim(),tarih:new Date().toISOString(),okundu:false}})});
+    closeModal();
+    await renderMesajlar();
+    await konusmayiAc(a.value);
+  };
+
+  window.mesajBadgeGuncelle = async function(){
+    try{
+      var res = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'MESAJ_LIST',item:{rumuz:currentUser()}})});
+      var data = await res.json();
+      var gelen = ((data.result || data || {}).gelen) || [];
+      var okunmamis = gelen.filter(function(m){return !m.okundu;}).length;
+      var badge = $('mesajBadge');
+      if(badge){ badge.style.display = okunmamis ? 'inline' : 'none'; badge.textContent = okunmamis || ''; }
+    }catch(e){}
+  };
+
+  // İlk açılışta panel yukarı sabit ve mevcut sekme yeniden çizilsin.
+  window.addEventListener('load', function(){
+    setTimeout(function(){
+      document.body.classList.add('qg-ready');
+      try { refreshAll(); } catch(e){}
+    }, 300);
+  });
+})();
+/* QGANG_FULL_CHECKUP_HOTFIX_END */
 </script>
 </body>
 </html>
