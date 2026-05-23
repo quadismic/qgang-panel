@@ -427,7 +427,7 @@ svg.org{display:inline-block}
 <!-- DOĞUM GÜNÜ BANNER -->
 <div class="dogumgunu-banner" id="dogumgunuBanner" style="display:none">
   <div class="dogumgunu-inner">
-    <div class="dogumgunu-label">🎂 BUGÜN</div>
+    <div class="dogumgunu-label" id="dogumgunuLabel">🎂 BUGÜN</div>
     <div class="dogumgunu-track">
       <div class="dogumgunu-scroll" id="dogumgunuScroll"></div>
     </div>
@@ -815,6 +815,7 @@ function izin(key){
 //
 const AUTH_URL = 'https://www.q-gang.com/_functions/qgang';
 const API_URL = 'https://www.q-gang.com/_functions/qgang';
+const OYLAMA_URL = 'https://www.q-gang.com/_functions/qoylama';
 
 // AUTH FONKSIYONLARI ----------------------
 function authTab(tab){
@@ -861,12 +862,12 @@ function adimIleri(mevcut){
     const katki=document.getElementById('k_katki').value.trim();
     if(!gunluk||!niyet||!katki){hata.textContent='Tüm alanları doldurun.';hata.style.display='block';return}
     adimGoster(4);
-    setTimeout(()=>{
-      const el=document.getElementById('kayitTuzukMetin');
+    setTimeout(function(){
+      var el=document.getElementById('kayitTuzukMetin');
       if(el){
-        const icerik=tuzuk&&tuzuk.icerik||VARSAYILAN_TUZUK;
+        var icerik=(tuzuk&&tuzuk.icerik)||(window.VARSAYILAN_TUZUK)||'<p>Tüzük yükleniyor...</p>';
         el.innerHTML=icerik;
-        el.querySelectorAll('.tuzuk-section').forEach(s=>{s.style.opacity='1';s.style.transform='none'});
+        el.querySelectorAll('.tuzuk-section').forEach(function(s){s.style.opacity='1';s.style.transform='none';});
       }
     },100);
   }
@@ -1267,7 +1268,7 @@ function renderDashboard(){
   if(typeof oylamalar!=='undefined'&&oylamalar.length){
     var aktifOy=oylamalar.filter(function(o){return o.aktif!==false;});
     if(aktifOy.length){
-      alerts+='<div class="alert-row alert-info" style="cursor:pointer" id="oylamaBildirimAlert"><i class="ti ti-checkup-list"></i> <strong>'+aktifOy.length+' aktif oylama</strong> devam ediyor</div>';
+      alerts+='<div class="alert-row alert-warn" style="cursor:pointer" id="oylamaBildirimAlert"><i class="ti ti-checkup-list"></i> <strong>'+aktifOy.length+' aktif oylama</strong> devam ediyor</div>';
     }
   }
   document.getElementById('alertsBox').innerHTML=alerts||'<div style="font-size:12px;color:#555">Uyarı yok</div>';
@@ -1318,16 +1319,17 @@ function renderMembers(){
     .sort(function(a,b){const ra=rutbeSira[a.rutbe]!==undefined?rutbeSira[a.rutbe]:9;const rb=rutbeSira[b.rutbe]!==undefined?rutbeSira[b.rutbe]:9;return ra-rb;});
   const editBtn=izin('uyeDuzenle')||izin('rutbeDegistir');
   const silBtn=izin('uyeSil');
+  // Tablo min-width düzelt
   let tbody='';
   filtered.forEach(function(m,i){
     const mid=m._id||m.id;
     const editBtnHtml=editBtn?('<button class="btn btn-sm" onclick="openModal(\'editMember\',\''+mid+'\')"><i class="ti ti-edit"></i></button>'):'';
     const silBtnHtml=silBtn?('<button class="btn btn-danger btn-sm" onclick="reqDeleteMember(\''+mid+'\')"><i class="ti ti-trash"></i></button>'):'';
     const sifreBtnHtml=(izin('sifreSifirla')||SESSION.rol==='Lider')?('<button class="btn btn-sm" title="Şifreyi sıfırla" onclick="reqSifreSifirla(\''+mid+'\',\''+m.rumuz+'\')"><i class="ti ti-key"></i></button>'):'';
-    const portfolyoBtnHtml=(izin('portfolyoGor')||SESSION.rol==='Lider')?('<button class="btn btn-sm" title="Portfolyo" onclick="portfolyoAc(\''+m.rumuz+'\')" style="color:#5a9d5a"><i class="ti ti-eye"></i></button>'):'';const emptyHtml=(!editBtn&&!silBtn&&!sifreBtnHtml&&!portfolyoBtnHtml)?'<span style="font-size:10px;color:#555">—</span>':'';
+    const portfolyoBtnHtml=(izin('portfolyoGor')||SESSION.rol==='Lider')?('<button class="btn btn-sm" title="Portfolyo" id="pf_btn_'+mid+'" style="color:#5a9d5a"><i class="ti ti-eye"></i></button>'):'';const emptyHtml=(!editBtn&&!silBtn&&!sifreBtnHtml&&!portfolyoBtnHtml)?'<span style="font-size:10px;color:#555">—</span>':'';
     tbody+='<tr>'
       +'<td>'+(i+1)+'</td>'
-      +'<td style="font-weight:500;cursor:pointer;color:#fac775" onclick="portfolyoAc(\''+m.rumuz+'\')">'+m.rumuz+'</td>'
+      +'<td id="pf_'+mid+'" style="font-weight:500;cursor:pointer;color:#fac775">'+m.rumuz+'</td>'
       +'<td>'+rutbeBadge(m.rutbe)+'</td>'
       +'<td>'+durumBadge(m.durum)+'</td>'
       +'<td style="font-size:11px;color:#888">'+(m.gorev||'Yok')+'</td>'
@@ -1493,6 +1495,14 @@ async function arsivFiltrele(){
   });
   tbl.appendChild(tb);wrap.appendChild(tbl);
   listeEl.innerHTML='';listeEl.appendChild(wrap);
+  // Portfolyo onclick - tırnak sorunu DOM API ile çöz
+  members.forEach(function(m){
+    var mid3=String(m._id||m.id);
+    var tdEl=document.getElementById('pf_'+mid3);
+    if(tdEl)(function(r){tdEl.onclick=function(){portfolyoAc(r);};})(m.rumuz);
+    var btnEl=document.getElementById('pf_btn_'+mid3);
+    if(btnEl)(function(r){btnEl.onclick=function(){portfolyoAc(r);};})(m.rumuz);
+  });
 }
 
 //
@@ -1567,8 +1577,11 @@ function portfolyoAc(rumuz){
     +disiplinHTML
     +'</div></div>';
 
-  document.body.appendChild(overlay);
-  document.body.style.overflow='hidden';
+  // Wix iframe uyumluluğu için mainPanel'e değil document.documentElement'e ekle
+  var container=document.getElementById('mainPanel')||document.body;
+  container.appendChild(overlay);
+  // Overlay'e tıklanınca kapat
+  overlay.addEventListener('click',function(e){if(e.target===overlay)portfolyoKapat();});
 
   // Sıfırlama onclick
   var brs2=document.getElementById('btnRtbSifirla');
@@ -1627,7 +1640,6 @@ async function rutbeGecmisiSifirla(rumuz){
 function portfolyoKapat(){
   var el=document.getElementById('portfolyoOverlay');
   if(el)el.remove();
-  document.body.style.overflow='';
 }
 
 // SEZON SISTEMI
@@ -2560,6 +2572,9 @@ function renderDogumgunuBanner(){
   const banner=document.getElementById('dogumgunuBanner');
   if(!bugunUyeler.length){if(banner)banner.style.display='none';return;}
   if(banner)banner.style.display='block';
+  // Label'ı isimlere güncelle
+  var labelEl=document.getElementById('dogumgunuLabel');
+  if(labelEl) labelEl.innerHTML='🎂 '+bugunUyeler.map(function(m){return m.rumuz;}).join(' & ');
   const scroll=document.getElementById('dogumgunuScroll');
   if(!scroll)return;
   // İsimleri + 🎂 emoji ile göster
