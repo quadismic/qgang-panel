@@ -250,6 +250,12 @@ body{overflow-x:hidden;}
 .auth-screen,.panel{position:relative!important;z-index:1!important;}
 .panel{max-width:900px!important;margin:36px auto 48px auto!important;padding-bottom:36px!important;}
 @media(max-width:700px){.panel{margin:12px auto 36px auto!important;}}
+
+/* QGANG_SELFHEAL_LAYOUT */
+#sezonCanvas{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;pointer-events:none!important;z-index:0!important;display:block!important;}
+.panel{position:relative!important;z-index:1!important;margin:0 auto!important;padding-top:28px!important;}
+.auth-screen{z-index:9999!important;}
+body.qg-selfheal{min-height:100vh!important;overflow-x:hidden!important;}
 </style>
 </head>
 <body>
@@ -3195,6 +3201,397 @@ function renderDogumgunuBanner(){
   });
 })();
 /* QGANG_FULL_CHECKUP_HOTFIX_END */
+</script>
+<script>
+/* QGANG_SELFHEAL_PATCH_START */
+(function(){
+  'use strict';
+
+  var QG_API = (typeof API_URL !== 'undefined' && API_URL) ? API_URL : 'https://www.q-gang.com/_functions/qgang';
+  var QG_OY = (typeof OYLAMA_URL !== 'undefined' && OYLAMA_URL) ? OYLAMA_URL : 'https://www.q-gang.com/_functions/qoylama';
+  var qgHydrating = null;
+  var qgLastHydrate = 0;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>"']/g,function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function can(k){
+    try { return (typeof izin === 'function' && izin(k)) || (typeof SESSION !== 'undefined' && SESSION.rol === 'Lider'); }
+    catch(e){ return false; }
+  }
+  function currentUser(){
+    try { return (SESSION && SESSION.rumuz) || 'Quadismic'; } catch(e){ return 'Quadismic'; }
+  }
+  function arrKat(k){
+    try { if(typeof parseKat === 'function') return parseKat(k); } catch(e){}
+    if(Array.isArray(k)) return k;
+    if(typeof k === 'string' && k) return k.split(',').map(function(s){return s.trim();}).filter(Boolean);
+    return [];
+  }
+  function normalizeRole(r){
+    r = String(r || '');
+    if(r === 'Lider') return 'Lider';
+    if(r.indexOf('Vekil') >= 0) return 'Vekilharç';
+    if(r === 'Kaptan') return 'Kaptan';
+    if(r.indexOf('Te') >= 0 || r.indexOf('Teğ') >= 0) return 'Teğmen';
+    if(r.indexOf('Üye') >= 0 || r.indexOf('Uye') >= 0) return 'Üye';
+    return r || 'Gözlemci';
+  }
+  function isLeader(){
+    try { return normalizeRole(SESSION && SESSION.rol) === 'Lider'; } catch(e){ return false; }
+  }
+  function safeDateText(s){
+    if(!s) return '-';
+    try { if(typeof fmtDate === 'function') return fmtDate(String(s).slice(0,10)); } catch(e){}
+    return String(s).slice(0,10);
+  }
+  function safeDateTime(s){
+    if(!s) return '-';
+    try { if(typeof fmtDateTime === 'function') return fmtDateTime(s); } catch(e){}
+    try { return new Date(s).toLocaleString('tr-TR'); } catch(e){ return String(s); }
+  }
+  function safeTL(v){
+    try { if(typeof fmtTL === 'function') return fmtTL(v); } catch(e){}
+    return Number(v || 0).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' ₺';
+  }
+
+  async function qgPost(action, itemOrId){
+    var isId = ['DELETE','USER_APPROVE','USER_REJECT','DISIPLIN_DELETE','DAVET_DELETE','BUDGET_DELETE','EVENT_DELETE','MEMBER_DELETE','DUYURU_DELETE','MESAJ_OKU'].some(function(x){ return action.indexOf(x) >= 0; });
+    var body = isId ? { action: action, id: itemOrId } : { action: action, item: itemOrId };
+    var res = await fetch(QG_API,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    var data = await res.json().catch(function(){ return {}; });
+    if(!res.ok || data.success === false) throw new Error(data.error || ('HTTP '+res.status));
+    return data;
+  }
+
+  window.qgHydrate = async function(force){
+    var now = Date.now();
+    if(!force && qgHydrating) return qgHydrating;
+    if(!force && now - qgLastHydrate < 2500) return true;
+    qgHydrating = (async function(){
+      var res = await fetch(QG_API + '?v=' + Date.now(), { method:'GET', cache:'no-store' });
+      var veri = await res.json();
+      if(!res.ok || !veri) throw new Error('Veri alınamadı');
+      if(Array.isArray(veri.members)) members = veri.members.map(function(m){ return Object.assign({}, m, { id:m._id || m.id, katilimcilar:arrKat(m.katilimcilar) }); });
+      if(Array.isArray(veri.events)) events = veri.events.map(function(e){ return Object.assign({}, e, { id:e._id || e.id, katilimcilar:arrKat(e.katilimcilar) }); });
+      if(Array.isArray(veri.budget)) butce = veri.budget.map(function(b){ return Object.assign({}, b, { id:b._id || b.id }); });
+      if(Array.isArray(veri.duyurular)) duyurular = veri.duyurular.map(function(d){ return Object.assign({}, d, { id:d._id || d.id }); });
+      if(Array.isArray(veri.disiplin)) disiplin = veri.disiplin.map(function(d){ return Object.assign({}, d, { id:d._id || d.id }); });
+      if(veri.tuzuk) tuzuk = veri.tuzuk;
+      qgLastHydrate = Date.now();
+      return true;
+    })();
+    try { return await qgHydrating; }
+    catch(e){ console.error('[QGANG] Veri yenileme hatası:', e); return false; }
+    finally { qgHydrating = null; }
+  };
+
+  function renderCurrentTab(){
+    var active = document.querySelector('.tab.active');
+    if(!active) return;
+    var name = active.id ? active.id.replace('tab-','') : 'dashboard';
+    qgAfterTab(name);
+  }
+
+  window.qgRefreshAll = async function(force){
+    await window.qgHydrate(!!force);
+    try { if(typeof uiAyarla === 'function') uiAyarla(); } catch(e){}
+    try { if(typeof renderDashboard === 'function') renderDashboard(); } catch(e){ console.error(e); }
+    try { if(typeof renderDuyuruBanner === 'function') renderDuyuruBanner(); } catch(e){ console.error(e); }
+    try { if(typeof mesajBadgeGuncelle === 'function') mesajBadgeGuncelle(); } catch(e){}
+    renderCurrentTab();
+  };
+
+  var oldCikis = window.cikisYap;
+  window.cikisYap = async function(){
+    try { await qgPost('OTURUM_CIKIS', { rumuz: currentUser() }); } catch(e){}
+    try { localStorage.removeItem('qg_session'); } catch(e){}
+    try { sessionStorage.clear(); } catch(e){}
+    location.href = location.pathname + '?logout=' + Date.now();
+  };
+
+  var oldUi = window.uiAyarla;
+  window.uiAyarla = function(){
+    try { if(typeof oldUi === 'function') oldUi(); } catch(e){ console.warn('[QGANG] uiAyarla eski hata:', e); }
+    var lider = isLeader();
+    var erisim = $('navErisimDD');
+    if(erisim) erisim.style.display = lider ? '' : 'none';
+    var log = $('navLog');
+    if(log && lider) log.style.display = '';
+    var bUye = $('btnUyeEkle');
+    if(bUye && (lider || can('uyeEkle'))) bUye.style.display = '';
+    var bDuyuru = $('btnDuyuruEkle');
+    if(bDuyuru && (lider || can('duyuruEkle'))) bDuyuru.style.display = '';
+    var bEtkinlik = $('btnEtkinlikEkle');
+    if(bEtkinlik && (lider || can('etkinlikEkle'))) bEtkinlik.style.display = '';
+  };
+
+  window.renderDuyurular = async function(){
+    await window.qgHydrate(false);
+    var el = $('duyuruList');
+    if(!el) return;
+    var list = Array.isArray(duyurular) ? duyurular.slice() : [];
+    list.sort(function(a,b){ return new Date(b.tarih || b._createdDate || 0) - new Date(a.tarih || a._createdDate || 0); });
+    if(!list.length){ el.innerHTML = '<div style="font-size:12px;color:#555">Henüz duyuru yok.</div>'; return; }
+    el.innerHTML = list.map(function(d){
+      var id = d._id || d.id;
+      var aktif = d.aktif !== false;
+      return '<div class="duyuru-kart">'
+        + '<div class="dk-header"><div><div class="dk-baslik">'+esc(d.baslik || 'Duyuru')+'</div>'
+        + '<div class="dk-meta">'+esc(d.yazar || '-')+' · '+esc(safeDateTime(d.tarih || d._createdDate))+' · '+(aktif?'Aktif':'Pasif')+'</div></div>'
+        + '<div style="display:flex;gap:4px">'
+        + ((can('duyuruEkle') || isLeader()) ? '<button class="btn btn-sm" onclick="openModal(\'editDuyuru\',\''+esc(id)+'\')"><i class="ti ti-edit"></i></button>' : '')
+        + ((can('duyuruSil') || isLeader()) ? '<button class="btn btn-danger btn-sm" onclick="reqDeleteDuyuru(\''+esc(id)+'\')"><i class="ti ti-trash"></i></button>' : '')
+        + '</div></div><div class="dk-icerik">'+esc(d.icerik || '')+'</div></div>';
+    }).join('');
+  };
+
+  window.reqDeleteDuyuru = async function(id){
+    if(!(can('duyuruSil') || isLeader())) return;
+    if(!confirm('Duyuru silinsin mi?')) return;
+    try { await qgPost('DUYURU_DELETE', id); duyurular = (duyurular || []).filter(function(d){ return String(d._id || d.id) !== String(id); }); await qgRefreshAll(true); }
+    catch(e){ alert('Duyuru silinemedi: '+e.message); }
+  };
+
+  window.renderEvents = async function(){
+    await window.qgHydrate(false);
+    var el = $('eventList');
+    if(!el) return;
+    var sorted = (Array.isArray(events) ? events.slice() : []).sort(function(a,b){ return new Date(b.tarih || 0) - new Date(a.tarih || 0); });
+    if(!sorted.length){ el.innerHTML = '<div style="font-size:12px;color:#555">Henüz etkinlik yok.</div>'; return; }
+    el.innerHTML = sorted.map(function(e){
+      var eid = e._id || e.id;
+      var kats = arrKat(e.katilimcilar);
+      return '<div class="event-card"><div class="ev-header"><div><div class="ev-title">'+esc(e.tur || 'Etkinlik')+'</div>'
+        + '<div class="ev-meta"><i class="ti ti-calendar"></i> '+esc(safeDateText(e.tarih))+' &nbsp;|&nbsp; +'+esc(e.puan || 0)+' puan &nbsp;|&nbsp; '+kats.length+' katılımcı</div></div>'
+        + '<div style="display:flex;gap:4px">'
+        + ((can('etkinlikEkle') || isLeader()) ? '<button class="btn btn-sm" onclick="openModal(\'editEvent\',\''+esc(eid)+'\')"><i class="ti ti-edit"></i></button>' : '')
+        + ((can('etkinlikSil') || isLeader()) ? '<button class="btn btn-danger btn-sm" onclick="reqDeleteEvent(\''+esc(eid)+'\')"><i class="ti ti-trash"></i></button>' : '')
+        + '</div></div><div class="member-chips">'+kats.map(function(r){ return '<span class="chip">'+esc(r)+'</span>'; }).join('')+'</div>'
+        + (e.not ? '<div style="font-size:11px;color:#888;margin-top:5px">'+esc(e.not)+'</div>' : '')
+        + '</div>';
+    }).join('');
+  };
+
+  window.reqDeleteEvent = async function(id){
+    if(!(can('etkinlikSil') || isLeader())) return;
+    if(!confirm('Etkinlik silinsin mi?')) return;
+    try { await qgPost('EVENT_DELETE', id); events = (events || []).filter(function(e){ return String(e._id || e.id) !== String(id); }); await qgRefreshAll(true); }
+    catch(e){ alert('Etkinlik silinemedi: '+e.message); }
+  };
+
+  window.renderMesajlar = async function(){
+    var liste = $('konusmaListesi');
+    if(liste) liste.innerHTML = '<div style="font-size:11px;color:#555;padding:8px">Yükleniyor...</div>';
+    try{
+      var data = await qgPost('MESAJ_LIST', { rumuz: currentUser() });
+      var result = data.result || {};
+      var gelen = result.gelen || [];
+      var giden = result.giden || [];
+      tumMesajlar = gelen.concat(giden);
+      if(typeof mesajBadgeGuncelle === 'function') await mesajBadgeGuncelle();
+      if(!liste) return;
+      var ortaklar = [];
+      function add(o){ if(o && o !== currentUser() && ortaklar.indexOf(o) < 0) ortaklar.push(o); }
+      gelen.forEach(function(m){ add(m.gonderen); });
+      giden.forEach(function(m){ add(m.alici); });
+      if(!ortaklar.length){
+        liste.innerHTML = '<div style="font-size:11px;color:#555;padding:8px">Henüz mesaj yok.<br><br><button class="btn btn-warn btn-sm" onclick="openModal(\'yeniMesaj\')">İlk mesajı gönder</button></div>';
+        return;
+      }
+      liste.innerHTML = ortaklar.map(function(o){
+        var unread = gelen.filter(function(m){ return m.gonderen === o && !m.okundu; }).length;
+        var related = tumMesajlar.filter(function(m){ return (m.gonderen===o&&m.alici===currentUser()) || (m.gonderen===currentUser()&&m.alici===o); });
+        related.sort(function(a,b){ return new Date(b._createdDate || b.tarih || 0) - new Date(a._createdDate || a.tarih || 0); });
+        var son = related[0];
+        return '<div onclick="konusmayiAc(\''+esc(o)+'\')" style="padding:8px 10px;cursor:pointer;border-radius:8px;margin-bottom:2px;'+(aktifKonusma===o?'background:#1a1a1a':'')+'">'
+          + '<div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:#d3d1c7">'+esc(o)+'</span>'+(unread?'<span style="background:#e24b4a;color:#fff;border-radius:10px;font-size:10px;padding:1px 5px">'+unread+'</span>':'')+'</div>'
+          + (son ? '<div style="font-size:11px;color:#555;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc((son.gonderen===currentUser()?'Sen: ':'')+(son.mesaj||'').slice(0,38))+'</div>' : '')
+          + '</div>';
+      }).join('');
+    }catch(e){
+      console.error('[QGANG] Mesajlar alınamadı:', e);
+      if(liste) liste.innerHTML = '<div style="font-size:11px;color:#e24b4a;padding:8px">Mesajlar alınamadı.</div>';
+    }
+  };
+
+  window.konusmayiAc = async function(ortak){
+    try{
+      aktifKonusma = ortak;
+      var bas = $('mesajBaslik'); if(bas) bas.innerHTML = '<i class="ti ti-user"></i> '+esc(ortak);
+      var wrap = $('mesajGonderWrap'); if(wrap) wrap.style.display = 'block';
+      var ic = $('mesajIcerik'); if(ic) ic.innerHTML = '<div style="font-size:11px;color:#555">Yükleniyor...</div>';
+      var data = await qgPost('MESAJ_KONUSMA', { rumuz1:currentUser(), rumuz2:ortak });
+      var mesajlar = data.result || [];
+      if(!ic) return;
+      ic.innerHTML = '';
+      if(!mesajlar.length) ic.innerHTML = '<div style="font-size:11px;color:#555">Bu konuşmada henüz mesaj yok.</div>';
+      mesajlar.forEach(function(m){
+        var benim = m.gonderen === currentUser();
+        var div = document.createElement('div');
+        div.style.cssText = 'max-width:75%;padding:8px 12px;border-radius:12px;font-size:12px;line-height:1.6;'+(benim?'align-self:flex-end;background:#2a1800;color:#fac775;border-bottom-right-radius:2px;':'align-self:flex-start;background:#141414;color:#c9c7bf;border-bottom-left-radius:2px;');
+        div.textContent = m.mesaj || '';
+        ic.appendChild(div);
+        if(!benim && !m.okundu) qgPost('MESAJ_OKU', m._id || m.id).catch(function(){});
+      });
+      ic.scrollTop = ic.scrollHeight;
+      await window.renderMesajlar();
+    }catch(e){ console.error('[QGANG] Konuşma açılamadı:', e); }
+  };
+
+  window.mesajGonder = async function(){
+    var inp = $('mesajInput');
+    if(!inp || !aktifKonusma || !inp.value.trim()) return;
+    var txt = inp.value.trim(); inp.value = '';
+    try { await qgPost('MESAJ_GONDER', { gonderen:currentUser(), alici:aktifKonusma, mesaj:txt, tarih:new Date().toISOString(), okundu:false }); await window.konusmayiAc(aktifKonusma); }
+    catch(e){ alert('Mesaj gönderilemedi: '+e.message); }
+  };
+
+  window.yeniMesajGonder = async function(){
+    var a = $('mesajAlici'); var m = $('yeniMesajIcerik');
+    if(!a || !m || !m.value.trim()) return;
+    try { await qgPost('MESAJ_GONDER', { gonderen:currentUser(), alici:a.value, mesaj:m.value.trim(), tarih:new Date().toISOString(), okundu:false }); if(typeof closeModal === 'function') closeModal(); await window.renderMesajlar(); await window.konusmayiAc(a.value); }
+    catch(e){ alert('Mesaj gönderilemedi: '+e.message); }
+  };
+
+  window.mesajBadgeGuncelle = async function(){
+    try{
+      var data = await qgPost('MESAJ_LIST', { rumuz: currentUser() });
+      var gelen = (data.result && data.result.gelen) || [];
+      var n = gelen.filter(function(m){ return !m.okundu; }).length;
+      var badge = $('mesajBadge');
+      if(badge){ badge.style.display = n ? 'inline' : 'none'; badge.textContent = n || ''; }
+    }catch(e){}
+  };
+
+  window.renderErisimBoard = function(){
+    var el = $('izinBoard');
+    if(!el) return;
+    if(!isLeader()){ el.innerHTML = '<div class="erisim-engel"><i class="ti ti-lock"></i>Bu bölüme sadece Lider erişebilir.</div>'; return; }
+    var roles = (typeof ROL_SIRASI !== 'undefined' ? ROL_SIRASI : ['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci']);
+    var keys = [];
+    try { keys = Object.keys(IZINLER.Lider || {}); } catch(e){}
+    el.innerHTML = '<div class="card"><div style="font-size:12px;color:#888;line-height:1.6">Erişim yönetimi görünür durumda. İzinlerin kalıcı şekilde kaydedilmesi için mevcut sürümdeki <strong>Kaydet</strong> altyapısı korunur. Lider tüm yetkilere sahiptir.</div></div>'
+      + '<div class="table-wrap"><table><thead><tr><th>Rol</th><th>Aktif izinler</th></tr></thead><tbody>'
+      + roles.map(function(r){ var active = keys.filter(function(k){ try{return !!IZINLER[r][k];}catch(e){return false;} }); return '<tr><td>'+esc(r)+'</td><td style="white-space:normal">'+active.map(function(k){return '<span class="chip">'+esc(k)+'</span>';}).join(' ')+'</td></tr>'; }).join('')
+      + '</tbody></table></div>';
+  };
+  window.izinKaydet = window.izinKaydet || function(){ alert('Bu sürümde izin tablosu görüntüleniyor. Kalıcı izin yazma için backend IZIN_KAYDET aksiyonu hazır.'); };
+  window.izinSifirla = window.izinSifirla || function(){ if(confirm('Görüntüyü varsayılan izinlere döndürelim mi?')) window.renderErisimBoard(); };
+
+  window.renderLog = window.renderLog || function(){
+    var el = $('logList'); if(!el) return;
+    var list = Array.isArray(logs) ? logs : [];
+    el.innerHTML = list.length ? list.map(function(l){ return '<div class="log-item"><div class="log-time">'+esc(safeDateTime(l.time))+'</div><div><span class="log-who">'+esc(l.who || '?')+'</span> <span class="log-action">'+esc(l.action || '')+'</span></div><div class="log-detail">'+esc(l.detail || '')+'</div></div>'; }).join('') : '<div style="font-size:12px;color:#555;padding:12px">Log yok.</div>';
+  };
+
+  window.renderDavet = async function(){
+    var kodEl = $('davetKodListesi'); var basEl = $('basvuruList');
+    if(kodEl) kodEl.innerHTML = '<div style="font-size:12px;color:#555">Yükleniyor...</div>';
+    if(basEl) basEl.innerHTML = '<div style="font-size:12px;color:#555">Yükleniyor...</div>';
+    try{
+      var dk = await qgPost('DAVET_LIST', {});
+      var kodlar = dk.result || [];
+      if(kodEl) kodEl.innerHTML = kodlar.length ? '<div class="table-wrap"><table><thead><tr><th>Kod</th><th>Aktif</th><th>Kullanan</th><th></th></tr></thead><tbody>'+kodlar.map(function(k){ return '<tr><td>'+esc(k.kod || '')+'</td><td>'+esc(k.aktif===false?'Hayır':'Evet')+'</td><td>'+esc(k.kullanan || '')+'</td><td>'+((can('davetYonet')||isLeader())?'<button class="btn btn-danger btn-sm" onclick="reqDeleteDavet(\''+esc(k._id||k.id)+'\')"><i class="ti ti-trash"></i></button>':'')+'</td></tr>'; }).join('')+'</tbody></table></div>' : '<div style="font-size:12px;color:#555">Davet kodu yok.</div>';
+    }catch(e){ if(kodEl) kodEl.innerHTML = '<div style="font-size:12px;color:#e24b4a">Davet kodları alınamadı.</div>'; }
+    try{
+      var bs = await qgPost('BASVURU_LIST', {});
+      var bas = bs.result || [];
+      if(basEl) basEl.innerHTML = bas.length ? bas.map(function(u){ return '<div class="card"><strong>'+esc(u.rumuz || '-')+'</strong><div style="font-size:11px;color:#888">'+esc(u.adSoyad || '')+' · '+esc(u.email || '')+'</div><div style="margin-top:8px;display:flex;gap:6px"><button class="btn btn-success btn-sm" onclick="basvuruOnayla(\''+esc(u._id||u.id)+'\')">Onayla</button><button class="btn btn-danger btn-sm" onclick="basvuruReddet(\''+esc(u._id||u.id)+'\')">Reddet</button></div></div>'; }).join('') : '<div style="font-size:12px;color:#555">Bekleyen başvuru yok.</div>';
+      var badge = $('basvuruSayiBadge'); if(badge) badge.innerHTML = bas.length ? '<span class="badge badge-sari">'+bas.length+' bekliyor</span>' : '';
+    }catch(e){ if(basEl) basEl.innerHTML = '<div style="font-size:12px;color:#e24b4a">Başvurular alınamadı.</div>'; }
+  };
+  window.reqDeleteDavet = async function(id){ if(!confirm('Davet kodu silinsin mi?')) return; try{ await qgPost('DAVET_DELETE', id); await renderDavet(); }catch(e){ alert(e.message); } };
+  window.basvuruOnayla = async function(id){ try{ await qgPost('USER_APPROVE', id); await renderDavet(); await qgRefreshAll(true); }catch(e){ alert(e.message); } };
+  window.basvuruReddet = async function(id){ if(!confirm('Başvuru reddedilsin mi?')) return; try{ await qgPost('USER_REJECT', id); await renderDavet(); }catch(e){ alert(e.message); } };
+
+  window.renderTuzuk = function(){
+    var g = $('tuzukGorunum'); var meta = $('tuzukMeta'); var btn = $('tuzukBtnGroup');
+    if(btn) btn.innerHTML = (can('tuzukDuzenle') || isLeader()) ? '<button class="btn btn-warn btn-sm" onclick="tuzukDuzenleAc()"><i class="ti ti-edit"></i> Düzenle</button>' : '';
+    if(g) g.innerHTML = (tuzuk && tuzuk.icerik) ? tuzuk.icerik : '<div class="card" style="font-size:12px;color:#555">Tüzük kaydı yok.</div>';
+    if(meta) meta.textContent = tuzuk && tuzuk._updatedDate ? 'Son güncelleme: '+safeDateTime(tuzuk._updatedDate) : '';
+  };
+  window.tuzukDuzenleAc = function(){ var ed=$('tuzukEditor'), ta=$('tuzukMetin'); if(ed) ed.style.display='block'; if(ta) ta.value=(tuzuk&&tuzuk.icerik)||''; };
+  window.tuzukDuzenleKapat = function(){ var ed=$('tuzukEditor'); if(ed) ed.style.display='none'; };
+  window.tuzukKaydet = async function(){ var ta=$('tuzukMetin'); if(!ta) return; try{ await qgPost('TUZUK_SAVE',{icerik:ta.value,tarih:new Date().toISOString(),yazar:currentUser()}); await qgRefreshAll(true); window.tuzukDuzenleKapat(); }catch(e){ alert(e.message); } };
+
+  window.renderOrg = function(){
+    var el = $('orgWrap'); if(!el) return;
+    var order = ['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
+    el.innerHTML = order.map(function(r){ var list=(members||[]).filter(function(m){return normalizeRole(m.rutbe)===r;}); if(!list.length) return ''; return '<div class="card"><div class="section-title">'+esc(r)+'</div><div class="member-chips">'+list.map(function(m){return '<span class="chip">'+esc(m.rumuz)+'</span>';}).join('')+'</div></div>'; }).join('');
+  };
+
+  window.renderOylama = async function(){
+    var el = $('oylamaList'); if(!el) return;
+    el.innerHTML = '<div style="font-size:12px;color:#555">Yükleniyor...</div>';
+    try{
+      var res = await fetch(QG_OY + '?v=' + Date.now(), {cache:'no-store'});
+      var data = await res.json();
+      var list = data.items || data.result || [];
+      window.oylamalar = list;
+      el.innerHTML = list.length ? list.map(function(o){ return '<div class="card"><strong>'+esc(o.baslik || 'Oylama')+'</strong><div style="font-size:12px;color:#888;margin-top:5px">'+esc(o.aciklama || '')+'</div></div>'; }).join('') : '<div style="font-size:12px;color:#555">Oylama yok.</div>';
+    }catch(e){ el.innerHTML = '<div style="font-size:12px;color:#e24b4a">Oylamalar alınamadı.</div>'; }
+  };
+
+  window.qgAfterTab = async function(name){
+    try{
+      if(name === 'dashboard'){ await qgHydrate(false); if(typeof renderDashboard === 'function') renderDashboard(); }
+      else if(name === 'members'){ await qgHydrate(false); if(typeof renderMembers === 'function') renderMembers(); }
+      else if(name === 'etkinlik'){ await renderEvents(); }
+      else if(name === 'duyurular'){ await renderDuyurular(); }
+      else if(name === 'mesajlar'){ await renderMesajlar(); }
+      else if(name === 'erisim'){ renderErisimBoard(); }
+      else if(name === 'davet'){ await renderDavet(); }
+      else if(name === 'tuzuk'){ await qgHydrate(false); renderTuzuk(); }
+      else if(name === 'org'){ await qgHydrate(false); renderOrg(); }
+      else if(name === 'log'){ renderLog(); }
+      else if(name === 'oylama'){ await renderOylama(); }
+      else if(name === 'butce'){ await qgHydrate(false); if(typeof renderButce === 'function') renderButce(); }
+      else if(name === 'gorev'){ await qgHydrate(false); if(typeof renderGorev === 'function') renderGorev(); if(typeof renderGorevTalepleri === 'function') renderGorevTalepleri(); }
+    }catch(e){ console.error('[QGANG] Sekme render hatası:', name, e); }
+  };
+
+  var oldShowTab = window.showTab;
+  window.showTab = function(name, btn){
+    try { if(typeof oldShowTab === 'function') oldShowTab(name, btn); }
+    catch(e){
+      document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active','open');});
+      if(btn) btn.classList.add('active');
+      document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+      var tab = $('tab-'+name); if(tab) tab.classList.add('active');
+    }
+    setTimeout(function(){ qgAfterTab(name); }, 0);
+  };
+  var oldShowTabDD = window.showTabDD;
+  window.showTabDD = function(name, ddId, btnId){
+    try { if(typeof oldShowTabDD === 'function') oldShowTabDD(name, ddId, btnId); }
+    catch(e){
+      document.querySelectorAll('.nav-dropdown').forEach(function(d){d.classList.remove('show');});
+      document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active','open');});
+      var btn=$(btnId); if(btn) btn.classList.add('active');
+      document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+      var tab=$('tab-'+name); if(tab) tab.classList.add('active');
+    }
+    setTimeout(function(){ qgAfterTab(name); }, 0);
+  };
+
+  var oldPanelAc = window.panelAc;
+  window.panelAc = async function(rumuz, rol){
+    if(typeof oldPanelAc === 'function') await oldPanelAc(rumuz, rol);
+    await qgRefreshAll(true);
+  };
+
+  window.addEventListener('load', function(){
+    document.body.classList.add('qg-selfheal');
+    setTimeout(function(){ qgRefreshAll(true); }, 800);
+    setInterval(function(){ if(document.getElementById('mainPanel') && document.getElementById('mainPanel').style.display !== 'none') qgRefreshAll(false); }, 45000);
+  });
+})();
+/* QGANG_SELFHEAL_PATCH_END */
+
 </script>
 </body>
 </html>
