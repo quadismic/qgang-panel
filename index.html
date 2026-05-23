@@ -519,8 +519,14 @@ async function cmsOku(){
   try{
     const res=await fetch(API_URL,{method:'GET'});
     if(!res.ok)throw new Error('HTTP '+res.status);
-    return await res.json();
-  }catch(e){console.error('CMS okuma hatası:',e);return null}
+    const text=await res.text();
+    const data=typeof text==='string'?JSON.parse(text):text;
+    // Wix HTTP Functions bazen {body: "..."} şeklinde döner
+    if(data&&data.body&&typeof data.body==='string'){
+      return JSON.parse(data.body);
+    }
+    return data;
+  }catch(e){console.error('CMS okuma hatası:',e);return null;}
 }
 
 async function cmsYaz(action,data){
