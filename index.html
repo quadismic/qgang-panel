@@ -243,520 +243,9 @@ svg.org{display:inline-block}
   table{font-size:11px}th,td{padding:5px 6px}
 }
 </style>
-</head>
-<body>
-<canvas id="sezonCanvas"></canvas>
-
-<!-- AUTH EKRANI -->
-<div id="authScreen" class="auth-screen">
-  <div class="auth-box">
-    <div class="auth-logo">
-      <div class="logo-text" style="font-family:'Vanilla Whale',serif;font-size:64px;letter-spacing:-0.5px;font-weight:400;line-height:1">-QG-</div>
-      <div class="logo-sub" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;margin-top:12px;color:#8a7d5a;font-weight:600;line-height:1.8">CESARET · ASALET · ADALET · SADAKAT</div>
-    </div>
-
-    <!-- TAB -->
-    <div class="auth-tabs">
-      <div class="auth-tab active" onclick="authTab('giris')">Giriş Yap</div>
-      <div class="auth-tab" onclick="authTab('kayit')">Kayıt Ol</div>
-    </div>
-
-    <!-- GİRİŞ FORMU -->
-    <div id="girisForm">
-      <div class="auth-error" id="girisHata"></div>
-      <div class="auth-form-group">
-        <label>Rumuz</label>
-        <input type="text" id="girisRumuz" placeholder="Rumuzun..." onkeydown="if(event.key==='Enter')girisYapBtn()">
-      </div>
-      <div class="auth-form-group">
-        <label>Şifre</label>
-        <input type="password" id="girusSifre" placeholder="••••••••" onkeydown="if(event.key==='Enter')girisYapBtn()">
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-        <input type="checkbox" id="beniHatirla" style="width:auto">
-        <label for="beniHatirla" style="font-size:12px;color:#888;cursor:pointer">Beni hatırla (30 gün)</label>
-      </div>
-      <button class="auth-btn" onclick="girisYapBtn()">BENİ İÇERİ AL</button>
-    </div>
-
-    <!-- KAYIT FORMU -->
-    <div id="kayitForm" style="display:none">
-      <div class="auth-error" id="kayitHata"></div>
-      <div class="auth-success" id="kayitBasari"></div>
-
-      <!-- ADIM 1: Davet kodu -->
-      <div class="kayit-adim active" id="adim1">
-        <div class="adim-no">Adım 1 / 4 — Davet Kodu</div>
-        <div class="auth-form-group">
-          <label>Davet Kodu</label>
-          <input type="text" id="k_davetKodu" placeholder="Davet kodunu gir..." style="text-transform:uppercase;letter-spacing:2px">
-        </div>
-        <p style="font-size:11px;color:#555;margin-bottom:12px">Koda sahip değilsen Q-GANG üyelerinden biri aracılığıyla ulaşabilirsin.</p>
-        <button class="auth-btn" onclick="adimIleri(1)">DEVAM ET</button>
-      </div>
-
-      <!-- ADIM 2: Kişisel bilgiler -->
-      <div class="kayit-adim" id="adim2">
-        <div class="adim-no">Adım 2 / 4 — Kimsin?</div>
-        <div class="auth-form-group">
-          <label>Rumuz (Takma Ad) *</label>
-          <input type="text" id="k_rumuz" placeholder="Topluluktaki adın...">
-        </div>
-        <div class="auth-form-group">
-          <label>Ad Soyad *</label>
-          <input type="text" id="k_adSoyad" placeholder="Gerçek adın...">
-        </div>
-        <div class="form-row" style="margin-bottom:0">
-          <div class="auth-form-group">
-            <label>Doğum Tarihi *</label>
-            <input type="date" id="k_dogum">
-          </div>
-          <div class="auth-form-group">
-            <label>Şehir *</label>
-            <input type="text" id="k_sehir" placeholder="İstanbul...">
-          </div>
-        </div>
-        <div class="auth-form-group">
-          <label>E-posta *</label>
-          <input type="email" id="k_email" placeholder="sen@mail.com">
-        </div>
-        <div class="auth-form-group">
-          <label>WhatsApp Numarası *</label>
-          <input type="tel" id="k_whatsapp" placeholder="+90 5xx xxx xx xx">
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn" onclick="adimGeri(2)" style="flex:1">Geri</button>
-          <button class="auth-btn" onclick="adimIleri(2)" style="flex:2;margin-top:0">DEVAM ET</button>
-        </div>
-      </div>
-
-      <!-- ADIM 3: Niyet ve durum -->
-      <div class="kayit-adim" id="adim3">
-        <div class="adim-no">Adım 3 / 4 — Sen Kimsin?</div>
-        <div class="auth-form-group">
-          <label>Günlük hayatında neler yapıyorsun? *</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Okuyorum"> Okuyorum</label>
-            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Çalışıyorum"> Çalışıyorum</label>
-            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Hem okuyorum hem çalışıyorum"> Hem okuyorum hem çalışıyorum</label>
-            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Arayıştayım"> Arayıştayım</label>
-            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Hiçbiri ama doluyum"> Hiçbiri ama doluyum</label>
-          </div>
-        </div>
-        <div class="auth-form-group">
-          <label>Q-GANG'de seni en çok çeken şey ne oldu? *</label>
-          <textarea id="k_niyetCeken" placeholder="Kısa cümle, kalpten olsun..."></textarea>
-        </div>
-        <div class="auth-form-group">
-          <label>Bu yapıya ne katabilirsin? *</label>
-          <textarea id="k_katki" placeholder="Bir cümleyle..."></textarea>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn" onclick="adimGeri(3)" style="flex:1">Geri</button>
-          <button class="auth-btn" onclick="adimIleri(3)" style="flex:2;margin-top:0">DEVAM ET</button>
-        </div>
-      </div>
-
-      <!-- ADIM 4: Taahhüt ve şifre -->
-      <div class="kayit-adim" id="adim4">
-        <div class="adim-no">Adım 4 / 4 — Son Adım</div>
-        <div class="auth-form-group">
-          <label>Ayda bir verilen küçük görevlere var mısın? *</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="gorevVar" value="Varım"> Varım</label>
-            <label class="radio-item"><input type="radio" name="gorevVar" value="Duruma göre"> Duruma göre</label>
-            <label class="radio-item"><input type="radio" name="gorevVar" value="Henüz hazır değilim"> Henüz hazır değilim</label>
-          </div>
-        </div>
-        <div class="auth-form-group">
-          <label>Son söz — Sahne senin</label>
-          <textarea id="k_sonSoz" placeholder="İster motto, ister komik bir şey, istersen sessiz kal..."></textarea>
-        </div>
-        <div style="margin-bottom:12px;padding:10px;background:#1a1a1a;border-radius:8px;border:0.5px solid #333">
-          <!-- Tüzük metni -->
-          <div style="margin-bottom:10px">
-            <div style="font-size:11px;color:#fac775;font-weight:600;margin-bottom:6px">📜 Q-GANG Topluluk Tüzüğü</div>
-            <div style="max-height:200px;overflow-y:auto;font-size:11px;color:#888;line-height:1.7;padding:10px;background:#111;border-radius:6px;border:0.5px solid #2a2a2a" id="kayitTuzukMetin">Yükleniyor...</div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:14px">
-            <input type="checkbox" id="k_taahhut" style="width:auto;margin-top:3px;accent-color:#fac775;flex-shrink:0">
-            <label for="k_taahhut" style="font-size:11px;color:#b4b2a9;cursor:pointer;line-height:1.5">
-              <strong style="color:#fac775;display:block;margin-bottom:2px">Tüzük Onayı *</strong>
-              Q-GANG Topluluk Tüzüğü'nü okuduğumu, anladığımı ve tüzüğe uygun davranacağımı; tüzüğün güncel hâlinden sorumlu olduğumu kabul, beyan ve taahhüt ederim.
-            </label>
-          </div>
-          <!-- KVKK metni -->
-          <div style="margin-bottom:10px;border-top:0.5px solid #2a2a2a;padding-top:10px">
-            <div style="font-size:11px;color:#fac775;font-weight:600;margin-bottom:6px">🔒 KVKK Aydınlatma Metni</div>
-            <div style="max-height:200px;overflow-y:auto;font-size:11px;color:#888;line-height:1.7;padding:10px;background:#111;border-radius:6px;border:0.5px solid #2a2a2a">
-              <strong style="color:#aaa;display:block;margin-bottom:6px">Veri Sorumlusu:</strong> Q-GANG Topluluğu<br><br>
-              <strong style="color:#aaa;display:block;margin-bottom:6px">İşlenen Kişisel Veriler:</strong> Ad-soyad, doğum tarihi, e-posta adresi, telefon numarası (WhatsApp), yaşadığı şehir.<br><br>
-              <strong style="color:#aaa;display:block;margin-bottom:6px">İşleme Amaçları:</strong> Topluluk üyeliği sürecinin yürütülmesi, üyeler arası iletişimin sağlanması, topluluk faaliyetlerinin organizasyonu.<br><br>
-              <strong style="color:#aaa;display:block;margin-bottom:6px">Hukuki Dayanak:</strong> KVKK Madde 5/2-a (açık rıza), Madde 5/2-f (meşru menfaat).<br><br>
-              <strong style="color:#aaa;display:block;margin-bottom:6px">Saklama Süresi:</strong> Üyelik süresince; üyelikten ayrılma veya talep halinde silinir.<br><br>
-              <strong style="color:#aaa;display:block;margin-bottom:6px">Haklarınız:</strong> KVKK Madde 11 kapsamında verilerinize erişim, düzeltme, silme, itiraz haklarına sahipsiniz.
-            </div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:8px">
-            <input type="checkbox" id="k_kvkk" style="width:auto;margin-top:3px;accent-color:#fac775;flex-shrink:0">
-            <label for="k_kvkk" style="font-size:11px;color:#b4b2a9;cursor:pointer;line-height:1.5">
-              <strong style="color:#fac775;display:block;margin-bottom:2px">KVKK Aydınlatma Onayı *</strong>
-              KVKK Aydınlatma Metni kapsamında kişisel verilerimin üyelik ve kayıt süreci amacıyla işlendiği konusunda bilgilendirildiğimi kabul ederim.
-            </label>
-          </div>
-        </div>
-        <div class="auth-form-group">
-          <label>Şifre belirle *</label>
-          <input type="password" id="k_sifre" placeholder="En az 6 karakter...">
-        </div>
-        <div class="auth-form-group">
-          <label>Şifre tekrar *</label>
-          <input type="password" id="k_sifreTekrar" placeholder="Tekrar gir...">
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn" onclick="adimGeri(4)" style="flex:1">Geri</button>
-          <button class="auth-btn" onclick="kayitGonder()" style="flex:2;margin-top:0">BENİ İÇERİ ALIN.</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="panel" id="mainPanel" style="display:none">
-
-<!-- DOĞUM GÜNÜ BANNER -->
-<div class="dogumgunu-banner" id="dogumgunuBanner" style="display:none">
-  <div class="dogumgunu-inner">
-    <div class="dogumgunu-label" id="dogumgunuLabel">🎂 BUGÜN</div>
-    <div class="dogumgunu-track">
-      <div class="dogumgunu-scroll" id="dogumgunuScroll"></div>
-    </div>
-  </div>
-</div>
-
-<!-- DUYURU BANNER -->
-<div class="duyuru-banner" id="duyuruBanner">
-  <div class="duyuru-inner">
-    <div class="duyuru-label">📢 DUYURU</div>
-    <div class="duyuru-track">
-      <div class="duyuru-scroll" id="duyuruScroll"></div>
-    </div>
-  </div>
-</div>
-
-<div class="top-bar">
-  <div style="display:flex;align-items:center;gap:14px">
-    <div style="line-height:1;text-align:center">
-      <div style="font-family:'Vanilla Whale',serif;font-size:32px;letter-spacing:-0.5px;color:#fac775;line-height:1">-QG-</div>
-    </div>
-    <div style="width:0.5px;height:32px;background:#333"></div>
-    <div>
-      <h1>Q-GANG Paneli</h1>
-      <div class="sub" id="lastSaved">Hazır</div>
-    </div>
-  </div>
-  <div class="user-info">
-    <span id="userRolBadge"></span>
-    <span id="userRumuz" style="font-size:13px;color:#888"></span>
-    <button class="btn btn-primary" onclick="reqAddMember()" id="btnUyeEkle" style="display:none"><i class="ti ti-plus"></i> Üye Ekle</button>
-    <button class="btn btn-sm" onclick="openModal('sifreDegistir')" style="color:#888;border-color:#333" title="Şifre Değiştir"><i class="ti ti-key"></i></button>
-    <button class="btn btn-sm" onclick="cikisYap()" style="color:#555;border-color:#333" title="Çıkış Yap"><i class="ti ti-logout"></i></button>
-  </div>
-</div>
-
-<nav class="nav" id="mainNav">
-  <!-- Dashboard -->
-  <div class="nav-item">
-    <button class="nav-btn active" onclick="showTab('dashboard',this)" id="navDashboard">
-      <i class="ti ti-chart-bar"></i> Dashboard
-    </button>
-  </div>
-
-  <!-- Mesajlar nav -->
-  <div class="nav-item">
-    <button class="nav-btn" id="navMesajlar" onclick="showTab('mesajlar',this)">
-      <i class="ti ti-message"></i> Mesajlar
-      <span id="mesajBadge" style="display:none;background:#e24b4a;color:#fff;border-radius:10px;font-size:10px;padding:1px 6px;margin-left:4px"></span>
-    </button>
-  </div>
-
-  <!-- Topluluk dropdown -->
-  <div class="nav-item">
-    <button class="nav-btn" onclick="toggleDropdown('ddTopluluk',this)" id="navToplulukBtn">
-      <i class="ti ti-users"></i> Topluluk <span class="arrow">▼</span>
-    </button>
-    <div class="nav-dropdown" id="ddTopluluk">
-      <div class="nav-dd-item" onclick="showTabDD('etkinlik','ddTopluluk','navToplulukBtn')"><i class="ti ti-calendar"></i> Etkinlikler</div>
-      <div class="nav-dd-item" onclick="showTabDD('members','ddTopluluk','navToplulukBtn')"><i class="ti ti-users"></i> Üyeler</div>
-      <div class="nav-dd-item" onclick="showTabDD('puan','ddTopluluk','navToplulukBtn')"><i class="ti ti-star"></i> Puanlar</div>
-      <div class="nav-dd-item" onclick="showTabDD('gorev','ddTopluluk','navToplulukBtn')"><i class="ti ti-check"></i> Görevler</div>
-      <div class="nav-dd-item" onclick="showTabDD('oylama','ddTopluluk','navToplulukBtn')"><i class="ti ti-checkup-list"></i> Oylamalar</div>
-      <div class="nav-dd-item" onclick="showTabDD('org','ddTopluluk','navToplulukBtn')"><i class="ti ti-hierarchy"></i> Organizasyon</div>
-    </div>
-  </div>
-
-  <!-- Yönetim dropdown -->
-  <div class="nav-item">
-    <button class="nav-btn" onclick="toggleDropdown('ddYonetim',this)" id="navYonetimBtn">
-      <i class="ti ti-settings"></i> Yönetim <span class="arrow">▼</span>
-    </button>
-    <div class="nav-dropdown" id="ddYonetim">
-      <div class="nav-dd-item" onclick="showTabDD('duyurular','ddYonetim','navYonetimBtn')"><i class="ti ti-speakerphone"></i> Duyurular</div>
-      <div class="nav-dd-item" id="navButceDD" onclick="showTabDD('butce','ddYonetim','navYonetimBtn')"><i class="ti ti-currency-lira"></i> Bütçe</div>
-      <div class="nav-dd-item" onclick="showTabDD('davet','ddYonetim','navYonetimBtn')"><i class="ti ti-mail-forward"></i> Davet & Başvuru</div>
-      <div class="nav-dd-item" onclick="showTabDD('tuzuk','ddYonetim','navYonetimBtn')"><i class="ti ti-license"></i> Tüzük & Disiplin</div>
-      <div class="nav-dd-item" id="navErisimDD" onclick="showTabDD('erisim','ddYonetim','navYonetimBtn')" style="display:none"><i class="ti ti-shield-lock"></i> Erişim Yönetimi</div>
-    </div>
-  </div>
-
-  <!-- Log -->
-  <div class="nav-item">
-    <button class="nav-btn" onclick="showTab('log',this)" id="navLog">
-      <i class="ti ti-history"></i> Log
-    </button>
-  </div>
-</nav>
-
-<!-- DASHBOARD -->
-<div id="tab-dashboard" class="tab active">
-  <div class="stat-grid" id="statsGrid"></div>
-  <div class="dash-grid">
-    <div class="card" style="padding:.9rem">
-      <div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-alert-circle" style="color:#fac775"></i> Uyarılar</div>
-      <div id="basvuruUyari"></div>
-      <div id="pasiflikUyari"></div>
-      <div id="alertsBox"></div>
-
-    </div>
-    <div class="card" style="padding:.9rem">
-      <div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-calendar-event" style="color:#9fe1cb"></i> Yaklaşan Etkinlikler</div>
-      <div id="upcomingEvents"></div>
-      <div class="section-title" style="margin-bottom:.6rem;margin-top:.9rem"><i class="ti ti-cake" style="color:#b5d4f4"></i> Yaklaşan Doğum Günleri</div>
-      <div id="birthdaysBox"></div>
-    </div>
-  </div>
-  <div id="dashButce" style="display:none"></div>
-  <div id="rutbeChart" style="display:none"></div>
-</div>
-
-<!-- ÜYELER -->
-<div id="tab-members" class="tab">
-  <div class="filters">
-    <input type="text" id="searchBox" placeholder="Ara..." oninput="renderMembers()" style="max-width:150px">
-    <select id="filterRutbe" onchange="renderMembers()">
-      <option value="">Tüm rütbeler</option>
-      <option>Lider</option><option>Vekilharç</option><option>Kaptan</option>
-      <option>Teğmen</option><option>Üye</option><option>Gözlemci</option>
-    </select>
-    <select id="filterDurum" onchange="renderMembers()">
-      <option value="">Tüm durumlar</option>
-      <option>Aktif</option><option>Pasif</option><option>Riskli</option>
-      <option>Cezalı</option><option>İzinde</option><option>Arşiv</option>
-    </select>
-    <select id="filterGorev" onchange="renderMembers()">
-      <option value="">Tüm görevler</option>
-      <option>Klan</option><option>Sosyal Medya</option><option>Yönetim</option><option>Özel</option><option>Yok</option>
-    </select>
-  </div>
-  <div class="table-wrap">
-    <table>
-      <thead><tr>
-        <th style="width:26px">#</th><th style="width:100px">Rumuz</th><th style="width:72px">Rütbe</th>
-        <th style="width:64px">Durum</th><th style="width:80px">Görev</th><th style="width:44px">Puan</th>
-        <th style="width:80px">Katılım</th><th style="width:70px">İşlem</th>
-      </tr></thead>
-      <tbody id="memberTableBody"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- PUAN -->
-<div id="tab-puan" class="tab">
-  <div id="puanSezonWrap"></div>
-  <div class="section-title">Puan Tablosu</div>
-  <div id="puanList"></div>
-  <div id="puanEditor"></div>
-  <hr class="sep">
-  <div id="puanArsivWrap"></div>
-</div>
-
-<!-- GÖREVLER -->
-<div id="tab-gorev" class="tab">
-  <!-- Görev Talebi - Üye ve üzeri rütbeler için -->
-  <div id="gorevTalepBtnWrap" style="margin-bottom:10px"></div>
-  <!-- Bekleyen Talepler (Yönetim için) -->
-  <div id="gorevTalepListesi"></div>
-  <!-- Görev Atama -->
-  <div id="gorevEditor"></div>
-  <div class="section-title">Görev Dağılımı</div>
-  <div id="gorevList"></div>
-</div>
-
-<!-- ETKİNLİKLER -->
-<div id="tab-etkinlik" class="tab">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
-    <div class="section-title" style="margin:0"><i class="ti ti-calendar"></i> Etkinlikler</div>
-    <div style="display:flex;gap:6px;align-items:center">
-      <div style="display:flex;border:0.5px solid #333;border-radius:8px;overflow:hidden">
-        <button id="btnListeGorunum" onclick="etkinlikGorunum('liste')" style="padding:5px 10px;background:#1a1a1a;color:#fac775;border:none;cursor:pointer;font-size:12px"><i class="ti ti-list"></i></button>
-        <button id="btnTakvimGorunum" onclick="etkinlikGorunum('takvim')" style="padding:5px 10px;background:#0d0d0d;color:#555;border:none;cursor:pointer;font-size:12px"><i class="ti ti-calendar-month"></i></button>
-      </div>
-      <button class="btn btn-primary" onclick="openModal('addEvent')" id="btnEtkinlikEkle" style="display:none"><i class="ti ti-plus"></i> Yeni Etkinlik</button>
-    </div>
-  </div>
-  <div id="eventList"></div>
-  <div id="takvimWrap" style="display:none"></div>
-</div>
-
-<!-- BÜTÇE -->
-<div id="tab-butce" class="tab">
-  <div id="butceContent"></div>
-</div>
-
-<!-- DUYURULAR -->
-<div id="tab-duyurular" class="tab">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
-    <div class="section-title" style="margin:0">Duyurular</div>
-    <button class="btn btn-warn" onclick="openModal('addDuyuru')" id="btnDuyuruEkle" style="display:none"><i class="ti ti-plus"></i> Yeni Duyuru</button>
-  </div>
-  <div id="duyuruList"></div>
-</div>
-
-
-<!-- ERİŞİM YÖNETİMİ -->
-<div id="tab-erisim" class="tab">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
-    <div class="section-title" style="margin:0"><i class="ti ti-shield-lock"></i> Erişim Yönetimi</div>
-    <div style="display:flex;gap:6px">
-      <button class="btn btn-success btn-sm" onclick="izinKaydet()"><i class="ti ti-check"></i> Kaydet</button>
-      <button class="btn btn-sm" onclick="izinSifirla()"><i class="ti ti-refresh"></i> Sıfırla</button>
-    </div>
-  </div>
-  <div style="font-size:11px;color:#555;margin-bottom:1rem">Her rol için izinleri aç/kapat. Sadece Lider erişebilir.</div>
-  <div id="izinBoard"></div>
-</div>
-
-<!-- DAVET & BAŞVURU -->
-<div id="tab-davet" class="tab">
-  <!-- DAVET KODLARI -->
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
-    <div class="section-title" style="margin:0"><i class="ti ti-mail-forward"></i> Davet Kodları</div>
-    <button class="btn btn-warn btn-sm" onclick="openModal('addDavet')" id="btnDavetEkle" style="display:none"><i class="ti ti-plus"></i> Kod Üret</button>
-  </div>
-  <div id="davetKodListesi"></div>
-
-  <hr class="sep">
-
-  <!-- BAŞVURULAR -->
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
-    <div class="section-title" style="margin:0"><i class="ti ti-user-check"></i> Bekleyen Başvurular</div>
-    <div id="basvuruSayiBadge"></div>
-  </div>
-  <div id="basvuruList"><div style="font-size:12px;color:#555">Yükleniyor...</div></div>
-</div>
-
-<!-- TÜZÜK + DİSİPLİN -->
-<div id="tab-tuzuk" class="tab">
-  <!-- TÜZÜK -->
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
-    <div class="section-title" style="margin:0"><i class="ti ti-license"></i> Q-GANG Tüzüğü</div>
-    <div id="tuzukBtnGroup"></div>
-  </div>
-
-  <!-- Görüntüleme -->
-  <div id="tuzukGorunum"></div>
-  <div id="tuzukMeta" style="font-size:10px;color:#444;margin-top:6px;text-align:right"></div>
-
-  <!-- Düzenleme editörü -->
-  <div id="tuzukEditor" style="display:none">
-    <div style="font-size:11px;color:#555;margin-bottom:8px">Tüzük içeriğini HTML olarak düzenleyebilirsin. Mevcut format korunur.</div>
-    <textarea id="tuzukMetin" style="width:100%;min-height:500px;padding:12px;border-radius:8px;border:0.5px solid #444;background:#0a0a0a;color:#9fe1cb;font-family:monospace;font-size:12px;line-height:1.6;resize:vertical"></textarea>
-    <div style="display:flex;gap:8px;margin-top:8px;justify-content:flex-end">
-      <button class="btn" onclick="tuzukIptal()">İptal</button>
-      <button class="btn btn-success" onclick="tuzukKaydet()"><i class="ti ti-check"></i> Kaydet</button>
-    </div>
-  </div>
-
-  <hr class="sep">
-
-  <!-- DİSİPLİN -->
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
-    <div class="section-title" style="margin:0"><i class="ti ti-gavel"></i> Disiplin Kayıtları</div>
-    <button class="btn btn-danger btn-sm" onclick="openModal('addDisiplin')" id="btnDisiplinEkle" style="display:none"><i class="ti ti-plus"></i> Kayıt Ekle</button>
-  </div>
-  <div id="disiplinList"></div>
-</div>
-
-<!-- OYLAMALAR -->
-<div id="tab-oylama" class="tab">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
-    <div class="section-title" style="margin:0"><i class="ti ti-ballot"></i> Oylamalar</div>
-    <button class="btn btn-warn btn-sm" id="btnOylamaEkle" onclick="openModal('addOylama')" style="display:none"><i class="ti ti-plus"></i> Oylama Oluştur</button>
-  </div>
-  <div id="oylamaList"></div>
-</div>
-
-<!-- MESAJLAR -->
-<div id="tab-mesajlar" class="tab">
-  <div style="display:flex;gap:0;height:520px;border:0.5px solid #1e1e1e;border-radius:12px;overflow:hidden">
-    <!-- Sol: Konuşma listesi -->
-    <div style="width:220px;border-right:0.5px solid #1e1e1e;display:flex;flex-direction:column;background:#0d0d0d;flex-shrink:0">
-      <div style="padding:10px;border-bottom:0.5px solid #1e1e1e">
-        <button class="btn btn-warn btn-sm" style="width:100%" onclick="openModal('yeniMesaj')"><i class="ti ti-edit"></i> Yeni Mesaj</button>
-      </div>
-      <div id="konusmaListesi" style="flex:1;overflow-y:auto;padding:6px"></div>
-    </div>
-    <!-- Sağ: Mesaj içeriği -->
-    <div style="flex:1;display:flex;flex-direction:column;background:#0a0a0a">
-      <div id="mesajBaslik" style="padding:12px 16px;border-bottom:0.5px solid #1e1e1e;font-size:13px;font-weight:500;color:#888">Bir konuşma seç</div>
-      <div id="mesajIcerik" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px"></div>
-      <div id="mesajGonderWrap" style="padding:10px;border-top:0.5px solid #1e1e1e;display:none">
-        <div style="display:flex;gap:8px">
-          <input id="mesajInput" type="text" placeholder="Mesajınızı yazın..." style="flex:1" onkeydown="if(event.key==='Enter')mesajGonder()">
-          <button class="btn btn-warn btn-sm" onclick="mesajGonder()"><i class="ti ti-send"></i></button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ORGANİZASYON -->
-<div id="tab-org" class="tab">
-  <div style="text-align:center;margin-bottom:1.5rem;padding:1rem 0;border-bottom:0.5px solid #222">
-    <div style="font-family:'Vanilla Whale',serif;font-size:36px;letter-spacing:-0.5px;color:#fac775;line-height:1;margin-bottom:8px">-QG-</div>
-    <div style="font-size:15px;font-weight:600;color:#d3d1c7;letter-spacing:2px;margin-bottom:3px">Q-GANG Topluluk Organizasyonu</div>
-    <div style="font-size:10px;color:#555;letter-spacing:2px">HİYERARŞİ · YAPI</div>
-  </div>
-  <div class="org-wrap" id="orgWrap"></div>
-</div>
-
-<!-- LOG -->
-<div id="tab-log" class="tab">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
-    <div class="section-title" style="margin:0">Değişiklik geçmişi</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap">
-      <button class="btn btn-success btn-sm" onclick="yedegiAl()"><i class="ti ti-download"></i> Yedek Al</button>
-      <button class="btn btn-danger btn-sm" onclick="clearLog()" id="btnLogTemizle" style="display:none"><i class="ti ti-trash"></i> Logu temizle</button>
-    </div>
-  </div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <div id="logList" style="max-height:600px;overflow-y:auto"></div>
-  </div>
-</div>
-
-</div>
-<div id="modalContainer"></div>
-<div class="cms-status" id="cmsStatus"></div>
-
-<!-- ÇEVRİMİÇİ BAR -->
-<div class="online-bar" id="onlineBar" style="display:none">
-  <div class="online-dot"></div>
-  <span class="online-count" id="onlineCount">0</span>
-  <span style="color:#444;margin-right:4px">çevrimiçi</span>
-  <span class="online-list" id="onlineList"></span>
-</div>
 
 <script>
+
 //
 // ROL VE IZIN SISTEMI
 //
@@ -2659,3 +2148,1276 @@ function renderDogumgunuBanner(){
   // Konfeti efektini tetikle
   if(typeof sezonParticleBaslat==='function') sezonParticleBaslat('dogumgunu');
 }
+
+</script>
+</head>
+<canvas id="sezonCanvas"></canvas>
+
+<!-- AUTH EKRANI -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="logo-text" style="font-family:'Vanilla Whale',serif;font-size:64px;letter-spacing:-0.5px;font-weight:400;line-height:1">-QG-</div>
+      <div class="logo-sub" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;margin-top:12px;color:#8a7d5a;font-weight:600;line-height:1.8">CESARET · ASALET · ADALET · SADAKAT</div>
+    </div>
+
+    <!-- TAB -->
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="authTab('giris')">Giriş Yap</div>
+      <div class="auth-tab" onclick="authTab('kayit')">Kayıt Ol</div>
+    </div>
+
+    <!-- GİRİŞ FORMU -->
+    <div id="girisForm">
+      <div class="auth-error" id="girisHata"></div>
+      <div class="auth-form-group">
+        <label>Rumuz</label>
+        <input type="text" id="girisRumuz" placeholder="Rumuzun..." onkeydown="if(event.key==='Enter')girisYapBtn()">
+      </div>
+      <div class="auth-form-group">
+        <label>Şifre</label>
+        <input type="password" id="girusSifre" placeholder="••••••••" onkeydown="if(event.key==='Enter')girisYapBtn()">
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <input type="checkbox" id="beniHatirla" style="width:auto">
+        <label for="beniHatirla" style="font-size:12px;color:#888;cursor:pointer">Beni hatırla (30 gün)</label>
+      </div>
+      <button class="auth-btn" onclick="girisYapBtn()">BENİ İÇERİ AL</button>
+    </div>
+
+    <!-- KAYIT FORMU -->
+    <div id="kayitForm" style="display:none">
+      <div class="auth-error" id="kayitHata"></div>
+      <div class="auth-success" id="kayitBasari"></div>
+
+      <!-- ADIM 1: Davet kodu -->
+      <div class="kayit-adim active" id="adim1">
+        <div class="adim-no">Adım 1 / 4 — Davet Kodu</div>
+        <div class="auth-form-group">
+          <label>Davet Kodu</label>
+          <input type="text" id="k_davetKodu" placeholder="Davet kodunu gir..." style="text-transform:uppercase;letter-spacing:2px">
+        </div>
+        <p style="font-size:11px;color:#555;margin-bottom:12px">Koda sahip değilsen Q-GANG üyelerinden biri aracılığıyla ulaşabilirsin.</p>
+        <button class="auth-btn" onclick="adimIleri(1)">DEVAM ET</button>
+      </div>
+
+      <!-- ADIM 2: Kişisel bilgiler -->
+      <div class="kayit-adim" id="adim2">
+        <div class="adim-no">Adım 2 / 4 — Kimsin?</div>
+        <div class="auth-form-group">
+          <label>Rumuz (Takma Ad) *</label>
+          <input type="text" id="k_rumuz" placeholder="Topluluktaki adın...">
+        </div>
+        <div class="auth-form-group">
+          <label>Ad Soyad *</label>
+          <input type="text" id="k_adSoyad" placeholder="Gerçek adın...">
+        </div>
+        <div class="form-row" style="margin-bottom:0">
+          <div class="auth-form-group">
+            <label>Doğum Tarihi *</label>
+            <input type="date" id="k_dogum">
+          </div>
+          <div class="auth-form-group">
+            <label>Şehir *</label>
+            <input type="text" id="k_sehir" placeholder="İstanbul...">
+          </div>
+        </div>
+        <div class="auth-form-group">
+          <label>E-posta *</label>
+          <input type="email" id="k_email" placeholder="sen@mail.com">
+        </div>
+        <div class="auth-form-group">
+          <label>WhatsApp Numarası *</label>
+          <input type="tel" id="k_whatsapp" placeholder="+90 5xx xxx xx xx">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="adimGeri(2)" style="flex:1">Geri</button>
+          <button class="auth-btn" onclick="adimIleri(2)" style="flex:2;margin-top:0">DEVAM ET</button>
+        </div>
+      </div>
+
+      <!-- ADIM 3: Niyet ve durum -->
+      <div class="kayit-adim" id="adim3">
+        <div class="adim-no">Adım 3 / 4 — Sen Kimsin?</div>
+        <div class="auth-form-group">
+          <label>Günlük hayatında neler yapıyorsun? *</label>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Okuyorum"> Okuyorum</label>
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Çalışıyorum"> Çalışıyorum</label>
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Hem okuyorum hem çalışıyorum"> Hem okuyorum hem çalışıyorum</label>
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Arayıştayım"> Arayıştayım</label>
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Hiçbiri ama doluyum"> Hiçbiri ama doluyum</label>
+          </div>
+        </div>
+        <div class="auth-form-group">
+          <label>Q-GANG'de seni en çok çeken şey ne oldu? *</label>
+          <textarea id="k_niyetCeken" placeholder="Kısa cümle, kalpten olsun..."></textarea>
+        </div>
+        <div class="auth-form-group">
+          <label>Bu yapıya ne katabilirsin? *</label>
+          <textarea id="k_katki" placeholder="Bir cümleyle..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="adimGeri(3)" style="flex:1">Geri</button>
+          <button class="auth-btn" onclick="adimIleri(3)" style="flex:2;margin-top:0">DEVAM ET</button>
+        </div>
+      </div>
+
+      <!-- ADIM 4: Taahhüt ve şifre -->
+      <div class="kayit-adim" id="adim4">
+        <div class="adim-no">Adım 4 / 4 — Son Adım</div>
+        <div class="auth-form-group">
+          <label>Ayda bir verilen küçük görevlere var mısın? *</label>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="gorevVar" value="Varım"> Varım</label>
+            <label class="radio-item"><input type="radio" name="gorevVar" value="Duruma göre"> Duruma göre</label>
+            <label class="radio-item"><input type="radio" name="gorevVar" value="Henüz hazır değilim"> Henüz hazır değilim</label>
+          </div>
+        </div>
+        <div class="auth-form-group">
+          <label>Son söz — Sahne senin</label>
+          <textarea id="k_sonSoz" placeholder="İster motto, ister komik bir şey, istersen sessiz kal..."></textarea>
+        </div>
+        <div style="margin-bottom:12px;padding:10px;background:#1a1a1a;border-radius:8px;border:0.5px solid #333">
+          <!-- Tüzük metni -->
+          <div style="margin-bottom:10px">
+            <div style="font-size:11px;color:#fac775;font-weight:600;margin-bottom:6px">📜 Q-GANG Topluluk Tüzüğü</div>
+            <div style="max-height:200px;overflow-y:auto;font-size:11px;color:#888;line-height:1.7;padding:10px;background:#111;border-radius:6px;border:0.5px solid #2a2a2a" id="kayitTuzukMetin">Yükleniyor...</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:14px">
+            <input type="checkbox" id="k_taahhut" style="width:auto;margin-top:3px;accent-color:#fac775;flex-shrink:0">
+            <label for="k_taahhut" style="font-size:11px;color:#b4b2a9;cursor:pointer;line-height:1.5">
+              <strong style="color:#fac775;display:block;margin-bottom:2px">Tüzük Onayı *</strong>
+              Q-GANG Topluluk Tüzüğü'nü okuduğumu, anladığımı ve tüzüğe uygun davranacağımı; tüzüğün güncel hâlinden sorumlu olduğumu kabul, beyan ve taahhüt ederim.
+            </label>
+          </div>
+          <!-- KVKK metni -->
+          <div style="margin-bottom:10px;border-top:0.5px solid #2a2a2a;padding-top:10px">
+            <div style="font-size:11px;color:#fac775;font-weight:600;margin-bottom:6px">🔒 KVKK Aydınlatma Metni</div>
+            <div style="max-height:200px;overflow-y:auto;font-size:11px;color:#888;line-height:1.7;padding:10px;background:#111;border-radius:6px;border:0.5px solid #2a2a2a">
+              <strong style="color:#aaa;display:block;margin-bottom:6px">Veri Sorumlusu:</strong> Q-GANG Topluluğu<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">İşlenen Kişisel Veriler:</strong> Ad-soyad, doğum tarihi, e-posta adresi, telefon numarası (WhatsApp), yaşadığı şehir.<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">İşleme Amaçları:</strong> Topluluk üyeliği sürecinin yürütülmesi, üyeler arası iletişimin sağlanması, topluluk faaliyetlerinin organizasyonu.<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">Hukuki Dayanak:</strong> KVKK Madde 5/2-a (açık rıza), Madde 5/2-f (meşru menfaat).<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">Saklama Süresi:</strong> Üyelik süresince; üyelikten ayrılma veya talep halinde silinir.<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">Haklarınız:</strong> KVKK Madde 11 kapsamında verilerinize erişim, düzeltme, silme, itiraz haklarına sahipsiniz.
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px">
+            <input type="checkbox" id="k_kvkk" style="width:auto;margin-top:3px;accent-color:#fac775;flex-shrink:0">
+            <label for="k_kvkk" style="font-size:11px;color:#b4b2a9;cursor:pointer;line-height:1.5">
+              <strong style="color:#fac775;display:block;margin-bottom:2px">KVKK Aydınlatma Onayı *</strong>
+              KVKK Aydınlatma Metni kapsamında kişisel verilerimin üyelik ve kayıt süreci amacıyla işlendiği konusunda bilgilendirildiğimi kabul ederim.
+            </label>
+          </div>
+        </div>
+        <div class="auth-form-group">
+          <label>Şifre belirle *</label>
+          <input type="password" id="k_sifre" placeholder="En az 6 karakter...">
+        </div>
+        <div class="auth-form-group">
+          <label>Şifre tekrar *</label>
+          <input type="password" id="k_sifreTekrar" placeholder="Tekrar gir...">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="adimGeri(4)" style="flex:1">Geri</button>
+          <button class="auth-btn" onclick="kayitGonder()" style="flex:2;margin-top:0">BENİ İÇERİ ALIN.</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="mainPanel" style="display:none">
+
+<!-- DOĞUM GÜNÜ BANNER -->
+<div class="dogumgunu-banner" id="dogumgunuBanner" style="display:none">
+  <div class="dogumgunu-inner">
+    <div class="dogumgunu-label" id="dogumgunuLabel">🎂 BUGÜN</div>
+    <div class="dogumgunu-track">
+      <div class="dogumgunu-scroll" id="dogumgunuScroll"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DUYURU BANNER -->
+<div class="duyuru-banner" id="duyuruBanner">
+  <div class="duyuru-inner">
+    <div class="duyuru-label">📢 DUYURU</div>
+    <div class="duyuru-track">
+      <div class="duyuru-scroll" id="duyuruScroll"></div>
+    </div>
+  </div>
+</div>
+
+<div class="top-bar">
+  <div style="display:flex;align-items:center;gap:14px">
+    <div style="line-height:1;text-align:center">
+      <div style="font-family:'Vanilla Whale',serif;font-size:32px;letter-spacing:-0.5px;color:#fac775;line-height:1">-QG-</div>
+    </div>
+    <div style="width:0.5px;height:32px;background:#333"></div>
+    <div>
+      <h1>Q-GANG Paneli</h1>
+      <div class="sub" id="lastSaved">Hazır</div>
+    </div>
+  </div>
+  <div class="user-info">
+    <span id="userRolBadge"></span>
+    <span id="userRumuz" style="font-size:13px;color:#888"></span>
+    <button class="btn btn-primary" onclick="reqAddMember()" id="btnUyeEkle" style="display:none"><i class="ti ti-plus"></i> Üye Ekle</button>
+    <button class="btn btn-sm" onclick="openModal('sifreDegistir')" style="color:#888;border-color:#333" title="Şifre Değiştir"><i class="ti ti-key"></i></button>
+    <button class="btn btn-sm" onclick="cikisYap()" style="color:#555;border-color:#333" title="Çıkış Yap"><i class="ti ti-logout"></i></button>
+  </div>
+</div>
+
+<nav class="nav" id="mainNav">
+  <!-- Dashboard -->
+  <div class="nav-item">
+    <button class="nav-btn active" onclick="showTab('dashboard',this)" id="navDashboard">
+      <i class="ti ti-chart-bar"></i> Dashboard
+    </button>
+  </div>
+
+  <!-- Mesajlar nav -->
+  <div class="nav-item">
+    <button class="nav-btn" id="navMesajlar" onclick="showTab('mesajlar',this)">
+      <i class="ti ti-message"></i> Mesajlar
+      <span id="mesajBadge" style="display:none;background:#e24b4a;color:#fff;border-radius:10px;font-size:10px;padding:1px 6px;margin-left:4px"></span>
+    </button>
+  </div>
+
+  <!-- Topluluk dropdown -->
+  <div class="nav-item">
+    <button class="nav-btn" onclick="toggleDropdown('ddTopluluk',this)" id="navToplulukBtn">
+      <i class="ti ti-users"></i> Topluluk <span class="arrow">▼</span>
+    </button>
+    <div class="nav-dropdown" id="ddTopluluk">
+      <div class="nav-dd-item" onclick="showTabDD('etkinlik','ddTopluluk','navToplulukBtn')"><i class="ti ti-calendar"></i> Etkinlikler</div>
+      <div class="nav-dd-item" onclick="showTabDD('members','ddTopluluk','navToplulukBtn')"><i class="ti ti-users"></i> Üyeler</div>
+      <div class="nav-dd-item" onclick="showTabDD('puan','ddTopluluk','navToplulukBtn')"><i class="ti ti-star"></i> Puanlar</div>
+      <div class="nav-dd-item" onclick="showTabDD('gorev','ddTopluluk','navToplulukBtn')"><i class="ti ti-check"></i> Görevler</div>
+      <div class="nav-dd-item" onclick="showTabDD('oylama','ddTopluluk','navToplulukBtn')"><i class="ti ti-checkup-list"></i> Oylamalar</div>
+      <div class="nav-dd-item" onclick="showTabDD('org','ddTopluluk','navToplulukBtn')"><i class="ti ti-hierarchy"></i> Organizasyon</div>
+    </div>
+  </div>
+
+  <!-- Yönetim dropdown -->
+  <div class="nav-item">
+    <button class="nav-btn" onclick="toggleDropdown('ddYonetim',this)" id="navYonetimBtn">
+      <i class="ti ti-settings"></i> Yönetim <span class="arrow">▼</span>
+    </button>
+    <div class="nav-dropdown" id="ddYonetim">
+      <div class="nav-dd-item" onclick="showTabDD('duyurular','ddYonetim','navYonetimBtn')"><i class="ti ti-speakerphone"></i> Duyurular</div>
+      <div class="nav-dd-item" id="navButceDD" onclick="showTabDD('butce','ddYonetim','navYonetimBtn')"><i class="ti ti-currency-lira"></i> Bütçe</div>
+      <div class="nav-dd-item" onclick="showTabDD('davet','ddYonetim','navYonetimBtn')"><i class="ti ti-mail-forward"></i> Davet & Başvuru</div>
+      <div class="nav-dd-item" onclick="showTabDD('tuzuk','ddYonetim','navYonetimBtn')"><i class="ti ti-license"></i> Tüzük & Disiplin</div>
+      <div class="nav-dd-item" id="navErisimDD" onclick="showTabDD('erisim','ddYonetim','navYonetimBtn')" style="display:none"><i class="ti ti-shield-lock"></i> Erişim Yönetimi</div>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="nav-item">
+    <button class="nav-btn" onclick="showTab('log',this)" id="navLog">
+      <i class="ti ti-history"></i> Log
+    </button>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div id="tab-dashboard" class="tab active">
+  <div class="stat-grid" id="statsGrid"></div>
+  <div class="dash-grid">
+    <div class="card" style="padding:.9rem">
+      <div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-alert-circle" style="color:#fac775"></i> Uyarılar</div>
+      <div id="basvuruUyari"></div>
+      <div id="pasiflikUyari"></div>
+      <div id="alertsBox"></div>
+
+    </div>
+    <div class="card" style="padding:.9rem">
+      <div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-calendar-event" style="color:#9fe1cb"></i> Yaklaşan Etkinlikler</div>
+      <div id="upcomingEvents"></div>
+      <div class="section-title" style="margin-bottom:.6rem;margin-top:.9rem"><i class="ti ti-cake" style="color:#b5d4f4"></i> Yaklaşan Doğum Günleri</div>
+      <div id="birthdaysBox"></div>
+    </div>
+  </div>
+  <div id="dashButce" style="display:none"></div>
+  <div id="rutbeChart" style="display:none"></div>
+</div>
+
+<!-- ÜYELER -->
+<div id="tab-members" class="tab">
+  <div class="filters">
+    <input type="text" id="searchBox" placeholder="Ara..." oninput="renderMembers()" style="max-width:150px">
+    <select id="filterRutbe" onchange="renderMembers()">
+      <option value="">Tüm rütbeler</option>
+      <option>Lider</option><option>Vekilharç</option><option>Kaptan</option>
+      <option>Teğmen</option><option>Üye</option><option>Gözlemci</option>
+    </select>
+    <select id="filterDurum" onchange="renderMembers()">
+      <option value="">Tüm durumlar</option>
+      <option>Aktif</option><option>Pasif</option><option>Riskli</option>
+      <option>Cezalı</option><option>İzinde</option><option>Arşiv</option>
+    </select>
+    <select id="filterGorev" onchange="renderMembers()">
+      <option value="">Tüm görevler</option>
+      <option>Klan</option><option>Sosyal Medya</option><option>Yönetim</option><option>Özel</option><option>Yok</option>
+    </select>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th style="width:26px">#</th><th style="width:100px">Rumuz</th><th style="width:72px">Rütbe</th>
+        <th style="width:64px">Durum</th><th style="width:80px">Görev</th><th style="width:44px">Puan</th>
+        <th style="width:80px">Katılım</th><th style="width:70px">İşlem</th>
+      </tr></thead>
+      <tbody id="memberTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- PUAN -->
+<div id="tab-puan" class="tab">
+  <div id="puanSezonWrap"></div>
+  <div class="section-title">Puan Tablosu</div>
+  <div id="puanList"></div>
+  <div id="puanEditor"></div>
+  <hr class="sep">
+  <div id="puanArsivWrap"></div>
+</div>
+
+<!-- GÖREVLER -->
+<div id="tab-gorev" class="tab">
+  <!-- Görev Talebi - Üye ve üzeri rütbeler için -->
+  <div id="gorevTalepBtnWrap" style="margin-bottom:10px"></div>
+  <!-- Bekleyen Talepler (Yönetim için) -->
+  <div id="gorevTalepListesi"></div>
+  <!-- Görev Atama -->
+  <div id="gorevEditor"></div>
+  <div class="section-title">Görev Dağılımı</div>
+  <div id="gorevList"></div>
+</div>
+
+<!-- ETKİNLİKLER -->
+<div id="tab-etkinlik" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-calendar"></i> Etkinlikler</div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <div style="display:flex;border:0.5px solid #333;border-radius:8px;overflow:hidden">
+        <button id="btnListeGorunum" onclick="etkinlikGorunum('liste')" style="padding:5px 10px;background:#1a1a1a;color:#fac775;border:none;cursor:pointer;font-size:12px"><i class="ti ti-list"></i></button>
+        <button id="btnTakvimGorunum" onclick="etkinlikGorunum('takvim')" style="padding:5px 10px;background:#0d0d0d;color:#555;border:none;cursor:pointer;font-size:12px"><i class="ti ti-calendar-month"></i></button>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('addEvent')" id="btnEtkinlikEkle" style="display:none"><i class="ti ti-plus"></i> Yeni Etkinlik</button>
+    </div>
+  </div>
+  <div id="eventList"></div>
+  <div id="takvimWrap" style="display:none"></div>
+</div>
+
+<!-- BÜTÇE -->
+<div id="tab-butce" class="tab">
+  <div id="butceContent"></div>
+</div>
+
+<!-- DUYURULAR -->
+<div id="tab-duyurular" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0">Duyurular</div>
+    <button class="btn btn-warn" onclick="openModal('addDuyuru')" id="btnDuyuruEkle" style="display:none"><i class="ti ti-plus"></i> Yeni Duyuru</button>
+  </div>
+  <div id="duyuruList"></div>
+</div>
+
+
+<!-- ERİŞİM YÖNETİMİ -->
+<div id="tab-erisim" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-shield-lock"></i> Erişim Yönetimi</div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-success btn-sm" onclick="izinKaydet()"><i class="ti ti-check"></i> Kaydet</button>
+      <button class="btn btn-sm" onclick="izinSifirla()"><i class="ti ti-refresh"></i> Sıfırla</button>
+    </div>
+  </div>
+  <div style="font-size:11px;color:#555;margin-bottom:1rem">Her rol için izinleri aç/kapat. Sadece Lider erişebilir.</div>
+  <div id="izinBoard"></div>
+</div>
+
+<!-- DAVET & BAŞVURU -->
+<div id="tab-davet" class="tab">
+  <!-- DAVET KODLARI -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-mail-forward"></i> Davet Kodları</div>
+    <button class="btn btn-warn btn-sm" onclick="openModal('addDavet')" id="btnDavetEkle" style="display:none"><i class="ti ti-plus"></i> Kod Üret</button>
+  </div>
+  <div id="davetKodListesi"></div>
+
+  <hr class="sep">
+
+  <!-- BAŞVURULAR -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-user-check"></i> Bekleyen Başvurular</div>
+    <div id="basvuruSayiBadge"></div>
+  </div>
+  <div id="basvuruList"><div style="font-size:12px;color:#555">Yükleniyor...</div></div>
+</div>
+
+<!-- TÜZÜK + DİSİPLİN -->
+<div id="tab-tuzuk" class="tab">
+  <!-- TÜZÜK -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-license"></i> Q-GANG Tüzüğü</div>
+    <div id="tuzukBtnGroup"></div>
+  </div>
+
+  <!-- Görüntüleme -->
+  <div id="tuzukGorunum"></div>
+  <div id="tuzukMeta" style="font-size:10px;color:#444;margin-top:6px;text-align:right"></div>
+
+  <!-- Düzenleme editörü -->
+  <div id="tuzukEditor" style="display:none">
+    <div style="font-size:11px;color:#555;margin-bottom:8px">Tüzük içeriğini HTML olarak düzenleyebilirsin. Mevcut format korunur.</div>
+    <textarea id="tuzukMetin" style="width:100%;min-height:500px;padding:12px;border-radius:8px;border:0.5px solid #444;background:#0a0a0a;color:#9fe1cb;font-family:monospace;font-size:12px;line-height:1.6;resize:vertical"></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;justify-content:flex-end">
+      <button class="btn" onclick="tuzukIptal()">İptal</button>
+      <button class="btn btn-success" onclick="tuzukKaydet()"><i class="ti ti-check"></i> Kaydet</button>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- DİSİPLİN -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-gavel"></i> Disiplin Kayıtları</div>
+    <button class="btn btn-danger btn-sm" onclick="openModal('addDisiplin')" id="btnDisiplinEkle" style="display:none"><i class="ti ti-plus"></i> Kayıt Ekle</button>
+  </div>
+  <div id="disiplinList"></div>
+</div>
+
+<!-- OYLAMALAR -->
+<div id="tab-oylama" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-ballot"></i> Oylamalar</div>
+    <button class="btn btn-warn btn-sm" id="btnOylamaEkle" onclick="openModal('addOylama')" style="display:none"><i class="ti ti-plus"></i> Oylama Oluştur</button>
+  </div>
+  <div id="oylamaList"></div>
+</div>
+
+<!-- MESAJLAR -->
+<div id="tab-mesajlar" class="tab">
+  <div style="display:flex;gap:0;height:520px;border:0.5px solid #1e1e1e;border-radius:12px;overflow:hidden">
+    <!-- Sol: Konuşma listesi -->
+    <div style="width:220px;border-right:0.5px solid #1e1e1e;display:flex;flex-direction:column;background:#0d0d0d;flex-shrink:0">
+      <div style="padding:10px;border-bottom:0.5px solid #1e1e1e">
+        <button class="btn btn-warn btn-sm" style="width:100%" onclick="openModal('yeniMesaj')"><i class="ti ti-edit"></i> Yeni Mesaj</button>
+      </div>
+      <div id="konusmaListesi" style="flex:1;overflow-y:auto;padding:6px"></div>
+    </div>
+    <!-- Sağ: Mesaj içeriği -->
+    <div style="flex:1;display:flex;flex-direction:column;background:#0a0a0a">
+      <div id="mesajBaslik" style="padding:12px 16px;border-bottom:0.5px solid #1e1e1e;font-size:13px;font-weight:500;color:#888">Bir konuşma seç</div>
+      <div id="mesajIcerik" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px"></div>
+      <div id="mesajGonderWrap" style="padding:10px;border-top:0.5px solid #1e1e1e;display:none">
+        <div style="display:flex;gap:8px">
+          <input id="mesajInput" type="text" placeholder="Mesajınızı yazın..." style="flex:1" onkeydown="if(event.key==='Enter')mesajGonder()">
+          <button class="btn btn-warn btn-sm" onclick="mesajGonder()"><i class="ti ti-send"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ORGANİZASYON -->
+<div id="tab-org" class="tab">
+  <div style="text-align:center;margin-bottom:1.5rem;padding:1rem 0;border-bottom:0.5px solid #222">
+    <div style="font-family:'Vanilla Whale',serif;font-size:36px;letter-spacing:-0.5px;color:#fac775;line-height:1;margin-bottom:8px">-QG-</div>
+    <div style="font-size:15px;font-weight:600;color:#d3d1c7;letter-spacing:2px;margin-bottom:3px">Q-GANG Topluluk Organizasyonu</div>
+    <div style="font-size:10px;color:#555;letter-spacing:2px">HİYERARŞİ · YAPI</div>
+  </div>
+  <div class="org-wrap" id="orgWrap"></div>
+</div>
+
+<!-- LOG -->
+<div id="tab-log" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0">Değişiklik geçmişi</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn btn-success btn-sm" onclick="yedegiAl()"><i class="ti ti-download"></i> Yedek Al</button>
+      <button class="btn btn-danger btn-sm" onclick="clearLog()" id="btnLogTemizle" style="display:none"><i class="ti ti-trash"></i> Logu temizle</button>
+    </div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div id="logList" style="max-height:600px;overflow-y:auto"></div>
+  </div>
+</div>
+
+</div>
+<div id="modalContainer"></div>
+<div class="cms-status" id="cmsStatus"></div>
+
+<!-- ÇEVRİMİÇİ BAR -->
+<div class="online-bar" id="onlineBar" style="display:none">
+  <div class="online-dot"></div>
+  <span class="online-count" id="onlineCount">0</span>
+  <span style="color:#444;margin-right:4px">çevrimiçi</span>
+  <span class="online-list" id="onlineList"></span>
+</div>
+
+E html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Q-GANG Panel</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#111;color:#d3d1c7;padding:12px}
+.panel{max-width:900px;margin:0 auto;padding-bottom:36px}
+#loginScreen{position:fixed;top:0;left:0;right:0;bottom:0;background:#111;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:1rem}
+#loginScreen .logo{font-size:28px;font-weight:700;color:#d3d1c7;letter-spacing:2px;margin-bottom:.5rem}
+#loginScreen .sub{font-size:13px;color:#555;margin-bottom:1.5rem}
+#loginScreen .spinner{width:32px;height:32px;border:2px solid #333;border-top-color:#fac775;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rol-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.rol-lider{background:#2c2c2a;color:#d3d1c7}
+.rol-vekilharc{background:#3a1010;color:#e24b4a}
+.rol-kaptan{background:#042c53;color:#b5d4f4}
+.rol-tegmen{background:#04342c;color:#9fe1cb}
+.rol-uye{background:#412402;color:#fac775}
+.rol-goruntüleyici{background:#222;color:#555}
+
+/* GİRİŞ / KAYIT EKRANI */
+.auth-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:#0a0a0a;display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;overflow-y:auto}
+.auth-box{background:#111;border:0.5px solid #333;border-radius:16px;padding:2rem;width:100%;max-width:420px;margin:auto}
+.auth-logo{text-align:center;margin-bottom:1.5rem}
+.auth-logo .logo-text{font-size:24px;font-weight:700;letter-spacing:3px;color:#fac775}
+.auth-logo .logo-sub{font-size:11px;color:#555;margin-top:4px;letter-spacing:2px}
+.auth-tabs{display:flex;border-bottom:0.5px solid #333;margin-bottom:1.5rem}
+.auth-tab{flex:1;text-align:center;padding:8px;font-size:13px;color:#888;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.auth-tab.active{color:#fac775;border-bottom-color:#fac775}
+.auth-form-group{margin-bottom:12px}
+.auth-form-group label{display:block;font-size:11px;color:#888;margin-bottom:4px}
+.auth-form-group input,.auth-form-group select,.auth-form-group textarea{width:100%;padding:9px 12px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:13px}
+.auth-form-group textarea{resize:vertical;min-height:70px}
+.auth-btn{width:100%;padding:10px;border-radius:8px;border:none;background:#854f0b;color:#fac775;font-size:13px;font-weight:600;cursor:pointer;margin-top:4px;letter-spacing:1px}
+.auth-btn:hover{background:#a36310}
+.auth-error{font-size:12px;color:#e24b4a;margin-bottom:8px;padding:8px;background:#3a1010;border-radius:6px;display:none}
+.auth-success{font-size:12px;color:#9fe1cb;margin-bottom:8px;padding:8px;background:#04342c;border-radius:6px;display:none}
+.auth-divider{text-align:center;font-size:11px;color:#555;margin:12px 0}
+.radio-group{display:flex;flex-direction:column;gap:6px}
+.radio-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:0.5px solid #333;cursor:pointer;font-size:12px;color:#d3d1c7}
+.radio-item:hover{background:#1a1a1a}
+.radio-item input{width:auto;margin:0}
+.kayit-adim{display:none}.kayit-adim.active{display:block}
+.adim-no{font-size:11px;color:#555;margin-bottom:1rem;text-align:center}
+
+/* ÇEVRİMİÇİ BAR */
+.online-bar{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:0.5px solid #222;padding:6px 16px;display:flex;align-items:center;gap:10px;z-index:100;font-size:11px}
+.online-dot{width:7px;height:7px;border-radius:50%;background:#4caf7d;box-shadow:0 0 6px #4caf7d;flex-shrink:0}
+.online-count{color:#4caf7d;font-weight:600}
+.online-list{color:#555;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.online-name{color:#888;margin:0 2px}
+.duyuru-banner{background:linear-gradient(90deg,#412402,#2a1800,#412402);border:0.5px solid #854f0b;border-radius:8px;padding:0;margin-bottom:1rem;overflow:hidden;display:none}
+.duyuru-inner{display:flex;align-items:center;gap:0}
+.duyuru-label{background:#854f0b;color:#fac775;font-size:11px;font-weight:700;padding:8px 12px;white-space:nowrap;flex-shrink:0;letter-spacing:1px}
+.duyuru-track{flex:1;overflow:hidden;position:relative;height:34px;-webkit-mask-image:linear-gradient(90deg,transparent 0%,black 4%,black 88%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,black 4%,black 88%,transparent 100%)}
+.duyuru-scroll{display:flex;align-items:center;height:100%;white-space:nowrap;will-change:transform}
+.duyuru-scroll:hover{animation-play-state:paused!important}
+.duyuru-item{display:inline-flex;align-items:center;gap:6px;margin-right:80px;font-size:12px;color:#fac775}
+.duyuru-item::before{content:'◆';font-size:8px;color:#854f0b;margin-right:4px}
+
+/* DOĞUM GÜNÜ BANNER */
+.dogumgunu-banner{background:linear-gradient(90deg,#042c53,#031a33,#042c53);border:0.5px solid #185fa5;border-radius:8px;padding:0;margin-bottom:6px;overflow:hidden}
+.dogumgunu-inner{display:flex;align-items:center;gap:0}
+.dogumgunu-label{background:#185fa5;color:#b5d4f4;font-size:11px;font-weight:700;padding:8px 12px;white-space:nowrap;flex-shrink:0;letter-spacing:1px}
+.dogumgunu-track{flex:1;overflow:hidden;position:relative;height:34px;-webkit-mask-image:linear-gradient(90deg,transparent 0%,black 4%,black 88%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,black 4%,black 88%,transparent 100%)}
+.dogumgunu-scroll{display:flex;align-items:center;height:100%;white-space:nowrap;will-change:transform}
+.dogumgunu-item{display:inline-flex;align-items:center;gap:6px;margin-right:80px;font-size:12px;color:#b5d4f4}
+
+/* NAV — DROPDOWN */
+.nav{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:1.2rem;border-bottom:0.5px solid #333;padding-bottom:.8rem;position:relative}
+.nav-item{position:relative}
+.nav-btn{padding:6px 12px;border-radius:8px;border:0.5px solid #444;background:transparent;color:#888;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:4px}
+.nav-btn.active{background:#1e1e1e;color:#d3d1c7;border-color:#666}
+.nav-btn:hover{background:#1a1a1a;color:#d3d1c7}
+.nav-btn .arrow{font-size:9px;transition:transform .2s}
+.nav-btn.open .arrow{transform:rotate(180deg)}
+.nav-dropdown{position:absolute;top:calc(100% + 6px);left:0;background:#1a1a1a;border:0.5px solid #444;border-radius:10px;padding:4px;min-width:160px;z-index:200;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.nav-dropdown.show{display:block}
+.nav-dd-item{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:7px;font-size:12px;color:#888;cursor:pointer;transition:all .15s;white-space:nowrap}
+.nav-dd-item:hover{background:#252525;color:#d3d1c7}
+.nav-dd-item.active{color:#fac775;background:#2a1800}
+.tab{display:none}.tab.active{display:block}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:1.2rem}
+.stat-card{background:#1a1a1a;border-radius:8px;padding:12px}
+.stat-card .label{font-size:11px;color:#888;margin-bottom:4px}
+.stat-card .value{font-size:20px;font-weight:500;color:#d3d1c7}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+th{text-align:left;padding:7px 8px;color:#888;border-bottom:0.5px solid #333;font-weight:500;font-size:11px;white-space:nowrap}
+td{padding:7px 8px;border-bottom:0.5px solid #222;color:#d3d1c7;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:hover td{background:#1a1a1a}
+.badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:500;white-space:nowrap}
+.badge-siyah{background:#2c2c2a;color:#d3d1c7}
+.badge-kirmizi{background:#3a1010;color:#e24b4a}
+.badge-mavi{background:#042c53;color:#b5d4f4}
+.badge-yesil{background:#04342c;color:#9fe1cb}
+.badge-sari{background:#412402;color:#fac775}
+.badge-beyaz{background:#2a2a28;color:#888780}
+.badge-aktif{background:transparent;color:#4caf7d;border:0.5px solid #4caf7d;padding:2px 8px}
+.badge-aktif::before{content:'● ';font-size:8px}
+.badge-pasif{background:transparent;color:#555;border:0.5px dashed #444;font-style:italic;text-decoration:none}
+.badge-riskli{background:#ff6b00;color:#fff;border:none;font-weight:700;padding:2px 8px}
+.badge-riskli::before{content:'⚠ ';font-size:9px}
+.badge-cezali{background:#e24b4a;color:#fff;border:none;font-weight:700;padding:2px 8px;text-transform:uppercase;letter-spacing:1px}
+.badge-izinde{background:transparent;color:#b5d4f4;border:1px dashed #378add;padding:2px 8px}
+.badge-arsiv{background:transparent;color:#3a3a3a;border:0.5px solid #2a2a2a;text-decoration:line-through}
+.badge-gelir{background:#04342c;color:#9fe1cb}
+.badge-gider{background:#3a1010;color:#e24b4a}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:8px}
+.form-group{display:flex;flex-direction:column;gap:3px}
+.form-group label{font-size:11px;color:#888}
+.form-group input,.form-group select,.form-group textarea{padding:7px 9px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:13px;width:100%}
+.form-group textarea{resize:vertical;min-height:56px}
+.btn{padding:7px 14px;border-radius:8px;border:0.5px solid #444;background:transparent;color:#d3d1c7;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn:hover{background:#1e1e1e}
+.btn-primary{background:#042c53;color:#b5d4f4;border-color:#185fa5}
+.btn-danger{background:#3a1010;color:#e24b4a;border-color:#a32d2d}
+.btn-success{background:#04342c;color:#9fe1cb;border-color:#0f6e56}
+.btn-warn{background:#412402;color:#fac775;border-color:#854f0b}
+.btn-sm{padding:3px 8px;font-size:11px}
+.section-title{font-size:14px;font-weight:500;color:#d3d1c7;margin-bottom:.8rem}
+.card{background:#1a1a1a;border:0.5px solid #333;border-radius:10px;padding:.9rem 1rem;margin-bottom:.8rem}
+.puan-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.puan-bar-bg{flex:1;height:5px;background:#2a2a2a;border-radius:3px;overflow:hidden;min-width:40px}
+.puan-bar{height:100%;background:#1d9e75;border-radius:3px;transition:width .3s}
+.alert-row{display:flex;align-items:flex-start;gap:8px;padding:7px 9px;border-radius:8px;margin-bottom:5px;font-size:12px;line-height:1.4}
+.alert-warn{background:#412402;color:#fac775}
+.alert-info{background:#042c53;color:#b5d4f4}
+.alert-danger{background:#3a1010;color:#e24b4a}
+.alert-success{background:#04342c;color:#9fe1cb}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.8rem;align-items:center}
+.filters select,.filters input{padding:5px 8px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:12px}
+.member-chips{display:flex;flex-wrap:wrap;gap:3px}
+.chip{padding:2px 7px;border-radius:10px;font-size:10px;background:#222;color:#888;border:0.5px solid #333}
+.event-card{background:#1a1a1a;border:0.5px solid #333;border-radius:10px;padding:.9rem;margin-bottom:8px}
+.event-card .ev-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.event-card .ev-title{font-weight:500;font-size:13px}
+.event-card .ev-meta{font-size:11px;color:#888;margin-bottom:6px}
+.butce-ozet{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.2rem}
+.butce-kart{border-radius:8px;padding:12px}
+.butce-kart .label{font-size:11px;margin-bottom:4px}
+.butce-kart .value{font-size:18px;font-weight:500}
+.bk-gelir{background:#04342c}.bk-gelir .label{color:#1d9e75}.bk-gelir .value{color:#9fe1cb}
+.bk-gider{background:#3a1010}.bk-gider .label{color:#a32d2d}.bk-gider .value{color:#e24b4a}
+.bk-net{background:#1a1a1a;border:0.5px solid #333}.bk-net .label{color:#888}.bk-net .value{color:#d3d1c7}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;z-index:1000;padding:12px}
+.modal-box{background:#1a1a1a;border-radius:12px;border:0.5px solid #444;padding:1.25rem;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
+.modal-box h3{font-size:15px;font-weight:500;margin-bottom:.9rem;color:#d3d1c7}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:.9rem;flex-wrap:wrap}
+.confirm-box{background:#1a1a1a;border-radius:12px;border:0.5px solid #854f0b;padding:1.25rem;width:100%;max-width:400px}
+.confirm-box h3{font-size:14px;font-weight:500;margin-bottom:.6rem;color:#fac775}
+.confirm-box p{font-size:13px;color:#d3d1c7;line-height:1.5;margin-bottom:1rem}
+.kod-box{background:#1a1a1a;border-radius:12px;border:0.5px solid #185fa5;padding:1.25rem;width:100%;max-width:680px;max-height:90vh;overflow-y:auto}
+.kod-box h3{font-size:14px;font-weight:500;margin-bottom:.6rem;color:#b5d4f4}
+.kod-area{background:#0a0a0a;border:0.5px solid #333;border-radius:8px;padding:.8rem;font-family:monospace;font-size:11px;color:#9fe1cb;white-space:pre-wrap;word-break:break-all;max-height:300px;overflow-y:auto;margin-bottom:.8rem;line-height:1.5}
+.log-item{padding:8px 10px;border-bottom:0.5px solid #222;font-size:11px;line-height:1.5}
+.log-item:last-child{border-bottom:none}
+.log-time{color:#555;font-size:10px;margin-bottom:2px}
+.log-who{color:#fac775;font-size:10px;font-weight:600}
+.log-action{color:#d3d1c7}
+.log-detail{color:#888;font-size:10px}
+/* TÜZÜK STİLLERİ */
+.tuzuk-section{margin-bottom:14px;border:0.5px solid #2c2c2a;border-radius:10px;overflow:hidden;opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+.tuzuk-section.visible{opacity:1;transform:translateY(0)}
+.tuzuk-section-header{display:flex;align-items:center;gap:12px;padding:14px 18px;background:#1a1a18;border-bottom:0.5px solid #2c2c2a}
+.tuzuk-section-num{font-size:11px;font-weight:600;letter-spacing:.1em;color:#5f5e5a;min-width:20px}
+.tuzuk-section-title{font-size:13px;font-weight:600;letter-spacing:.06em;color:#888780}
+.tuzuk-section-body{padding:18px;font-size:14px;line-height:1.75;color:#b4b2a9}
+.tuzuk-rule{display:flex;gap:12px;padding:13px 0;border-bottom:0.5px solid #1e1e1c}
+.tuzuk-rule:first-child{padding-top:0}.tuzuk-rule:last-child{border-bottom:none;padding-bottom:0}
+.tuzuk-rule-num{font-size:11px;font-weight:600;color:#444441;min-width:18px;padding-top:2px;flex-shrink:0}
+.tuzuk-rule-title{font-size:13px;font-weight:600;color:#888780;margin-bottom:4px}
+.tuzuk-rule-text{font-size:13px;line-height:1.7;color:#5f5e5a}
+.sanction-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.sanction-card{background:#1a1a18;border:0.5px solid #2c2c2a;border-radius:8px;padding:14px 12px;text-align:center}
+.sanction-label{font-size:11px;font-weight:600;letter-spacing:.06em;margin-bottom:6px}
+.sanction-label.uyari{color:#ba7517}.sanction-label.uzaklastirma{color:#185fa5}.sanction-label.ihrac{color:#a32d2d}
+.sanction-desc{font-size:12px;color:#444441;line-height:1.5}
+.sanction-note{font-size:13px;color:#5f5e5a;line-height:1.75;padding-top:14px;border-top:0.5px solid #1e1e1c}
+@media(max-width:480px){.sanction-grid{grid-template-columns:1fr}}
+.duyuru-kart{background:#1a1a1a;border:0.5px solid #333;border-radius:10px;padding:.9rem;margin-bottom:8px}
+.duyuru-kart .dk-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.duyuru-kart .dk-baslik{font-weight:500;font-size:13px;color:#fac775}
+.duyuru-kart .dk-icerik{font-size:12px;color:#d3d1c7;margin-bottom:6px;line-height:1.5}
+.duyuru-kart .dk-meta{font-size:10px;color:#555}
+/* ORG */
+.org-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:.5rem 0;text-align:center}
+svg.org{display:inline-block}
+@keyframes orgFadeIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+.org-node-anim{opacity:0;animation:orgFadeIn .4s ease forwards}
+.org-gozlemci rect{fill:#111;stroke:#2a2a2a;stroke-width:0.5}
+.org-gozlemci .t1{fill:#555;font-size:10px;font-weight:400}
+.org-lider rect{fill:#2c2c2a;stroke:#888780;stroke-width:0.5}
+.org-lider text.t1{fill:#d3d1c7;font-size:12px;font-weight:600}
+.org-lider text.t2{fill:#888780;font-size:10px}
+.org-yonetici rect{fill:none;stroke:#a32d2d;stroke-width:0.5;stroke-dasharray:5 3}
+.org-yonetici text{fill:#e24b4a;font-size:10px;opacity:.7}
+.org-yetkili rect{fill:#042c53;stroke:#185fa5;stroke-width:0.5}
+.org-yetkili text.t1{fill:#b5d4f4;font-size:12px;font-weight:600}
+.org-yetkili text.t2{fill:#378add;font-size:10px}
+.org-yardimci rect{fill:#04342c;stroke:#0f6e56;stroke-width:0.5}
+.org-yardimci text.t1{fill:#9fe1cb;font-size:12px;font-weight:600}
+.org-yardimci text.t2{fill:#1d9e75;font-size:10px}
+.org-uye rect{fill:#412402;stroke:#854f0b;stroke-width:0.5}
+.org-uye text.t1{fill:#fac775;font-size:10px;font-weight:600}
+.org-uye text.t2{fill:#ba7517;font-size:9px}
+.org-conn{stroke:#444;stroke-width:0.5;fill:none;opacity:0;animation:orgFadeIn .3s ease forwards}
+.org-conn-dash{stroke:#444;stroke-width:0.5;fill:none;stroke-dasharray:4 3;opacity:0;animation:orgFadeIn .3s ease forwards}
+.sep{border:none;border-top:0.5px solid #333;margin:.9rem 0}
+.top-bar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.9rem;gap:8px;flex-wrap:wrap}
+.top-bar h1{font-size:17px;font-weight:500;color:#d3d1c7}
+.top-bar .sub{font-size:11px;color:#555;margin-top:2px}
+.user-info{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.erisim-engel{background:#1a1a1a;border:0.5px solid #3a1010;border-radius:10px;padding:2rem;text-align:center;color:#e24b4a;font-size:13px;margin:1rem 0}
+.erisim-engel i{font-size:28px;display:block;margin-bottom:.5rem;opacity:.6}
+/* CMS durum göstergesi */
+.cms-status{position:fixed;bottom:12px;right:12px;padding:6px 12px;border-radius:20px;font-size:11px;z-index:500;transition:all .3s;opacity:0}
+.cms-status.show{opacity:1}
+.cms-ok{background:#04342c;color:#9fe1cb;border:0.5px solid #0f6e56}
+.cms-err{background:#3a1010;color:#e24b4a;border:0.5px solid #a32d2d}
+.cms-loading{background:#042c53;color:#b5d4f4;border:0.5px solid #185fa5}
+@media(max-width:600px){
+  body{padding:8px}
+  .dash-grid{grid-template-columns:1fr}
+  .butce-ozet{grid-template-columns:1fr 1fr}
+  .butce-kart.bk-net{grid-column:1/-1}
+  .form-row{grid-template-columns:1fr}
+  .filters{flex-direction:column;align-items:stretch}
+  .filters select,.filters input{width:100%}
+  .modal-box,.confirm-box,.kod-box{padding:1rem}
+  .nav button{font-size:11px;padding:5px 9px}
+  table{font-size:11px}th,td{padding:5px 6px}
+}
+</style>
+
+<body>
+<canvas id="sezonCanvas"></canvas>
+
+<!-- AUTH EKRANI -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="logo-text" style="font-family:'Vanilla Whale',serif;font-size:64px;letter-spacing:-0.5px;font-weight:400;line-height:1">-QG-</div>
+      <div class="logo-sub" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;margin-top:12px;color:#8a7d5a;font-weight:600;line-height:1.8">CESARET · ASALET · ADALET · SADAKAT</div>
+    </div>
+
+    <!-- TAB -->
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="authTab('giris')">Giriş Yap</div>
+      <div class="auth-tab" onclick="authTab('kayit')">Kayıt Ol</div>
+    </div>
+
+    <!-- GİRİŞ FORMU -->
+    <div id="girisForm">
+      <div class="auth-error" id="girisHata"></div>
+      <div class="auth-form-group">
+        <label>Rumuz</label>
+        <input type="text" id="girisRumuz" placeholder="Rumuzun..." onkeydown="if(event.key==='Enter')girisYapBtn()">
+      </div>
+      <div class="auth-form-group">
+        <label>Şifre</label>
+        <input type="password" id="girusSifre" placeholder="••••••••" onkeydown="if(event.key==='Enter')girisYapBtn()">
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <input type="checkbox" id="beniHatirla" style="width:auto">
+        <label for="beniHatirla" style="font-size:12px;color:#888;cursor:pointer">Beni hatırla (30 gün)</label>
+      </div>
+      <button class="auth-btn" onclick="girisYapBtn()">BENİ İÇERİ AL</button>
+    </div>
+
+    <!-- KAYIT FORMU -->
+    <div id="kayitForm" style="display:none">
+      <div class="auth-error" id="kayitHata"></div>
+      <div class="auth-success" id="kayitBasari"></div>
+
+      <!-- ADIM 1: Davet kodu -->
+      <div class="kayit-adim active" id="adim1">
+        <div class="adim-no">Adım 1 / 4 — Davet Kodu</div>
+        <div class="auth-form-group">
+          <label>Davet Kodu</label>
+          <input type="text" id="k_davetKodu" placeholder="Davet kodunu gir..." style="text-transform:uppercase;letter-spacing:2px">
+        </div>
+        <p style="font-size:11px;color:#555;margin-bottom:12px">Koda sahip değilsen Q-GANG üyelerinden biri aracılığıyla ulaşabilirsin.</p>
+        <button class="auth-btn" onclick="adimIleri(1)">DEVAM ET</button>
+      </div>
+
+      <!-- ADIM 2: Kişisel bilgiler -->
+      <div class="kayit-adim" id="adim2">
+        <div class="adim-no">Adım 2 / 4 — Kimsin?</div>
+        <div class="auth-form-group">
+          <label>Rumuz (Takma Ad) *</label>
+          <input type="text" id="k_rumuz" placeholder="Topluluktaki adın...">
+        </div>
+        <div class="auth-form-group">
+          <label>Ad Soyad *</label>
+          <input type="text" id="k_adSoyad" placeholder="Gerçek adın...">
+        </div>
+        <div class="form-row" style="margin-bottom:0">
+          <div class="auth-form-group">
+            <label>Doğum Tarihi *</label>
+            <input type="date" id="k_dogum">
+          </div>
+          <div class="auth-form-group">
+            <label>Şehir *</label>
+            <input type="text" id="k_sehir" placeholder="İstanbul...">
+          </div>
+        </div>
+        <div class="auth-form-group">
+          <label>E-posta *</label>
+          <input type="email" id="k_email" placeholder="sen@mail.com">
+        </div>
+        <div class="auth-form-group">
+          <label>WhatsApp Numarası *</label>
+          <input type="tel" id="k_whatsapp" placeholder="+90 5xx xxx xx xx">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="adimGeri(2)" style="flex:1">Geri</button>
+          <button class="auth-btn" onclick="adimIleri(2)" style="flex:2;margin-top:0">DEVAM ET</button>
+        </div>
+      </div>
+
+      <!-- ADIM 3: Niyet ve durum -->
+      <div class="kayit-adim" id="adim3">
+        <div class="adim-no">Adım 3 / 4 — Sen Kimsin?</div>
+        <div class="auth-form-group">
+          <label>Günlük hayatında neler yapıyorsun? *</label>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Okuyorum"> Okuyorum</label>
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Çalışıyorum"> Çalışıyorum</label>
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Hem okuyorum hem çalışıyorum"> Hem okuyorum hem çalışıyorum</label>
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Arayıştayım"> Arayıştayım</label>
+            <label class="radio-item"><input type="radio" name="gunlukDurum" value="Hiçbiri ama doluyum"> Hiçbiri ama doluyum</label>
+          </div>
+        </div>
+        <div class="auth-form-group">
+          <label>Q-GANG'de seni en çok çeken şey ne oldu? *</label>
+          <textarea id="k_niyetCeken" placeholder="Kısa cümle, kalpten olsun..."></textarea>
+        </div>
+        <div class="auth-form-group">
+          <label>Bu yapıya ne katabilirsin? *</label>
+          <textarea id="k_katki" placeholder="Bir cümleyle..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="adimGeri(3)" style="flex:1">Geri</button>
+          <button class="auth-btn" onclick="adimIleri(3)" style="flex:2;margin-top:0">DEVAM ET</button>
+        </div>
+      </div>
+
+      <!-- ADIM 4: Taahhüt ve şifre -->
+      <div class="kayit-adim" id="adim4">
+        <div class="adim-no">Adım 4 / 4 — Son Adım</div>
+        <div class="auth-form-group">
+          <label>Ayda bir verilen küçük görevlere var mısın? *</label>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="gorevVar" value="Varım"> Varım</label>
+            <label class="radio-item"><input type="radio" name="gorevVar" value="Duruma göre"> Duruma göre</label>
+            <label class="radio-item"><input type="radio" name="gorevVar" value="Henüz hazır değilim"> Henüz hazır değilim</label>
+          </div>
+        </div>
+        <div class="auth-form-group">
+          <label>Son söz — Sahne senin</label>
+          <textarea id="k_sonSoz" placeholder="İster motto, ister komik bir şey, istersen sessiz kal..."></textarea>
+        </div>
+        <div style="margin-bottom:12px;padding:10px;background:#1a1a1a;border-radius:8px;border:0.5px solid #333">
+          <!-- Tüzük metni -->
+          <div style="margin-bottom:10px">
+            <div style="font-size:11px;color:#fac775;font-weight:600;margin-bottom:6px">📜 Q-GANG Topluluk Tüzüğü</div>
+            <div style="max-height:200px;overflow-y:auto;font-size:11px;color:#888;line-height:1.7;padding:10px;background:#111;border-radius:6px;border:0.5px solid #2a2a2a" id="kayitTuzukMetin">Yükleniyor...</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:14px">
+            <input type="checkbox" id="k_taahhut" style="width:auto;margin-top:3px;accent-color:#fac775;flex-shrink:0">
+            <label for="k_taahhut" style="font-size:11px;color:#b4b2a9;cursor:pointer;line-height:1.5">
+              <strong style="color:#fac775;display:block;margin-bottom:2px">Tüzük Onayı *</strong>
+              Q-GANG Topluluk Tüzüğü'nü okuduğumu, anladığımı ve tüzüğe uygun davranacağımı; tüzüğün güncel hâlinden sorumlu olduğumu kabul, beyan ve taahhüt ederim.
+            </label>
+          </div>
+          <!-- KVKK metni -->
+          <div style="margin-bottom:10px;border-top:0.5px solid #2a2a2a;padding-top:10px">
+            <div style="font-size:11px;color:#fac775;font-weight:600;margin-bottom:6px">🔒 KVKK Aydınlatma Metni</div>
+            <div style="max-height:200px;overflow-y:auto;font-size:11px;color:#888;line-height:1.7;padding:10px;background:#111;border-radius:6px;border:0.5px solid #2a2a2a">
+              <strong style="color:#aaa;display:block;margin-bottom:6px">Veri Sorumlusu:</strong> Q-GANG Topluluğu<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">İşlenen Kişisel Veriler:</strong> Ad-soyad, doğum tarihi, e-posta adresi, telefon numarası (WhatsApp), yaşadığı şehir.<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">İşleme Amaçları:</strong> Topluluk üyeliği sürecinin yürütülmesi, üyeler arası iletişimin sağlanması, topluluk faaliyetlerinin organizasyonu.<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">Hukuki Dayanak:</strong> KVKK Madde 5/2-a (açık rıza), Madde 5/2-f (meşru menfaat).<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">Saklama Süresi:</strong> Üyelik süresince; üyelikten ayrılma veya talep halinde silinir.<br><br>
+              <strong style="color:#aaa;display:block;margin-bottom:6px">Haklarınız:</strong> KVKK Madde 11 kapsamında verilerinize erişim, düzeltme, silme, itiraz haklarına sahipsiniz.
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px">
+            <input type="checkbox" id="k_kvkk" style="width:auto;margin-top:3px;accent-color:#fac775;flex-shrink:0">
+            <label for="k_kvkk" style="font-size:11px;color:#b4b2a9;cursor:pointer;line-height:1.5">
+              <strong style="color:#fac775;display:block;margin-bottom:2px">KVKK Aydınlatma Onayı *</strong>
+              KVKK Aydınlatma Metni kapsamında kişisel verilerimin üyelik ve kayıt süreci amacıyla işlendiği konusunda bilgilendirildiğimi kabul ederim.
+            </label>
+          </div>
+        </div>
+        <div class="auth-form-group">
+          <label>Şifre belirle *</label>
+          <input type="password" id="k_sifre" placeholder="En az 6 karakter...">
+        </div>
+        <div class="auth-form-group">
+          <label>Şifre tekrar *</label>
+          <input type="password" id="k_sifreTekrar" placeholder="Tekrar gir...">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="adimGeri(4)" style="flex:1">Geri</button>
+          <button class="auth-btn" onclick="kayitGonder()" style="flex:2;margin-top:0">BENİ İÇERİ ALIN.</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="mainPanel" style="display:none">
+
+<!-- DOĞUM GÜNÜ BANNER -->
+<div class="dogumgunu-banner" id="dogumgunuBanner" style="display:none">
+  <div class="dogumgunu-inner">
+    <div class="dogumgunu-label" id="dogumgunuLabel">🎂 BUGÜN</div>
+    <div class="dogumgunu-track">
+      <div class="dogumgunu-scroll" id="dogumgunuScroll"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DUYURU BANNER -->
+<div class="duyuru-banner" id="duyuruBanner">
+  <div class="duyuru-inner">
+    <div class="duyuru-label">📢 DUYURU</div>
+    <div class="duyuru-track">
+      <div class="duyuru-scroll" id="duyuruScroll"></div>
+    </div>
+  </div>
+</div>
+
+<div class="top-bar">
+  <div style="display:flex;align-items:center;gap:14px">
+    <div style="line-height:1;text-align:center">
+      <div style="font-family:'Vanilla Whale',serif;font-size:32px;letter-spacing:-0.5px;color:#fac775;line-height:1">-QG-</div>
+    </div>
+    <div style="width:0.5px;height:32px;background:#333"></div>
+    <div>
+      <h1>Q-GANG Paneli</h1>
+      <div class="sub" id="lastSaved">Hazır</div>
+    </div>
+  </div>
+  <div class="user-info">
+    <span id="userRolBadge"></span>
+    <span id="userRumuz" style="font-size:13px;color:#888"></span>
+    <button class="btn btn-primary" onclick="reqAddMember()" id="btnUyeEkle" style="display:none"><i class="ti ti-plus"></i> Üye Ekle</button>
+    <button class="btn btn-sm" onclick="openModal('sifreDegistir')" style="color:#888;border-color:#333" title="Şifre Değiştir"><i class="ti ti-key"></i></button>
+    <button class="btn btn-sm" onclick="cikisYap()" style="color:#555;border-color:#333" title="Çıkış Yap"><i class="ti ti-logout"></i></button>
+  </div>
+</div>
+
+<nav class="nav" id="mainNav">
+  <!-- Dashboard -->
+  <div class="nav-item">
+    <button class="nav-btn active" onclick="showTab('dashboard',this)" id="navDashboard">
+      <i class="ti ti-chart-bar"></i> Dashboard
+    </button>
+  </div>
+
+  <!-- Mesajlar nav -->
+  <div class="nav-item">
+    <button class="nav-btn" id="navMesajlar" onclick="showTab('mesajlar',this)">
+      <i class="ti ti-message"></i> Mesajlar
+      <span id="mesajBadge" style="display:none;background:#e24b4a;color:#fff;border-radius:10px;font-size:10px;padding:1px 6px;margin-left:4px"></span>
+    </button>
+  </div>
+
+  <!-- Topluluk dropdown -->
+  <div class="nav-item">
+    <button class="nav-btn" onclick="toggleDropdown('ddTopluluk',this)" id="navToplulukBtn">
+      <i class="ti ti-users"></i> Topluluk <span class="arrow">▼</span>
+    </button>
+    <div class="nav-dropdown" id="ddTopluluk">
+      <div class="nav-dd-item" onclick="showTabDD('etkinlik','ddTopluluk','navToplulukBtn')"><i class="ti ti-calendar"></i> Etkinlikler</div>
+      <div class="nav-dd-item" onclick="showTabDD('members','ddTopluluk','navToplulukBtn')"><i class="ti ti-users"></i> Üyeler</div>
+      <div class="nav-dd-item" onclick="showTabDD('puan','ddTopluluk','navToplulukBtn')"><i class="ti ti-star"></i> Puanlar</div>
+      <div class="nav-dd-item" onclick="showTabDD('gorev','ddTopluluk','navToplulukBtn')"><i class="ti ti-check"></i> Görevler</div>
+      <div class="nav-dd-item" onclick="showTabDD('oylama','ddTopluluk','navToplulukBtn')"><i class="ti ti-checkup-list"></i> Oylamalar</div>
+      <div class="nav-dd-item" onclick="showTabDD('org','ddTopluluk','navToplulukBtn')"><i class="ti ti-hierarchy"></i> Organizasyon</div>
+    </div>
+  </div>
+
+  <!-- Yönetim dropdown -->
+  <div class="nav-item">
+    <button class="nav-btn" onclick="toggleDropdown('ddYonetim',this)" id="navYonetimBtn">
+      <i class="ti ti-settings"></i> Yönetim <span class="arrow">▼</span>
+    </button>
+    <div class="nav-dropdown" id="ddYonetim">
+      <div class="nav-dd-item" onclick="showTabDD('duyurular','ddYonetim','navYonetimBtn')"><i class="ti ti-speakerphone"></i> Duyurular</div>
+      <div class="nav-dd-item" id="navButceDD" onclick="showTabDD('butce','ddYonetim','navYonetimBtn')"><i class="ti ti-currency-lira"></i> Bütçe</div>
+      <div class="nav-dd-item" onclick="showTabDD('davet','ddYonetim','navYonetimBtn')"><i class="ti ti-mail-forward"></i> Davet & Başvuru</div>
+      <div class="nav-dd-item" onclick="showTabDD('tuzuk','ddYonetim','navYonetimBtn')"><i class="ti ti-license"></i> Tüzük & Disiplin</div>
+      <div class="nav-dd-item" id="navErisimDD" onclick="showTabDD('erisim','ddYonetim','navYonetimBtn')" style="display:none"><i class="ti ti-shield-lock"></i> Erişim Yönetimi</div>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="nav-item">
+    <button class="nav-btn" onclick="showTab('log',this)" id="navLog">
+      <i class="ti ti-history"></i> Log
+    </button>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div id="tab-dashboard" class="tab active">
+  <div class="stat-grid" id="statsGrid"></div>
+  <div class="dash-grid">
+    <div class="card" style="padding:.9rem">
+      <div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-alert-circle" style="color:#fac775"></i> Uyarılar</div>
+      <div id="basvuruUyari"></div>
+      <div id="pasiflikUyari"></div>
+      <div id="alertsBox"></div>
+
+    </div>
+    <div class="card" style="padding:.9rem">
+      <div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-calendar-event" style="color:#9fe1cb"></i> Yaklaşan Etkinlikler</div>
+      <div id="upcomingEvents"></div>
+      <div class="section-title" style="margin-bottom:.6rem;margin-top:.9rem"><i class="ti ti-cake" style="color:#b5d4f4"></i> Yaklaşan Doğum Günleri</div>
+      <div id="birthdaysBox"></div>
+    </div>
+  </div>
+  <div id="dashButce" style="display:none"></div>
+  <div id="rutbeChart" style="display:none"></div>
+</div>
+
+<!-- ÜYELER -->
+<div id="tab-members" class="tab">
+  <div class="filters">
+    <input type="text" id="searchBox" placeholder="Ara..." oninput="renderMembers()" style="max-width:150px">
+    <select id="filterRutbe" onchange="renderMembers()">
+      <option value="">Tüm rütbeler</option>
+      <option>Lider</option><option>Vekilharç</option><option>Kaptan</option>
+      <option>Teğmen</option><option>Üye</option><option>Gözlemci</option>
+    </select>
+    <select id="filterDurum" onchange="renderMembers()">
+      <option value="">Tüm durumlar</option>
+      <option>Aktif</option><option>Pasif</option><option>Riskli</option>
+      <option>Cezalı</option><option>İzinde</option><option>Arşiv</option>
+    </select>
+    <select id="filterGorev" onchange="renderMembers()">
+      <option value="">Tüm görevler</option>
+      <option>Klan</option><option>Sosyal Medya</option><option>Yönetim</option><option>Özel</option><option>Yok</option>
+    </select>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th style="width:26px">#</th><th style="width:100px">Rumuz</th><th style="width:72px">Rütbe</th>
+        <th style="width:64px">Durum</th><th style="width:80px">Görev</th><th style="width:44px">Puan</th>
+        <th style="width:80px">Katılım</th><th style="width:70px">İşlem</th>
+      </tr></thead>
+      <tbody id="memberTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- PUAN -->
+<div id="tab-puan" class="tab">
+  <div id="puanSezonWrap"></div>
+  <div class="section-title">Puan Tablosu</div>
+  <div id="puanList"></div>
+  <div id="puanEditor"></div>
+  <hr class="sep">
+  <div id="puanArsivWrap"></div>
+</div>
+
+<!-- GÖREVLER -->
+<div id="tab-gorev" class="tab">
+  <!-- Görev Talebi - Üye ve üzeri rütbeler için -->
+  <div id="gorevTalepBtnWrap" style="margin-bottom:10px"></div>
+  <!-- Bekleyen Talepler (Yönetim için) -->
+  <div id="gorevTalepListesi"></div>
+  <!-- Görev Atama -->
+  <div id="gorevEditor"></div>
+  <div class="section-title">Görev Dağılımı</div>
+  <div id="gorevList"></div>
+</div>
+
+<!-- ETKİNLİKLER -->
+<div id="tab-etkinlik" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-calendar"></i> Etkinlikler</div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <div style="display:flex;border:0.5px solid #333;border-radius:8px;overflow:hidden">
+        <button id="btnListeGorunum" onclick="etkinlikGorunum('liste')" style="padding:5px 10px;background:#1a1a1a;color:#fac775;border:none;cursor:pointer;font-size:12px"><i class="ti ti-list"></i></button>
+        <button id="btnTakvimGorunum" onclick="etkinlikGorunum('takvim')" style="padding:5px 10px;background:#0d0d0d;color:#555;border:none;cursor:pointer;font-size:12px"><i class="ti ti-calendar-month"></i></button>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('addEvent')" id="btnEtkinlikEkle" style="display:none"><i class="ti ti-plus"></i> Yeni Etkinlik</button>
+    </div>
+  </div>
+  <div id="eventList"></div>
+  <div id="takvimWrap" style="display:none"></div>
+</div>
+
+<!-- BÜTÇE -->
+<div id="tab-butce" class="tab">
+  <div id="butceContent"></div>
+</div>
+
+<!-- DUYURULAR -->
+<div id="tab-duyurular" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0">Duyurular</div>
+    <button class="btn btn-warn" onclick="openModal('addDuyuru')" id="btnDuyuruEkle" style="display:none"><i class="ti ti-plus"></i> Yeni Duyuru</button>
+  </div>
+  <div id="duyuruList"></div>
+</div>
+
+
+<!-- ERİŞİM YÖNETİMİ -->
+<div id="tab-erisim" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-shield-lock"></i> Erişim Yönetimi</div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-success btn-sm" onclick="izinKaydet()"><i class="ti ti-check"></i> Kaydet</button>
+      <button class="btn btn-sm" onclick="izinSifirla()"><i class="ti ti-refresh"></i> Sıfırla</button>
+    </div>
+  </div>
+  <div style="font-size:11px;color:#555;margin-bottom:1rem">Her rol için izinleri aç/kapat. Sadece Lider erişebilir.</div>
+  <div id="izinBoard"></div>
+</div>
+
+<!-- DAVET & BAŞVURU -->
+<div id="tab-davet" class="tab">
+  <!-- DAVET KODLARI -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-mail-forward"></i> Davet Kodları</div>
+    <button class="btn btn-warn btn-sm" onclick="openModal('addDavet')" id="btnDavetEkle" style="display:none"><i class="ti ti-plus"></i> Kod Üret</button>
+  </div>
+  <div id="davetKodListesi"></div>
+
+  <hr class="sep">
+
+  <!-- BAŞVURULAR -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-user-check"></i> Bekleyen Başvurular</div>
+    <div id="basvuruSayiBadge"></div>
+  </div>
+  <div id="basvuruList"><div style="font-size:12px;color:#555">Yükleniyor...</div></div>
+</div>
+
+<!-- TÜZÜK + DİSİPLİN -->
+<div id="tab-tuzuk" class="tab">
+  <!-- TÜZÜK -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-license"></i> Q-GANG Tüzüğü</div>
+    <div id="tuzukBtnGroup"></div>
+  </div>
+
+  <!-- Görüntüleme -->
+  <div id="tuzukGorunum"></div>
+  <div id="tuzukMeta" style="font-size:10px;color:#444;margin-top:6px;text-align:right"></div>
+
+  <!-- Düzenleme editörü -->
+  <div id="tuzukEditor" style="display:none">
+    <div style="font-size:11px;color:#555;margin-bottom:8px">Tüzük içeriğini HTML olarak düzenleyebilirsin. Mevcut format korunur.</div>
+    <textarea id="tuzukMetin" style="width:100%;min-height:500px;padding:12px;border-radius:8px;border:0.5px solid #444;background:#0a0a0a;color:#9fe1cb;font-family:monospace;font-size:12px;line-height:1.6;resize:vertical"></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;justify-content:flex-end">
+      <button class="btn" onclick="tuzukIptal()">İptal</button>
+      <button class="btn btn-success" onclick="tuzukKaydet()"><i class="ti ti-check"></i> Kaydet</button>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- DİSİPLİN -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-gavel"></i> Disiplin Kayıtları</div>
+    <button class="btn btn-danger btn-sm" onclick="openModal('addDisiplin')" id="btnDisiplinEkle" style="display:none"><i class="ti ti-plus"></i> Kayıt Ekle</button>
+  </div>
+  <div id="disiplinList"></div>
+</div>
+
+<!-- OYLAMALAR -->
+<div id="tab-oylama" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0"><i class="ti ti-ballot"></i> Oylamalar</div>
+    <button class="btn btn-warn btn-sm" id="btnOylamaEkle" onclick="openModal('addOylama')" style="display:none"><i class="ti ti-plus"></i> Oylama Oluştur</button>
+  </div>
+  <div id="oylamaList"></div>
+</div>
+
+<!-- MESAJLAR -->
+<div id="tab-mesajlar" class="tab">
+  <div style="display:flex;gap:0;height:520px;border:0.5px solid #1e1e1e;border-radius:12px;overflow:hidden">
+    <!-- Sol: Konuşma listesi -->
+    <div style="width:220px;border-right:0.5px solid #1e1e1e;display:flex;flex-direction:column;background:#0d0d0d;flex-shrink:0">
+      <div style="padding:10px;border-bottom:0.5px solid #1e1e1e">
+        <button class="btn btn-warn btn-sm" style="width:100%" onclick="openModal('yeniMesaj')"><i class="ti ti-edit"></i> Yeni Mesaj</button>
+      </div>
+      <div id="konusmaListesi" style="flex:1;overflow-y:auto;padding:6px"></div>
+    </div>
+    <!-- Sağ: Mesaj içeriği -->
+    <div style="flex:1;display:flex;flex-direction:column;background:#0a0a0a">
+      <div id="mesajBaslik" style="padding:12px 16px;border-bottom:0.5px solid #1e1e1e;font-size:13px;font-weight:500;color:#888">Bir konuşma seç</div>
+      <div id="mesajIcerik" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px"></div>
+      <div id="mesajGonderWrap" style="padding:10px;border-top:0.5px solid #1e1e1e;display:none">
+        <div style="display:flex;gap:8px">
+          <input id="mesajInput" type="text" placeholder="Mesajınızı yazın..." style="flex:1" onkeydown="if(event.key==='Enter')mesajGonder()">
+          <button class="btn btn-warn btn-sm" onclick="mesajGonder()"><i class="ti ti-send"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ORGANİZASYON -->
+<div id="tab-org" class="tab">
+  <div style="text-align:center;margin-bottom:1.5rem;padding:1rem 0;border-bottom:0.5px solid #222">
+    <div style="font-family:'Vanilla Whale',serif;font-size:36px;letter-spacing:-0.5px;color:#fac775;line-height:1;margin-bottom:8px">-QG-</div>
+    <div style="font-size:15px;font-weight:600;color:#d3d1c7;letter-spacing:2px;margin-bottom:3px">Q-GANG Topluluk Organizasyonu</div>
+    <div style="font-size:10px;color:#555;letter-spacing:2px">HİYERARŞİ · YAPI</div>
+  </div>
+  <div class="org-wrap" id="orgWrap"></div>
+</div>
+
+<!-- LOG -->
+<div id="tab-log" class="tab">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0">Değişiklik geçmişi</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn btn-success btn-sm" onclick="yedegiAl()"><i class="ti ti-download"></i> Yedek Al</button>
+      <button class="btn btn-danger btn-sm" onclick="clearLog()" id="btnLogTemizle" style="display:none"><i class="ti ti-trash"></i> Logu temizle</button>
+    </div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div id="logList" style="max-height:600px;overflow-y:auto"></div>
+  </div>
+</div>
+
+</div>
+<div id="modalContainer"></div>
+<div class="cms-status" id="cmsStatus"></div>
+
+<!-- ÇEVRİMİÇİ BAR -->
+<div class="online-bar" id="onlineBar" style="display:none">
+  <div class="online-dot"></div>
+  <span class="online-count" id="onlineCount">0</span>
+  <span style="color:#444;margin-right:4px">çevrimiçi</span>
+  <span class="online-list" id="onlineList"></span>
+</div>
+</body>
+</html>
