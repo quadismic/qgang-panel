@@ -258,6 +258,12 @@ svg.org{display:inline-block}
 body{min-height:100vh;overflow-x:hidden}
 .panel{position:relative}
 
+
+/* QG PATCH v2 */
+#sezonCanvas{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;z-index:-1!important;pointer-events:none!important;display:block!important;}
+#tab-mesajlar{display:none!important;}
+#navMesajlar{display:none!important;}
+
 </style>
 </head>
 <body>
@@ -3205,6 +3211,237 @@ _showTabContent = function(name){
 ].forEach(function(fn){ try{ if(typeof window[fn]==='undefined' && typeof eval(fn)==='function') window[fn]=eval(fn); }catch(e){} });
 
 console.info('Q-GANG Stabilizer Patch v1 aktif.');
+
+
+
+/* ===============================
+   Q-GANG STABILIZER PATCH v2
+   - Mesajlaşma kaldırıldı
+   - Davet kodu üretimi güçlendirildi
+   - Organizasyon chart üye listesine bağlandı
+   - Sekme ve buton fonksiyonları güvenli hale getirildi
+================================ */
+(function(){
+  function $(id){return document.getElementById(id);}
+  function html(id,v){var el=$(id); if(el) el.innerHTML=v;}
+  function show(el,display){ if(el) el.style.display=display||''; }
+  function hide(el){ if(el) el.style.display='none'; }
+  function E(v){return String(v==null?'':v).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});}
+  function getId(x){return x && (x._id || x.id || '');}
+  function normalizeRole(r){
+    r=String(r||'Gözlemci');
+    var map={'Yönetici':'Vekilharç','Yetkili':'Kaptan','Yardımcı':'Teğmen','Uye':'Üye','Gozlemci':'Gözlemci','Tegmen':'Teğmen','Vekilharc':'Vekilharç'};
+    return map[r]||r;
+  }
+  function roleRank(r){
+    var arr=['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
+    var ix=arr.indexOf(normalizeRole(r)); return ix<0?99:ix;
+  }
+
+  // 1) Mesajlaşma modülünü şimdilik tamamen kaldır.
+  function removeMessagingUI(){
+    try{
+      var nav=$('navMesajlar'); if(nav && nav.parentElement) nav.parentElement.remove();
+      var tab=$('tab-mesajlar'); if(tab) tab.remove();
+      var badge=$('mesajBadge'); if(badge) badge.remove();
+    }catch(e){console.warn('Mesaj UI kaldırılamadı',e);}
+  }
+  removeMessagingUI();
+  document.addEventListener('DOMContentLoaded',removeMessagingUI);
+
+  // Mesaj fonksiyonları no-op: eski çağrılar paneli bozmasın.
+  window.renderMesajlar=function(){};
+  window.mesajBadgeGuncelle=async function(){};
+  window.mesajGonder=async function(){};
+  window.yeniMesajGonder=async function(){};
+  window.konusmayiAc=function(){};
+  window.bildirimBaslat=function(){ try{ bildirimKontrol&&bildirimKontrol(); }catch(e){} };
+
+  // 2) UI izin ayarı düzeltmesi: mevcut HTML'de btnKodUret yok, btnDavetEkle var.
+  var oldUiAyarla=window.uiAyarla;
+  window.uiAyarla=function(){
+    try{ if(typeof oldUiAyarla==='function') oldUiAyarla(); }catch(e){console.warn('uiAyarla eski hata',e);}
+    try{
+      removeMessagingUI();
+      var lider=(window.SESSION&&SESSION.rol==='Lider');
+      if(lider || (typeof izin==='function' && (izin('kodUret')||izin('davetYonet')))) show($('btnDavetEkle'));
+      if(lider) show($('navErisimDD'));
+      if(lider || (typeof izin==='function' && izin('basvuruGor'))) { var nav=$('navDavetDD'); if(nav) show(nav); }
+    }catch(e){console.warn('uiAyarla patch hata',e);}
+  };
+
+  // 3) Güvenli CMS yaz: hata mesajını görünür yap.
+  async function qgPost(action,payload){
+    var body=payload||{};
+    var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({action:action},body))});
+    var data=await res.json().catch(function(){return {success:false,error:'JSON okunamadı'};});
+    if(!res.ok || data.success===false) throw new Error(data.error||('HTTP '+res.status));
+    return data;
+  }
+
+  // 4) Davet sistemi: listele, üret, sil.
+  window.renderDavet=function(){
+    try{ window.renderDavetKodlari(); }catch(e){console.error(e);}
+    try{ window.renderBasvurular&&window.renderBasvurular(); }catch(e){console.error(e);}
+  };
+
+  window.renderDavetKodlari=async function(){
+    var el=$('davetKodListesi'); if(!el) return;
+    el.innerHTML='<div style="font-size:12px;color:#555">Davet kodları yükleniyor...</div>';
+    try{
+      var data=await qgPost('DAVET_LIST',{});
+      var list=data.result||[];
+      var canManage=(SESSION&&SESSION.rol==='Lider') || (typeof izin==='function' && (izin('davetYonet')||izin('kodGor')||izin('kodUret')));
+      if(!list.length){
+        el.innerHTML='<div class="card" style="font-size:12px;color:#555">Henüz davet kodu yok.</div>';
+        return;
+      }
+      el.innerHTML=list.map(function(k){
+        var id=getId(k);
+        var aktif=k.aktif!==false;
+        return '<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px">'
+          +'<div style="min-width:0">'
+          +'<div style="font-size:14px;font-weight:700;color:#fac775;letter-spacing:1px">'+E(k.kod||'')+'</div>'
+          +'<div style="font-size:10px;color:#555;margin-top:3px">'+(aktif?'Aktif':'Pasif/Kullanıldı')
+          +(k.kullanan?' · Kullanan: '+E(k.kullanan):'')
+          +(k.olusturan?' · Oluşturan: '+E(k.olusturan):'')+'</div>'
+          +'</div>'
+          +(canManage?'<button class="btn btn-danger btn-sm" onclick="reqDeleteDavet(\''+E(id)+'\')"><i class="ti ti-trash"></i></button>':'')
+          +'</div>';
+      }).join('');
+    }catch(e){
+      el.innerHTML='<div class="alert-row alert-danger"><i class="ti ti-alert-triangle"></i> Davet kodları yüklenemedi: '+E(e.message)+'</div>';
+    }
+  };
+
+  window.reqDeleteDavet=async function(id){
+    if(!id) return;
+    if(!confirm('Bu davet kodu silinsin mi?')) return;
+    try{
+      await qgPost('DAVET_DELETE',{id:id});
+      if(typeof cmsStatusGoster==='function') cmsStatusGoster('ok','<i class="ti ti-check"></i> Davet kodu silindi');
+      await renderDavetKodlari();
+    }catch(e){alert('Davet kodu silinemedi: '+e.message);}
+  };
+
+  function generateInviteCode(){
+    var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var out='QG-';
+    for(var i=0;i<6;i++) out+=chars[Math.floor(Math.random()*chars.length)];
+    return out;
+  }
+
+  var oldOpenModal=window.openModal;
+  window.openModal=function(type,id){
+    if(type==='yeniMesaj') return; // mesajlaşma kaldırıldı
+    if(type==='addDavet'){
+      var mc=$('modalContainer'); if(!mc) return;
+      var kod=generateInviteCode();
+      mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-box">'
+        +'<h3><i class="ti ti-mail-forward"></i> Davet Kodu Üret</h3>'
+        +'<div class="form-group"><label>Kod</label><input id="m_kod" value="'+E(kod)+'" style="text-transform:uppercase;letter-spacing:2px"></div>'
+        +'<div style="font-size:11px;color:#555;margin-top:6px">Bu kod tek kullanımlık davet kodu olarak kaydedilir.</div>'
+        +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button><button class="btn btn-warn" onclick="davetKaydet()"><i class="ti ti-check"></i> Kaydet</button></div>'
+        +'</div></div>';
+      return;
+    }
+    try{ if(typeof oldOpenModal==='function') return oldOpenModal(type,id); }
+    catch(e){ console.error('openModal hata',e); alert('Modal açılırken hata: '+e.message); }
+  };
+
+  window.davetKaydet=async function(){
+    var inp=$('m_kod'); var kod=inp?inp.value.trim().toUpperCase():'';
+    if(!kod){ alert('Kod gerekli.'); return; }
+    if(!/^[A-Z0-9\-]{4,30}$/.test(kod)){ alert('Kod yalnızca harf, rakam ve tire içermeli.'); return; }
+    try{
+      await qgPost('DAVET_ADD',{item:{kod:kod,aktif:true,tarih:new Date().toISOString(),olusturan:(SESSION&&SESSION.rumuz)||''}});
+      if(typeof closeModal==='function') closeModal();
+      if(typeof cmsStatusGoster==='function') cmsStatusGoster('ok','<i class="ti ti-check"></i> Davet kodu oluşturuldu');
+      await renderDavetKodlari();
+    }catch(e){ alert('Davet kodu oluşturulamadı: '+e.message); }
+  };
+
+  // 5) Organizasyon chart: üyelerden canlı, görsel olarak önceki havaya yakın SVG.
+  window.renderOrg=function(){
+    var wrap=$('orgWrap'); if(!wrap) return;
+    var list=(window.members||[]).slice().filter(function(m){return (m.durum||'Aktif')!=='Arşiv';});
+    if(!list.length){ wrap.innerHTML='<div class="card" style="font-size:12px;color:#555">Üye verisi yüklenmedi.</div>'; return; }
+    list.sort(function(a,b){ return roleRank(a.rutbe)-roleRank(b.rutbe) || String(a.rumuz||'').localeCompare(String(b.rumuz||''),'tr'); });
+    var byRole={}; list.forEach(function(m){ var r=normalizeRole(m.rutbe); (byRole[r]||(byRole[r]=[])).push(m); });
+    var roles=['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
+    var w=980, nodeW=138, nodeH=48, gapX=16, gapY=95, top=20;
+    var rows=[];
+    roles.forEach(function(r){ if(byRole[r]&&byRole[r].length) rows.push({role:r,items:byRole[r]}); });
+    var h=Math.max(260, top+rows.length*gapY+80);
+    function roleClass(r){return {'Lider':'org-lider','Vekilharç':'org-yonetici','Kaptan':'org-yetkili','Teğmen':'org-yardimci','Üye':'org-uye','Gözlemci':'org-gozlemci'}[r]||'org-uye';}
+    function roleColor(r){return {'Lider':'#888780','Vekilharç':'#a32d2d','Kaptan':'#185fa5','Teğmen':'#0f6e56','Üye':'#854f0b','Gözlemci':'#2a2a2a'}[r]||'#444';}
+    var svg='<svg class="org" viewBox="0 0 '+w+' '+h+'" width="100%" style="max-width:'+w+'px;min-width:760px">';
+    var centers=[];
+    rows.forEach(function(row,ri){
+      var count=Math.min(row.items.length, 6);
+      var total=count*nodeW+(count-1)*gapX;
+      var start=(w-total)/2;
+      var y=top+ri*gapY;
+      svg+='<text x="'+(w/2)+'" y="'+(y-10)+'" text-anchor="middle" fill="'+roleColor(row.role)+'" style="font-size:11px;font-weight:700;letter-spacing:2px">'+E(row.role).toUpperCase()+'</text>';
+      row.items.slice(0,6).forEach(function(m,i){
+        var x=start+i*(nodeW+gapX); var cx=x+nodeW/2;
+        centers.push({role:row.role,x:cx,y:y+nodeH/2,ri:ri});
+        svg+='<g class="org-node-anim '+roleClass(row.role)+'" style="animation-delay:'+(ri*0.08+i*0.035)+'s">'
+          +'<rect x="'+x+'" y="'+y+'" width="'+nodeW+'" height="'+nodeH+'" rx="12"></rect>'
+          +'<text class="t1" x="'+cx+'" y="'+(y+21)+'" text-anchor="middle">'+E(m.rumuz||'—')+'</text>'
+          +'<text class="t2" x="'+cx+'" y="'+(y+37)+'" text-anchor="middle">'+E(m.gorev||'Yok')+' · '+(Number(m.puan)||0)+'p</text>'
+          +'</g>';
+      });
+      if(row.items.length>6){
+        svg+='<text x="'+(w/2)+'" y="'+(y+nodeH+18)+'" text-anchor="middle" fill="#555" style="font-size:10px">+ '+(row.items.length-6)+' üye daha</text>';
+      }
+    });
+    // row connectors behind-ish by drawing after okay enough
+    var lines='';
+    for(var r=0;r<rows.length-1;r++){
+      var up=centers.filter(function(c){return c.ri===r;});
+      var down=centers.filter(function(c){return c.ri===r+1;});
+      if(up.length&&down.length){
+        var ux=up.reduce(function(a,c){return a+c.x;},0)/up.length, uy=up[0].y+nodeH/2;
+        var dx=down.reduce(function(a,c){return a+c.x;},0)/down.length, dy=down[0].y-nodeH/2;
+        lines+='<path class="org-conn" d="M '+ux+' '+uy+' C '+ux+' '+(uy+28)+', '+dx+' '+(dy-28)+', '+dx+' '+dy+'" style="animation-delay:'+(r*0.1)+'s"></path>';
+      }
+    }
+    svg=svg.replace('>', '>'+lines);
+    svg+='</svg>';
+    var summary='<div class="stat-grid" style="margin-bottom:1rem">'+roles.map(function(r){var n=(byRole[r]||[]).length;return n?'<div class="stat-card"><div class="label">'+E(r)+'</div><div class="value">'+n+'</div></div>':'';}).join('')+'</div>';
+    wrap.innerHTML=summary+svg;
+  };
+
+  // 6) Sekme yönlendirici: mesajlar çıkarıldı, render hataları izole edildi.
+  window._showTabContent=function(name){
+    if(name==='mesajlar') name='dashboard';
+    try{
+      document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active','tab-animating');});
+      var tab=$('tab-'+name);
+      if(tab){ tab.classList.add('active'); void tab.offsetWidth; tab.classList.add('tab-animating'); }
+      var fns={dashboard:renderDashboard,members:renderMembers,puan:renderPuan,gorev:renderGorev,etkinlik:renderEvents,butce:renderButce,duyurular:renderDuyurular,davet:renderDavet,tuzuk:renderTuzuk,oylama:renderOylama,basvurular:renderBasvurular,erisim:renderErisimBoard,org:renderOrg,log:renderLog};
+      if(fns[name]) fns[name]();
+    }catch(e){
+      console.error('Sekme render hatası',name,e);
+      var t=$('tab-'+name); if(t) t.innerHTML='<div class="alert-row alert-danger"><i class="ti ti-alert-triangle"></i> Bu sekme yüklenirken hata oluştu: '+E(e.message)+'</div>';
+    }
+  };
+
+  // 7) Panel açıldıktan sonra menüyü temizle ve yetki butonlarını düzelt.
+  var oldPanelAc=window.panelAc;
+  window.panelAc=async function(rumuz,rol){
+    var ret;
+    try{ ret=await oldPanelAc(rumuz,rol); }catch(e){ console.error('panelAc hata',e); throw e; }
+    removeMessagingUI();
+    try{ uiAyarla(); }catch(e){}
+    return ret;
+  };
+
+  // Global garanti
+  ['renderDavet','renderDavetKodlari','reqDeleteDavet','davetKaydet','renderOrg','openModal','uiAyarla','_showTabContent'].forEach(function(fn){try{window[fn]=eval(fn);}catch(e){}});
+  console.info('Q-GANG Stabilizer Patch v2 aktif: Mesajlaşma kaldırıldı, davet ve organizasyon güçlendirildi.');
+})();
 
 </script>
 </body>
