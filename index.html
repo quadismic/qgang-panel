@@ -270,7 +270,7 @@ svg.org{display:inline-block}
       </div>
       <div class="auth-form-group">
         <label>Şifre</label>
-        <input type="password" id="girusSifre" placeholder="••••••••" onkeydown="if(event.key==='Enter')girisYapBtn()">
+        <input type="password" id="girisSifre" placeholder="••••••••" onkeydown="if(event.key==='Enter')girisYapBtn()">
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
         <input type="checkbox" id="beniHatirla" style="width:auto">
@@ -928,7 +928,7 @@ async function kayitGonder(){
 
 async function girisYapBtn(){
   const rumuz=document.getElementById('girisRumuz').value.trim();
-  const sifre=document.getElementById('girusSifre').value;
+  const sifre=document.getElementById('girisSifre').value;
   const hata=document.getElementById('girisHata');
   if(hata)hata.style.display='none';
   if(!rumuz||!sifre){if(hata){hata.textContent='Rumuz ve şifre gerekli.';hata.style.display='block';}return;}
@@ -2602,3 +2602,56 @@ function renderDogumgunuBanner(){
   // Konfeti efektini tetikle
   if(typeof sezonParticleBaslat==='function') sezonParticleBaslat('dogumgunu');
 }
+
+// ==================================================
+// GITHUB / BROWSER UYUMLULUK KİLİDİ
+// Inline onclick fonksiyonları için global bağlama
+// ==================================================
+(function(){
+  const fnNames = [
+    'authTab','girisYapBtn','adimIleri','adimGeri','kayitGonder','showTab','showTabDD',
+    'toggleDropdown','renderMembers','renderPuan','etkinlikGorunum','takvimAyDegistir',
+    'takvimGunTikla','mesajGonder','cikisYap','clearLog','reqButce','reqDeleteButce',
+    'reqGorev','reqSifreSifirla','gorevTalepYanitla','sezonuKapat','portfolyoKapat'
+  ];
+
+  fnNames.forEach(function(name){
+    if (typeof window[name] === 'undefined' && typeof eval(name) === 'function') {
+      window[name] = eval(name);
+    }
+  });
+
+  // Dosyanın eksik/yarım sürümlerinde bazı yönetim fonksiyonları yoksa butonların tamamen ölmesini engelle.
+  window.openModal = window.openModal || function(){ console.warn('openModal fonksiyonu bu HTML sürümünde bulunmuyor.'); };
+  window.closeModal = window.closeModal || function(){ var m=document.getElementById('modalContainer'); if(m) m.innerHTML=''; };
+  window.reqAddMember = window.reqAddMember || function(){ window.openModal('member'); };
+  window.reqDeleteMember = window.reqDeleteMember || function(){ console.warn('reqDeleteMember fonksiyonu eksik.'); };
+  window.tuzukKaydet = window.tuzukKaydet || function(){ console.warn('tuzukKaydet fonksiyonu eksik.'); };
+  window.tuzukIptal = window.tuzukIptal || function(){ console.warn('tuzukIptal fonksiyonu eksik.'); };
+  window.izinKaydet = window.izinKaydet || function(){ console.warn('izinKaydet fonksiyonu eksik.'); };
+  window.izinSifirla = window.izinSifirla || function(){ console.warn('izinSifirla fonksiyonu eksik.'); };
+  window.yedegiAl = window.yedegiAl || function(){ console.warn('yedegiAl fonksiyonu eksik.'); };
+  window.onlineSistemiBaslat = window.onlineSistemiBaslat || function(){ console.warn('onlineSistemiBaslat fonksiyonu eksik.'); };
+
+  function bindAuthButtons(){
+    const tabs = document.querySelectorAll('.auth-tab');
+    if (tabs[0]) tabs[0].addEventListener('click', function(e){ e.preventDefault(); window.authTab('giris'); });
+    if (tabs[1]) tabs[1].addEventListener('click', function(e){ e.preventDefault(); window.authTab('kayit'); });
+
+    const loginBtn = document.querySelector('#girisForm .auth-btn');
+    if (loginBtn) loginBtn.addEventListener('click', function(e){ e.preventDefault(); window.girisYapBtn(); });
+
+    const registerBtn = document.querySelector('#adim4 .auth-btn');
+    if (registerBtn) registerBtn.addEventListener('click', function(e){ e.preventDefault(); window.kayitGonder(); });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindAuthButtons);
+  } else {
+    bindAuthButtons();
+  }
+})();
+
+</script>
+</body>
+</html>
