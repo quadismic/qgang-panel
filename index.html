@@ -2898,3 +2898,273 @@ async function renderOylama(){
 </script>
 </body>
 </html>
+<script>
+// ============================================================
+// MODAL SİSTEMİ
+// ============================================================
+function openModal(type, data){
+  var mc=document.getElementById('modalContainer');
+  if(!mc)return;
+  mc.innerHTML='';
+  if(type==='addMember'&&(izin('uyeEkle')||SESSION.rol==='Lider')){
+    var today=new Date().toISOString().split('T')[0];
+    var rOpts=RUTBELER.map(function(r){return'<option'+(r==='Gözlemci'?' selected':'')+'>'+r+'</option>';}).join('');
+    var dOpts=DURUMLAR.map(function(d){return'<option'+(d==='Aktif'?' selected':'')+'>'+d+'</option>';}).join('');
+    var gOpts=GOREVLER.map(function(g){return'<option'+(g==='Yok'?' selected':'')+'>'+g+'</option>';}).join('');
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3>Yeni Üye</h3>'
+      +'<div class="form-row"><div class="form-group"><label>Rumuz</label><input id="m_rumuz" placeholder="Rumuz"></div>'
+      +'<div class="form-group"><label>Rütbe</label><select id="m_rutbe">'+rOpts+'</select></div></div>'
+      +'<div class="form-row"><div class="form-group"><label>Durum</label><select id="m_durum">'+dOpts+'</select></div>'
+      +'<div class="form-group"><label>Görev</label><select id="m_gorev">'+gOpts+'</select></div></div>'
+      +'<div class="form-row"><div class="form-group"><label>Katılım</label><input type="date" id="m_katilim" value="'+today+'"></div>'
+      +'<div class="form-group"><label>Doğum</label><input type="date" id="m_dogum"></div></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Referans</label><input id="m_ref" placeholder="Kim getirdi?"></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Not</label><textarea id="m_not" placeholder="Lider notu..."></textarea></div>'
+      +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" onclick="reqSaveMember()"><i class="ti ti-check"></i> Kaydet</button>'
+      +'</div></div></div>';
+  } else if(type==='editMember'&&data){
+    var m=members.find(function(x){return String(x._id)===String(data)||String(x.id)===String(data);});
+    if(!m)return;
+    var mid=m._id||m.id;
+    var today2=new Date().toISOString().split('T')[0];
+    var rO=RUTBELER.map(function(r){return'<option'+(r===m.rutbe?' selected':'')+'>'+r+'</option>';}).join('');
+    var dO=DURUMLAR.map(function(d){return'<option'+(d===m.durum?' selected':'')+'>'+d+'</option>';}).join('');
+    var gO=GOREVLER.map(function(g){return'<option'+(g===m.gorev?' selected':'')+'>'+g+'</option>';}).join('');
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3>'+m.rumuz+' — Düzenle</h3>'
+      +'<div class="form-row"><div class="form-group"><label>Rumuz</label><input id="e_rumuz" value="'+(m.rumuz||'')+'"></div>'
+      +'<div class="form-group"><label>Rütbe</label><select id="e_rutbe">'+rO+'</select></div></div>'
+      +'<div class="form-row"><div class="form-group"><label>Durum</label><select id="e_durum">'+dO+'</select></div>'
+      +'<div class="form-group"><label>Görev</label><select id="e_gorev">'+gO+'</select></div></div>'
+      +'<div class="form-row"><div class="form-group"><label>Puan</label><input type="number" id="e_puan" value="'+(m.puan||0)+'"></div>'
+      +'<div class="form-group"><label>Katılım</label><input type="date" id="e_katilim" value="'+(m.katilim||today2)+'"></div></div>'
+      +'<div class="form-row"><div class="form-group"><label>Doğum</label><input type="date" id="e_dogum" value="'+(m.dogum||'')+'"></div>'
+      +'<div class="form-group"><label>Referans</label><input id="e_ref" value="'+(m.ref||'')+'"></div></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Not</label><textarea id="e_not">'+(m.not||'')+'</textarea></div>'
+      +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" id="btnEditMemberSave"><i class="ti ti-check"></i> Güncelle</button>'
+      +'</div></div></div>';
+    setTimeout(function(){var b=document.getElementById('btnEditMemberSave');if(b)(function(id){b.onclick=function(){reqUpdateMember(id);};})(mid);},50);
+  } else if(type==='addEvent'&&(izin('etkinlikEkle')||SESSION.rol==='Lider')){
+    var today3=new Date().toISOString().split('T')[0];
+    function getRtbEtk(r){if(r==='Lider')return 0;if(r&&r.includes('Vekil'))return 1;if(r==='Kaptan')return 2;if(r&&r.includes('Te'))return 3;if(r&&r.includes('ye'))return 4;return 5;}
+    var siraliE=[...members].sort(function(a,b){return getRtbEtk(a.rutbe)-getRtbEtk(b.rutbe)||a.rumuz.localeCompare(b.rumuz,'tr');});
+    var eOpts=ETK_TURLERI.map(function(t){return'<option>'+t+'</option>';}).join('');
+    var katOpts=siraliE.map(function(m){return'<option value="'+m.rumuz+'">'+m.rumuz+' ('+m.rutbe+')</option>';}).join('');
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3>Yeni Etkinlik</h3>'
+      +'<div class="form-row"><div class="form-group"><label>Tür</label><select id="e_tur">'+eOpts+'</select></div>'
+      +'<div class="form-group"><label>Tarih</label><input type="date" id="e_date" value="'+today3+'"></div></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Puan</label><input type="number" id="e_puan2" value="10"></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Katılımcılar <span style="font-size:10px;color:#555">(Ctrl ile çoklu)</span></label>'
+      +'<select id="e_katilimcilar" multiple style="height:140px">'+katOpts+'</select></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Not</label><textarea id="e_not2" placeholder="Notlar..."></textarea></div>'
+      +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" onclick="reqSaveEvent()"><i class="ti ti-check"></i> Kaydet</button>'
+      +'</div></div></div>';
+  } else if(type==='addDuyuru'&&(izin('duyuruEkle')||SESSION.rol==='Lider')){
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3>Yeni Duyuru</h3>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Başlık</label><input id="d_baslik" placeholder="Duyuru başlığı..."></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>İçerik</label><textarea id="d_icerik" style="min-height:80px" placeholder="Duyuru içeriği..."></textarea></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label><input type="checkbox" id="d_aktif" checked style="width:auto;margin-right:6px">Bannerde yayinla</label></div>'
+      +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" onclick="reqSaveDuyuru()"><i class="ti ti-check"></i> Yayınla</button>'
+      +'</div></div></div>';
+  } else if(type==='gorevTalep'){
+    var gOpts2=(GOREVLER||[]).map(function(g){return'<option>'+g+'</option>';}).join('');
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3>Görev Talebi Gönder</h3>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Görev Türü</label><select id="gt_tur">'+gOpts2+'</select></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Açıklama</label><textarea id="gt_aciklama" placeholder="Neden bu görevi almak istiyorsunuz?"></textarea></div>'
+      +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" onclick="reqGorevTalepGonder()"><i class="ti ti-send"></i> Gönder</button>'
+      +'</div></div></div>';
+  } else if(type==='addOylama'&&(izin('oylamaEkle')||SESSION.rol==='Lider')){
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3>Yeni Oylama</h3>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Başlık</label><input id="oy_baslik" placeholder="Oylama başlığı..."></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Tür</label><select id="oy_tur"><option>Anket</option><option>Secim</option></select></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Açıklama</label><textarea id="oy_aciklama" placeholder="Açıklama..."></textarea></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Seçenekler (virgülle ayır)</label><input id="oy_secenekler" placeholder="Evet, Hayır, Çekimser"></div>'
+      +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" onclick="reqOylamaOlustur()"><i class="ti ti-check"></i> Oluştur</button>'
+      +'</div></div></div>';
+  } else if(type==='addButce'&&(izin('butceDuzenle')||SESSION.rol==='Lider')){
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3>Bütçe Kaydı Ekle</h3>'
+      +'<div class="form-row"><div class="form-group"><label>Tür</label><select id="b_tur"><option value="gelir">Gelir</option><option value="gider">Gider</option></select></div>'
+      +'<div class="form-group"><label>Tutar (₺)</label><input type="number" id="b_tutar" placeholder="0.00" step="0.01"></div></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Açıklama</label><input id="b_aciklama" placeholder="Açıklama..."></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Tarih</label><input type="date" id="b_tarih" value="'+new Date().toISOString().split('T')[0]+'"></div>'
+      +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" onclick="reqSaveButce()"><i class="ti ti-check"></i> Kaydet</button>'
+      +'</div></div></div>';
+  } else if(type==='confirm2'&&data){
+    // confirm2 kendi işler
+  }
+}
+
+function closeModal(){
+  var mc=document.getElementById('modalContainer');
+  if(mc)mc.innerHTML='';
+}
+
+// ============================================================
+// ONLİNE SİSTEM
+// ============================================================
+function onlineSistemiBaslat(){
+  oturumPing();
+  onlineListeGuncelle();
+  setInterval(function(){oturumPing();onlineListeGuncelle();},2*60*1000);
+  window.addEventListener('beforeunload',function(){oturumKapat();});
+  setTimeout(pasiflikKontrol,10000);
+  setInterval(pasiflikKontrol,5*60*1000);
+  var ob=document.getElementById('onlineBar');
+  if(ob)setTimeout(function(){ob.style.display='flex';},1000);
+}
+
+async function oturumPing(){
+  try{
+    await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'OTURUM_PING',item:{rumuz:SESSION.rumuz,rol:SESSION.rol}})});
+  }catch(e){}
+}
+
+async function oturumKapat(){
+  try{
+    await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'OTURUM_KAPAT',item:{rumuz:SESSION.rumuz}})});
+  }catch(e){}
+}
+
+async function onlineListeGuncelle(){
+  try{
+    var ob=document.getElementById('onlineBar');
+    if(ob&&ob.style.display==='none')ob.style.display='flex';
+    var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'OTURUM_LIST'})});
+    var data=await res.json();
+    var liste=data.result||[];
+    var sayEl=document.getElementById('onlineCount');
+    var listEl=document.getElementById('onlineList');
+    if(sayEl)sayEl.textContent=liste.length||0;
+    if(listEl)listEl.textContent=liste.map(function(o){return o.rumuz;}).join(', ');
+  }catch(e){}
+}
+
+// ============================================================
+// BAŞVURU SİSTEMİ
+// ============================================================
+function renderBasvurular(){
+  // renderDavet ile aynı - alias
+  renderDavet();
+}
+
+async function reqBasvuruOnayla(id,rumuz){
+  confirm2('Başvuruyu onayla','<strong>'+rumuz+'</strong> üyeliğe kabul edilecek.',async function(){
+    await cmsYaz('USER_APPROVE',id);
+    var tazeVeri=await cmsOku();
+    if(tazeVeri&&tazeVeri.members){
+      members=tazeVeri.members.map(function(m){return Object.assign({},m,{id:m._id||m.id});});
+    }
+    addLog('Başvuru onaylandı',rumuz);save();
+    var uyari=document.getElementById('basvuruUyari');
+    if(uyari)uyari.innerHTML='';
+    renderDavet();basvuruSayisiniGuncelle();
+    renderDashboard();renderMembers();
+  });
+}
+
+async function reqBasvuruReddet(id,rumuz){
+  confirm2('Başvuruyu reddet','<strong>'+rumuz+'</strong> başvurusu reddedilecek.',async function(){
+    await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'BASVURU_REDDET',id:id})});
+    addLog('Başvuru reddedildi',rumuz);save();
+    renderDavet();basvuruSayisiniGuncelle();
+  });
+}
+
+// ============================================================
+// DİSİPLİN SİSTEMİ
+// ============================================================
+async function reqDisiplinKaldir(id){
+  var d=disiplin.find(function(x){return String(x._id)===String(id)||String(x.id)===String(id);});if(!d)return;
+  confirm2('Cezayı kaldır','<strong>'+d.uye+'</strong> — '+d.cezaTuru+' kaldırılacak.',async function(){
+    var gunc=Object.assign({},d,{_id:d._id||d.id,durum:'Kaldırıldı'});
+    var idx=disiplin.findIndex(function(x){return String(x._id)===String(id)||String(x.id)===String(id);});
+    if(idx>-1)disiplin[idx]=Object.assign({},disiplin[idx],{durum:'Kaldırıldı'});
+    addLog('Ceza kaldırıldı',d.uye+' — '+d.cezaTuru);save();
+    await cmsYaz('DISIPLIN_UPDATE',gunc);
+    renderDisiplin();renderMembers();renderDashboard();
+  });
+}
+
+async function reqDisiplinSil(id){
+  var d=disiplin.find(function(x){return String(x._id)===String(id)||String(x.id)===String(id);});if(!d)return;
+  confirm2('Disiplin kaydını sil','<strong>'+d.uye+'</strong> kaydı silinecek.',async function(){
+    disiplin=disiplin.filter(function(x){return String(x._id)!==String(id)&&String(x.id)!==String(id);});
+    addLog('Disiplin kaydı silindi',d.uye);save();
+    await cmsYaz('DISIPLIN_DELETE',id);
+    renderDisiplin();
+  });
+}
+
+// ============================================================
+// OYLAMA CRUD
+// ============================================================
+async function reqOyVer(oid,secim){
+  try{
+    await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'OY_VER',id:oid,rumuz:SESSION.rumuz,secim:secim})});
+    addLog('Oy verildi',secim);
+    renderOylama();
+  }catch(e){alert('Hata: '+e.message);}
+}
+
+async function reqOylakapat(oid,aktif){
+  try{
+    await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'OYLAMA_GUNCELLE',id:oid,aktif:aktif})});
+    addLog(aktif?'Oylama açıldı':'Oylama kapatıldı','ID: '+oid);
+    renderOylama();
+  }catch(e){}
+}
+
+async function reqOylamaSil(oid){
+  confirm2('Oylamayı sil','Bu oylama kalıcı olarak silinecek.',async function(){
+    try{
+      await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'OYLAMA_SIL',id:oid})});
+      addLog('Oylama silindi','ID: '+oid);
+      renderOylama();
+    }catch(e){}
+  });
+}
+
+async function reqOylamaOlustur(){
+  var baslik=document.getElementById('oy_baslik');
+  var tur=document.getElementById('oy_tur');
+  var aciklama=document.getElementById('oy_aciklama');
+  var secenekler=document.getElementById('oy_secenekler');
+  if(!baslik||!baslik.value.trim()){alert('Başlık gerekli!');return;}
+  var secArr=(secenekler&&secenekler.value?secenekler.value.split(',').map(function(s){return s.trim();}).filter(function(s){return s;}):['Evet','Hayır']);
+  try{
+    await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'OYLAMA_EKLE',baslik:baslik.value.trim(),tur:tur?tur.value:'Anket',aciklama:aciklama?aciklama.value:'',secenekler:JSON.stringify(secArr),oylar:'{}',olusturan:SESSION.rumuz,tarih:new Date().toISOString().split('T')[0],aktif:true})});
+    addLog('Oylama oluşturuldu',baslik.value.trim());save();
+    closeModal();renderOylama();
+  }catch(e){alert('Hata: '+e.message);}
+}
+
+// ============================================================
+// PASIFLIK KONTROLÜ (placeholder - ana fonksiyon zaten var)
+// ============================================================
+if(typeof pasiflikKontrol==='undefined'){
+  function pasiflikKontrol(){}
+}
+</script>
+</body>
+</html>
