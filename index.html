@@ -270,7 +270,7 @@ svg.org{display:inline-block}
       </div>
       <div class="auth-form-group">
         <label>Şifre</label>
-        <input type="password" id="girisSifre" placeholder="••••••••" onkeydown="if(event.key==='Enter')girisYapBtn()">
+        <input type="password" id="girusSifre" placeholder="••••••••" onkeydown="if(event.key==='Enter')girisYapBtn()">
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
         <input type="checkbox" id="beniHatirla" style="width:auto">
@@ -928,7 +928,7 @@ async function kayitGonder(){
 
 async function girisYapBtn(){
   const rumuz=document.getElementById('girisRumuz').value.trim();
-  const sifre=document.getElementById('girisSifre').value;
+  const sifre=document.getElementById('girusSifre').value;
   const hata=document.getElementById('girisHata');
   if(hata)hata.style.display='none';
   if(!rumuz||!sifre){if(hata){hata.textContent='Rumuz ve şifre gerekli.';hata.style.display='block';}return;}
