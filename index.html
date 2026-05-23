@@ -3443,6 +3443,336 @@ console.info('Q-GANG Stabilizer Patch v1 aktif.');
   console.info('Q-GANG Stabilizer Patch v2 aktif: Mesajlaşma kaldırıldı, davet ve organizasyon güçlendirildi.');
 })();
 
+
+
+/* =====================================================================
+   Q-GANG CRUD REPAIR PATCH v3
+   Amaç: Mevcut tasarımı bozmadan kırık CRUD akışlarını tek API sözleşmesine bağlamak.
+   Kapsam: Üye, Etkinlik, Bütçe, Davet, Organizasyon chart, temel refresh.
+   ===================================================================== */
+(function(){
+  'use strict';
+
+  function el(id){ return document.getElementById(id); }
+  function val(id){ var x=el(id); return x ? String(x.value || '').trim() : ''; }
+  function esc3(s){
+    return String(s == null ? '' : s).replace(/[&<>'"]/g,function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];
+    });
+  }
+  function gid(x){ return x && (x._id || x.id || ''); }
+  function today3(){ return new Date().toISOString().split('T')[0]; }
+  function arrKat(v){
+    if(Array.isArray(v)) return v;
+    if(!v) return [];
+    return String(v).split(',').map(function(x){return x.trim();}).filter(Boolean);
+  }
+  function callStatus(type,msg){
+    try{
+      if(typeof cmsStatusGoster === 'function') cmsStatusGoster(type,msg);
+    }catch(e){}
+  }
+  async function postQ(action, payload){
+    var body = Object.assign({ action: action }, payload || {});
+    var res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    var data = await res.json().catch(function(){ return { success:false, error:'JSON okunamadı' }; });
+    if(!res.ok || data.success === false){
+      throw new Error(data.error || ('HTTP ' + res.status));
+    }
+    return data;
+  }
+  async function getQ(){
+    var res = await fetch(API_URL, { method:'GET' });
+    var data = await res.json().catch(function(){ return null; });
+    if(!res.ok || !data) throw new Error('Veri okunamadı');
+    return data;
+  }
+  async function reloadQ(renderName){
+    var veri = await getQ();
+    members = (veri.members || []).map(function(m){ return Object.assign({}, m, { id: gid(m), katilimcilar: arrKat(m.katilimcilar) }); });
+    events = (veri.events || []).map(function(e){ return Object.assign({}, e, { id: gid(e), katilimcilar: arrKat(e.katilimcilar) }); });
+    butce = (veri.budget || veri.butce || []).map(function(b){ return Object.assign({}, b, { id: gid(b) }); });
+    duyurular = (veri.duyurular || []).map(function(d){ return Object.assign({}, d, { id: gid(d) }); });
+    disiplin = (veri.disiplin || []).map(function(d){ return Object.assign({}, d, { id: gid(d) }); });
+    tuzuk = veri.tuzuk || tuzuk || null;
+    try{ if(typeof uiAyarla === 'function') uiAyarla(); }catch(e){}
+    try{ if(typeof renderDashboard === 'function') renderDashboard(); }catch(e){console.error(e);}
+    if(renderName){
+      try{
+        var map={members:renderMembers, etkinlik:renderEvents, butce:renderButce, davet:renderDavet, duyurular:renderDuyurular, org:renderOrg, tuzuk:renderTuzuk};
+        if(map[renderName]) map[renderName]();
+      }catch(e){ console.error('Render refresh hatası', renderName, e); }
+    }
+    return veri;
+  }
+  function optionsHtml(list, selected){
+    return (list || []).map(function(o){
+      return '<option value="'+esc3(o)+'" '+(String(o)===String(selected)?'selected':'')+'>'+esc3(o)+'</option>';
+    }).join('');
+  }
+  function modal(title, body, footer){
+    var mc=el('modalContainer');
+    if(!mc) return;
+    mc.innerHTML = '<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-box">'
+      + '<h3>'+title+'</h3>' + body + '<div class="modal-footer">' + (footer || '') + '</div></div></div>';
+  }
+  function input(label,id,value,type){
+    return '<div class="form-group"><label>'+esc3(label)+'</label><input id="'+esc3(id)+'" type="'+(type||'text')+'" value="'+esc3(value||'')+'"></div>';
+  }
+  function textarea(label,id,value){
+    return '<div class="form-group"><label>'+esc3(label)+'</label><textarea id="'+esc3(id)+'">'+esc3(value||'')+'</textarea></div>';
+  }
+  function select(label,id,list,value){
+    return '<div class="form-group"><label>'+esc3(label)+'</label><select id="'+esc3(id)+'">'+optionsHtml(list,value)+'</select></div>';
+  }
+
+  // ---- OpenModal tamiri ----
+  var previousOpenModal = window.openModal;
+  window.openModal = function(type,id){
+    try{
+      if(type === 'yeniMesaj') return; // mesajlaşma kaldırıldı
+
+      if(type === 'addMember' || type === 'editMember'){
+        var m = type === 'editMember' ? members.find(function(x){return String(gid(x))===String(id);}) : null;
+        m = m || {};
+        modal(type === 'editMember' ? 'Üye Düzenle' : 'Üye Ekle',
+          '<div class="form-row">'
+          + input('Rumuz','m_rumuz',m.rumuz||'')
+          + select('Rütbe','m_rutbe', (typeof RUTBETLER!=='undefined'?RUTBETLER:(typeof RUTBELER!=='undefined'?RUTBELER:['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'])), m.rutbe||'Gözlemci')
+          + select('Durum','m_durum', (typeof DURUMLAR!=='undefined'?DURUMLAR:['Aktif','Pasif','Riskli','Cezalı','İzinde','Arşiv']), m.durum||'Aktif')
+          + '</div><div class="form-row">'
+          + select('Görev','m_gorev', (typeof GOREVLER!=='undefined'?GOREVLER:['Yok','Klan','Sosyal Medya','Yönetim','Özel']), m.gorev||'Yok')
+          + input('Puan','m_puan',m.puan||0,'number')
+          + input('Katılım','m_katilim',m.katilim||today3(),'date')
+          + '</div>'
+          + input('Doğum','m_dogum',m.dogum||'','date')
+          + textarea('Not','m_not',m.not||''),
+          '<button class="btn" onclick="closeModal()">İptal</button><button class="btn btn-warn" onclick="uyeKaydet(\''+(id||'')+'\')">Kaydet</button>'
+        );
+        return;
+      }
+
+      if(type === 'addEvent' || type === 'editEvent'){
+        var ev = type === 'editEvent' ? events.find(function(x){return String(gid(x))===String(id);}) : null;
+        ev = ev || {};
+        modal(type === 'editEvent' ? 'Etkinlik Düzenle' : 'Yeni Etkinlik',
+          '<div class="form-row">'
+          + select('Tür','m_tur', (typeof ETK_TURLERI!=='undefined'?ETK_TURLERI:['GANG-UP','BBQ-GANG','OP-NIGHT','B-DAY & S-DAY','Diğer']), ev.tur||'GANG-UP')
+          + input('Tarih','m_tarih',ev.tarih||today3(),'date')
+          + input('Puan','m_puan',ev.puan||10,'number')
+          + '</div>'
+          + textarea('Katılımcılar (virgülle)','m_katilimcilar',arrKat(ev.katilimcilar).join(','))
+          + textarea('Not','m_not',ev.not||''),
+          '<button class="btn" onclick="closeModal()">İptal</button><button class="btn btn-warn" onclick="etkinlikKaydet(\''+(id||'')+'\')">Kaydet</button>'
+        );
+        return;
+      }
+
+      if(type === 'addDavet'){
+        var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        var kod='QG-';
+        for(var i=0;i<6;i++) kod+=chars[Math.floor(Math.random()*chars.length)];
+        modal('Davet Kodu Üret',
+          input('Kod','m_kod',kod),
+          '<button class="btn" onclick="closeModal()">İptal</button><button class="btn btn-warn" onclick="davetKaydet()">Kaydet</button>'
+        );
+        return;
+      }
+
+      if(typeof previousOpenModal === 'function') return previousOpenModal(type,id);
+    }catch(e){
+      console.error('openModal v3 hata:',e);
+      alert('Modal açılırken hata: '+e.message);
+    }
+  };
+
+  // ---- Üye CRUD ----
+  window.reqAddMember = function(){ window.openModal('addMember'); };
+  window.uyeKaydet = async function(id){
+    try{
+      var item = {
+        rumuz: val('m_rumuz'),
+        rutbe: val('m_rutbe') || 'Gözlemci',
+        durum: val('m_durum') || 'Aktif',
+        gorev: val('m_gorev') || 'Yok',
+        puan: Number(val('m_puan')) || 0,
+        katilim: val('m_katilim') || today3(),
+        dogum: val('m_dogum'),
+        not: val('m_not')
+      };
+      if(!item.rumuz){ alert('Rumuz gerekli.'); return; }
+      callStatus('loading','<i class="ti ti-loader"></i> Üye kaydediliyor...');
+      if(id){
+        var old = members.find(function(x){return String(gid(x))===String(id);}) || {};
+        item = Object.assign({}, old, item, { _id: old._id || id });
+        await postQ('MEMBER_UPDATE', { item:item });
+      }else{
+        await postQ('MEMBER_ADD', { item:item });
+      }
+      if(typeof closeModal==='function') closeModal();
+      await reloadQ('members');
+      callStatus('ok','<i class="ti ti-check"></i> Üye kaydedildi');
+    }catch(e){ console.error(e); alert('Üye kaydedilemedi: '+e.message); callStatus('err','<i class="ti ti-x"></i> Üye kaydedilemedi'); }
+  };
+  window.reqDeleteMember = async function(id){
+    try{
+      if(!id) return;
+      if(!confirm('Bu üye silinsin mi?')) return;
+      await postQ('MEMBER_DELETE', { id:id });
+      await reloadQ('members');
+    }catch(e){ alert('Üye silinemedi: '+e.message); }
+  };
+
+  // ---- Etkinlik CRUD ----
+  window.etkinlikKaydet = async function(id){
+    try{
+      var item = {
+        tur: val('m_tur') || 'GANG-UP',
+        tarih: val('m_tarih') || today3(),
+        puan: Number(val('m_puan')) || 0,
+        katilimcilar: val('m_katilimcilar'),
+        not: val('m_not')
+      };
+      if(!item.tarih){ alert('Tarih gerekli.'); return; }
+      callStatus('loading','<i class="ti ti-loader"></i> Etkinlik kaydediliyor...');
+      if(id){
+        var old = events.find(function(x){return String(gid(x))===String(id);}) || {};
+        item = Object.assign({}, old, item, { _id: old._id || id });
+        await postQ('EVENT_UPDATE', { item:item });
+      }else{
+        await postQ('EVENT_ADD', { item:item });
+      }
+      if(typeof closeModal==='function') closeModal();
+      await reloadQ('etkinlik');
+      callStatus('ok','<i class="ti ti-check"></i> Etkinlik kaydedildi');
+    }catch(e){ console.error(e); alert('Etkinlik kaydedilemedi: '+e.message); callStatus('err','<i class="ti ti-x"></i> Etkinlik kaydedilemedi'); }
+  };
+  window.reqEditEvent = function(id){ window.openModal('editEvent', id); };
+  window.reqDeleteEvent = async function(id){
+    try{
+      if(!id) return;
+      if(!confirm('Bu etkinlik silinsin mi?')) return;
+      await postQ('EVENT_DELETE', { id:id });
+      await reloadQ('etkinlik');
+    }catch(e){ alert('Etkinlik silinemedi: '+e.message); }
+  };
+
+  // ---- Bütçe CRUD ----
+  window.reqButce = async function(){
+    try{
+      var item = {
+        tur: val('b_tur') || 'gelir',
+        tarih: val('b_tarih') || today3(),
+        tutar: Number(val('b_tutar')) || 0,
+        aciklama: val('b_aciklama'),
+        kategori: val('b_kategori') || 'Diğer'
+      };
+      if(!item.tutar || !item.aciklama){ alert('Tutar ve açıklama zorunlu.'); return; }
+      callStatus('loading','<i class="ti ti-loader"></i> Bütçe kaydediliyor...');
+      await postQ('BUDGET_ADD', { item:item });
+      await reloadQ('butce');
+      if(el('b_tutar')) el('b_tutar').value='';
+      if(el('b_aciklama')) el('b_aciklama').value='';
+      callStatus('ok','<i class="ti ti-check"></i> Bütçe kaydedildi');
+    }catch(e){ console.error(e); alert('Bütçe kaydedilemedi: '+e.message); callStatus('err','<i class="ti ti-x"></i> Bütçe kaydedilemedi'); }
+  };
+  window.reqDeleteButce = async function(id){
+    try{
+      if(!id) return;
+      if(!confirm('Bu bütçe işlemi silinsin mi?')) return;
+      await postQ('BUDGET_DELETE', { id:id });
+      await reloadQ('butce');
+    }catch(e){ alert('Bütçe işlemi silinemedi: '+e.message); }
+  };
+
+  // ---- Davet CRUD ----
+  window.davetKaydet = async function(){
+    try{
+      var kod = val('m_kod').toUpperCase();
+      if(!kod){ alert('Kod gerekli.'); return; }
+      if(!/^[A-Z0-9\-]{4,30}$/.test(kod)){ alert('Kod yalnızca harf, rakam ve tire içermeli.'); return; }
+      callStatus('loading','<i class="ti ti-loader"></i> Davet kodu kaydediliyor...');
+      await postQ('DAVET_ADD', { item:{ kod:kod, aktif:true, tarih:new Date().toISOString(), olusturan:(SESSION&&SESSION.rumuz)||'' } });
+      if(typeof closeModal==='function') closeModal();
+      await reloadQ('davet');
+      callStatus('ok','<i class="ti ti-check"></i> Davet kodu oluşturuldu');
+    }catch(e){ console.error(e); alert('Davet kodu oluşturulamadı: '+e.message); callStatus('err','<i class="ti ti-x"></i> Davet kodu oluşturulamadı'); }
+  };
+  window.reqDeleteDavet = async function(id){
+    try{
+      if(!id) return;
+      if(!confirm('Bu davet kodu silinsin mi?')) return;
+      await postQ('DAVET_DELETE', { id:id });
+      await reloadQ('davet');
+    }catch(e){ alert('Davet kodu silinemedi: '+e.message); }
+  };
+
+  // ---- Organizasyon chart: window.members yerine gerçek members state ----
+  window.renderOrg = function(){
+    var wrap = el('orgWrap');
+    if(!wrap) return;
+    var list = (members || []).slice().filter(function(m){ return (m.durum || 'Aktif') !== 'Arşiv'; });
+    if(!list.length){ wrap.innerHTML='<div class="card" style="font-size:12px;color:#555">Üye verisi yüklenmedi.</div>'; return; }
+    var order = {'Lider':0,'Vekilharç':1,'Kaptan':2,'Teğmen':3,'Üye':4,'Gözlemci':5};
+    list.sort(function(a,b){ return (order[a.rutbe]??9)-(order[b.rutbe]??9) || String(a.rumuz||'').localeCompare(String(b.rumuz||''),'tr'); });
+    var roles = ['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
+    var by = {}; list.forEach(function(m){ var r=roles.indexOf(m.rutbe)>-1?m.rutbe:'Üye'; (by[r]||(by[r]=[])).push(m); });
+    var colors = {'Lider':'#d3d1c7','Vekilharç':'#e24b4a','Kaptan':'#b5d4f4','Teğmen':'#9fe1cb','Üye':'#fac775','Gözlemci':'#555'};
+    var fills = {'Lider':'#2c2c2a','Vekilharç':'#3a1010','Kaptan':'#042c53','Teğmen':'#04342c','Üye':'#412402','Gözlemci':'#111'};
+    var w=1100, nodeW=142, nodeH=52, rowGap=102, top=28;
+    var activeRoles = roles.filter(function(r){ return by[r] && by[r].length; });
+    var h = Math.max(300, top + activeRoles.length*rowGap + 70);
+    var nodesByRow=[];
+    var lines='';
+    var svg='<svg class="org" viewBox="0 0 '+w+' '+h+'" width="100%" style="max-width:'+w+'px;min-width:780px">';
+    activeRoles.forEach(function(role,ri){
+      var items=by[role];
+      var shown=items.slice(0, Math.min(items.length, 7));
+      var total=shown.length*nodeW+(shown.length-1)*14;
+      var start=(w-total)/2;
+      var y=top+ri*rowGap;
+      nodesByRow[ri]=[];
+      svg+='<text x="'+(w/2)+'" y="'+(y-11)+'" text-anchor="middle" fill="'+colors[role]+'" style="font-size:11px;font-weight:700;letter-spacing:2px">'+esc3(role.toUpperCase())+'</text>';
+      shown.forEach(function(m,i){
+        var x=start+i*(nodeW+14), cx=x+nodeW/2;
+        nodesByRow[ri].push({x:cx,y:y});
+        svg+='<g class="org-node-anim" style="animation-delay:'+(ri*0.08+i*0.035)+'s">'
+          +'<rect x="'+x+'" y="'+y+'" width="'+nodeW+'" height="'+nodeH+'" rx="13" fill="'+fills[role]+'" stroke="'+colors[role]+'" stroke-width="0.6"></rect>'
+          +'<text x="'+cx+'" y="'+(y+22)+'" text-anchor="middle" fill="'+colors[role]+'" style="font-size:12px;font-weight:700">'+esc3(m.rumuz||'—')+'</text>'
+          +'<text x="'+cx+'" y="'+(y+39)+'" text-anchor="middle" fill="#888" style="font-size:10px">'+esc3(m.gorev||'Yok')+' · '+(Number(m.puan)||0)+'p</text>'
+          +'</g>';
+      });
+      if(items.length>shown.length){
+        svg+='<text x="'+(w/2)+'" y="'+(y+nodeH+18)+'" text-anchor="middle" fill="#555" style="font-size:10px">+ '+(items.length-shown.length)+' üye daha</text>';
+      }
+    });
+    for(var r=0;r<nodesByRow.length-1;r++){
+      var a=nodesByRow[r]||[], b=nodesByRow[r+1]||[];
+      if(a.length&&b.length){
+        var ax=a.reduce(function(s,n){return s+n.x;},0)/a.length;
+        var bx=b.reduce(function(s,n){return s+n.x;},0)/b.length;
+        var ay=a[0].y+nodeH, byy=b[0].y;
+        lines+='<path class="org-conn" d="M '+ax+' '+ay+' C '+ax+' '+(ay+28)+', '+bx+' '+(byy-28)+', '+bx+' '+byy+'" stroke="#444" stroke-width="0.6" fill="none"></path>';
+      }
+    }
+    svg = svg.replace('>', '>'+lines) + '</svg>';
+    var summary='<div class="stat-grid" style="margin-bottom:1rem">'+roles.map(function(r){
+      var n=(by[r]||[]).length; if(!n) return '';
+      return '<div class="stat-card"><div class="label">'+esc3(r)+'</div><div class="value">'+n+'</div></div>';
+    }).join('')+'</div>';
+    wrap.innerHTML=summary+svg;
+  };
+
+  // ---- Global güvence ----
+  ['openModal','reqAddMember','uyeKaydet','reqDeleteMember','etkinlikKaydet','reqEditEvent','reqDeleteEvent','reqButce','reqDeleteButce','davetKaydet','reqDeleteDavet','renderOrg'].forEach(function(fn){
+    try{ window[fn]=eval(fn); }catch(e){}
+  });
+  console.info('Q-GANG CRUD Repair Patch v3 aktif.');
+})();
 </script>
 </body>
 </html>
