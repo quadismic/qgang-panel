@@ -1291,7 +1291,7 @@ function renderDashboard(){
   document.getElementById('upcomingEvents').innerHTML=upcoming.length?upcoming.map(e=>`<div class="alert-row alert-success"><i class="ti ti-calendar-event"></i> <strong>${e.tur}</strong> — ${e.diff===0?'Bugün!':e.diff+' gün sonra'}</div>`).join(''):'<div style="font-size:12px;color:#555">30 gün içinde etkinlik yok</div>';
   const today=new Date();
   const bd=members.filter(m=>m.dogum).map(m=>{const d=new Date(m.dogum);d.setFullYear(today.getFullYear());return{...m,diff:Math.ceil((d-today)/864e5)}}).filter(m=>m.diff>=0&&m.diff<=30).sort((a,b)=>a.diff-b.diff);
-  document.getElementById('birthdaysBox').innerHTML=bd.length?bd.map(m=>`<div class="alert-row alert-info"><i class="ti ti-cake"></i> <strong>${m.rumuz}</strong> — ${m.diff===0?'Bugün!':m.diff+' gün sonra'}</div>`).join(''):'<div style="font-size:12px;color:#555">30 gün içinde doğum günü yok</div>';
+  document.getElementById('birthdaysBox').innerHTML=bd.length?bd.map(function(m){var lbl=m.diff===0?'<span style="color:#fac775;font-weight:700">🎂 Bugün!</span>':m.diff+' gün sonra';return'<div class="alert-row alert-info"><i class="ti ti-cake"></i> <strong>'+m.rumuz+'</strong> &nbsp;— '+lbl+'</div>';}).join(''):'<div style="font-size:12px;color:#555">Yaklaşan doğum günü yok</div>';
   document.getElementById('dashButce').innerHTML=izin('butceGor')?`
     <div style="margin-bottom:8px"><span style="font-size:11px;color:#888">Toplam gelir</span><div style="font-size:16px;font-weight:500;color:#9fe1cb">${fmtTL(gelir)}</div></div>
     <div style="margin-bottom:8px"><span style="font-size:11px;color:#888">Toplam gider</span><div style="font-size:16px;font-weight:500;color:#e24b4a">${fmtTL(gider)}</div></div>
@@ -1358,9 +1358,10 @@ function renderPuan(){
   // Puan tablosu
   const sorted=[...members].sort(function(a,b){return (Number(b.puan)||0)-(Number(a.puan)||0);});
   const maxP=sorted.reduce(function(acc,m){return Math.max(acc,Number(m.puan)||0);},1);
+  // Genel puan listesi kaldırıldı - sadece sezon listesi
   const puanEl=document.getElementById('puanList');
-  puanEl.innerHTML='';
-  sorted.forEach(function(m,i){
+  if(puanEl) puanEl.innerHTML='';
+  sorted.forEach(function(m,i){ if(false) {
     const puan=Number(m.puan)||0;
     const yuzde=Math.round(puan/maxP*100);
     const div=document.createElement('div');div.className='puan-row';
@@ -1369,8 +1370,8 @@ function renderPuan(){
       +'<div class="puan-bar-bg"><div class="puan-bar" style="width:'+yuzde+'%"></div></div>'
       +'<div style="width:32px;font-size:12px;font-weight:500;color:#d3d1c7;text-align:right">'+puan+'</div>'
       +'<div style="width:65px">'+rutbeBadge(m.rutbe)+'</div>';
-    puanEl.appendChild(div);
-  });
+    if(puanEl) puanEl.appendChild(div);
+  } });
 
   // Puan düzenleme editörü
   const editor=document.getElementById('puanEditor');
@@ -1499,164 +1500,115 @@ async function arsivFiltrele(){
 // ===========================
 // PORTFOLYO SİSTEMİ
 // ===========================
-async function portfolyoAc(rumuz){
-  if(!izin('portfolyoGor')&&SESSION.rol!=='Lider'){
-    alert('Portfolyo görüntüleme yetkiniz yok.');return;
-  }
+function portfolyoAc(rumuz){
+  if(!izin('portfolyoGor')&&SESSION.rol!=='Lider'){alert('Portfolyo görüntüleme yetkiniz yok.');return;}
   const m=members.find(function(x){return x.rumuz===rumuz;});
-  if(!m) return;
+  if(!m){alert('Üye bulunamadı.');return;}
 
-  // Önce temel verilerle hızlı render et, async veriler gelince güncelle
-  var rutbeGecmisiData=[];
-  var puanArsivData=[];
+  // Yerel verilerle hızlı render
   var katilinanEtkinlikler=events.filter(function(e){
     return parseKat(e.katilimcilar).includes(rumuz);
   }).sort(function(a,b){return new Date(b.tarih)-new Date(a.tarih);});
-  var disiplinData=[];
-  if(izin('disiplinUygula')||SESSION.rol==='Lider'){
-    disiplinData=disiplin.filter(function(d){return d.uye===rumuz;});
+  var disiplinData=(izin('disiplinUygula')||SESSION.rol==='Lider')?disiplin.filter(function(d){return d.uye===rumuz;}):[];
+  var toplamEtkinlik=katilinanEtkinlikler.length;
+  var canSifirla=izin('rutbeGecmisiSifirla')||SESSION.rol==='Lider';
+
+  // Etkinlik listesi HTML
+  var etkinlikHTML='';
+  if(katilinanEtkinlikler.length){
+    etkinlikHTML='<div class="portfolyo-section"><div class="portfolyo-section-title"><i class="ti ti-calendar"></i> Son Etkinlikler</div><div class="pf-etkinlik-liste">';
+    katilinanEtkinlikler.slice(0,8).forEach(function(e){
+      etkinlikHTML+='<div class="pf-etkinlik"><span>'+e.tur+'</span><span style="display:flex;gap:10px"><span style="color:#555">'+fmtDate(e.tarih)+'</span><span style="color:#fac775">+'+(e.puan||0)+' puan</span></span></div>';
+    });
+    if(katilinanEtkinlikler.length>8) etkinlikHTML+='<div style="font-size:11px;color:#555;padding:4px 10px">+'+(katilinanEtkinlikler.length-8)+' daha...</div>';
+    etkinlikHTML+='</div></div>';
+  }else{etkinlikHTML='<div class="portfolyo-section"><div class="portfolyo-section-title"><i class="ti ti-calendar"></i> Son Etkinlikler</div><div style="font-size:12px;color:#555">Henüz etkinlik yok.</div></div>';}
+
+  // Disiplin HTML
+  var disiplinHTML='';
+  if(disiplinData.length){
+    disiplinHTML='<div class="portfolyo-section"><div class="portfolyo-section-title" style="color:#e24b4a"><i class="ti ti-gavel"></i> Disiplin Geçmişi</div><div class="pf-etkinlik-liste">';
+    disiplinData.forEach(function(d){
+      disiplinHTML+='<div class="pf-etkinlik" style="border-left:2px solid #e24b4a"><div><div style="font-size:12px">'+d.cezaTuru+'</div><div style="font-size:11px;color:#555">'+(d.gerekce||'')+'</div></div><span style="font-size:11px;color:#555">'+fmtDate(d.tarih)+'</span></div>';
+    });
+    disiplinHTML+='</div></div>';
   }
 
-  // Async veriler
-  var TIMEOUT=5000;
-  function fetchWithTimeout(url,opts){
-    return Promise.race([
-      fetch(url,opts),
-      new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},TIMEOUT);})
-    ]);
-  }
-  try{
-    var rgRes=await fetchWithTimeout(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'RUTBE_GECMISI_LIST',item:{rumuz:rumuz}})});
-    rutbeGecmisiData=(await rgRes.json()).result||[];
-  }catch(e){rutbeGecmisiData=[];}
-  try{
-    var paRes=await fetchWithTimeout(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'PUAN_ARSIV_LIST',item:{rumuz:rumuz}})});
-    puanArsivData=(await paRes.json()).result||[];
-  }catch(e){puanArsivData=[];}
-
-  // Toplam kazanılan puan
-  const toplamKazanilan=puanArsivData
-    .filter(function(a){return a.miktar>0;})
-    .reduce(function(s,a){return s+(Number(a.miktar)||0);},0);
-
-  // Portfolyo modali oluştur
-  const overlay=document.createElement('div');
-  overlay.className='portfolyo-overlay';
-  overlay.id='portfolyoOverlay';
+  // Overlay oluştur
+  var overlay=document.createElement('div');
+  overlay.className='portfolyo-overlay';overlay.id='portfolyoOverlay';
   overlay.onclick=function(e){if(e.target===overlay)portfolyoKapat();};
 
-  const rutbeRenk={Lider:'#fac775',Vekilharç:'#c94040',Kaptan:'#4a9fd4',Teğmen:'#5a9d5a',Üye:'#c9a040',Gözlemci:'#555'};
-  const renk=rutbeRenk[m.rutbe]||'#888';
-
-  // Header
-  var headerHtml='<div class="portfolyo-header">'
-    +'<div style="display:flex;gap:14px;align-items:flex-start">'
-    +'<div class="portfolyo-avatar"><span style="font-size:22px">'+(m.rumuz[0]||'?').toUpperCase()+'</span></div>'
-    +'<div>'
-    +'<div style="font-size:18px;font-weight:600;color:#d3d1c7;margin-bottom:4px">'+m.rumuz+'</div>'
-    +'<div style="display:flex;gap:6px;flex-wrap:wrap">'+rutbeBadge(m.rutbe)+durumBadge(m.durum)+'</div>'
-    +'<div style="font-size:11px;color:#555;margin-top:6px">Katılım: '+fmtDate(m.katilim)+(m.ref?' · Referans: '+m.ref:'')+'</div>'
-    +'</div></div>'
-    +'<button class="btn btn-sm" onclick="portfolyoKapat()" style="flex-shrink:0"><i class="ti ti-x"></i></button>'
-    +'</div>';
-
-  // İstatistikler
-  var statsHtml='<div class="pf-stat-grid">'
-    +'<div class="pf-stat"><div class="val">'+( m.puan||0)+'</div><div class="lbl">Mevcut Puan</div></div>'
-    +'<div class="pf-stat"><div class="val">'+toplamKazanilan+'</div><div class="lbl">Toplam Kazanılan</div></div>'
-    +'<div class="pf-stat"><div class="val">'+katilinanEtkinlikler.length+'</div><div class="lbl">Etkinlik</div></div>'
-    +'<div class="pf-stat"><div class="val">'+(m.gorev||'Yok')+'</div><div class="lbl">Görev</div></div>'
-    +'</div>';
-
-  // Rütbe yolculuğu
-  var canSifirlaRutbe=izin('rutbeGecmisiSifirla')||SESSION.rol==='Lider';
-  var rutbeHtml='';
-  if(rutbeGecmisiData.length){
-    var sifirlaBtn=canSifirlaRutbe?'<button class="btn btn-danger btn-sm" style="margin-left:auto;font-size:10px" id="btnRutbeSifirla"><i class="ti ti-refresh"></i> Sifirla</button>':'';
-    rutbeHtml='<div class="portfolyo-section"><div class="portfolyo-section-title" style="display:flex;align-items:center"><i class="ti ti-arrow-up"></i> Rütbe Yolculuğu '+sifirlaBtn+'</div>'
-      +'<div class="rutbe-timeline">';
-    rutbeGecmisiData.forEach(function(r){
-      rutbeHtml+='<div class="rt-item"><div class="rt-dot"></div><div class="rt-line"></div>'
-        +'<div><div style="font-size:12px;color:#d3d1c7">'+r.eskiRutbe+' → <strong>'+r.yeniRutbe+'</strong></div>'
-        +'<div style="font-size:11px;color:#555">'+fmtDate(r.tarih)+(r.aciklama?' · '+r.aciklama:'')+'</div></div></div>';
-    });
-    rutbeHtml+='</div></div>';
-  } else {
-    rutbeHtml='<div class="portfolyo-section"><div class="portfolyo-section-title"><i class="ti ti-arrow-up"></i> Rütbe Yolculuğu</div>'
-      +'<div style="font-size:12px;color:#555">Henüz rütbe değişikliği yok.</div></div>';
-  }
-
-  // Son etkinlikler
-  var etkinlikHtml='<div class="portfolyo-section"><div class="portfolyo-section-title"><i class="ti ti-calendar"></i> Son Etkinlikler</div>'
-    +'<div class="pf-etkinlik-liste">';
-  if(katilinanEtkinlikler.length){
-    katilinanEtkinlikler.slice(0,8).forEach(function(e){
-      etkinlikHtml+='<div class="pf-etkinlik">'
-        +'<span>'+e.tur+'</span>'
-        +'<span style="display:flex;gap:10px"><span style="color:#555">'+fmtDate(e.tarih)+'</span>'
-        +'<span style="color:#fac775">+'+( e.puan||0)+' puan</span></span></div>';
-    });
-    if(katilinanEtkinlikler.length>8){
-      etkinlikHtml+='<div style="font-size:11px;color:#555;padding:4px 10px">+'+(katilinanEtkinlikler.length-8)+' etkinlik daha...</div>';
-    }
-  } else {
-    etkinlikHtml+='<div style="font-size:12px;color:#555">Henüz etkinlik kaydı yok.</div>';
-  }
-  etkinlikHtml+='</div></div>';
-
-  // Puan geçmişi (son 5)
-  var puanHtml='';
-  if(puanArsivData.length){
-    puanHtml='<div class="portfolyo-section"><div class="portfolyo-section-title"><i class="ti ti-history"></i> Son Puan Hareketleri</div>'
-      +'<div class="pf-etkinlik-liste">';
-    puanArsivData.slice(0,6).forEach(function(a){
-      var renk2=a.miktar>=0?'#9fe1cb':'#e24b4a';
-      var isaret=a.miktar>=0?'+':'';
-      puanHtml+='<div class="pf-etkinlik">'
-        +'<span style="color:#888">'+( a.gerekce||'—')+'</span>'
-        +'<span style="display:flex;gap:10px"><span style="color:#555">'+fmtDate(a.tarih)+'</span>'
-        +'<span style="color:'+renk2+'">'+isaret+a.miktar+'</span></span></div>';
-    });
-    puanHtml+='</div></div>';
-  }
-
-  // Disiplin (yöneticiye özel)
-  var disiplinHtml='';
-  if(disiplinData.length){
-    disiplinHtml='<div class="portfolyo-section"><div class="portfolyo-section-title" style="color:#e24b4a"><i class="ti ti-gavel"></i> Disiplin Geçmişi</div>'
-      +'<div class="pf-etkinlik-liste">';
-    disiplinData.forEach(function(d){
-      disiplinHtml+='<div class="pf-etkinlik" style="border-left:2px solid #e24b4a">'
-        +'<div><div style="font-size:12px">'+d.cezaTuru+'</div><div style="font-size:11px;color:#555">'+( d.gerekce||'')+'</div></div>'
-        +'<span style="font-size:11px;color:#555">'+fmtDate(d.tarih)+'</span></div>';
-    });
-    disiplinHtml+='</div></div>';
-  }
-
-  overlay.innerHTML=headerHtml.replace('<div class="portfolyo-header">','<div class="portfolyo-box"><div class="portfolyo-header">')
-    +'<div class="portfolyo-body">'+statsHtml+rutbeHtml+etkinlikHtml+puanHtml+disiplinHtml+'</div></div>';
-  // Wrap düzelt
   overlay.innerHTML='<div class="portfolyo-box">'
     +'<div class="portfolyo-header">'
     +'<div style="display:flex;gap:14px;align-items:flex-start">'
     +'<div class="portfolyo-avatar"><span style="font-size:22px">'+(m.rumuz[0]||'?').toUpperCase()+'</span></div>'
-    +'<div>'
-    +'<div style="font-size:18px;font-weight:600;color:#d3d1c7;margin-bottom:4px">'+m.rumuz+'</div>'
+    +'<div><div style="font-size:18px;font-weight:600;color:#d3d1c7;margin-bottom:4px">'+m.rumuz+'</div>'
     +'<div style="display:flex;gap:6px;flex-wrap:wrap">'+rutbeBadge(m.rutbe)+durumBadge(m.durum)+'</div>'
     +'<div style="font-size:11px;color:#555;margin-top:6px">Katılım: '+fmtDate(m.katilim||'')+(m.ref?' · Referans: '+m.ref:'')+'</div>'
     +'</div></div>'
-    +'<button class="btn btn-sm" onclick="portfolyoKapat()"><i class="ti ti-x"></i></button>'
+    +'<button class="btn btn-sm" onclick="portfolyoKapat()"><i class="ti ti-x"></i></button></div>'
+    +'<div class="portfolyo-body">'
+    // Stats
+    +'<div class="pf-stat-grid">'
+    +'<div class="pf-stat"><div class="val">'+(m.puan||0)+'</div><div class="lbl">Mevcut Puan</div></div>'
+    +'<div class="pf-stat"><div class="val" id="pf_totalEarned">...</div><div class="lbl">Toplam Kazanılan</div></div>'
+    +'<div class="pf-stat"><div class="val">'+toplamEtkinlik+'</div><div class="lbl">Etkinlik</div></div>'
+    +'<div class="pf-stat"><div class="val">'+(m.gorev||'Yok')+'</div><div class="lbl">Görev</div></div>'
     +'</div>'
-    +'<div class="portfolyo-body">'+statsHtml+rutbeHtml+etkinlikHtml+puanHtml+disiplinHtml+'</div>'
-    +'</div>';
+    // Rütbe
+    +'<div class="portfolyo-section"><div class="portfolyo-section-title" style="display:flex;align-items:center;gap:8px"><span><i class="ti ti-arrow-up"></i> Rütbe Yolculuğu</span>'+(canSifirla?'<button class="btn btn-danger btn-sm" style="font-size:10px;margin-left:auto" id="btnRtbSifirla"><i class="ti ti-refresh"></i> Sıfırla</button>':'')+'</div>'
+    +'<div id="pf_rutbeTimeline"><div style="font-size:12px;color:#555"><i class="ti ti-loader"></i> Yükleniyor...</div></div></div>'
+    // Etkinlikler
+    +etkinlikHTML
+    // Puan hareketleri
+    +'<div class="portfolyo-section"><div class="portfolyo-section-title"><i class="ti ti-history"></i> Son Puan Hareketleri</div><div id="pf_puanHareketleri"><div style="font-size:12px;color:#555"><i class="ti ti-loader"></i> Yükleniyor...</div></div></div>'
+    // Disiplin
+    +disiplinHTML
+    +'</div></div>';
 
   document.body.appendChild(overlay);
   document.body.style.overflow='hidden';
-  // Rütbe sıfırlama butonu onclick (tırnak sorunu önlemi)
-  var brs=document.getElementById('btnRutbeSifirla');
-  if(brs)(function(r){brs.onclick=function(){rutbeGecmisiSifirla(r);};})(rumuz);
+
+  // Sıfırlama onclick
+  var brs2=document.getElementById('btnRtbSifirla');
+  if(brs2)(function(r){brs2.onclick=function(){rutbeGecmisiSifirla(r);};})(rumuz);
+
+  // Async veriler - donmadan arka planda yükle
+  Promise.all([
+    fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'RUTBE_GECMISI_LIST',item:{rumuz:rumuz}})}).then(function(r){return r.json();}).catch(function(){return {result:[]};}).then(function(d){return d.result||[];}),
+    fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_LIST',item:{rumuz:rumuz}})}).then(function(r){return r.json();}).catch(function(){return {result:[]};}).then(function(d){return d.result||[];})
+  ]).then(function(results){
+    var rgData=results[0];var paData=results[1];
+    // Rütbe timeline
+    var rtEl=document.getElementById('pf_rutbeTimeline');
+    if(rtEl){
+      if(rgData.length){
+        var rtHtml='<div class="rutbe-timeline">';
+        rgData.forEach(function(r){
+          rtHtml+='<div class="rt-item"><div class="rt-dot"></div><div><div style="font-size:12px;color:#d3d1c7">'+r.eskiRutbe+' → <strong>'+r.yeniRutbe+'</strong></div><div style="font-size:11px;color:#555">'+fmtDate(r.tarih)+(r.aciklama?' · '+r.aciklama:'')+'</div></div></div>';
+        });
+        rtHtml+='</div>';
+        rtEl.innerHTML=rtHtml;
+      }else{rtEl.innerHTML='<div style="font-size:12px;color:#555">Henüz rütbe değişikliği yok.</div>';}
+    }
+    // Puan hareketleri
+    var phEl=document.getElementById('pf_puanHareketleri');
+    if(phEl){
+      if(paData.length){
+        var phHtml='<div class="pf-etkinlik-liste">';
+        paData.slice(0,6).forEach(function(a){
+          var renk=a.miktar>=0?'#9fe1cb':'#e24b4a';var isaret=a.miktar>=0?'+':'';
+          phHtml+='<div class="pf-etkinlik"><span style="color:#888">'+(a.gerekce||'—')+'</span><span style="display:flex;gap:10px"><span style="color:#555">'+fmtDate(a.tarih)+'</span><span style="color:'+renk+'">'+isaret+a.miktar+'</span></span></div>';
+        });
+        phHtml+='</div>';
+        phEl.innerHTML=phHtml;
+      }else{phEl.innerHTML='<div style="font-size:12px;color:#555">Puan kaydı yok.</div>';}
+    }
+    // Toplam kazanılan
+    var totalEl=document.getElementById('pf_totalEarned');
+    if(totalEl){var toplam=paData.filter(function(a){return a.miktar>0;}).reduce(function(s,a){return s+Number(a.miktar);},0);totalEl.textContent=toplam;}
+  }).catch(function(e){console.error('Portfolyo async hata:',e);});
 }
 
 
@@ -2337,7 +2289,9 @@ async function renderGorevTalepleri(){
       const uyariEl=document.getElementById('basvuruUyari');
       if(uyariEl){
         const mevcutHtml=uyariEl.innerHTML;
-        if(!mevcutHtml.includes('gorev-talep-uyari')){
+        var gtMevcut=uyariEl.querySelector('#gorev-talep-uyari');
+        if(gtMevcut) gtMevcut.remove();
+        if(true){
           uyariEl.innerHTML+='<div id="gorev-talep-uyari" class="alert-row alert-warn" style="cursor:pointer;margin-top:6px" onclick="showTabDD(\'gorev\',\'ddTopluluk\',\'navToplulukBtn\')"><i class="ti ti-checkbox"></i> <strong>'+bildirimSayisi+' bekleyen gorev talebi</strong></div>';
         }
       }
@@ -3294,6 +3248,9 @@ async function oturumPing(){
 }
 
 async function onlineListeGuncelle(){
+  // Online bar'ı görünür yap
+  var ob=document.getElementById('onlineBar');
+  if(ob&&ob.style.display==='none') ob.style.display='flex';
   try{
     const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'OTURUM_LIST'})});
