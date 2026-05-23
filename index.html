@@ -976,13 +976,10 @@ async function panelAc(rumuz,rol){
     cmsStatusGoster('loading','<i class="ti ti-loader"></i> Veriler yükleniyor...');
     const veri=await cmsOku();
     if(veri){
-      if(veri.members&&veri.members.length)members=veri.members.map(m=>({...m,id:m._id||m.id,katilimcilar:parseKat(m.katilimcilar)}));
-      if(veri.events&&veri.events.length)events=veri.events.map(e=>({...e,id:e._id||e.id,katilimcilar:parseKat(e.katilimcilar)}));
-      if(veri.budget&&veri.budget.length)butce=veri.budget.map(b=>({...b,id:b._id||b.id}));
-      if(veri.duyurular&&veri.duyurular.length)duyurular=veri.duyurular.map(d=>({...d,id:d._id||d.id}));
-      if(veri.disiplin&&veri.disiplin.length)disiplin=veri.disiplin.map(d=>({...d,id:d._id||d.id}));
-      if(veri.tuzuk)tuzuk=veri.tuzuk;
+      cmsVeriyiYukle(veri);
       cmsStatusGoster('ok','<i class="ti ti-check"></i> Hazır');
+    } else {
+      cmsStatusGoster('err','<i class="ti ti-x"></i> Veri çekilemedi');
     }
   }
 
@@ -1052,42 +1049,47 @@ async function cmsYaz(action,data){
 }
 
 // Panel yuklenince
-window.addEventListener('load',async function(){
-  // Kaydedilmis oturum var mi?
-  const saved=localStorage.getItem('qg_session');
-  if(saved){
-    try{
-      const s=JSON.parse(saved);
-      const otuzGun=30*24*60*60*1000;
-      if(Date.now()-s.zaman<otuzGun){
-        // Oturum gecerli — veri cek ve ac
-        const veri=await cmsOku();
-        if(veri){
-          if(veri.members&&veri.members.length)members=veri.members.map(m=>({...m,id:m._id||m.id,katilimcilar:parseKat(m.katilimcilar)}));
-          if(veri.events&&veri.events.length)events=veri.events.map(e=>({...e,id:e._id||e.id,katilimcilar:parseKat(e.katilimcilar)}));
-          if(veri.budget&&veri.budget.length)butce=veri.budget.map(b=>({...b,id:b._id||b.id}));
-          if(veri.duyurular&&veri.duyurular.length)duyurular=veri.duyurular.map(d=>({...d,id:d._id||d.id}));
-          if(veri.disiplin&&veri.disiplin.length)disiplin=veri.disiplin.map(d=>({...d,id:d._id||d.id}));
-          if(veri.tuzuk)tuzuk=veri.tuzuk;
-        }
-        panelAc(s.rumuz,s.rol);
-        return;
-      } else {
-        localStorage.removeItem('qg_session');
-      }
-    }catch(e){localStorage.removeItem('qg_session')}
+// GÜVENLİ MOD: Eski qg_session kayıtları otomatik dashboard açmasın.
+// Beni Hatırla istenirse bunu true yapabiliriz; hata ayıklama/stabil sürümde false daha güvenli.
+const AUTO_LOGIN_FROM_LOCALSTORAGE = false;
+
+function cmsVeriyiYukle(veri){
+  if(!veri) return false;
+  members = Array.isArray(veri.members) ? veri.members.map(m => ({...m, id: m._id || m.id, katilimcilar: parseKat(m.katilimcilar)})) : [];
+  events = Array.isArray(veri.events) ? veri.events.map(e => ({...e, id: e._id || e.id, katilimcilar: parseKat(e.katilimcilar)})) : [];
+  butce = Array.isArray(veri.budget) ? veri.budget.map(b => ({...b, id: b._id || b.id})) : [];
+  duyurular = Array.isArray(veri.duyurular) ? veri.duyurular.map(d => ({...d, id: d._id || d.id})) : [];
+  disiplin = Array.isArray(veri.disiplin) ? veri.disiplin.map(d => ({...d, id: d._id || d.id})) : [];
+  tuzuk = veri.tuzuk || null;
+  return true;
+}
+
+window.addEventListener('load', async function(){
+  // Eski hatalı oturum yüzünden login bypass olmasın.
+  if(!AUTO_LOGIN_FROM_LOCALSTORAGE){
+    localStorage.removeItem('qg_session');
   }
-  // Oturum yok — auth ekranini goster (veri arka planda cekiliyor)
-  cmsOku().then(veri=>{
+
+  // Login ekranı varsayılan olarak açık kalsın.
+  const auth = document.getElementById('authScreen');
+  const panel = document.getElementById('mainPanel');
+  if(auth) auth.style.display = 'flex';
+  if(panel) panel.style.display = 'none';
+
+  // Kayıt ekranındaki rumuz kontrolü ve tüzük metni için verileri arka planda çek.
+  try{
+    cmsStatusGoster('loading','<i class="ti ti-loader"></i> Veriler kontrol ediliyor...');
+    const veri = await cmsOku();
     if(veri){
-      if(veri.members&&veri.members.length)members=veri.members.map(m=>({...m,id:m._id||m.id,katilimcilar:parseKat(m.katilimcilar)}));
-      if(veri.events&&veri.events.length)events=veri.events.map(e=>({...e,id:e._id||e.id,katilimcilar:parseKat(e.katilimcilar)}));
-      if(veri.budget&&veri.budget.length)butce=veri.budget.map(b=>({...b,id:b._id||b.id}));
-      if(veri.duyurular&&veri.duyurular.length)duyurular=veri.duyurular.map(d=>({...d,id:d._id||d.id}));
-      if(veri.disiplin&&veri.disiplin.length)disiplin=veri.disiplin.map(d=>({...d,id:d._id||d.id}));
-      if(veri.tuzuk)tuzuk=veri.tuzuk;
+      cmsVeriyiYukle(veri);
+      cmsStatusGoster('ok','<i class="ti ti-check"></i> Bağlantı hazır');
+    } else {
+      cmsStatusGoster('err','<i class="ti ti-x"></i> Veri bağlantısı yok');
     }
-  });
+  } catch(e){
+    console.error('Başlangıç veri yükleme hatası:', e);
+    cmsStatusGoster('err','<i class="ti ti-x"></i> Veri bağlantısı hatası');
+  }
 });
 
 function parseKat(k){
@@ -2603,24 +2605,18 @@ function renderDogumgunuBanner(){
   if(typeof sezonParticleBaslat==='function') sezonParticleBaslat('dogumgunu');
 }
 
-/* === Q-GANG STABILITY PATCH: inline onclick global bindings === */
-try {
-  window.authTab = authTab;
-  window.girisYapBtn = girisYapBtn;
-  window.adimIleri = adimIleri;
-  window.adimGeri = adimGeri;
-  window.kayitGonder = kayitGonder;
-  window.showTab = showTab;
-  window.showTabDD = showTabDD;
-  window.toggleDropdown = toggleDropdown;
-  window.reqAddMember = reqAddMember;
-  window.openModal = openModal;
-  window.cikisYap = cikisYap;
-  window.renderMembers = renderMembers;
-  window.etkinlikGorunum = etkinlikGorunum;
-} catch (e) {
-  console.warn('Q-GANG global binding warning:', e);
-}
+
+
+// Inline onclick fonksiyonları için global bağlama
+window.authTab = authTab;
+window.adimIleri = adimIleri;
+window.adimGeri = adimGeri;
+window.girisYapBtn = girisYapBtn;
+window.kayitGonder = kayitGonder;
+window.cikisYap = cikisYap;
+window.showTab = showTab;
+window.showTabDD = showTabDD;
+window.toggleDropdown = toggleDropdown;
 
 </script>
 </body>
