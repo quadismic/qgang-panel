@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel</title>
+<title>Q-GANG Panel v.1.0</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -253,12 +253,12 @@ svg.org{display:inline-block}
 const ROL_SIRASI = ['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
 
 const IZINLER = {
-  Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,kodGor:1,duyuruEkle:1,duyuruSil:1,basvuruGor:1,basvuruOnayla:1,davetYonet:1,disiplinUygula:1,tuzukDuzenle:1,oylamaEkle:1,sifreSifirla:1,portfolyoGor:1,sezonKapat:1,rutbeGecmisiSifirla:1},
-  'Vekilharç':   {uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:1,kodGor:1,duyuruEkle:1,duyuruSil:0,basvuruGor:1,basvuruOnayla:1,davetYonet:0,disiplinUygula:1,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:1,portfolyoGor:1,sezonKapat:0,rutbeGecmisiSifirla:1},
-  Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:0,portfolyoGor:1,sezonKapat:0,rutbeGecmisiSifirla:1},
-  'Teğmen':      {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:0,portfolyoGor:1,sezonKapat:0,rutbeGecmisiSifirla:1},
-  'Üye':         {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:0,sifreSifirla:0,portfolyoGor:1,sezonKapat:0,rutbeGecmisiSifirla:1},
-  'Gözlemci':    {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:0,sifreSifirla:0,portfolyoGor:0,sezonKapat:0,rutbeGecmisiSifirla:0}
+  Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,kodGor:1,duyuruEkle:1,duyuruSil:1,basvuruGor:1,basvuruOnayla:1,davetYonet:1,disiplinUygula:1,tuzukDuzenle:1,oylamaEkle:1,sifreSifirla:1,sezonKapat:1,rutbeGecmisiSifirla:1},
+  'Vekilharç':   {uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:1,kodGor:1,duyuruEkle:1,duyuruSil:0,basvuruGor:1,basvuruOnayla:1,davetYonet:0,disiplinUygula:1,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:1,sezonKapat:0,rutbeGecmisiSifirla:1},
+  Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:0,sezonKapat:0,rutbeGecmisiSifirla:1},
+  'Teğmen':      {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:0,sezonKapat:0,rutbeGecmisiSifirla:1},
+  'Üye':         {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:0,sifreSifirla:0,sezonKapat:0,rutbeGecmisiSifirla:1},
+  'Gözlemci':    {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:0,sifreSifirla:0,sezonKapat:0,rutbeGecmisiSifirla:0}
 };
 
 async function cikisYap(){
@@ -751,7 +751,7 @@ function _showTabContent(name){
     gorev:renderGorev, etkinlik:renderEvents, butce:renderButce,
     duyurular:renderDuyurular, davet:renderDavet, tuzuk:renderTuzuk,
     oylama:renderOylama, basvurular:renderBasvurular,
-    erisim:renderErisimBoard, org:renderOrg, log:renderLog, mesajlar:renderMesajlar
+    erisim:renderErisimBoard, org:renderOrg, log:renderLog, 
   };
   if(fns[name]) fns[name]();
 }
@@ -794,18 +794,8 @@ function renderDashboard(){
   if(riskli>0)alerts+='<div class="alert-row alert-danger"><i class="ti ti-alert-triangle"></i> '+riskli+' riskli üye</div>';
   if(pasif>0)alerts+='<div class="alert-row alert-warn"><i class="ti ti-clock"></i> '+pasif+' pasif üye</div>';
   if(gorevSiz>3)alerts+='<div class="alert-row alert-info"><i class="ti ti-briefcase"></i> '+gorevSiz+' üye görevsiz</div>';
-  const terfiBek=members.filter(function(m){return m.puan>=50&&m.rutbe!=='Siyah'&&m.rutbe!=='Mavi';});
-  if(terfiBek.length&&(izin('uyeDuzenle')||SESSION.rol==='Lider')){var terfiDiv=document.createElement('div');terfiDiv.className='alert-row alert-info';terfiDiv.style.cursor='pointer';terfiDiv.onclick=function(){showTabDD('members','ddTopluluk','navToplulukBtn');};terfiDiv.innerHTML='<i class="ti ti-arrow-up"></i> <strong>'+terfiBek.length+' terfi adayı</strong> — '+terfiBek.map(function(a){return a.rumuz;}).join(', ');alerts+=terfiDiv.outerHTML;}
   if(net<0&&izin('butceGor'))alerts+='<div class="alert-row alert-danger"><i class="ti ti-currency-lira"></i> Kasa negatife düştü!</div>';
-  // Terfi adaylari
-  if(izin('uyeDuzenle')||SESSION.rol==='Lider'){
-    const adaylar=terfiAdayKontrol();
-    if(adaylar.length){
-      alerts+='<div class="alert-row alert-success" style="cursor:pointer" onclick="showTabDD(\'members\',\'ddTopluluk\',\'navToplulukBtn\')">'
-        +'<i class="ti ti-arrow-up"></i> <strong>'+adaylar.length+' terfi adayı</strong> — '
-        +adaylar.map(function(a){return a.rumuz;}).join(', ')+'</div>';
-    }
-  }
+  
   // Aktif oylama bildirimi
   if(typeof oylamalar!=='undefined'&&oylamalar.length){
     var aktifOy=oylamalar.filter(function(o){return o.aktif!==false;});
@@ -881,13 +871,13 @@ function renderMembers(){
     const portfolyoBtnHtml=(izin('portfolyoGor')||SESSION.rol==='Lider')?('<button class="btn btn-sm" title="Portfolyo" id="pf_btn_'+mid+'" style="color:#5a9d5a"><i class="ti ti-eye"></i></button>'):'';const emptyHtml=(!editBtn&&!silBtn&&!sifreBtnHtml&&!portfolyoBtnHtml)?'<span style="font-size:10px;color:#555">—</span>':'';
     tbody+='<tr>'
       +'<td>'+(i+1)+'</td>'
-      +'<td id="pf_'+mid+'" style="font-weight:500;cursor:pointer;color:#fac775">'+m.rumuz+'</td>'
+      +'<td style="font-weight:500;color:#d3d1c7">'+m.rumuz+'</td>'
       +'<td>'+rutbeBadge(m.rutbe)+'</td>'
       +'<td>'+durumBadge(m.durum)+'</td>'
       +'<td style="font-size:11px;color:#888">'+(m.gorev||'Yok')+'</td>'
       +'<td style="font-weight:500">'+(m.puan||0)+'</td>'
       +'<td style="font-size:11px;color:#555">'+(m.katilim?fmtDate(m.katilim):'-')+'</td>'
-      +'<td><div class="action-row">'+portfolyoBtnHtml+editBtnHtml+silBtnHtml+sifreBtnHtml+emptyHtml+'</div></td></tr>';
+      +'<td><div class="action-row">'+editBtnHtml+silBtnHtml+sifreBtnHtml+emptyHtml+'</div></td></tr>';
   });
   document.getElementById('memberTableBody').innerHTML=tbody;
 }
@@ -1047,96 +1037,13 @@ async function arsivFiltrele(){
   });
   tbl.appendChild(tb);wrap.appendChild(tbl);
   listeEl.innerHTML='';listeEl.appendChild(wrap);
-  // Portfolyo onclick - tırnak sorunu DOM API ile çöz
-  members.forEach(function(m){
-    var mid3=String(m._id||m.id);
-    var tdEl=document.getElementById('pf_'+mid3);
-    if(tdEl)(function(r){tdEl.onclick=function(){portfolyoAc(r);};})(m.rumuz);
-    var btnEl=document.getElementById('pf_btn_'+mid3);
-    if(btnEl)(function(r){btnEl.onclick=function(){portfolyoAc(r);};})(m.rumuz);
-  });
-}
+
 
 //
 
 // ===========================
 // PORTFOLYO SİSTEMİ
-// ===========================
-function portfolyoAc(rumuz){
-  if(!izin('portfolyoGor')&&SESSION.rol!=='Lider'){alert('Portfolyo görüntüleme yetkiniz yok.');return;}
-  const m=members.find(function(x){return x.rumuz===rumuz;});
-  if(!m){alert('Üye bulunamadı.');return;}
-
-  // Yerel verilerle hızlı render
-  var katilinanEtkinlikler=events.filter(function(e){
-    return parseKat(e.katilimcilar).includes(rumuz);
-  }).sort(function(a,b){return new Date(b.tarih)-new Date(a.tarih);});
-  var disiplinData=(izin('disiplinUygula')||SESSION.rol==='Lider')?disiplin.filter(function(d){return d.uye===rumuz;}):[];
-  var toplamEtkinlik=katilinanEtkinlikler.length;
-  var canSifirla=izin('rutbeGecmisiSifirla')||SESSION.rol==='Lider';
-
-  // Etkinlik listesi HTML
-  var etkinlikHTML='';
-  if(katilinanEtkinlikler.length){
-    etkinlikHTML='<div class="portfolyo-section"><div class="portfolyo-section-title"><i class="ti ti-calendar"></i> Son Etkinlikler</div><div class="pf-etkinlik-liste">';
-    katilinanEtkinlikler.slice(0,8).forEach(function(e){
-      etkinlikHTML+='<div class="pf-etkinlik"><span>'+e.tur+'</span><span style="display:flex;gap:10px"><span style="color:#555">'+fmtDate(e.tarih)+'</span><span style="color:#fac775">+'+(e.puan||0)+' puan</span></span></div>';
-    });
-    if(katilinanEtkinlikler.length>8) etkinlikHTML+='<div style="font-size:11px;color:#555;padding:4px 10px">+'+(katilinanEtkinlikler.length-8)+' daha...</div>';
-    etkinlikHTML+='</div></div>';
-  }else{etkinlikHTML='<div class="portfolyo-section"><div class="portfolyo-section-title"><i class="ti ti-calendar"></i> Son Etkinlikler</div><div style="font-size:12px;color:#555">Henüz etkinlik yok.</div></div>';}
-
-  // Disiplin HTML
-  var disiplinHTML='';
-  if(disiplinData.length){
-    disiplinHTML='<div class="portfolyo-section"><div class="portfolyo-section-title" style="color:#e24b4a"><i class="ti ti-gavel"></i> Disiplin Geçmişi</div><div class="pf-etkinlik-liste">';
-    disiplinData.forEach(function(d){
-      disiplinHTML+='<div class="pf-etkinlik" style="border-left:2px solid #e24b4a"><div><div style="font-size:12px">'+d.cezaTuru+'</div><div style="font-size:11px;color:#555">'+(d.gerekce||'')+'</div></div><span style="font-size:11px;color:#555">'+fmtDate(d.tarih)+'</span></div>';
-    });
-    disiplinHTML+='</div></div>';
-  }
-
-  // Overlay oluştur
-  var overlay=document.createElement('div');
-  overlay.className='portfolyo-overlay';overlay.id='portfolyoOverlay';
-  overlay.onclick=function(e){if(e.target===overlay)portfolyoKapat();};
-
-  overlay.innerHTML='<div class="portfolyo-box">'
-    +'<div class="portfolyo-header">'
-    +'<div style="display:flex;gap:14px;align-items:flex-start">'
-    +'<div class="portfolyo-avatar"><span style="font-size:22px">'+(m.rumuz[0]||'?').toUpperCase()+'</span></div>'
-    +'<div><div style="font-size:18px;font-weight:600;color:#d3d1c7;margin-bottom:4px">'+m.rumuz+'</div>'
-    +'<div style="display:flex;gap:6px;flex-wrap:wrap">'+rutbeBadge(m.rutbe)+durumBadge(m.durum)+'</div>'
-    +'<div style="font-size:11px;color:#555;margin-top:6px">Katılım: '+fmtDate(m.katilim||'')+(m.ref?' · Referans: '+m.ref:'')+'</div>'
-    +'</div></div>'
-    +'<button class="btn btn-sm" onclick="portfolyoKapat()"><i class="ti ti-x"></i></button></div>'
-    +'<div class="portfolyo-body">'
-    // Stats
-    +'<div class="pf-stat-grid">'
-    +'<div class="pf-stat"><div class="val">'+(m.puan||0)+'</div><div class="lbl">Mevcut Puan</div></div>'
-    +'<div class="pf-stat"><div class="val" id="pf_totalEarned">...</div><div class="lbl">Toplam Kazanılan</div></div>'
-    +'<div class="pf-stat"><div class="val">'+toplamEtkinlik+'</div><div class="lbl">Etkinlik</div></div>'
-    +'<div class="pf-stat"><div class="val">'+(m.gorev||'Yok')+'</div><div class="lbl">Görev</div></div>'
-    +'</div>'
-    // Rütbe
-    +'<div class="portfolyo-section"><div class="portfolyo-section-title" style="display:flex;align-items:center;gap:8px"><span><i class="ti ti-arrow-up"></i> Rütbe Yolculuğu</span>'+(canSifirla?'<button class="btn btn-danger btn-sm" style="font-size:10px;margin-left:auto" id="btnRtbSifirla"><i class="ti ti-refresh"></i> Sıfırla</button>':'')+'</div>'
-    +'<div id="pf_rutbeTimeline"><div style="font-size:12px;color:#555"><i class="ti ti-loader"></i> Yükleniyor...</div></div></div>'
-    // Etkinlikler
-    +etkinlikHTML
-    // Puan hareketleri
-    +'<div class="portfolyo-section"><div class="portfolyo-section-title"><i class="ti ti-history"></i> Son Puan Hareketleri</div><div id="pf_puanHareketleri"><div style="font-size:12px;color:#555"><i class="ti ti-loader"></i> Yükleniyor...</div></div></div>'
-    // Disiplin
-    +disiplinHTML
-    +'</div></div>';
-
-  // Wix iframe uyumluluğu için mainPanel'e değil document.documentElement'e ekle
-  document.body.appendChild(overlay);
-  // Overlay'e tıklanınca kapat
-  overlay.addEventListener('click',function(e){if(e.target===overlay)portfolyoKapat();});
-
-  // Sıfırlama onclick
-  var brs2=document.getElementById('btnRtbSifirla');
-  if(brs2)(function(r){brs2.onclick=function(){rutbeGecmisiSifirla(r);};})(rumuz);
+// ===========================)(rumuz);
 
   // Async veriler - donmadan arka planda yükle
   Promise.all([
@@ -1176,22 +1083,9 @@ function portfolyoAc(rumuz){
 }
 
 
-async function rutbeGecmisiSifirla(rumuz){
-  confirm2('Rütbe Geçmişi Sıfırla','<strong>'+rumuz+'</strong> için tüm rütbe geçmişi silinecek.',async function(){
-    try{
-      await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'RUTBE_GECMISI_SIFIRLA',item:{rumuz:rumuz}})});
-      addLog('Rütbe geçmişi sıfırlandı',rumuz);save();
-      portfolyoKapat();
-      setTimeout(function(){portfolyoAc(rumuz);},300);
-    }catch(e){alert('Hata: '+e.message);}
-  });
-}
 
-function portfolyoKapat(){
-  var el=document.getElementById('portfolyoOverlay');
-  if(el)el.remove();
-}
+
+
 
 // SEZON SISTEMI
 const SEZONLAR_TANIM=[
@@ -1253,8 +1147,7 @@ function renderPuanSezon(){
         var rumuz=item[0],puan=item[1];
         var mx=members.find(function(m){return m.rumuz===rumuz;});
         var row=document.createElement('div');row.className='puan-row';row.style.cursor='pointer';
-        row.onclick=function(){portfolyoAc(rumuz);};
-        var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+            var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
         row.innerHTML='<div style="width:24px;font-size:11px;color:#555;text-align:center">'+(i+1)+'</div>'
           +'<div style="width:90px;font-size:12px;font-weight:500;color:#d3d1c7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+medal+' '+rumuz+'</div>'
           +(mx?rutbeBadge(mx.rutbe):'')
@@ -1348,108 +1241,7 @@ function getSeasonIcon(s){
   return{kis:'❄️',ilkbahar:'🌸',yaz:'☀️',sonbahar:'🍂',dogumgunu:'🎉'}[s]||'';
 }
 
-// Canvas Particle Sistemi
-var sezonAnim=null;
-function sezonParticleBaslat(sezon){
-  const canvas=document.getElementById('sezonCanvas');
-  if(!canvas)return;
-  const ctx=canvas.getContext('2d');
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
-  window.addEventListener('resize',function(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
 
-  var particles=[];
-  var MAX=60;
-
-  function Particle(){
-    this.reset();
-  }
-  Particle.prototype.reset=function(){
-    this.x=Math.random()*canvas.width;
-    this.y=-20;
-    this.size=Math.random()*6+2;
-    this.speed=Math.random()*1.2+0.3;
-    this.opacity=Math.random()*0.7+0.2;
-    this.swing=Math.random()*2-1;
-    this.swingSpeed=Math.random()*0.03+0.01;
-    this.angle=0;
-    // Sezona özel
-    if(sezon==='kis'){
-      this.color='rgba(168,212,245,'+this.opacity+')';
-      this.shape='circle';this.size=Math.random()*4+1;
-    } else if(sezon==='ilkbahar'){
-      var hue=Math.random()<0.5?320:140;
-      this.color='hsla('+hue+',70%,70%,'+this.opacity+')';
-      this.shape='petal';this.size=Math.random()*8+4;
-      this.speed*=0.6;
-    } else if(sezon==='yaz'){
-      this.color='rgba(255,220,80,'+this.opacity+')';
-      this.shape='ray';this.size=Math.random()*3+1;
-      this.speed*=0.4;this.y=Math.random()*canvas.height;
-      this.x=Math.random()*canvas.width;
-    } else if(sezon==='sonbahar'){
-      var leafH=Math.floor(Math.random()*3);
-      var leafColors=['rgba(220,100,30,','rgba(180,60,20,','rgba(200,140,20,'];
-      this.color=leafColors[leafH]+this.opacity+')';
-      this.shape='leaf';this.size=Math.random()*10+5;
-      this.rot=Math.random()*360;this.rotSpeed=Math.random()*3-1.5;
-    } else if(sezon==='dogumgunu'){
-      var colors=['rgba(255,80,180,','rgba(80,200,255,','rgba(255,220,60,','rgba(120,255,120,','rgba(200,100,255,'];
-      this.color=colors[Math.floor(Math.random()*colors.length)]+this.opacity+')';
-      this.shape='confetti';this.size=Math.random()*10+4;
-      this.rot=Math.random()*360;this.rotSpeed=Math.random()*6-3;
-      this.speed*=1.5;
-    }
-  };
-  Particle.prototype.update=function(){
-    this.angle+=this.swingSpeed;
-    this.x+=Math.sin(this.angle)*this.swing;
-    this.y+=this.speed;
-    if(this.shape==='yaz'||this.shape==='ray'){
-      this.opacity-=0.002;
-      if(this.opacity<=0){this.opacity=Math.random()*0.5+0.1;this.x=Math.random()*canvas.width;this.y=Math.random()*canvas.height;}
-    }
-    if(this.rot!==undefined)this.rot+=this.rotSpeed;
-    if(this.y>canvas.height+20)this.reset();
-  };
-  Particle.prototype.draw=function(){
-    ctx.save();
-    ctx.globalAlpha=this.opacity;
-    if(this.shape==='circle'){
-      ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fillStyle=this.color;ctx.fill();
-    } else if(this.shape==='petal'){
-      ctx.translate(this.x,this.y);ctx.rotate(this.angle*2);
-      ctx.beginPath();ctx.ellipse(0,0,this.size/2,this.size,0,0,Math.PI*2);
-      ctx.fillStyle=this.color;ctx.fill();
-    } else if(this.shape==='ray'){
-      ctx.translate(this.x,this.y);ctx.rotate(this.angle);
-      ctx.beginPath();ctx.moveTo(0,-this.size*3);ctx.lineTo(0,this.size*3);
-      ctx.strokeStyle=this.color;ctx.lineWidth=1;ctx.stroke();
-    } else if(this.shape==='leaf'){
-      ctx.translate(this.x,this.y);ctx.rotate(this.rot*Math.PI/180);
-      ctx.beginPath();ctx.ellipse(0,0,this.size/2,this.size,0,0,Math.PI*2);
-      ctx.fillStyle=this.color;ctx.fill();
-    } else if(this.shape==='confetti'){
-      ctx.translate(this.x,this.y);ctx.rotate(this.rot*Math.PI/180);
-      ctx.fillStyle=this.color;ctx.fillRect(-this.size/2,-this.size/4,this.size,this.size/2);
-    }
-    ctx.restore();
-  };
-
-  for(var i=0;i<MAX;i++){
-    var p=new Particle();
-    p.y=Math.random()*canvas.height; // Başlangıçta dağıt
-    particles.push(p);
-  }
-
-  if(sezonAnim)cancelAnimationFrame(sezonAnim);
-  function loop(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    particles.forEach(function(p){p.update();p.draw();});
-    sezonAnim=requestAnimationFrame(loop);
-  }
-  loop();
-}
 
 function renderSezon(){
   const sezon=getSeason();
@@ -1458,130 +1250,11 @@ function renderSezon(){
     wrap.innerHTML='<span class="sezon-badge sezon-'+sezon+'">'
       +getSeasonIcon(sezon)+' '+getSeasonLabel(sezon)+'</span>';
   }
-  sezonParticleBaslat(sezon);
+  
 }
 
-//
-let aktifKonusma=null;
-let tumMesajlar=[];
-
-async function renderMesajlar(){
-  // Okunmamis mesaj badge guncelle
-  await mesajBadgeGuncelle();
-  // Konusma listesini cek
-  const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({action:'MESAJ_LIST',item:{rumuz:SESSION.rumuz}})});
-  const data=await res.json();
-  const gelen=data.result?.gelen||[];
-  const giden=data.result?.giden||[];
-  tumMesajlar=[...gelen,...giden];
-
-  // Benzersiz konusma ortaklarini bul
-  const ortaklar=new Set();
-  gelen.forEach(function(m){ortaklar.add(m.gonderen);});
-  giden.forEach(function(m){ortaklar.add(m.alici);});
-
-  const liste=document.getElementById('konusmaListesi');
-  if(!liste)return;
-  liste.innerHTML='<div style="padding:8px;font-size:11px;color:#555">Yükleniyor...</div>';
-  await new Promise(function(r){setTimeout(r,50);});
-  liste.innerHTML='';
-  if(!ortaklar.size){
-    liste.innerHTML='<div style="font-size:11px;color:#555;padding:8px">Henüz mesaj yok</div>';
-    return;
-  }
-  [...ortaklar].forEach(function(ortak){
-    const okunmamis=gelen.filter(function(m){return m.gonderen===ortak&&!m.okundu;}).length;
-    const son=tumMesajlar.filter(function(m){
-      return (m.gonderen===ortak&&m.alici===SESSION.rumuz)||(m.gonderen===SESSION.rumuz&&m.alici===ortak);
-    }).sort(function(a,b){return new Date(b._createdDate)-new Date(a._createdDate);})[0];
-    const div=document.createElement('div');
-    div.style.cssText='padding:8px 10px;cursor:pointer;border-radius:8px;margin-bottom:2px;'
-      +(aktifKonusma===ortak?'background:#1a1a1a;':'');
-    div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center">'
-      +'<span style="font-size:12px;font-weight:500;color:#d3d1c7">'+ortak+'</span>'
-      +(okunmamis?'<span style="background:#e24b4a;color:#fff;border-radius:10px;font-size:10px;padding:1px 5px">'+okunmamis+'</span>':'')
-      +'</div>'
-      +(son?'<div style="font-size:11px;color:#555;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'
-        +(son.gonderen===SESSION.rumuz?'Sen: ':'')+son.mesaj.substring(0,30)+'</div>':'');
-    div.onmouseover=function(){if(aktifKonusma!==ortak)div.style.background='#141414';};
-    div.onmouseout=function(){if(aktifKonusma!==ortak)div.style.background='';};
-    (function(o){div.onclick=function(){konusmayiAc(o);};})(ortak);
-    div.className='konusma-item-anim';
-    liste.appendChild(div);
-  });
-}
-
-async function konusmayiAc(ortak){
-  aktifKonusma=ortak;
-  document.getElementById('mesajBaslik').innerHTML='<i class="ti ti-user"></i> '+ortak;
-  document.getElementById('mesajGonderWrap').style.display='block';
-  const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({action:'MESAJ_KONUSMA',item:{rumuz1:SESSION.rumuz,rumuz2:ortak}})});
-  const data=await res.json();
-  const mesajlar=data.result||[];
-  const ic=document.getElementById('mesajIcerik');
-  ic.innerHTML='';
-  mesajlar.forEach(function(m){
-    const benim=m.gonderen===SESSION.rumuz;
-    const div=document.createElement('div');
-    div.style.cssText='max-width:75%;padding:8px 12px;border-radius:12px;font-size:12px;line-height:1.6;'
-      +(benim?'align-self:flex-end;background:#2a1800;color:#fac775;border-bottom-right-radius:2px;'
-        :'align-self:flex-start;background:#141414;color:#c9c7bf;border-bottom-left-radius:2px;');
-    div.textContent=m.mesaj;
-    // Okunmamissa oku
-    if(!benim&&!m.okundu){
-      fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'MESAJ_OKU',id:m._id||m.id})});
-    }
-    ic.appendChild(div);
-  });
-  ic.scrollTop=ic.scrollHeight;
-  await renderMesajlar();
-}
-
-async function mesajGonder(){
-  const inp=document.getElementById('mesajInput');
-  if(!inp||!aktifKonusma||!inp.value.trim())return;
-  const mesaj=inp.value.trim();inp.value='';
-  await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({action:'MESAJ_GONDER',item:{
-      gonderen:SESSION.rumuz,alici:aktifKonusma,
-      mesaj:mesaj,tarih:new Date().toISOString(),okundu:false
-    }})});
-  konusmayiAc(aktifKonusma);
-}
-
-async function mesajBadgeGuncelle(){
-  try{
-    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'MESAJ_LIST',item:{rumuz:SESSION.rumuz}})});
-    const data=await res.json();
-    const okunmamis=(data.result?.gelen||[]).filter(function(m){return !m.okundu;}).length;
-    const badge=document.getElementById('mesajBadge');
-    if(badge){
-      if(okunmamis>0){badge.style.display='inline';badge.textContent=okunmamis;}
-      else badge.style.display='none';
-    }
-  }catch(e){}
-}
 
 // BILDIRIM SISTEMI
-let okunduListesi=[];
-
-async function bildirimBaslat(){
-  // Onceki okundu listesini cek
-  try{
-    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'OKUNDU_LIST',item:{rumuz:SESSION.rumuz}})});
-    const data=await res.json();
-    okunduListesi=(data.result||[]).map(function(o){return o.icerikId;});
-  }catch(e){}
-  // Her 2 dakikada kontrol
-  bildirimKontrol();
-  setInterval(bildirimKontrol,2*60*1000);
-  setInterval(mesajBadgeGuncelle,30*1000);
-}
 
 async function bildirimKontrol(){
   // Son verileri cek ve okunmamislari bul
@@ -1737,26 +1410,7 @@ function takvimGunTikla(gun){
 }
 
 // TERFİ ADAYI KONTROLU
-function terfiAdayKontrol(){
-  const bugun=new Date();
-  const adaylar=[];
-  members.forEach(function(m){
-    if(m.rutbe!=='Gözlemci')return;
-    // 1 ay kontrolu
-    const katilim=m.katilim?new Date(m.katilim):null;
-    const ay=katilim?Math.floor((bugun-katilim)/(30*24*60*60*1000)):0;
-    // Etkinlik sayisi
-    const etkinlikSayisi=events.filter(function(e){
-      return parseKat(e.katilimcilar).includes(m.rumuz);
-    }).length;
-    // Puan
-    const puan=Number(m.puan)||0;
-    if(ay>=1&&etkinlikSayisi>=3&&puan>=30){
-      adaylar.push({rumuz:m.rumuz,ay:ay,etkinlik:etkinlikSayisi,puan:puan});
-    }
-  });
-  return adaylar;
-}
+
 
 //
 // Sifre sifirla (Lider/Vekilharc tarafindan)
@@ -2098,69 +1752,13 @@ function renderDuyuruBanner(){
       scroll.addEventListener('mouseleave',function(){if(scroll._anim)scroll._anim.play();});
     });
   }
-  renderDogumgunuBanner();
+  
 }
 
-function renderDogumgunuBanner(){
-  const bugun=new Date();
-  const bugunAy=bugun.getMonth()+1;
-  const bugunGun=bugun.getDate();
-  // Doğum tarihini farklı formatlarda parse et
-  function parseDogum(dStr){
-    if(!dStr)return null;
-    try{
-      var d;
-      if(dStr.includes('T')){d=new Date(dStr);}
-      else if(dStr.includes('-')){var p=dStr.split('-');d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}
-      else if(dStr.includes('.')){var p2=dStr.split('.');d=new Date(parseInt(p2[2]),parseInt(p2[1])-1,parseInt(p2[0]));}
-      else return null;
-      return isNaN(d.getTime())?null:d;
-    }catch(e){return null;}
-  }
-  const bugunUyeler=members.filter(function(m){
-    var d=parseDogum(m.dogum);
-    if(!d)return false;
-    return d.getMonth()+1===bugunAy&&d.getDate()===bugunGun;
-  });
-  const banner=document.getElementById('dogumgunuBanner');
-  if(!bugunUyeler.length){if(banner)banner.style.display='none';return;}
-  if(banner)banner.style.display='block';
-  // Label'ı isimlere güncelle
-  var labelEl=document.getElementById('dogumgunuLabel');
-  if(labelEl) labelEl.innerHTML='🎂 '+bugunUyeler.map(function(m){return m.rumuz;}).join(' & ');
-  const scroll=document.getElementById('dogumgunuScroll');
-  if(!scroll)return;
-  // İsimleri + 🎂 emoji ile göster
-  scroll.innerHTML=bugunUyeler.map(function(m){
-    return'<span class="dogumgunu-item">'
-      +'<span style="font-size:16px">🎂</span>'
-      +'<span style="font-weight:700;color:#ffd280;font-size:13px;letter-spacing:0.5px;margin:0 4px">'+m.rumuz+'</span>'
-      +'<span style="color:#8ab8d8;font-size:12px">— İyi ki doğdun!</span>'
-      +'</span>';
-  }).join('<span style="color:#185fa5;margin:0 20px">◆</span>');
-  // Animasyon
-  requestAnimationFrame(function(){
-    var trackW=scroll.parentElement?scroll.parentElement.offsetWidth:800;
-    var scrollW=scroll.scrollWidth||400;
-    var toplam=trackW+scrollW;
-    var sure=Math.round(toplam/60*1000);
-    if(scroll._anim){try{scroll._anim.cancel();}catch(e){}}
-    scroll._anim=scroll.animate(
-      [{transform:'translateX('+trackW+'px)'},{transform:'translateX(-'+scrollW+'px)'}],
-      {duration:sure,iterations:Infinity,easing:'linear'}
-    );
-    scroll.addEventListener('mouseenter',function(){if(scroll._anim)scroll._anim.pause();});
-    scroll.addEventListener('mouseleave',function(){if(scroll._anim)scroll._anim.play();});
-  });
-  // Konfeti efektini tetikle
-  if(typeof sezonParticleBaslat==='function') sezonParticleBaslat('dogumgunu');
-}
 
 </script>
 
 <body>
-<canvas id="sezonCanvas"></canvas>
-
 <!-- AUTH EKRANI -->
 <div id="authScreen" class="auth-screen">
   <div class="auth-box">
@@ -2338,16 +1936,6 @@ function renderDogumgunuBanner(){
 
 <div class="panel" id="mainPanel" style="display:none">
 
-<!-- DOĞUM GÜNÜ BANNER -->
-<div class="dogumgunu-banner" id="dogumgunuBanner" style="display:none">
-  <div class="dogumgunu-inner">
-    <div class="dogumgunu-label" id="dogumgunuLabel">🎂 DOĞUM GÜNÜ</div>
-    <div class="dogumgunu-track">
-      <div class="dogumgunu-scroll" id="dogumgunuScroll"></div>
-    </div>
-  </div>
-</div>
-
 <!-- DUYURU BANNER -->
 <div class="duyuru-banner" id="duyuruBanner">
   <div class="duyuru-inner">
@@ -2384,17 +1972,7 @@ function renderDogumgunuBanner(){
     <button class="nav-btn active" onclick="showTab('dashboard',this)" id="navDashboard">
       <i class="ti ti-chart-bar"></i> Dashboard
     </button>
-  </div>
-
-  <!-- Mesajlar nav -->
-  <div class="nav-item">
-    <button class="nav-btn" id="navMesajlar" onclick="showTab('mesajlar',this)">
-      <i class="ti ti-message"></i> Mesajlar
-      <span id="mesajBadge" style="display:none;background:#e24b4a;color:#fff;border-radius:10px;font-size:10px;padding:1px 6px;margin-left:4px"></span>
-    </button>
-  </div>
-
-  <!-- Topluluk dropdown -->
+  </div>  <!-- Topluluk dropdown -->
   <div class="nav-item">
     <button class="nav-btn" onclick="toggleDropdown('ddTopluluk',this)" id="navToplulukBtn">
       <i class="ti ti-users"></i> Topluluk <span class="arrow">▼</span>
@@ -2487,7 +2065,7 @@ function renderDogumgunuBanner(){
 <!-- PUAN -->
 <div id="tab-puan" class="tab">
   <div id="puanSezonWrap"></div>
-  <div class="section-title">Puan Tablosu</div>
+  <div class="section-title"></div>
   <div id="puanList"></div>
   <div id="puanEditor"></div>
   <hr class="sep">
@@ -2608,33 +2186,7 @@ function renderDogumgunuBanner(){
     <button class="btn btn-warn btn-sm" id="btnOylamaEkle" onclick="openModal('addOylama')" style="display:none"><i class="ti ti-plus"></i> Oylama Oluştur</button>
   </div>
   <div id="oylamaList"></div>
-</div>
-
-<!-- MESAJLAR -->
-<div id="tab-mesajlar" class="tab">
-  <div style="display:flex;gap:0;height:520px;border:0.5px solid #1e1e1e;border-radius:12px;overflow:hidden">
-    <!-- Sol: Konuşma listesi -->
-    <div style="width:220px;border-right:0.5px solid #1e1e1e;display:flex;flex-direction:column;background:#0d0d0d;flex-shrink:0">
-      <div style="padding:10px;border-bottom:0.5px solid #1e1e1e">
-        <button class="btn btn-warn btn-sm" style="width:100%" onclick="openModal('yeniMesaj')"><i class="ti ti-edit"></i> Yeni Mesaj</button>
-      </div>
-      <div id="konusmaListesi" style="flex:1;overflow-y:auto;padding:6px"></div>
-    </div>
-    <!-- Sağ: Mesaj içeriği -->
-    <div style="flex:1;display:flex;flex-direction:column;background:#0a0a0a">
-      <div id="mesajBaslik" style="padding:12px 16px;border-bottom:0.5px solid #1e1e1e;font-size:13px;font-weight:500;color:#888">Bir konuşma seç</div>
-      <div id="mesajIcerik" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px"></div>
-      <div id="mesajGonderWrap" style="padding:10px;border-top:0.5px solid #1e1e1e;display:none">
-        <div style="display:flex;gap:8px">
-          <input id="mesajInput" type="text" placeholder="Mesajınızı yazın..." style="flex:1" onkeydown="if(event.key==='Enter')mesajGonder()">
-          <button class="btn btn-warn btn-sm" onclick="mesajGonder()"><i class="ti ti-send"></i></button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ORGANİZASYON -->
+</div><!-- ORGANİZASYON -->
 <div id="tab-org" class="tab">
   <div style="text-align:center;margin-bottom:1.5rem;padding:1rem 0;border-bottom:0.5px solid #222">
     <div style="font-family:'Vanilla Whale',serif;font-size:36px;letter-spacing:-0.5px;color:#fac775;line-height:1;margin-bottom:8px">-QG-</div>
