@@ -772,7 +772,7 @@ const IZINLER = {
   'Gözlemci':    {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:0,sifreSifirla:0,portfolyoGor:0,sezonKapat:0,rutbeGecmisiSifirla:0}
 };
 
-function cikisYap(){
+async function cikisYap(){
   oturumKapat();
   localStorage.removeItem('qg_session');
   location.reload();
@@ -1446,7 +1446,7 @@ function renderPuan(){
   arsivWrap.appendChild(arsivListe);
 }
 
-function reqPuan(){
+async function reqPuan(){
   const idEl=document.getElementById('puanUye');
   const miktarEl=document.getElementById('puanMiktar');
   const sebepEl=document.getElementById('puanSebep');
@@ -1717,7 +1717,7 @@ function renderPuanSezon(){
   }).catch(function(){});
 }
 
-function sezonuKapat(){
+async function sezonuKapat(){
   var sezon=getMevcutSezonAdi();
   confirm2('Sezonu Kapat','<strong>'+sezon.ad+'</strong> sezonu kapatılacak. Sıralama arşivlenir.',async function(){
     var baslangic=getSezonAyBaslangic();
@@ -2348,7 +2348,7 @@ function renderGorev(){
   }).join('');
 }
 
-function reqGorev(){
+async function reqGorev(){
   const uyeEl=document.getElementById('gorevUye');
   const gorevEl=document.getElementById('gorevTip');
   if(!uyeEl||!gorevEl){alert('Form alanları bulunamadı.');return;}
@@ -2414,7 +2414,7 @@ function reqEditEvent(id){
   openModal('editEvent',id);
 }
 
-function reqDeleteEvent(id){
+async function reqDeleteEvent(id){
   if(!izin('etkinlikSil'))return;
   const e=events.find(e=>String(e._id)===String(id)||String(e.id)===String(id));if(!e)return;
   confirm2('Etkinliği sil','<strong>'+e.tur+'</strong> ('+fmtDate(e.tarih)+') silinecek.',async()=>{
@@ -2482,7 +2482,7 @@ function renderButce(){
     +'</tr></thead><tbody>'+tbody+'</tbody></table></div>';
 }
 
-function reqButce(){
+async function reqButce(){
   if(!izin('butceDuzenle'))return;
   const tur=document.getElementById('b_tur').value,tarih=document.getElementById('b_tarih').value;
   const tutar=parseFloat(document.getElementById('b_tutar').value)||0;
@@ -2499,7 +2499,7 @@ function reqButce(){
   });
 }
 
-function reqDeleteButce(id){
+async function reqDeleteButce(id){
   if(!izin('butceDuzenle'))return;
   const b=butce.find(b=>String(b._id)===String(id)||String(b.id)===String(id));if(!b)return;
   confirm2('İşlemi sil','<strong>'+(b.tur==='gelir'?'Gelir':'Gider')+'</strong>: '+fmtTL(Number(b.tutar))+' — '+b.aciklama,async function(){
