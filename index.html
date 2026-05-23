@@ -1130,8 +1130,7 @@ function portfolyoAc(rumuz){
     +'</div></div>';
 
   // Wix iframe uyumluluğu için mainPanel'e değil document.documentElement'e ekle
-  var container=document.getElementById('mainPanel')||document.body;
-  container.appendChild(overlay);
+  document.body.appendChild(overlay);
   // Overlay'e tıklanınca kapat
   overlay.addEventListener('click',function(e){if(e.target===overlay)portfolyoKapat();});
 
@@ -2342,7 +2341,7 @@ function renderDogumgunuBanner(){
 <!-- DOĞUM GÜNÜ BANNER -->
 <div class="dogumgunu-banner" id="dogumgunuBanner" style="display:none">
   <div class="dogumgunu-inner">
-    <div class="dogumgunu-label" id="dogumgunuLabel">🎂 BUGÜN</div>
+    <div class="dogumgunu-label" id="dogumgunuLabel">🎂 DOĞUM GÜNÜ</div>
     <div class="dogumgunu-track">
       <div class="dogumgunu-scroll" id="dogumgunuScroll"></div>
     </div>
@@ -2838,11 +2837,16 @@ async function renderOylama(){
   const el=document.getElementById('oylamaList');if(!el)return;
   el.innerHTML='<div style="font-size:12px;color:#555">Yükleniyor...</div>';
   try{
-    const res=await fetch(OYLAMA_URL,{method:'GET'});
-    const text=await res.text();
-    const data=typeof text==='string'?JSON.parse(text):text;
-    const parsed=data&&data.body&&typeof data.body==='string'?JSON.parse(data.body):data;
-    oylamalar=parsed.items||parsed||[];
+    const res=await fetch(OYLAMA_URL,{method:'GET',headers:{'Accept':'application/json'}});
+    if(!res.ok){oylamalar=[];console.warn('Oylama API hatası:',res.status);
+    }else{
+      const text=await res.text();
+      try{
+        const data=JSON.parse(text);
+        const parsed=data&&data.body&&typeof data.body==='string'?JSON.parse(data.body):data;
+        oylamalar=parsed.items||parsed||[];
+      }catch(e){oylamalar=[];}
+    }
   }catch(e){oylamalar=[];}
   el.innerHTML='';
   if(!oylamalar.length){el.innerHTML='<div class="card" style="text-align:center;color:#555;font-size:12px;padding:2rem">Henüz oylama yok.</div>';return;}
@@ -3173,7 +3177,9 @@ if(typeof pasiflikKontrol==='undefined'){
 // ERİŞİM YÖNETİMİ
 // ============================================================
 var ROLLER_LISTE=['Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
-var aktifIzinler=JSON.parse(JSON.stringify(IZINLER||{}));
+// aktifIzinler lazy init - renderErisimBoard çalışınca set edilecek
+var aktifIzinler={};
+function _initAktifIzinler(){if(!Object.keys(aktifIzinler).length&&typeof IZINLER!=='undefined')aktifIzinler=JSON.parse(JSON.stringify(IZINLER));}
 
 async function renderErisimBoard(){
   var el=document.getElementById('izinBoard');if(!el)return;
@@ -3290,14 +3296,7 @@ async function reqDeleteMember(id){
   });
 }
 
-async function reqSifreSifirla(id,rumuz){
-  if(!izin('sifreSifirla')&&SESSION.rol!=='Lider')return;
-  confirm2('Şifreyi sıfırla','<strong>'+rumuz+'</strong> şifresi <strong>qgang123</strong> olarak sıfırlanacak.',async function(){
-    var yeniHash=await hashStr('qgang123');
-    await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'SIFRE_SIFIRLA',id:id,sifreHash:yeniHash})});
-    addLog('Şifre sıfırlandı',rumuz);save();
-  });
-}
+
 
 // ============================================================
 // ETKİNLİK CRUD
