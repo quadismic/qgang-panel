@@ -3168,3 +3168,384 @@ if(typeof pasiflikKontrol==='undefined'){
 </script>
 </body>
 </html>
+<script>
+// ============================================================
+// ERİŞİM YÖNETİMİ
+// ============================================================
+var ROLLER_LISTE=['Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
+var aktifIzinler=JSON.parse(JSON.stringify(IZINLER||{}));
+
+async function renderErisimBoard(){
+  var el=document.getElementById('izinBoard');if(!el)return;
+  if(SESSION.rol!=='Lider'){el.innerHTML='<div style="padding:2rem;text-align:center;color:#555">Sadece Lider erişebilir.</div>';return;}
+  try{
+    var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'IZIN_OKU'})});
+    var data=await res.json();
+    if(data.result){aktifIzinler=Object.assign({},IZINLER||{},data.result);Object.assign(IZINLER||{},data.result);}
+  }catch(e){}
+  var izinler=Object.keys(IZIN_ETIKETLER||{});
+  var thHtml='<tr><th style="text-align:left;padding:8px;color:#888;border-bottom:0.5px solid #333;min-width:140px">İzin</th>';
+  ROLLER_LISTE.forEach(function(r){thHtml+='<th style="text-align:center;padding:8px;color:#888;border-bottom:0.5px solid #333;white-space:nowrap">'+r+'</th>';});
+  thHtml+='</tr>';
+  var tbl=document.createElement('table');tbl.style.cssText='width:100%;border-collapse:collapse;font-size:12px';
+  var thead=document.createElement('thead');thead.innerHTML=thHtml;tbl.appendChild(thead);
+  var tbody=document.createElement('tbody');
+  izinler.forEach(function(key){
+    var tr=document.createElement('tr');
+    var lbl=document.createElement('td');lbl.style.cssText='padding:7px 8px;border-bottom:0.5px solid #222;color:#d3d1c7';lbl.textContent=(IZIN_ETIKETLER||{})[key]||key;tr.appendChild(lbl);
+    ROLLER_LISTE.forEach(function(rol){
+      var td=document.createElement('td');td.style.cssText='text-align:center;padding:7px 8px;border-bottom:0.5px solid #222';
+      var inp=document.createElement('input');inp.type='checkbox';inp.checked=!!(aktifIzinler[rol]&&aktifIzinler[rol][key]);
+      inp.style.cssText='width:16px;height:16px;cursor:pointer;accent-color:#fac775';
+      (function(r,k){inp.onchange=function(){if(!aktifIzinler[r])aktifIzinler[r]={};aktifIzinler[r][k]=this.checked?1:0;};})(rol,key);
+      td.appendChild(inp);tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+  var wrap=document.createElement('div');wrap.style.overflowX='auto';wrap.appendChild(tbl);
+  el.innerHTML='';el.appendChild(wrap);
+  // Kaydet butonu
+  var saveBtn=document.getElementById('btnIzinKaydet');
+  if(saveBtn)saveBtn.style.display='';
+}
+
+async function izinKaydet(){
+  var kayit={};
+  ROLLER_LISTE.forEach(function(r){kayit[r]=aktifIzinler[r]||{};});
+  var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'IZIN_KAYDET',item:kayit})});
+  var data=await res.json();
+  if(data.success){Object.assign(IZINLER||{},kayit);addLog('Erişim izinleri güncellendi','Lider');save();cmsStatusGoster('ok','<i class="ti ti-check"></i> İzinler kaydedildi');}
+}
+
+// ============================================================
+// ÜYE CRUD
+// ============================================================
+function reqAddMember(){
+  if(izin('uyeEkle')||SESSION.rol==='Lider') openModal('addMember');
+}
+
+function reqSaveMember(){
+  if(!izin('uyeEkle')&&SESSION.rol!=='Lider'){alert('Yetkiniz yok.');return;}
+  var rumuzEl=document.getElementById('m_rumuz');if(!rumuzEl)return;
+  var rumuz=rumuzEl.value.trim();if(!rumuz){alert('Rumuz gerekli!');return;}
+  var rutbe=(document.getElementById('m_rutbe')||{value:'Gözlemci'}).value;
+  var durum=(document.getElementById('m_durum')||{value:'Aktif'}).value;
+  var gorev=(document.getElementById('m_gorev')||{value:'Yok'}).value;
+  var katilim=(document.getElementById('m_katilim')||{value:''}).value;
+  var dogum=(document.getElementById('m_dogum')||{value:''}).value;
+  var ref=(document.getElementById('m_ref')||{value:''}).value;
+  var not=(document.getElementById('m_not')||{value:''}).value;
+  if(members.some(function(m){return m.rumuz&&m.rumuz.toLowerCase()===rumuz.toLowerCase();})){alert('Bu rumuz zaten kullanılıyor!');return;}
+  var yeni={rumuz:rumuz,rutbe:rutbe,durum:durum,gorev:gorev,puan:0,katilim:katilim,dogum:dogum,ref:ref,not:not};
+  confirm2('Yeni üye ekle','<strong>'+rumuz+'</strong> — '+rutbe,async function(){
+    closeModal();
+    var kontrol=await cmsOku();
+    if(kontrol&&kontrol.members){
+      members=kontrol.members.map(function(m){return Object.assign({},m,{id:m._id||m.id});});
+      if(members.some(function(m){return m.rumuz&&m.rumuz.toLowerCase()===rumuz.toLowerCase();})){alert(rumuz+' zaten kayıtlı!');return;}
+    }
+    await cmsYaz('MEMBER_ADD',yeni);
+    var taze=await cmsOku();
+    if(taze&&taze.members)members=taze.members.map(function(m){return Object.assign({},m,{id:m._id||m.id});});
+    addLog('Üye eklendi',rumuz+' — '+rutbe);save();
+    renderMembers();renderDashboard();
+  });
+}
+
+function reqUpdateMember(id){
+  var m=members.find(function(x){return String(x._id)===String(id)||String(x.id)===String(id);});if(!m)return;
+  function getRtbSec(r){if(r==='Lider')return 0;if(r&&r.includes('Vekil'))return 1;if(r==='Kaptan')return 2;if(r&&r.includes('Te'))return 3;if(r&&r.includes('ye'))return 4;return 5;}
+  if(SESSION.rol!=='Lider'&&getRtbSec(m.rutbe)<=getRtbSec(SESSION.rol)){alert('Bu üyeyi düzenleyemezsiniz.');return;}
+  var eRumuz=document.getElementById('e_rumuz');
+  var newRumuz=(eRumuz&&eRumuz.value.trim())||m.rumuz;
+  var newRutbe=(document.getElementById('e_rutbe')||{value:m.rutbe}).value;
+  var newDurum=(document.getElementById('e_durum')||{value:m.durum}).value;
+  var newGorev=(document.getElementById('e_gorev')||{value:m.gorev}).value;
+  var newPuan=Number((document.getElementById('e_puan')||{value:m.puan}).value)||0;
+  var newKatilim=(document.getElementById('e_katilim')||{value:m.katilim||''}).value;
+  var newDogum=(document.getElementById('e_dogum')||{value:m.dogum||''}).value;
+  var newRef=(document.getElementById('e_ref')||{value:m.ref||''}).value;
+  var newNot=(document.getElementById('e_not')||{value:m.not||''}).value;
+  var gunc=Object.assign({},m,{rumuz:newRumuz,rutbe:newRutbe,durum:newDurum,gorev:newGorev,puan:newPuan,katilim:newKatilim,dogum:newDogum,ref:newRef,not:newNot,_id:m._id||m.id});
+  confirm2('Üyeyi güncelle','<strong>'+m.rumuz+'</strong> bilgileri güncellenecek.',async function(){
+    var idx=members.findIndex(function(x){return String(x._id)===String(id)||String(x.id)===String(id);});
+    if(idx>-1)members[idx]=gunc;
+    addLog('Üye güncellendi',newRumuz);save();closeModal();
+    await cmsYaz('MEMBER_UPDATE',gunc);
+    renderMembers();renderDashboard();
+  });
+}
+
+async function reqDeleteMember(id){
+  if(!izin('uyeSil')&&SESSION.rol!=='Lider')return;
+  var m=members.find(function(x){return String(x._id)===String(id)||String(x.id)===String(id);});if(!m)return;
+  function getRtbSec2(r){if(r==='Lider')return 0;if(r&&r.includes('Vekil'))return 1;if(r==='Kaptan')return 2;if(r&&r.includes('Te'))return 3;if(r&&r.includes('ye'))return 4;return 5;}
+  if(SESSION.rol!=='Lider'&&getRtbSec2(m.rutbe)<=getRtbSec2(SESSION.rol)){alert('Bu üyeyi silemezsiniz.');return;}
+  confirm2('Üyeyi sil','<strong>'+m.rumuz+'</strong> kalıcı olarak silinecek.',async function(){
+    members=members.filter(function(x){return String(x._id)!==String(id)&&String(x.id)!==String(id);});
+    addLog('Üye silindi',m.rumuz);save();
+    await cmsYaz('MEMBER_DELETE',id);
+    renderMembers();renderDashboard();
+  });
+}
+
+async function reqSifreSifirla(id,rumuz){
+  if(!izin('sifreSifirla')&&SESSION.rol!=='Lider')return;
+  confirm2('Şifreyi sıfırla','<strong>'+rumuz+'</strong> şifresi <strong>qgang123</strong> olarak sıfırlanacak.',async function(){
+    var yeniHash=await hashStr('qgang123');
+    await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'SIFRE_SIFIRLA',id:id,sifreHash:yeniHash})});
+    addLog('Şifre sıfırlandı',rumuz);save();
+  });
+}
+
+// ============================================================
+// ETKİNLİK CRUD
+// ============================================================
+async function reqSaveEvent(){
+  var tur=(document.getElementById('e_tur')||{value:''}).value;
+  var tarih=(document.getElementById('e_date')||{value:''}).value;
+  var puan=Number((document.getElementById('e_puan2')||{value:10}).value)||10;
+  var katEl=document.getElementById('e_katilimcilar');
+  var katilimcilar=katEl?Array.from(katEl.selectedOptions).map(function(o){return o.value;}).join(','):'';
+  var not=(document.getElementById('e_not2')||{value:''}).value;
+  if(!tur||!tarih){alert('Tür ve tarih gerekli!');return;}
+  confirm2('Etkinlik kaydet','<strong>'+tur+'</strong> — '+fmtDate(tarih),async function(){
+    closeModal();
+    var yeni={tur:tur,tarih:tarih,puan:puan,katilimcilar:katilimcilar,not:not};
+    var result=await cmsYaz('EVENT_ADD',yeni);
+    if(result&&result.result){
+      var eid=result.result._id||result.result.id;
+      var katArr=katilimcilar?katilimcilar.split(',').filter(function(x){return x;}):[];
+      for(var i=0;i<katArr.length;i++){
+        var rumuz=katArr[i].trim();
+        var m=members.find(function(x){return x.rumuz===rumuz;});
+        if(m){m.puan=(Number(m.puan)||0)+puan;await cmsYaz('MEMBER_UPDATE',Object.assign({},m,{_id:m._id||m.id}));await puanArsivEkle(rumuz,puan,tur,'etkinlik',eid);}
+      }
+    }
+    addLog('Etkinlik eklendi',tur+' — '+fmtDate(tarih));save();
+    renderEvents();renderPuan();renderDashboard();
+  });
+}
+
+// ============================================================
+// DUYURU CRUD
+// ============================================================
+async function reqSaveDuyuru(){
+  var baslik=(document.getElementById('d_baslik')||{value:''}).value.trim();
+  var icerik=(document.getElementById('d_icerik')||{value:''}).value.trim();
+  var aktif=(document.getElementById('d_aktif')||{checked:true}).checked;
+  if(!baslik){alert('Başlık gerekli!');return;}
+  var yeni={baslik:baslik,icerik:icerik,aktif:aktif,tarih:new Date().toISOString(),yazar:SESSION.rumuz};
+  closeModal();
+  var result=await cmsYaz('DUYURU_ADD',yeni);
+  if(result&&result.result)duyurular.unshift(Object.assign({},yeni,{_id:result.result._id,id:result.result._id}));
+  addLog('Duyuru eklendi',baslik);save();
+  renderDuyurular();renderDuyuruBanner();
+}
+
+async function reqDeleteDuyuru(id){
+  if(!izin('duyuruSil')&&SESSION.rol!=='Lider')return;
+  var d=duyurular.find(function(x){return String(x._id)===String(id)||String(x.id)===String(id);});if(!d)return;
+  confirm2('Duyuruyu sil','<strong>'+d.baslik+'</strong> silinecek.',async function(){
+    duyurular=duyurular.filter(function(x){return String(x._id)!==String(id)&&String(x.id)!==String(id);});
+    addLog('Duyuru silindi',d.baslik);save();
+    await cmsYaz('DUYURU_DELETE',id);
+    renderDuyurular();renderDuyuruBanner();
+  });
+}
+
+// ============================================================
+// BÜTÇE CRUD
+// ============================================================
+async function reqSaveButce(){
+  var tur=(document.getElementById('b_tur')||{value:'gelir'}).value;
+  var tutar=Number((document.getElementById('b_tutar')||{value:0}).value)||0;
+  var aciklama=(document.getElementById('b_aciklama')||{value:''}).value.trim();
+  var tarih=(document.getElementById('b_tarih')||{value:''}).value;
+  if(!tutar||!aciklama){alert('Tutar ve açıklama gerekli!');return;}
+  var yeni={tur:tur,tutar:tutar,aciklama:aciklama,tarih:tarih,ekleyen:SESSION.rumuz};
+  closeModal();
+  var result=await cmsYaz('BUDGET_ADD',yeni);
+  if(result&&result.result)butce.push(Object.assign({},yeni,{_id:result.result._id,id:result.result._id}));
+  addLog('Bütçe kaydı eklendi',tur+': '+fmtTL(tutar)+' — '+aciklama);save();
+  renderButce();renderDashboard();
+}
+
+// ============================================================
+// GÖREV TALEBİ
+// ============================================================
+async function reqGorevTalepGonder(){
+  var turEl=document.getElementById('gt_tur');
+  var aciklamaEl=document.getElementById('gt_aciklama');
+  if(!turEl){closeModal();return;}
+  var talep={rumuz:SESSION.rumuz,tur:turEl.value,aciklama:aciklamaEl?aciklamaEl.value:'',tarih:new Date().toISOString().split('T')[0],durum:'beklemede'};
+  await cmsYaz('GOREV_TALEP_ADD',talep);
+  addLog('Görev talebi gönderildi',SESSION.rumuz+' — '+turEl.value);save();
+  closeModal();
+  var mc=document.getElementById('modalContainer');
+  mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()" style="background:rgba(0,0,0,.88)">'
+    +'<div class="modal-box" style="text-align:center;max-width:380px;padding:2.5rem 2rem">'
+    +'<div style="font-size:40px;margin-bottom:12px">✅</div>'
+    +'<div style="font-size:16px;font-weight:600;color:#fac775;margin-bottom:8px">Talep İletildi</div>'
+    +'<div style="font-size:13px;color:#888;margin-bottom:16px">Görev talebiniz yönetim ekibine iletildi.</div>'
+    +'<button class="btn btn-warn" onclick="closeModal()" style="width:100%">Tamam</button>'
+    +'</div></div>';
+  basvuruSayisiniGuncelle();
+}
+
+// ============================================================
+// PUAN ARŞİVİ
+// ============================================================
+async function puanArsivEkle(rumuz,miktar,gerekce,tip,refId){
+  try{
+    var kayit={rumuz:rumuz,miktar:miktar,gerekce:gerekce,tip:tip||'manuel',refId:refId||'',tarih:new Date().toISOString().split('T')[0],ekleyen:SESSION.rumuz};
+    await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_ADD',item:kayit})});
+  }catch(e){}
+}
+
+// ============================================================
+// YEDEKLEME
+// ============================================================
+async function yedegiAl(){
+  cmsStatusGoster('loading','<i class="ti ti-loader"></i> Yedek hazırlanıyor...');
+  try{
+    var res=await fetch(API_URL,{method:'GET'});
+    var text=await res.text();
+    var cmsVeri=typeof text==='string'?JSON.parse(text):text;
+    var parsed=cmsVeri&&cmsVeri.body&&typeof cmsVeri.body==='string'?JSON.parse(cmsVeri.body):cmsVeri;
+    var veri={tarih:new Date().toISOString(),members:parsed.members||members,events:parsed.events||events,butce:parsed.budget||butce,duyurular:parsed.duyurular||duyurular,logs:logs};
+    var blob=new Blob([JSON.stringify(veri,null,2)],{type:'application/json'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='qgang-yedek-'+new Date().toISOString().split('T')[0]+'.json';a.click();
+    cmsStatusGoster('ok','<i class="ti ti-check"></i> Yedek indirildi');
+  }catch(e){cmsStatusGoster('error','Hata: '+e.message);}
+}
+
+function saveToCSV(){
+  var bom='\uFEFF';
+  var header='Rumuz,Rütbe,Durum,Görev,Puan,Katılım,Doğum,Referans,Not\n';
+  var rows=members.map(function(m){
+    return [m.rumuz,m.rutbe,m.durum,m.gorev,m.puan,m.katilim,m.dogum,m.ref,m.not].map(function(v){return '"'+(v||'')+'"';}).join(',');
+  }).join('\n');
+  var blob=new Blob([bom+header+rows],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='qgang-uyeler-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
+}
+</script>
+</body>
+</html>
+<script>
+// ============================================================
+// EKSİK KALAN 8 FONKSİYON
+// ============================================================
+
+// Puan arşivi sorgula
+function arsivSorgula(){
+  var sel=document.getElementById('arsivFilter');
+  var rumuz=sel?sel.value:'';
+  arsivFiltrele(rumuz);
+}
+
+// JSON export
+function exportJSON(){
+  var veri={
+    tarih:new Date().toISOString(),
+    members:members,
+    events:events,
+    butce:butce,
+    duyurular:duyurular,
+    disiplin:disiplin,
+    logs:logs
+  };
+  var blob=new Blob([JSON.stringify(veri,null,2)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='qgang-yedek-'+new Date().toISOString().split('T')[0]+'.json';
+  a.click();
+}
+
+// Erişim izni değiştir
+function izinDegistir(rol,key,deger){
+  if(!aktifIzinler)window.aktifIzinler={};
+  if(!aktifIzinler[rol])aktifIzinler[rol]={};
+  aktifIzinler[rol][key]=deger?1:0;
+}
+
+// Erişim sıfırla
+function izinSifirla(){
+  if(!confirm('Tüm izinler varsayılana dönecek. Emin misin?'))return;
+  window.aktifIzinler=JSON.parse(JSON.stringify(IZINLER));
+  renderErisimBoard();
+}
+
+// kayitGoner alias (yazım hatası - kayitGonder'in alternatifi)
+function kayitGoner(){kayitGonder();}
+
+// Bütçe ekle butonu açık
+function reqAddButce(){
+  openModal('addButce');
+}
+
+// Davet kodu üret
+async function reqDavetKoduUret(){
+  if(!izin('kodUret')&&SESSION.rol!=='Lider'){alert('Yetkiniz yok.');return;}
+  confirm2('Davet kodu üret','Yeni bir davet kodu oluşturulacak.',async function(){
+    try{
+      var kod=Math.random().toString(36).substring(2,10).toUpperCase();
+      var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'DAVET_KOD_EKLE',item:{kod:kod,olusturan:SESSION.rumuz,tarih:new Date().toISOString().split('T')[0],kullanildi:false}})});
+      var data=await res.json();
+      addLog('Davet kodu üretildi',kod);save();
+      alert('Kod: '+kod);
+      renderDavet();
+    }catch(e){alert('Hata: '+e.message);}
+  });
+}
+
+// Etkinlik güncelle
+async function reqUpdateEvent(eid){
+  var turEl=document.getElementById('ee_tur');
+  var tarihEl=document.getElementById('ee_tarih');
+  var puanEl=document.getElementById('ee_puan');
+  var katEl=document.getElementById('ee_kat');
+  if(!turEl||!tarihEl||!katEl)return;
+  var yeniTur=turEl.value.trim();
+  var yeniTarih=tarihEl.value;
+  var yeniPuan=Number(puanEl?puanEl.value:10)||10;
+  var secilenler=Array.from(katEl.selectedOptions).map(function(o){return o.value;});
+  var eskiEtk=events.find(function(ev){return String(ev._id)===String(eid)||String(ev.id)===String(eid);});
+  if(!eskiEtk)return;
+  var eskiKat=parseKat(eskiEtk.katilimcilar);
+  var eskiPuan=Number(eskiEtk.puan)||10;
+  confirm2('Etkinliği Güncelle',secilenler.length+' katılımcı · +'+yeniPuan+' puan',async function(){
+    // Puan farkları
+    var cikanlar=eskiKat.filter(function(r){return !secilenler.includes(r);});
+    var eklenenler=secilenler.filter(function(r){return !eskiKat.includes(r);});
+    var puanFarki=yeniPuan-eskiPuan;
+    for(var i=0;i<cikanlar.length;i++){
+      var mx=members.find(function(m){return m.rumuz===cikanlar[i];});
+      if(mx){mx.puan=Math.max(0,(Number(mx.puan)||0)-eskiPuan);await cmsYaz('MEMBER_UPDATE',Object.assign({},mx,{_id:mx._id||mx.id}));}
+    }
+    for(var j=0;j<eklenenler.length;j++){
+      var my=members.find(function(m){return m.rumuz===eklenenler[j];});
+      if(my){my.puan=(Number(my.puan)||0)+yeniPuan;await cmsYaz('MEMBER_UPDATE',Object.assign({},my,{_id:my._id||my.id}));}
+    }
+    if(puanFarki!==0){
+      var kalan=eskiKat.filter(function(r){return secilenler.includes(r);});
+      for(var k=0;k<kalan.length;k++){
+        var mz=members.find(function(m){return m.rumuz===kalan[k];});
+        if(mz){mz.puan=Math.max(0,(Number(mz.puan)||0)+puanFarki);await cmsYaz('MEMBER_UPDATE',Object.assign({},mz,{_id:mz._id||mz.id}));}
+      }
+    }
+    var guncEtk={_id:eid,tur:yeniTur,tarih:yeniTarih,puan:yeniPuan,katilimcilar:secilenler.join(','),not:eskiEtk.not||''};
+    await cmsYaz('EVENT_UPDATE',guncEtk);
+    var idx2=events.findIndex(function(ev){return String(ev._id)===String(eid)||String(ev.id)===String(eid);});
+    if(idx2>=0)events[idx2]=Object.assign({},eskiEtk,guncEtk,{katilimcilar:secilenler});
+    addLog('Etkinlik güncellendi',yeniTur+' — '+yeniTarih);save();
+    closeModal();renderEvents();renderPuan();renderDashboard();
+  });
+}
+</script>
+</body>
+</html>
