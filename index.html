@@ -930,10 +930,10 @@ async function girisYapBtn(){
   const rumuz=document.getElementById('girisRumuz').value.trim();
   const sifre=document.getElementById('girusSifre').value;
   const hata=document.getElementById('girisHata');
-  hata.style.display='none';
-  if(!rumuz||!sifre){hata.textContent='Rumuz ve şifre gerekli.';hata.style.display='block';return}
-  const btn=document.querySelector('#girisForm .auth-btn');
-  btn.textContent='Giriş yapılıyor...';btn.disabled=true;
+  if(hata)hata.style.display='none';
+  if(!rumuz||!sifre){if(hata){hata.textContent='Rumuz ve şifre gerekli.';hata.style.display='block';}return;}
+  const btn=document.querySelector('#girisForm .auth-btn')||document.querySelector('.auth-btn');
+  if(btn){btn.textContent='Giriş yapılıyor...';btn.disabled=true;}
   const sifreHash=await hashStr(sifre);
   try{
     const res=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'LOGIN',rumuz,sifreHash})});
