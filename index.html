@@ -625,38 +625,6 @@ function parseKat(k){
   return[];
 }
 
-function uiAyarla(){
-  // Lider her şeyi görebilir - direkt açık
-  const lider=SESSION.rol==='Lider';
-  
-  function showIfIzin(id,key){
-    const el=document.getElementById(id);
-    if(el&&(izin(key)||lider)) el.style.display='';
-  }
-  
-  showIfIzin('btnUyeEkle','uyeEkle');
-  showIfIzin('btnButceEkle','butceDuzenle');
-  showIfIzin('btnEtkinlikEkle','etkinlikEkle');
-  showIfIzin('btnKodUret','kodUret');
-  showIfIzin('btnLogTemizle','logSil');
-  showIfIzin('btnDuyuruEkle','duyuruEkle');
-  showIfIzin('btnDisiplinEkle','disiplinUygula');
-  showIfIzin('btnOylamaEkle','oylamaEkle');
-  
-  if(!izin('butceGor')&&!lider){const nb=document.getElementById('navButceDD');if(nb)nb.style.display='none';}
-  if(!izin('logGor')&&!lider){const nl=document.getElementById('navLog');if(nl)nl.style.display='none';}
-  
-  const rolN2=SESSION.rol||'';
-  if(lider||rolN2.includes('Vekil')){
-    const navBasvuru=document.getElementById('navBasvuruDD');
-    if(navBasvuru) navBasvuru.style.display='';
-    basvuruSayisiniGuncelle();
-  }
-  if(lider){
-    const navEr=document.getElementById('navErisimDD');
-    if(navEr) navEr.style.display='';
-  }
-}
 
 //
 // VERI
@@ -2516,6 +2484,19 @@ function openModal(type, data){
       +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
       +'<button class="btn btn-warn" onclick="reqSaveEvent()"><i class="ti ti-check"></i> Kaydet</button>'
       +'</div></div></div>';
+  } else if(type==='editDuyuru'&&data){
+    var duyuruObj=duyurular.find(function(d){return String(d._id)===String(data)||String(d.id)===String(data);});
+    if(!duyuruObj)return;
+    var did2=duyuruObj._id||duyuruObj.id;
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3>Duyuru Düzenle</h3>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Başlık</label><input id="de_baslik" value="'+duyuruObj.baslik+'"></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>İçerik</label><textarea id="de_icerik" style="min-height:80px">'+duyuruObj.icerik+'</textarea></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label><input type="checkbox" id="de_aktif" style="width:auto;margin-right:6px"'+(duyuruObj.aktif!==false?' checked':'')+'> Bannerde yayınla</label></div>'
+      +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" id="btnDuyuruGuncelle"><i class="ti ti-check"></i> Güncelle</button>'
+      +'</div></div></div>';
+    setTimeout(function(){var b=document.getElementById('btnDuyuruGuncelle');if(b)(function(id){b.onclick=function(){reqUpdateDuyuru(id);};})(did2);},50);
   } else if(type==='addDuyuru'&&(izin('duyuruEkle')||SESSION.rol==='Lider')){
     mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
       +'<div class="modal-box"><h3>Yeni Duyuru</h3>'
@@ -3104,7 +3085,24 @@ const IZIN_ETIKETLER = {
   basvuruOnayla:'Başvuru Onayla/Reddet',
   basvuruGor:'Başvuru Gör',
   uyeEkle:'Üye Ekle',
-  uyeSil:'Üye Sil'
+  uyeSil:'Üye Sil',
+  uyeDuzenle:'Üye Düzenle',
+  rutbeDegistir:'Rütbe Değiştir',
+  sifreSifirla:'Şifre Sıfırla',
+  puanDuzenle:'Puan Düzenle',
+  gorevAta:'Görev Ata',
+  disiplinUygula:'Disiplin Uygula',
+  tuzukDuzenle:'Tüzük Düzenle',
+  etkinlikEkle:'Etkinlik Ekle',
+  etkinlikSil:'Etkinlik Sil',
+  duyuruEkle:'Duyuru Ekle',
+  duyuruSil:'Duyuru Sil',
+  oylamaEkle:'Oylama Oluştur',
+  butceDuzenle:'Bütçe Düzenle',
+  butceGor:'Bütçe Gör',
+  logSil:'Log Temizle',
+  logGor:'Log Gör',
+  sezonKapat:'Sezon Kapat'
 };
 
 // ============================================================
@@ -3278,22 +3276,6 @@ function tuzukIptal(){
   if(gorunum)gorunum.style.display='';
 }
 
-async function tuzukKaydet(){
-  var metin=document.getElementById('tuzukMetin');
-  if(!metin){alert('Editör bulunamadı.');return;}
-  var icerik=metin.value;
-  confirm2('Tüzüğü kaydet','Tüzük güncellenecek.',async function(){
-    try{
-      var yeniTuzuk={icerik:icerik,guncelleme:new Date().toISOString(),guncelleyen:SESSION.rumuz};
-      var res=await cmsYaz('TUZUK_GUNCELLE',yeniTuzuk);
-      if(res){tuzuk=Object.assign(tuzuk||{},yeniTuzuk);}
-      addLog('Tüzük güncellendi',SESSION.rumuz);save();
-      tuzukIptal();
-      renderTuzuk();
-      cmsStatusGoster('ok','<i class="ti ti-check"></i> Tüzük kaydedildi');
-    }catch(e){alert('Hata: '+e.message);}
-  });
-}
 
 // Disiplin modal - openModal('addDisiplin') için alias
 function openModalAddDisiplin(){reqDisiplinEkle();}
@@ -3412,7 +3394,7 @@ function renderOrg() {
   // BAŞLIK
   var header = document.createElement('div');
   header.style.cssText = 'text-align:center;padding:20px 0 24px;border-bottom:1px solid #1a1a1a;margin-bottom:24px';
-  header.innerHTML = '<div style="font-family:monospace;font-size:20px;color:#fac775;letter-spacing:4px;font-weight:700">-QG-</div>'
+  header.innerHTML = '<div style="font-family:\'Vanilla Whale\',monospace;font-size:32px;color:#fac775;letter-spacing:-0.5px;font-weight:400;line-height:1">-QG-</div>'
     + '<div style="font-size:13px;font-weight:600;color:#d3d1c7;letter-spacing:2px;margin:6px 0 2px">Q-GANG TOPLULUK ORGANİZASYONU</div>'
     + '<div style="font-size:10px;color:#333;letter-spacing:4px">HİYERARŞİ · YAPI</div>';
   wrap.appendChild(header);
@@ -3476,6 +3458,55 @@ function renderOrg() {
   wrap.appendChild(footer);
 
   el.appendChild(wrap);
+}
+</script>
+<script>
+// ============================================================
+// EKSİK FONKSİYONLAR - SON DÜZELTMELER
+// ============================================================
+
+// reqUpdateDuyuru
+async function reqUpdateDuyuru(id) {
+  var baslikEl = document.getElementById('de_baslik');
+  var icerikEl = document.getElementById('de_icerik');
+  var aktifEl = document.getElementById('de_aktif');
+  if (!baslikEl) return;
+  var gunc = { _id: id, baslik: baslikEl.value.trim(), icerik: icerikEl ? icerikEl.value.trim() : '', aktif: aktifEl ? aktifEl.checked : true };
+  var idx = duyurular.findIndex(function(d) { return String(d._id) === String(id) || String(d.id) === String(id); });
+  if (idx > -1) duyurular[idx] = Object.assign({}, duyurular[idx], gunc);
+  addLog('Duyuru güncellendi', gunc.baslik); save();
+  closeModal();
+  await cmsYaz('DUYURU_UPDATE', gunc);
+  renderDuyurular(); renderDuyuruBanner();
+}
+
+// tuzukKaydet - confirm2 sonsuz döngüsünü engellemek için doğrudan kaydet
+async function tuzukKaydet() {
+  var metin = document.getElementById('tuzukMetin');
+  if (!metin) { alert('Editör bulunamadı.'); return; }
+  var icerik = metin.value;
+  if (!icerik.trim()) { alert('İçerik boş olamaz.'); return; }
+  if (!confirm('Tüzüğü kaydetmek istiyor musun?')) return;
+  try {
+    var yeniTuzuk = { icerik: icerik, guncelleme: new Date().toISOString(), guncelleyen: SESSION.rumuz };
+    var res = await cmsYaz('TUZUK_GUNCELLE', yeniTuzuk);
+    tuzuk = Object.assign(tuzuk || {}, yeniTuzuk);
+    addLog('Tüzük güncellendi', SESSION.rumuz); save();
+    tuzukIptal();
+    renderTuzuk();
+    cmsStatusGoster('ok', '<i class="ti ti-check"></i> Tüzük kaydedildi');
+  } catch (e) { alert('Hata: ' + e.message); }
+}
+
+// uiAyarla - btnDavetEkle (davet kodu üret) göster
+var _origUiAyarla = uiAyarla;
+function uiAyarla() {
+  _origUiAyarla();
+  // Davet kodu üret butonu
+  var btnDavetEkle = document.getElementById('btnDavetEkle');
+  if (btnDavetEkle && (izin('kodUret') || SESSION.rol === 'Lider')) {
+    btnDavetEkle.style.display = '';
+  }
 }
 </script>
 </body>
