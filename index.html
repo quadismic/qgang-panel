@@ -3544,20 +3544,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var _origGA = typeof girisYapBtn !== 'undefined' ? girisYapBtn : null;
 });
 
-// gorevTalepleri yüklemesini cmsOku'ya entegre et
-var _origCmsOku = cmsOku;
-async function cmsOku() {
-  var veri = await _origCmsOku();
-  if (veri) {
-    try {
-      var tRes = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'GOREV_TALEP_LIST' }) });
-      var tData = await tRes.json();
-      gorevTalepleri = tData.result || [];
-    } catch (e) { }
-  }
-  return veri;
-}
+// gorevTalepleri cmsOku wrap kaldırıldı - renderGorevTalepleri ayrı çağrılıyor
 </script>
 </body>
 </html>
