@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel v1.1</title>
+<title>Q-GANG Panel</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -63,8 +63,9 @@ body{font-family:Arial,sans-serif;background:#111;color:#d3d1c7;padding:12px}
 .duyuru-inner{display:flex;align-items:center;gap:0}
 .duyuru-label{background:#854f0b;color:#fac775;font-size:11px;font-weight:700;padding:8px 12px;white-space:nowrap;flex-shrink:0;letter-spacing:1px}
 .duyuru-track{flex:1;overflow:hidden;position:relative;height:34px;-webkit-mask-image:linear-gradient(90deg,transparent 0%,black 4%,black 88%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,black 4%,black 88%,transparent 100%)}
-.duyuru-scroll{display:flex;align-items:center;height:100%;white-space:nowrap;will-change:transform}
+.duyuru-scroll{display:flex;align-items:center;height:100%;white-space:nowrap;will-change:transform;animation:duyuruKay 20s linear infinite}
 .duyuru-scroll:hover{animation-play-state:paused!important}
+@keyframes duyuruKay{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
 .duyuru-item{display:inline-flex;align-items:center;gap:6px;margin-right:80px;font-size:12px;color:#fac775}
 .duyuru-item::before{content:'◆';font-size:8px;color:#854f0b;margin-right:4px}
 
@@ -2138,7 +2139,7 @@ function renderDuyuruBanner(){
   <!-- DAVET KODLARI -->
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
     <div class="section-title" style="margin:0"><i class="ti ti-mail-forward"></i> Davet Kodları</div>
-    <button class="btn btn-warn btn-sm" onclick="openModal('addDavet')" id="btnDavetEkle" style="display:none"><i class="ti ti-plus"></i> Kod Üret</button>
+    <button class="btn btn-warn btn-sm" onclick="reqDavetKoduUret()" id="btnDavetEkle" style="display:none"><i class="ti ti-plus"></i> Kod Üret</button>
   </div>
   <div id="davetKodList"></div>
 
@@ -2194,12 +2195,7 @@ function renderDuyuruBanner(){
 </div><!-- ORGANİZASYON -->
 <div id="tab-org" class="tab">
   <div id="orgChart"></div>
-  <div style="text-align:center;margin-bottom:1.5rem;padding:1rem 0;border-bottom:0.5px solid #222">
-    <div style="font-family:'Vanilla Whale',serif;font-size:36px;letter-spacing:-0.5px;color:#fac775;line-height:1;margin-bottom:8px">-QG-</div>
-    <div style="font-size:15px;font-weight:600;color:#d3d1c7;letter-spacing:2px;margin-bottom:3px">Q-GANG Topluluk Organizasyonu</div>
-    <div style="font-size:10px;color:#555;letter-spacing:2px">HİYERARŞİ · YAPI</div>
-  </div>
-  <div class="org-wrap" id="orgWrap"></div>
+
 </div>
 
 <!-- LOG -->
@@ -2275,14 +2271,6 @@ function renderDuyurular(){
   });
 }
 
-function renderTuzuk(){
-  const el=document.getElementById('tuzukGorunum');if(!el)return;
-  if(tuzuk&&tuzuk.icerik){el.innerHTML=tuzuk.icerik;}
-  else{el.innerHTML='<div style="color:#555;font-size:12px">Tüzük henüz yüklenmedi.</div>';}
-  var canEdit=izin('tuzukDuzenle')||SESSION.rol==='Lider';
-  var btnGrp=document.getElementById('tuzukBtnGroup');
-  if(btnGrp){btnGrp.innerHTML=canEdit?'<button class="btn btn-sm" onclick="tuzukDuzenle()"><i class="ti ti-edit"></i> Düzenle</button>':'';}
-}
 
 function renderDisiplin(){
   const el=document.getElementById('disiplinList');if(!el)return;
@@ -2370,27 +2358,6 @@ function renderLog(){
   });
 }
 
-function renderOrg(){
-  const el=document.getElementById('orgChart');if(!el)return;
-  const rutbeSira={Lider:0,'Vekilharç':1,Kaptan:2,'Teğmen':3,'Üye':4,'Gözlemci':5};
-  const gruplar={};
-  Object.keys(rutbeSira).forEach(function(r){gruplar[r]=[];});
-  members.forEach(function(m){if(gruplar[m.rutbe])gruplar[m.rutbe].push(m);});
-  el.innerHTML='';
-  Object.keys(rutbeSira).forEach(function(rutbe){
-    if(!gruplar[rutbe].length)return;
-    var sek=document.createElement('div');sek.style.cssText='margin-bottom:16px';
-    var baslik=document.createElement('div');baslik.style.cssText='font-size:11px;font-weight:600;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px';
-    baslik.textContent=rutbe+' ('+gruplar[rutbe].length+')';sek.appendChild(baslik);
-    var grid=document.createElement('div');grid.style.cssText='display:flex;flex-wrap:wrap;gap:8px';
-    gruplar[rutbe].forEach(function(m){
-      var chip=document.createElement('div');chip.style.cssText='background:#111;border:0.5px solid #222;border-radius:8px;padding:8px 12px;cursor:pointer';
-      chip.innerHTML='<div style="font-size:12px;font-weight:500;color:#d3d1c7">'+m.rumuz+'</div><div style="font-size:10px;color:#555">'+( m.gorev||'Yok')+'</div>';
-      chip.onclick=function(){portfolyoAc(m.rumuz);};grid.appendChild(chip);
-    });
-    sek.appendChild(grid);el.appendChild(sek);
-  });
-}
 
 async function renderOylama(){
   const el=document.getElementById('oylamaList');if(!el)return;
@@ -2459,8 +2426,6 @@ async function renderOylama(){
 }
 
 </script>
-</body>
-</html>
 <script>
 // ============================================================
 // MODAL SİSTEMİ
@@ -2468,6 +2433,18 @@ async function renderOylama(){
 function openModal(type, data){
   var mc=document.getElementById('modalContainer');
   if(!mc)return;
+  if(type==='sifreDegistir'){
+    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+      +'<div class="modal-box"><h3><i class="ti ti-key"></i> Şifre Değiştir</h3>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Mevcut Şifre</label><input type="password" id="sd_eski" placeholder="Mevcut şifren..."></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Yeni Şifre</label><input type="password" id="sd_yeni" placeholder="Yeni şifre..."></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Yeni Şifre (Tekrar)</label><input type="password" id="sd_yeni2" placeholder="Tekrar gir..."></div>'
+      +'<div id="sd_hata" style="color:#e24b4a;font-size:12px;display:none;margin-bottom:8px"></div>'
+      +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" onclick="reqSifreDegistir()"><i class="ti ti-check"></i> Değiştir</button>'
+      +'</div></div></div>';
+    return;
+  }
   if(type==='addDisiplin'){reqDisiplinEkle();return;}
   if(type==='editEvent'){
     var eid=data;var evObj=events.find(function(ev){return String(ev._id)===String(eid)||String(ev.id)===String(eid);});if(!evObj)return;
@@ -2741,8 +2718,6 @@ if(typeof pasiflikKontrol==='undefined'){
   function pasiflikKontrol(){}
 }
 </script>
-</body>
-</html>
 <script>
 // ============================================================
 // ERİŞİM YÖNETİMİ
@@ -3003,8 +2978,6 @@ function saveToCSV(){
   a.download='qgang-uyeler-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
 }
 </script>
-</body>
-</html>
 <script>
 // ============================================================
 // EKSİK KALAN 8 FONKSİYON
@@ -3117,8 +3090,6 @@ async function reqUpdateEvent(eid){
   });
 }
 </script>
-</body>
-</html>
 <script>
 // ============================================================
 // EKSİK SABİT VE FONKSİYONLAR
@@ -3133,29 +3104,12 @@ const IZIN_ETIKETLER = {
   basvuruOnayla:'Başvuru Onayla/Reddet',
   basvuruGor:'Başvuru Gör',
   uyeEkle:'Üye Ekle',
-  uyeSil:'Üye Sil',
-  uyeDuzenle:'Üye Düzenle',
-  rutbeDegistir:'Rütbe Değiştir',
-  sifreSifirla:'Şifre Sıfırla',
-  puanDuzenle:'Puan Düzenle',
-  gorevAta:'Görev Ata',
-  disiplinUygula:'Disiplin Uygula',
-  tuzukDuzenle:'Tüzük Düzenle',
-  etkinlikEkle:'Etkinlik Ekle',
-  etkinlikSil:'Etkinlik Sil',
-  duyuruEkle:'Duyuru Ekle',
-  duyuruSil:'Duyuru Sil',
-  oylamaEkle:'Oylama Oluştur',
-  butceDuzenle:'Bütçe Düzenle',
-  butceGor:'Bütçe Gör',
-  logSil:'Log Temizle',
-  logGor:'Log Gör',
-  sezonKapat:'Sezon Kapat'
+  uyeSil:'Üye Sil'
 };
-var ROLLER_LISTE=['Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
-if(typeof aktifIzinler==='undefined'||!Object.keys(aktifIzinler).length){
-  var aktifIzinler=JSON.parse(JSON.stringify(typeof IZINLER!=='undefined'?IZINLER:{}));
-}
+
+// ============================================================
+// EKSİK SABİT VE FONKSİYONLAR
+// ============================================================
 
 // renderPuanArsiv - puan arşivi yükle
 async function renderPuanArsiv(rumuz){
@@ -3254,44 +3208,8 @@ async function reqSifreSifirla(id,rumuz){
 }
 
 // renderOrg - organizasyon şeması (düzeltilmiş)
-function renderOrg(){
-  var el=document.getElementById('orgChart');if(!el)return;
-  var rutbeSira={Lider:0,'Vekilharç':1,Kaptan:2,'Teğmen':3,'Üye':4,'Gözlemci':5};
-  var gruplar={};
-  Object.keys(rutbeSira).forEach(function(r){gruplar[r]=[];});
-  members.forEach(function(m){if(gruplar[m.rutbe])gruplar[m.rutbe].push(m);else{if(!gruplar['Üye'])gruplar['Üye']=[];gruplar['Üye'].push(m);}});
-  el.innerHTML='';
-  Object.keys(rutbeSira).forEach(function(rutbe){
-    var listesi=gruplar[rutbe]||[];
-    if(!listesi.length)return;
-    var sek=document.createElement('div');sek.style.cssText='margin-bottom:16px';
-    var baslik=document.createElement('div');baslik.style.cssText='font-size:11px;font-weight:600;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px';
-    baslik.textContent=rutbe+' ('+listesi.length+')';sek.appendChild(baslik);
-    var grid=document.createElement('div');grid.style.cssText='display:flex;flex-wrap:wrap;gap:8px';
-    listesi.forEach(function(m){
-      var chip=document.createElement('div');
-      chip.style.cssText='background:#111;border:0.5px solid #222;border-radius:8px;padding:8px 12px;min-width:100px';
-      chip.innerHTML='<div style="font-size:12px;font-weight:500;color:#d3d1c7">'+m.rumuz+'</div>'
-        +'<div style="font-size:10px;color:#555;margin-top:2px">'+(m.gorev||'Yok')+'</div>';
-      grid.appendChild(chip);
-    });
-    sek.appendChild(grid);el.appendChild(sek);
-  });
-  if(!el.children.length){el.innerHTML='<div style="font-size:12px;color:#555">Henüz üye yok.</div>';}
-}
 
 // renderTuzuk (düzeltilmiş)
-function renderTuzuk(){
-  var el=document.getElementById('tuzukIcerik');if(!el)return;
-  var canEdit=izin('tuzukDuzenle')||SESSION.rol==='Lider';
-  if(tuzuk&&tuzuk.icerik){
-    el.innerHTML=tuzuk.icerik;
-  }else{
-    el.innerHTML='<div style="color:#555;font-size:12px;padding:1rem;text-align:center"><i class="ti ti-file-off"></i> Tüzük henüz eklenmemiş.</div>';
-  }
-  var editBtn=document.getElementById('btnTuzukDuzenle');
-  if(editBtn)editBtn.style.display=canEdit?'':'none';
-}
 
 // Puan azaltma düzeltme - negatif değer kontrolü
 var _origReqPuan = typeof reqPuan !== 'undefined' ? reqPuan : null;
@@ -3343,15 +3261,6 @@ async function arsivSorgula(){
   });
   tbl.appendChild(tbody);listeEl.appendChild(tbl);
 }
-</script>
-</body>
-</html>
-<script>
-// ============================================================
-// TÜZÜK DÜZENLEME + DİSİPLİN MODAL + ETKİNLİK DÜZENLEME
-// ============================================================
-
-// Tüzük düzenleme
 function tuzukDuzenle(){
   var editor=document.getElementById('tuzukEditor');
   var gorunum=document.getElementById('tuzukGorunum');
@@ -3391,82 +3300,12 @@ function openModalAddDisiplin(){reqDisiplinEkle();}
 
 // Etkinlik düzenleme modal - reqEditEvent için gerekli editEvent modal
 // renderOrg - hiyerarşik organizasyon şeması
-function renderOrg(){
-  var el=document.getElementById('orgChart');
-  if(!el){var tab=document.getElementById('tab-org');if(tab){el=document.createElement('div');el.id='orgChart';tab.appendChild(el);}else return;}
-  if(!members||!members.length){el.innerHTML='<div style="font-size:12px;color:#555;padding:2rem;text-align:center">Üye verisi yüklenmedi.</div>';return;}
-  
-  // Rütbe renkleri
-  var RENKLER={Lider:{bg:'#2a1800',border:'#fac775',txt:'#fac775'},Vekilharç:{bg:'#2a0000',border:'#c94040',txt:'#e06060'},Kaptan:{bg:'#001a2a',border:'#4a9fd4',txt:'#7ab8e4'},'Teğmen':{bg:'#001a00',border:'#4a9a4a',txt:'#7aba7a'},'Üye':{bg:'#1a1500',border:'#8a7430',txt:'#c9a040'},'Gözlemci':{bg:'#0f0f0f',border:'#333',txt:'#555'}};
-  var SIRALA=['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
-  
-  var gruplar={};SIRALA.forEach(function(r){gruplar[r]=[];});
-  members.forEach(function(m){var r=m.rutbe||'Üye';if(!gruplar[r])gruplar[r]=[];gruplar[r].push(m);});
-  
-  el.innerHTML='';
-  
-  // Başlık
-  var baslik=document.createElement('div');baslik.className='org-baslik';
-  baslik.innerHTML='<div class="org-baslik-qg">-QG-</div>'
-    +'<div style="font-size:14px;font-weight:600;color:#d3d1c7;margin:6px 0 2px;letter-spacing:1px">Q-GANG Topluluk Organizasyonu</div>'
-    +'<div class="org-baslik-alt">HİYERARŞİ · YAPI</div>';
-  el.appendChild(baslik);
-  
-  // Her rütbe katmanı
-  SIRALA.forEach(function(rutbe, ri){
-    var listesi=gruplar[rutbe]||[];
-    if(!listesi.length)return;
-    var renk=RENKLER[rutbe]||RENKLER['Gözlemci'];
-    
-    // Connector (Lider hariç)
-    if(ri>0){var conn=document.createElement('div');conn.className='org-connector';el.appendChild(conn);}
-    
-    // Rütbe başlık etiketi
-    var label=document.createElement('div');label.style.cssText='text-align:center;margin-bottom:10px';
-    label.innerHTML='<span class="org-rutbe-baslik" style="color:'+renk.txt+'">'+rutbe+' ('+listesi.length+')</span>';
-    el.appendChild(label);
-    
-    // Chip grid
-    var satir=document.createElement('div');satir.className='org-satir';
-    listesi.forEach(function(m){
-      var chip=document.createElement('div');chip.className='org-chip';
-      chip.style.cssText='background:'+renk.bg+';border:1px solid '+renk.border+';';
-      chip.innerHTML='<div class="org-chip-rumuz" style="color:'+renk.txt+'">'+m.rumuz+'</div>'
-        +'<div class="org-chip-gorev">'+(m.gorev&&m.gorev!=='Yok'?m.gorev:'—')+'</div>';
-      satir.appendChild(chip);
-    });
-    el.appendChild(satir);
-  });
-  
-  if(!el.querySelector('.org-chip')){el.innerHTML+='<div style="text-align:center;color:#555;font-size:12px;padding:2rem">Üye bulunamadı.</div>';}
-}
 </script>
-</body>
-</html>
 <script>
 // ============================================================
 // ŞİFRE DEĞİŞTİR MODAL + ORG CHART + TÜZÜK DEFAULT
 // ============================================================
 
-// openModal'a sifreDegistir ekle - bir sonraki çağrıda override
-var _omBase = openModal;
-function openModal(type, data) {
-  if (type === 'sifreDegistir') {
-    var mc = document.getElementById('modalContainer');
-    if (!mc) return;
-    mc.innerHTML = '<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
-      + '<div class="modal-box"><h3><i class="ti ti-key"></i> Şifre Değiştir</h3>'
-      + '<div class="form-group" style="margin-bottom:8px"><label>Mevcut Şifre</label><input type="password" id="sd_eski" placeholder="Mevcut şifren..."></div>'
-      + '<div class="form-group" style="margin-bottom:8px"><label>Yeni Şifre</label><input type="password" id="sd_yeni" placeholder="Yeni şifre..."></div>'
-      + '<div class="form-group" style="margin-bottom:8px"><label>Yeni Şifre (Tekrar)</label><input type="password" id="sd_yeni2" placeholder="Tekrar gir..."></div>'
-      + '<div id="sd_hata" style="color:#e24b4a;font-size:12px;display:none;margin-bottom:8px"></div>'
-      + '<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
-      + '<button class="btn btn-warn" onclick="reqSifreDegistir()"><i class="ti ti-check"></i> Değiştir</button>'
-      + '</div></div></div>';
-    return;
-  }
-  if (typeof _omBase === 'function') _omBase(type, data);
-}
 
 async function reqSifreDegistir() {
   var eskiEl = document.getElementById('sd_eski');
@@ -3512,12 +3351,6 @@ async function gorevTalepleriniYukle() {
   } catch (e) { gorevTalepleri = []; }
 }
 
-// renderDashboard'u wrap et - gorevTalepleri yüklü yoksa yükle
-var _origRD = renderDashboard;
-function renderDashboard() {
-  if (!gorevTalepleri) gorevTalepleri = [];
-  _origRD();
-}
 
 // Tüzük boşsa varsayılan tüzük metni göster
 var _origRT = renderTuzuk;
@@ -3546,8 +3379,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // gorevTalepleri cmsOku wrap kaldırıldı - renderGorevTalepleri ayrı çağrılıyor
 </script>
-</body>
-</html>
 <script>
 // ============================================================
 // ORG CHART - SVG TABANLI HİYERARŞİK KURUMSAL YAPI
