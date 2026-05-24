@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel v1.1.</title>
+<title>Q-GANG Panel</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -1596,11 +1596,23 @@ function reqEditEvent(id){
 async function reqDeleteEvent(id){
   if(!izin('etkinlikSil'))return;
   const e=events.find(function(e){return String(e._id)===String(id)||String(e.id)===String(id);});if(!e)return;
-
-  confirm2('Etkinliği sil','<strong>'+e.tur+'</strong> ('+fmtDate(e.tarih)+') silinecek.',async()=>{
+  const kat=parseKat(e.katilimcilar);
+  const epuan=Number(e.puan)||10;
+  confirm2('Etkinliği sil','<strong>'+e.tur+'</strong> ('+fmtDate(e.tarih)+') silinecek.<br><span style="font-size:12px;color:#888">'+kat.length+' katılımcıdan '+epuan+' puan geri alınacak.</span>',async function(){
+    // Katılımcıların puanlarını geri al
+    for(var i=0;i<kat.length;i++){
+      var rumuz=kat[i].trim();
+      var m=members.find(function(x){return x.rumuz===rumuz;});
+      if(m){
+        m.puan=Math.max(0,(Number(m.puan)||0)-epuan);
+        await cmsYaz('MEMBER_UPDATE',Object.assign({},m,{_id:m._id||m.id}));
+        // Arşivden de sil - negatif kayıt ekle
+        await puanArsivEkle(rumuz,-epuan,'Etkinlik silindi: '+e.tur,'etkinlik');
+      }
+    }
     events=events.filter(function(ev){return String(ev._id)!==String(id)&&String(ev.id)!==String(id);});
     addLog('Etkinlik silindi',e.tur+' — '+fmtDate(e.tarih));save();
-    renderEvents();renderDashboard();
+    renderEvents();renderPuan();renderDashboard();
     await cmsYaz('EVENT_DELETE',e._id||e.id);
   });
 }
@@ -1713,8 +1725,12 @@ function renderDuyuruBanner(){
   // CSS animation - Web Animations API yerine
   scroll.style.animation = 'none';
   scroll.style.transform = '';
-  // Animasyon süresini içerik uzunluğuna göre ayarla
-  var duration = Math.max(15, aktif.length * 8);
+  // Animasyon süresini içerik sayısına ve uzunluğuna göre ayarla
+  // Her duyuru yaklaşık 5 saniye görünsün, minimum 12 saniye
+  var duration = Math.max(12, aktif.length * 6);
+  scroll.style.animation = 'none';
+  // Force reflow
+  void scroll.offsetWidth;
   scroll.style.animation = 'duyuruKay ' + duration + 's linear infinite';
 }
 
@@ -2648,11 +2664,18 @@ async function reqOyVer(oid,secim){
 
 async function reqOylakapat(oid,aktif){
   try{
+    // Mevcut oylamayı bul - aktif alanını güncelle
+    var mevcut=oylamalar.find(function(o){return String(o._id)===String(oid)||String(o.id)===String(oid);});
+    if(!mevcut){renderOylama();return;}
+    var gunc=Object.assign({},mevcut,{_id:mevcut._id||mevcut.id,aktif:aktif});
     await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'OYLAMA_UPDATE',item:{_id:oid,aktif:aktif}})});
-    addLog(aktif?'Oylama açıldı':'Oylama kapatıldı','ID: '+oid);
+      body:JSON.stringify({action:'OYLAMA_UPDATE',item:gunc})});
+    // Local state güncelle
+    var idx=oylamalar.findIndex(function(o){return String(o._id)===String(oid)||String(o.id)===String(oid);});
+    if(idx>-1)oylamalar[idx]=Object.assign({},oylamalar[idx],{aktif:aktif});
+    addLog(aktif?'Oylama açıldı':'Oylama kapatıldı',mevcut.baslik||'ID: '+oid);
     renderOylama();
-  }catch(e){}
+  }catch(e){console.error('Oylama hatası:',e);}
 }
 
 async function reqOylamaSil(oid){
