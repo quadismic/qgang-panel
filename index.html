@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel v1.5</title>
+<title>Q-GANG Panel</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -65,7 +65,7 @@ body{font-family:Arial,sans-serif;background:#111;color:#d3d1c7;padding:12px}
 .duyuru-track{flex:1;overflow:hidden;position:relative;height:34px;-webkit-mask-image:linear-gradient(90deg,transparent 0%,black 4%,black 88%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,black 4%,black 88%,transparent 100%)}
 .duyuru-scroll{display:flex;align-items:center;height:100%;white-space:nowrap;will-change:transform;animation:duyuruKay 20s linear infinite}
 .duyuru-scroll:hover{animation-play-state:paused!important}
-@keyframes duyuruKay{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+@keyframes duyuruKay{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .duyuru-item{display:inline-flex;align-items:center;gap:6px;margin-right:80px;font-size:12px;color:#fac775}
 .duyuru-item::before{content:'◆';font-size:8px;color:#854f0b;margin-right:4px}
 
@@ -1695,38 +1695,27 @@ async function reqDeleteButce(id){
 // DUYURULAR
 //
 function renderDuyuruBanner(){
-  const aktif=duyurular.filter(function(d){return d.aktif!==false;});
-  const banner=document.getElementById('duyuruBanner');
-  if(!aktif.length){banner.style.display='none';}
-  else{
-    banner.style.display='block';
-    const scroll=document.getElementById('duyuruScroll');
-    const icerik=aktif.map(function(d){
-      return '<span class="duyuru-item"><span style="font-weight:700;color:#ffd280;letter-spacing:0.5px">'+d.baslik+'</span>'
-        +'<span style="color:#854f0b;margin:0 6px">◆</span>'
-        +'<span style="color:#c9aa7a;font-weight:400">'+d.icerik+'</span></span>';
-    }).join('');
-    // Sonsuz loop için: tek kopya + kendi genişliğine göre kayar
-    scroll.innerHTML=icerik;
-    // Boyutu ölç, sonra döngü kur
-    scroll.style.transform='';
-    requestAnimationFrame(function(){
-      const trackW=scroll.parentElement.offsetWidth;
-      const scrollW=scroll.scrollWidth;
-      const toplam=trackW+scrollW;
-      const hiz=80; // pixel/saniye
-      const sure=Math.round(toplam/hiz*1000); // ms
-      // Mevcut animasyonu iptal et
-      if(scroll._anim){try{scroll._anim.cancel();}catch(e){}}
-      scroll._anim=scroll.animate(
-        [{transform:'translateX('+trackW+'px)'},{transform:'translateX(-'+scrollW+'px)'}],
-        {duration:sure,iterations:Infinity,easing:'linear'}
-      );
-      scroll.addEventListener('mouseenter',function(){if(scroll._anim)scroll._anim.pause();});
-      scroll.addEventListener('mouseleave',function(){if(scroll._anim)scroll._anim.play();});
-    });
-  }
-  
+  var aktif=duyurular.filter(function(d){return d.aktif!==false;});
+  var banner=document.getElementById('duyuruBanner');
+  if(!banner)return;
+  if(!aktif.length){banner.style.display='none';return;}
+  banner.style.display='block';
+  var scroll=document.getElementById('duyuruScroll');
+  if(!scroll)return;
+  // İçerik oluştur (iki kopya - seamless loop için)
+  var icerik=aktif.map(function(d){
+    return '<span class="duyuru-item"><span style="font-weight:700;color:#ffd280;letter-spacing:0.5px">'+d.baslik+'</span>'
+      +'<span style="color:#854f0b;margin:0 6px">◆</span>'
+      +'<span style="color:#c9aa7a;font-weight:400">'+d.icerik+'</span></span>';
+  }).join('');
+  // İki kopya koy - CSS animation seamless loop
+  scroll.innerHTML = icerik + icerik;
+  // CSS animation - Web Animations API yerine
+  scroll.style.animation = 'none';
+  scroll.style.transform = '';
+  // Animasyon süresini içerik uzunluğuna göre ayarla
+  var duration = Math.max(15, aktif.length * 8);
+  scroll.style.animation = 'duyuruKay ' + duration + 's linear infinite';
 }
 
 
@@ -3334,25 +3323,6 @@ async function gorevTalepleriniYukle() {
 }
 
 
-// Tüzük boşsa varsayılan tüzük metni göster
-var _origRT = renderTuzuk;
-function renderTuzuk() {
-  if (!tuzuk || !tuzuk.icerik) {
-    var el = document.getElementById('tuzukGorunum');
-    if (el) {
-      el.innerHTML = '<div style="color:#555;font-size:12px;padding:1rem;text-align:center;border:1px dashed #222;border-radius:8px">'
-        + '<i class="ti ti-file-off" style="font-size:24px;display:block;margin-bottom:8px"></i>'
-        + 'Tüzük henüz eklenmemiş.<br>'
-        + ((SESSION.rol === 'Lider' || izin('tuzukDuzenle')) ? '<button class="btn btn-sm" style="margin-top:12px" onclick="tuzukDuzenle()"><i class="ti ti-plus"></i> Tüzük Ekle</button>' : '')
-        + '</div>';
-    }
-    var canEdit = izin('tuzukDuzenle') || SESSION.rol === 'Lider';
-    var btnGrp = document.getElementById('tuzukBtnGroup');
-    if (btnGrp) btnGrp.innerHTML = canEdit ? '<button class="btn btn-sm" onclick="tuzukDuzenle()"><i class="ti ti-edit"></i> Düzenle</button>' : '';
-    return;
-  }
-  if (typeof _origRT === 'function') _origRT();
-}
 
 // panelAc sonunda görev taleplerini yükle
 document.addEventListener('DOMContentLoaded', function() {
@@ -3498,16 +3468,73 @@ async function tuzukKaydet() {
   } catch (e) { alert('Hata: ' + e.message); }
 }
 
-// uiAyarla - btnDavetEkle (davet kodu üret) göster
-var _origUiAyarla = uiAyarla;
-function uiAyarla() {
-  _origUiAyarla();
-  // Davet kodu üret butonu
-  var btnDavetEkle = document.getElementById('btnDavetEkle');
-  if (btnDavetEkle && (izin('kodUret') || SESSION.rol === 'Lider')) {
-    btnDavetEkle.style.display = '';
+</script>
+<script>
+// ============================================================
+// uiAyarla ve renderTuzuk - TEMİZ TANIMLAR
+// ============================================================
+
+function uiAyarla(){
+  var lider=SESSION.rol==='Lider';
+  function showIfIzin(id,key){
+    var el=document.getElementById(id);
+    if(el&&(izin(key)||lider))el.style.display='';
+  }
+  showIfIzin('btnUyeEkle','uyeEkle');
+  showIfIzin('btnButceEkle','butceDuzenle');
+  showIfIzin('btnEtkinlikEkle','etkinlikEkle');
+  showIfIzin('btnKodUret','kodUret');
+  showIfIzin('btnLogTemizle','logSil');
+  showIfIzin('btnDuyuruEkle','duyuruEkle');
+  showIfIzin('btnDisiplinEkle','disiplinUygula');
+  showIfIzin('btnOylamaEkle','oylamaEkle');
+  showIfIzin('btnDavetEkle','kodUret');
+
+  if(!izin('butceGor')&&!lider){var nb=document.getElementById('navButceDD');if(nb)nb.style.display='none';}
+  if(!izin('logGor')&&!lider){var nl=document.getElementById('navLog');if(nl)nl.style.display='none';}
+
+  var rolN2=SESSION.rol||'';
+  if(lider||rolN2.includes('Vekil')){
+    var navBasvuru=document.getElementById('navBasvuruDD');
+    if(navBasvuru)navBasvuru.style.display='';
+    basvuruSayisiniGuncelle();
+  }
+  if(lider){
+    var navEr=document.getElementById('navErisimDD');
+    if(navEr)navEr.style.display='';
   }
 }
+
+function renderTuzuk(){
+  var el=document.getElementById('tuzukGorunum');if(!el)return;
+  var canEdit=izin('tuzukDuzenle')||SESSION.rol==='Lider';
+  var btnGrp=document.getElementById('tuzukBtnGroup');
+  if(tuzuk&&tuzuk.icerik){
+    el.innerHTML=tuzuk.icerik;
+  }else{
+    el.innerHTML='<div style="color:#555;font-size:12px;padding:1.5rem;text-align:center;border:1px dashed #222;border-radius:8px">'
+      +'<i class="ti ti-file-off" style="font-size:24px;display:block;margin-bottom:8px"></i>'
+      +'Tüzük henüz eklenmemiş.'
+      +(canEdit?'<br><button class="btn btn-sm" style="margin-top:12px" onclick="tuzukDuzenle()"><i class="ti ti-plus"></i> Tüzük Ekle</button>':'')
+      +'</div>';
+  }
+  if(btnGrp)btnGrp.innerHTML=canEdit?'<button class="btn btn-sm" onclick="tuzukDuzenle()"><i class="ti ti-edit"></i> Düzenle</button>':'';
+}
+
+// panelAc'ta veriyi giriş sonrası hemen yükle ve dashboard'u render et
+// Bu fonksiyon giriş sonrası dashboard'u render etmeyi garantiler
+var _panelAcYuklendi = false;
+(function patchPanelAc(){
+  var origPanelAc = panelAc;
+  panelAc = async function(rumuz, rol) {
+    await origPanelAc(rumuz, rol);
+    // Veri yüklendiyse dashboard'u yeniden render et
+    if(members && members.length) {
+      renderDashboard();
+      renderDuyuruBanner();
+    }
+  };
+})();
 </script>
 </body>
 </html>
