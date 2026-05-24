@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel</title>
+<title>Q-GANG Panel v1.1.</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -2896,7 +2896,12 @@ async function reqGorevTalepGonder(){
   if(!turEl){closeModal();return;}
   var talep={rumuz:SESSION.rumuz,tur:turEl.value,aciklama:aciklamaEl?aciklamaEl.value:'',tarih:new Date().toISOString().split('T')[0],durum:'beklemede'};
   await cmsYaz('GOREV_TALEP_ADD',talep);
+  // gorevTalepleri güncelle
+  if(!gorevTalepleri)gorevTalepleri=[];
+  gorevTalepleri.push(talep);
   addLog('Görev talebi gönderildi',SESSION.rumuz+' — '+turEl.value);save();
+  // Dashboard bildirimi anında güncelle
+  renderDashboard();
   closeModal();
   var mc=document.getElementById('modalContainer');
   mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()" style="background:rgba(0,0,0,.88)">'
@@ -3003,15 +3008,29 @@ function reqAddButce(){
 // Davet kodu üret
 async function reqDavetKoduUret(){
   if(!izin('kodUret')&&SESSION.rol!=='Lider'){alert('Yetkiniz yok.');return;}
-  confirm2('Davet kodu üret','Yeni bir davet kodu oluşturulacak.',async function(){
+  confirm2('Davet kodu üret','Yeni bir QGANG-XXXX formatında kod oluşturulacak.',async function(){
     try{
-      var kod=Math.random().toString(36).substring(2,10).toUpperCase();
+      // QGANG-XXXX formatı
+      var rastgele=Math.random().toString(36).substring(2,6).toUpperCase();
+      var kod='QGANG-'+rastgele;
       var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({action:'DAVET_KOD_EKLE',item:{kod:kod,olusturan:SESSION.rumuz,tarih:new Date().toISOString().split('T')[0],kullanildi:false}})});
       var data=await res.json();
-      addLog('Davet kodu üretildi',kod);save();
-      alert('Kod: '+kod);
-      renderDavet();
+      if(data.success||data.result){
+        addLog('Davet kodu üretildi',kod);save();
+        // Paneli güncelle
+        renderDavetKodlari();
+        // Başarı mesajı
+        var mc=document.getElementById('modalContainer');
+        mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+          +'<div class="modal-box" style="text-align:center;max-width:360px;padding:2rem">'
+          +'<div style="font-size:32px;margin-bottom:12px">🎟️</div>'
+          +'<div style="font-size:14px;font-weight:600;color:#fac775;margin-bottom:8px">Kod Oluşturuldu!</div>'
+          +'<div style="font-size:22px;font-weight:700;letter-spacing:4px;color:#d3d1c7;background:#111;padding:12px;border-radius:8px;border:1px solid #333;margin-bottom:16px">'+kod+'</div>'
+          +'<div style="font-size:12px;color:#555;margin-bottom:16px">Bu kodu paylaşmak istediğin kişiye ilet.</div>'
+          +'<button class="btn btn-warn" onclick="closeModal()" style="width:100%">Tamam</button>'
+          +'</div></div>';
+      }else{alert('Hata: '+(data.error||'İşlem başarısız'));}
     }catch(e){alert('Hata: '+e.message);}
   });
 }
@@ -3068,30 +3087,35 @@ async function reqUpdateEvent(eid){
 // IZIN_ETIKETLER - Erişim yönetimi için
 // İzinler hiyerarşik sırayla - üstten alta yetkiden görüntülemeye
 const IZIN_ETIKETLER = {
-  davetYonet:'Davet Yönet',
-  kodUret:'Davet Kodu Üret',
-  kodGor:'Davet Kodlarını Gör',
-  basvuruOnayla:'Başvuru Onayla/Reddet',
-  basvuruGor:'Başvuru Gör',
+  // — YÖNETİM —
+  sezonKapat:'Sezon Kapat',
+  tuzukDuzenle:'Tüzük Düzenle',
+  disiplinUygula:'Disiplin Uygula',
+  // — ÜYE YÖNETİMİ —
   uyeEkle:'Üye Ekle',
-  uyeSil:'Üye Sil',
   uyeDuzenle:'Üye Düzenle',
   rutbeDegistir:'Rütbe Değiştir',
   sifreSifirla:'Şifre Sıfırla',
+  uyeSil:'Üye Sil',
+  // — DAVET & BAŞVURU —
+  davetYonet:'Davet Yönet',
+  basvuruOnayla:'Başvuru Onayla/Reddet',
+  basvuruGor:'Başvuru Gör',
+  kodUret:'Davet Kodu Üret',
+  kodGor:'Davet Kodlarını Gör',
+  // — İÇERİK & AKTİVİTE —
   puanDuzenle:'Puan Düzenle',
-  gorevAta:'Görev Ata',
-  disiplinUygula:'Disiplin Uygula',
-  tuzukDuzenle:'Tüzük Düzenle',
   etkinlikEkle:'Etkinlik Ekle',
   etkinlikSil:'Etkinlik Sil',
+  gorevAta:'Görev Ata',
+  oylamaEkle:'Oylama Oluştur',
   duyuruEkle:'Duyuru Ekle',
   duyuruSil:'Duyuru Sil',
-  oylamaEkle:'Oylama Oluştur',
+  // — BÜTÇE & LOG —
   butceDuzenle:'Bütçe Düzenle',
   butceGor:'Bütçe Gör',
   logSil:'Log Temizle',
-  logGor:'Log Gör',
-  sezonKapat:'Sezon Kapat'
+  logGor:'Log Gör'
 };
 
 // ============================================================
@@ -3512,11 +3536,7 @@ function renderTuzuk(){
   if(tuzuk&&tuzuk.icerik){
     el.innerHTML=tuzuk.icerik;
   }else{
-    el.innerHTML='<div style="color:#555;font-size:12px;padding:1.5rem;text-align:center;border:1px dashed #222;border-radius:8px">'
-      +'<i class="ti ti-file-off" style="font-size:24px;display:block;margin-bottom:8px"></i>'
-      +'Tüzük henüz eklenmemiş.'
-      +(canEdit?'<br><button class="btn btn-sm" style="margin-top:12px" onclick="tuzukDuzenle()"><i class="ti ti-plus"></i> Tüzük Ekle</button>':'')
-      +'</div>';
+    el.innerHTML='<div class="tuzuk-section visible"><div class="tuzuk-section-header"><span class="tuzuk-section-num">I</span><span class="tuzuk-section-title">Başlangıç</span></div><div class="tuzuk-section-body">Q-GANG; birlikte oyun oynama ve sosyal dayanışma alanlarında faaliyet gösteren bir eğlence ve kardeşlik topluluğudur.<br><br>Lider, topluluğun en yetkili yöneticisidir. Lider tarafından alınan tüm kararlar kesin ve bağlayıcıdır. Tüzükte açıkça düzenlenmeyen hususlar, topluluk ilkeleri ve kardeşlik ruhu esas alınarak Lider tarafından belirlenir.<br><br>Tüzük gerekli görüldüğünde Lider tarafından güncellenebilir. Topluluğa bağlı olan herkes, tüzüğün güncel hâlini bilmek ve buna uymakla sorumludur.</div></div><div class="tuzuk-section visible"><div class="tuzuk-section-header"><span class="tuzuk-section-num">II</span><span class="tuzuk-section-title">İlkeler</span></div><div class="tuzuk-section-body"><div class="tuzuk-rule"><span class="tuzuk-rule-num">1</span><div><div class="tuzuk-rule-title">Huzur esastır</div><div class="tuzuk-rule-text">Herkes topluluğun huzurunu korumakla yükümlüdür. Gereksiz gerginlik, sert tartışma ve huzur bozucu tutumlara yer yoktur.</div></div></div><div class="tuzuk-rule"><span class="tuzuk-rule-num">2</span><div><div class="tuzuk-rule-title">Saygı vazgeçilmezdir</div><div class="tuzuk-rule-text">Fikir ayrılıkları doğaldır. Ancak hakaret, aşağılama, dışlama ve benzeri davranışlara asla müsamaha gösterilmez. Bu çizgide ısrar edenler topluluktan çıkarılır.</div></div></div><div class="tuzuk-rule"><span class="tuzuk-rule-num">3</span><div><div class="tuzuk-rule-title">Kardeşlik emek ister</div><div class="tuzuk-rule-text">Topluluğun bir parçası olmak, imkânlar dâhilinde aktif katılımı veya katılamadığında dahi bu bağa özen göstermeyi gerektirir.</div></div></div><div class="tuzuk-rule"><span class="tuzuk-rule-num">4</span><div><div class="tuzuk-rule-title">Kırgınlıklar çözülür, taşınmaz</div><div class="tuzuk-rule-text">Tartışma ve dargınlıklar iyi niyet, empati ve gönül alma iradesiyle çözülür. Küslük Q-GANG\'de kalıcı olamaz.</div></div></div></div></div><div class="tuzuk-section visible"><div class="tuzuk-section-header"><span class="tuzuk-section-num">III</span><span class="tuzuk-section-title">Disiplin ve Yaptırımlar</span></div><div class="tuzuk-section-body"><div class="sanction-grid"><div class="sanction-card"><div class="sanction-label uyari">Uyarı</div><div class="sanction-desc">Hafif ihlaller, ilk tekrar</div></div><div class="sanction-card"><div class="sanction-label uzaklastirma">Uzaklaştırma</div><div class="sanction-desc">Orta ağırlıklı ihlaller</div></div><div class="sanction-card"><div class="sanction-label ihrac">İhraç</div><div class="sanction-desc">Ağır veya tekrarlayan ihlaller</div></div></div><div class="sanction-note">İhlalin ağırlığı, kişinin tutumu, pişmanlığı, telafi iradesi ve tekrar durumu dikkate alınarak yaptırım belirlenir. Karar, ilgilinin savunması alındıktan sonra verilir ve uygulama sonrasında topluluğa duyurulur.</div></div></div>'+(canEdit?'<div style="margin-top:1rem;text-align:right"><button class="btn btn-sm" onclick="tuzukDuzenle()"><i class="ti ti-edit"></i> Düzenle</button></div>':'');
   }
   if(btnGrp)btnGrp.innerHTML=canEdit?'<button class="btn btn-sm" onclick="tuzukDuzenle()"><i class="ti ti-edit"></i> Düzenle</button>':'';
 }
