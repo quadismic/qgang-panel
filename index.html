@@ -407,9 +407,11 @@ async function kayitGonder(){
     if(data.success){
       basari.textContent=data.message||'Başvurun alındı! Yetkili onayından sonra giriş yapabilirsin.';
       basari.style.display='block';
+      basari.scrollIntoView({behavior:'smooth',block:'center'});
       btn.textContent='Başvuru Gönderildi ✓';
     } else {
       hata.textContent=data.error||'Bir hata oluştu.';hata.style.display='block';
+      hata.scrollIntoView({behavior:'smooth',block:'center'});
       btn.textContent='BENİ İÇERİ AL';btn.disabled=false;
     }
   }catch(e){
@@ -1455,9 +1457,9 @@ async function gorevTalepYanitla(id,durum){
     var gi=gorevTalepleri.findIndex(function(t){return String(t._id)===String(id)||String(t.id)===String(id);});
     if(gi>-1)gorevTalepleri[gi]=Object.assign({},gorevTalepleri[gi],{durum:durum});
   }
-  renderGorev();
   await renderGorevTalepleri();
-  renderDashboard();
+  renderGorev();
+  renderDashboard(); // Dashboard uyarı kutusunu anında günceller
 }
 
 async function renderGorevTalepleri(){
@@ -2944,14 +2946,17 @@ async function reqGorevTalepGonder(){
   var aciklamaEl=document.getElementById('gt_aciklama');
   if(!turEl){closeModal();return;}
   var talep={rumuz:SESSION.rumuz,tur:turEl.value,aciklama:aciklamaEl?aciklamaEl.value:'',tarih:new Date().toISOString().split('T')[0],durum:'beklemede'};
-  await cmsYaz('GOREV_TALEP_ADD',talep);
-  // gorevTalepleri güncelle
+  var talepRes=await cmsYaz('GOREV_TALEP_ADD',talep);
+  // ID'yi al - Wix'ten dönen ID varsa onu kullan
+  var yeniTalep=Object.assign({},talep,{_id:talepRes&&talepRes.result?(talepRes.result._id||talepRes.result.id):('tmp-'+Date.now())});
   if(!gorevTalepleri)gorevTalepleri=[];
-  gorevTalepleri.push(talep);
+  gorevTalepleri.push(yeniTalep);
   addLog('Görev talebi gönderildi',SESSION.rumuz+' — '+turEl.value);save();
-  // Dashboard bildirimi anında güncelle
-  renderDashboard();
   closeModal();
+  // ANINDA güncelle - tüm ilgili render'ları çağır
+  await renderGorevTalepleri();
+  renderGorev();
+  renderDashboard();
   var mc=document.getElementById('modalContainer');
   mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()" style="background:rgba(0,0,0,.88)">'
     +'<div class="modal-box" style="text-align:center;max-width:380px;padding:2.5rem 2rem">'
@@ -3075,7 +3080,7 @@ async function reqDavetKoduUret(){
           +'<div class="modal-box" style="text-align:center;max-width:360px;padding:2rem">'
           +'<div style="font-size:32px;margin-bottom:12px">🎟️</div>'
           +'<div style="font-size:14px;font-weight:600;color:#fac775;margin-bottom:8px">Kod Oluşturuldu!</div>'
-          +'<div style="font-size:22px;font-weight:700;letter-spacing:4px;color:#d3d1c7;background:#111;padding:12px;border-radius:8px;border:1px solid #333;margin-bottom:16px">'+kod+'</div>'
+          +'<div style="font-size:22px;font-weight:700;letter-spacing:4px;color:#d3d1c7;background:#111;padding:12px;border-radius:8px;border:1px solid #333;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px"><span id="uretilen_kod">'+kod+'</span><button onclick="navigator.clipboard.writeText(\"'+kod+'\").then(function(){var b=document.getElementById(\"kopya_btn\");if(b){b.innerHTML=\"<i class=\\\\\"ti ti-check\\\\\"></i>\";setTimeout(function(){b.innerHTML=\"<i class=\\\\\"ti ti-copy\\\\\"></i>\";},1500);}});" id="kopya_btn" style="background:#333;border:none;border-radius:6px;padding:6px 10px;cursor:pointer;color:#fac775;font-size:14px"><i class=\"ti ti-copy\"></i></button></div>'
           +'<div style="font-size:12px;color:#555;margin-bottom:16px">Bu kodu paylaşmak istediğin kişiye ilet.</div>'
           +'<button class="btn btn-warn" onclick="closeModal()" style="width:100%">Tamam</button>'
           +'</div></div>';
@@ -3196,8 +3201,10 @@ async function renderDavetKodlari(){
     kodlar.forEach(function(k){
       var row=document.createElement('div');row.className='card';row.style.cssText='padding:10px 14px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px';
       var info=document.createElement('div');info.style.flex='1';
-      info.innerHTML='<span style="font-size:14px;font-weight:600;color:#fac775;letter-spacing:2px">'+k.kod+'</span>'
-        +'<span style="font-size:11px;color:#555;margin-left:12px">'+(k.kullanildi?'<span style="color:#e24b4a">Kullanıldı</span>':'<span style="color:#9fe1cb">Aktif</span>')+'</span>'
+      var kodStr=k.kod;
+      info.innerHTML='<span style="font-size:14px;font-weight:600;color:#fac775;letter-spacing:2px">'+kodStr+'</span>'
+        +'<span class="kopya-kod-btn" onclick="navigator.clipboard.writeText(\''+kodStr+'\').then(function(){var el=event.target;el.textContent=\'✓\';setTimeout(function(){el.textContent=\'Kopyala\';},1500);})" style="font-size:10px;color:#555;margin-left:8px;cursor:pointer;padding:2px 6px;border-radius:4px;border:0.5px solid #333;user-select:none">Kopyala</span>'
+        +'<span style="font-size:11px;color:#555;margin-left:8px">'+(k.kullanildi?'<span style="color:#e24b4a">Kullanıldı</span>':'<span style="color:#9fe1cb">Aktif</span>')+'</span>'
         +'<div style="font-size:11px;color:#555">Oluşturan: '+(k.olusturan||'—')+' · '+(k.tarih?fmtDate(k.tarih):'')+'</div>';
       row.appendChild(info);
       // Silme butonu
