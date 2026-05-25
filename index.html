@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel v.10</title>
+<title>Q-GANG Panel</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -532,8 +532,14 @@ async function cmsOku(){
 }
 
 async function cmsYaz(action,data){
-  const idActions=['DELETE','USER_APPROVE','USER_REJECT','DISIPLIN_DELETE','DAVET_DELETE','BUDGET_DELETE','EVENT_DELETE','MEMBER_DELETE','DUYURU_DELETE'];
-  const payload=idActions.some(a=>action.includes(a))?{action,id:data}:{action,item:data};
+  const idActions=['DELETE','USER_APPROVE','USER_REJECT','DISIPLIN_DELETE','DAVET_DELETE','BUDGET_DELETE','EVENT_DELETE','MEMBER_DELETE','DUYURU_DELETE','DAVET_KOD_SIL'];
+  var basePayload=idActions.some(function(a){return action.includes(a);})?{action,id:data}:{action,item:data};
+  // Token + rol bilgisini ekle (güvenlik katmanı)
+  var session={}; try{session=JSON.parse(localStorage.getItem('qg_session')||'{}');}catch(e){}
+  var payload=Object.assign({},basePayload,{
+    aktarRumuz:SESSION.rumuz||session.rumuz||'',
+    aktarRol:SESSION.rol||session.rol||''
+  });
   try{
     cmsStatusGoster('loading','<i class="ti ti-loader"></i> Kaydediliyor...');
     const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
@@ -1441,9 +1447,17 @@ async function gorevTalebiGonder(){
 }
 
 async function gorevTalepYanitla(id,durum){
+  var gorGosteren=durum==='Onaylandi'?'Onaylandı':'Reddedildi';
   await cmsYaz('GOREV_TALEP_UPDATE',{_id:id,durum:durum});
-  addLog('Gorev talebi guncellendi',durum);save();
-  renderGorev();basvuruSayisiniGuncelle();
+  addLog('Görev talebi '+gorGosteren,id);save();
+  // gorevTalepleri local güncelle
+  if(gorevTalepleri){
+    var gi=gorevTalepleri.findIndex(function(t){return String(t._id)===String(id)||String(t.id)===String(id);});
+    if(gi>-1)gorevTalepleri[gi]=Object.assign({},gorevTalepleri[gi],{durum:durum});
+  }
+  renderGorev();
+  await renderGorevTalepleri();
+  renderDashboard();
 }
 
 async function renderGorevTalepleri(){
@@ -1707,31 +1721,32 @@ async function reqDeleteButce(id){
 // DUYURULAR
 //
 function renderDuyuruBanner(){
-  var aktif=duyurular.filter(function(d){return d.aktif!==false;});
+  // Max 5 duyuru bannerde göster
+  var aktif=duyurular.filter(function(d){return d.aktif!==false;}).slice(0,5);
   var banner=document.getElementById('duyuruBanner');
   if(!banner)return;
   if(!aktif.length){banner.style.display='none';return;}
   banner.style.display='block';
   var scroll=document.getElementById('duyuruScroll');
   if(!scroll)return;
-  // İçerik oluştur (iki kopya - seamless loop için)
+  // Her duyuru max 100 karakter göster (karakter sınırı)
   var icerik=aktif.map(function(d){
-    return '<span class="duyuru-item"><span style="font-weight:700;color:#ffd280;letter-spacing:0.5px">'+d.baslik+'</span>'
+    var baslik=d.baslik||'';
+    var metin=(d.icerik||'');
+    if(metin.length>100)metin=metin.substring(0,97)+'...';
+    return '<span class="duyuru-item"><span style="font-weight:700;color:#ffd280;letter-spacing:0.5px">'+baslik+'</span>'
       +'<span style="color:#854f0b;margin:0 6px">◆</span>'
-      +'<span style="color:#c9aa7a;font-weight:400">'+d.icerik+'</span></span>';
+      +'<span style="color:#c9aa7a;font-weight:400">'+metin+'</span></span>';
   }).join('');
-  // İki kopya koy - CSS animation seamless loop
+  // İki kopya koy - seamless CSS loop için
   scroll.innerHTML = icerik + icerik;
-  // CSS animation - Web Animations API yerine
-  scroll.style.animation = 'none';
-  scroll.style.transform = '';
-  // Animasyon süresini içerik sayısına ve uzunluğuna göre ayarla
-  // Her duyuru yaklaşık 5 saniye görünsün, minimum 12 saniye
-  var duration = Math.max(12, aktif.length * 6);
-  scroll.style.animation = 'none';
-  // Force reflow
-  void scroll.offsetWidth;
-  scroll.style.animation = 'duyuruKay ' + duration + 's linear infinite';
+  // Toplam karakter uzunluğuna göre süre hesapla (her 40 karakter ~1 saniye)
+  var toplamKarakter=aktif.reduce(function(s,d){return s+(d.baslik||'').length+(d.icerik||'').length;},0);
+  var duration=Math.max(15,Math.round(toplamKarakter/25));
+  if(duration>60)duration=60; // max 60 saniye
+  scroll.style.animation='none';
+  void scroll.offsetWidth; // reflow
+  scroll.style.animation='duyuruKay '+duration+'s linear infinite';
 }
 
 
@@ -2506,7 +2521,7 @@ function openModal(type, data){
     mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
       +'<div class="modal-box"><h3>Yeni Duyuru</h3>'
       +'<div class="form-group" style="margin-bottom:8px"><label>Başlık</label><input id="d_baslik" placeholder="Duyuru başlığı..."></div>'
-      +'<div class="form-group" style="margin-bottom:8px"><label>İçerik</label><textarea id="d_icerik" style="min-height:80px" placeholder="Duyuru içeriği..."></textarea></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>İçerik <span style="font-size:10px;color:#555">(max 200 karakter)</span></label><textarea id="d_icerik" style="min-height:80px" placeholder="Duyuru içeriği..." maxlength="200" oninput="var c=this.value.length;var el=document.getElementById(\"d_kalan\");if(el)el.textContent=(200-c)+\" karakter kaldı\""></textarea><div id="d_kalan" style="font-size:10px;color:#555;text-align:right">200 karakter kaldı</div></div>'
       +'<div class="form-group" style="margin-bottom:8px"><label><input type="checkbox" id="d_aktif" checked style="width:auto;margin-right:6px">Bannerde yayinla</label></div>'
       +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
       +'<button class="btn btn-warn" onclick="reqSaveDuyuru()"><i class="ti ti-check"></i> Yayınla</button>'
@@ -3180,11 +3195,19 @@ async function renderDavetKodlari(){
     el.innerHTML='';
     kodlar.forEach(function(k){
       var row=document.createElement('div');row.className='card';row.style.cssText='padding:10px 14px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px';
-      var info=document.createElement('div');
+      var info=document.createElement('div');info.style.flex='1';
       info.innerHTML='<span style="font-size:14px;font-weight:600;color:#fac775;letter-spacing:2px">'+k.kod+'</span>'
         +'<span style="font-size:11px;color:#555;margin-left:12px">'+(k.kullanildi?'<span style="color:#e24b4a">Kullanıldı</span>':'<span style="color:#9fe1cb">Aktif</span>')+'</span>'
         +'<div style="font-size:11px;color:#555">Oluşturan: '+(k.olusturan||'—')+' · '+(k.tarih?fmtDate(k.tarih):'')+'</div>';
       row.appendChild(info);
+      // Silme butonu
+      if(izin('kodUret')||SESSION.rol==='Lider'){
+        var silBtn=document.createElement('button');silBtn.className='btn btn-danger btn-sm';
+        silBtn.innerHTML='<i class="ti ti-trash"></i>';
+        var kid=k._id||k.id;
+        (function(kId,kKod){silBtn.onclick=function(){reqDavetKoduSil(kId,kKod);};})(kid,k.kod);
+        row.appendChild(silBtn);
+      }
       el.appendChild(row);
     });
   }catch(e){el.innerHTML='<div style="color:#e24b4a;font-size:12px">Hata: '+e.message+'</div>';}
@@ -3588,6 +3611,19 @@ var _panelAcYuklendi = false;
     }
   };
 })();
+</script>
+<script>
+// ============================================================
+// DAVET KODU SİL
+// ============================================================
+async function reqDavetKoduSil(id, kod) {
+  if (!izin('kodUret') && SESSION.rol !== 'Lider') { alert('Yetkiniz yok.'); return; }
+  confirm2('Davet kodunu sil', '<strong>' + kod + '</strong> kodu silinecek. Bu işlem geri alınamaz.', async function() {
+    await cmsYaz('DAVET_KOD_SIL', id);
+    addLog('Davet kodu silindi', kod); save();
+    renderDavetKodlari();
+  });
+}
 </script>
 </body>
 </html>
