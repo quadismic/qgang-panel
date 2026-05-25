@@ -1454,7 +1454,7 @@ async function renderGorevTalepleri(){
     const liste=data.result||[];
     const el=document.getElementById('gorevTalepListesi');
     if(!el)return;
-    const bekleyenler=liste.filter(function(t){return t.durum==='Bekliyor';});
+    const bekleyenler=liste.filter(function(t){return t.durum==='beklemede'||t.durum==='Bekliyor';});
     if(!bekleyenler.length){el.innerHTML='';return;}
     const canYanitla=izin('gorevAta')||SESSION.rol==='Lider';
     let html='<div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-checkbox"></i> Bekleyen Gorev Talepleri</div>';
@@ -2729,17 +2729,28 @@ async function renderErisimBoard(){
     if(data.result){aktifIzinler=Object.assign({},IZINLER||{},data.result);Object.assign(IZINLER||{},data.result);}
   }catch(e){}
   var izinler=Object.keys(IZIN_ETIKETLER||{});
-  var thHtml='<tr><th style="text-align:left;padding:8px;color:#888;border-bottom:0.5px solid #333;min-width:140px">İzin</th>';
-  ROLLER_LISTE.forEach(function(r){thHtml+='<th style="text-align:center;padding:8px;color:#888;border-bottom:0.5px solid #333;white-space:nowrap">'+r+'</th>';});
+  var thHtml='<tr><th style="text-align:left;padding:8px;color:#888;border-bottom:0.5px solid #333;min-width:160px">İzin</th>';
+  ROLLER_LISTE.forEach(function(r){thHtml+='<th style="text-align:center;padding:8px;color:#888;border-bottom:0.5px solid #333;white-space:nowrap;font-size:11px">'+r+'</th>';});
   thHtml+='</tr>';
   var tbl=document.createElement('table');tbl.style.cssText='width:100%;border-collapse:collapse;font-size:12px';
   var thead=document.createElement('thead');thead.innerHTML=thHtml;tbl.appendChild(thead);
   var tbody=document.createElement('tbody');
   izinler.forEach(function(key){
+    var deger=(IZIN_ETIKETLER||{})[key]||key;
+    // Kategori başlığı kontrolü
+    if(deger==='__baslik__'){
+      var tr=document.createElement('tr');
+      var td=document.createElement('td');
+      td.colSpan=ROLLER_LISTE.length+1;
+      td.style.cssText='padding:12px 8px 6px;font-size:11px;font-weight:700;color:#fac775;letter-spacing:1px;border-bottom:0.5px solid #333;background:#0f0f0f';
+      td.textContent=key;
+      tr.appendChild(td);tbody.appendChild(tr);
+      return;
+    }
     var tr=document.createElement('tr');
-    var lbl=document.createElement('td');lbl.style.cssText='padding:7px 8px;border-bottom:0.5px solid #222;color:#d3d1c7';lbl.textContent=(IZIN_ETIKETLER||{})[key]||key;tr.appendChild(lbl);
+    var lbl=document.createElement('td');lbl.style.cssText='padding:7px 8px;border-bottom:0.5px solid #111;color:#d3d1c7;padding-left:16px';lbl.textContent=deger;tr.appendChild(lbl);
     ROLLER_LISTE.forEach(function(rol){
-      var td=document.createElement('td');td.style.cssText='text-align:center;padding:7px 8px;border-bottom:0.5px solid #222';
+      var td=document.createElement('td');td.style.cssText='text-align:center;padding:7px 8px;border-bottom:0.5px solid #111';
       var inp=document.createElement('input');inp.type='checkbox';inp.checked=!!(aktifIzinler[rol]&&aktifIzinler[rol][key]);
       inp.style.cssText='width:16px;height:16px;cursor:pointer;accent-color:#fac775';
       (function(r,k){inp.onchange=function(){if(!aktifIzinler[r])aktifIzinler[r]={};aktifIzinler[r][k]=this.checked?1:0;};})(rol,key);
@@ -3110,35 +3121,34 @@ async function reqUpdateEvent(eid){
 // IZIN_ETIKETLER - Erişim yönetimi için
 // İzinler hiyerarşik sırayla - üstten alta yetkiden görüntülemeye
 const IZIN_ETIKETLER = {
-  // — YÖNETİM —
-  sezonKapat:'Sezon Kapat',
-  tuzukDuzenle:'Tüzük Düzenle',
-  disiplinUygula:'Disiplin Uygula',
-  // — ÜYE YÖNETİMİ —
-  uyeEkle:'Üye Ekle',
-  uyeDuzenle:'Üye Düzenle',
+  '🔥 KRİTİK / STRATEJİK': '__baslik__',
   rutbeDegistir:'Rütbe Değiştir',
-  sifreSifirla:'Şifre Sıfırla',
+  disiplinUygula:'Disiplin Uygula',
   uyeSil:'Üye Sil',
-  // — DAVET & BAŞVURU —
-  davetYonet:'Davet Yönet',
+  sifreSifirla:'Şifre Sıfırla',
+  tuzukDuzenle:'Tüzük Düzenle',
+  sezonKapat:'Sezon Kapat',
+  butceDuzenle:'Bütçe Düzenle',
+  uyeDuzenle:'Üye Düzenle',
   basvuruOnayla:'Başvuru Onayla/Reddet',
-  basvuruGor:'Başvuru Gör',
+  uyeEkle:'Üye Ekle',
+  '⚔️ OPERASYONEL YÖNETİM': '__baslik__',
+  gorevAta:'Görev Ata',
+  davetYonet:'Davet Yönet',
   kodUret:'Davet Kodu Üret',
   kodGor:'Davet Kodlarını Gör',
-  // — İÇERİK & AKTİVİTE —
-  puanDuzenle:'Puan Düzenle',
   etkinlikEkle:'Etkinlik Ekle',
   etkinlikSil:'Etkinlik Sil',
-  gorevAta:'Görev Ata',
-  oylamaEkle:'Oylama Oluştur',
+  puanDuzenle:'Puan Düzenle',
   duyuruEkle:'Duyuru Ekle',
   duyuruSil:'Duyuru Sil',
-  // — BÜTÇE & LOG —
-  butceDuzenle:'Bütçe Düzenle',
+  oylamaEkle:'Oylama Oluştur',
+  '📊 TAKİP / GÖZLEM': '__baslik__',
+  basvuruGor:'Başvuru Gör',
   butceGor:'Bütçe Gör',
-  logSil:'Log Temizle',
-  logGor:'Log Gör'
+  logGor:'Log Gör',
+  '🧹 BAKIM / DESTEK': '__baslik__',
+  logSil:'Log Temizle'
 };
 
 // ============================================================
