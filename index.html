@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel</title>
+<title>Q-GANG Panel v1.0.0</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -66,6 +66,8 @@ body{font-family:Arial,sans-serif;background:#111;color:#d3d1c7;padding:12px}
 .duyuru-scroll{display:flex;align-items:center;height:100%;white-space:nowrap;will-change:transform;animation:duyuruKay 20s linear infinite}
 .duyuru-scroll:hover{animation-play-state:paused!important}
 @keyframes duyuruKay{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+#tab-org{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#orgChart{min-width:280px;width:100%}
 @keyframes orgFadeDown{0%{opacity:0;transform:translateY(-12px)}100%{opacity:1;transform:translateY(0)}}
 .org-row-anim{animation:orgFadeDown .35s ease both}
 .duyuru-item{display:inline-flex;align-items:center;gap:6px;margin-right:80px;font-size:12px;color:#fac775;white-space:nowrap}
@@ -248,6 +250,14 @@ svg.org{display:inline-block}
 </style>
 
 <script>
+// Token yardımcı - tüm fetch'lerde kullan
+function getToken(){
+  var s='';
+  try{s=localStorage.getItem('qg_session')||sessionStorage.getItem('qg_session')||'';}catch(e){}
+  try{return JSON.parse(s).token||'';}catch(e){return '';}
+}
+function authBody(extra){return Object.assign({token:getToken()},extra||{});}
+
 
 //
 // ROL VE IZIN SISTEMI
@@ -743,7 +753,7 @@ function _showTabContent(name){
     tab.classList.add('tab-animating');
   }
   const fns={
-    dashboard:renderDashboard, members:renderMembers, puan:renderPuan,
+    dashboard:renderDashboard, members:renderMembers, puan:function(){renderPuan();renderGenelPuanTablosu();},
     gorev:renderGorev, etkinlik:renderEvents, butce:renderButce,
     duyurular:renderDuyurular, davet:function(){renderDavetKodlari();renderDavet();uiAyarla();}, tuzuk:function(){renderTuzuk();renderDisiplin();uiAyarla();},
     oylama:renderOylama, basvurular:renderBasvurular,
@@ -905,7 +915,7 @@ function renderPuan(){
   // Genel puan listesi kaldırıldı - sadece sezon listesi
   const puanEl=document.getElementById('puanList');
   if(puanEl) puanEl.innerHTML='';
-  sorted.forEach(function(m,i){ if(false) {
+  sorted.forEach(function(m,i){ if(true) {
     const puan=Number(m.puan)||0;
     const yuzde=Math.round(puan/maxP*100);
     const div=document.createElement('div');div.className='puan-row';
@@ -1482,8 +1492,10 @@ async function gorevTalepYanitla(id,durum){
 
 async function renderGorevTalepleri(){
   try{
+    var _gtSqg='';try{_gtSqg=localStorage.getItem('qg_session')||sessionStorage.getItem('qg_session')||'';}catch(e){}
+    var _gtSess={};try{_gtSess=JSON.parse(_gtSqg);}catch(e){}
     const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'GOREV_TALEP_LIST'})});
+      body:JSON.stringify({action:'GOREV_TALEP_LIST',token:_gtSess.token||''})});
     const data=await res.json();
     const liste=data.result||[];
     const el=document.getElementById('gorevTalepListesi');
@@ -2214,7 +2226,7 @@ function renderDuyuruBanner(){
   </div>
   <div id="oylamaList"></div>
 </div><!-- ORGANİZASYON -->
-<div id="tab-org" class="tab">
+<div id="tab-org" class="tab" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
   <div id="orgChart"></div>
 
 </div>
@@ -2251,7 +2263,7 @@ function renderDuyuruBanner(){
 
 async function basvuruSayisiniGuncelle(){
   try{
-    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'BASVURU_LIST'})});
+    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'BASVURU_LIST',token:getToken()})});
     const data=await res.json();
     const bekleyenler=(data.result||[]).filter(function(b){return b.durum==='beklemede';});
     const badge=document.getElementById('basvuruBadge');
@@ -2630,7 +2642,7 @@ function onlineSistemiBaslat(){
 async function oturumPing(){
   try{
     await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'OTURUM_PING',item:{rumuz:SESSION.rumuz,rol:SESSION.rol}})});
+      body:JSON.stringify({action:'OTURUM_PING',item:{rumuz:SESSION.rumuz,rol:SESSION.rol},token:getToken()})});
   }catch(e){}
 }
 
@@ -2646,7 +2658,7 @@ async function onlineListeGuncelle(){
     var ob=document.getElementById('onlineBar');
     if(ob&&ob.style.display==='none')ob.style.display='flex';
     var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'OTURUM_LIST'})});
+      body:JSON.stringify({action:'OTURUM_LIST',token:getToken()})});
     var data=await res.json();
     var liste=data.result||[];
     var sayEl=document.getElementById('onlineCount');
@@ -2718,7 +2730,7 @@ async function reqDisiplinSil(id){
 async function reqOyVer(oid,secim){
   try{
     await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'OY_VER',id:oid,rumuz:SESSION.rumuz,secim:secim})});
+      body:JSON.stringify({action:'OY_VER',token:getToken(),id:oid,rumuz:SESSION.rumuz,secim:secim})});
     addLog('Oy verildi',secim);
     renderOylama();
   }catch(e){alert('Hata: '+e.message);}
@@ -2731,7 +2743,7 @@ async function reqOylakapat(oid,aktif){
     if(!mevcut){renderOylama();return;}
     var gunc=Object.assign({},mevcut,{_id:mevcut._id||mevcut.id,aktif:aktif});
     await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'OYLAMA_UPDATE',item:gunc})});
+      body:JSON.stringify({action:'OYLAMA_UPDATE',token:getToken(),item:gunc})});
     // Local state güncelle
     var idx=oylamalar.findIndex(function(o){return String(o._id)===String(oid)||String(o.id)===String(oid);});
     if(idx>-1)oylamalar[idx]=Object.assign({},oylamalar[idx],{aktif:aktif});
@@ -2760,7 +2772,7 @@ async function reqOylamaOlustur(){
   var secArr=(secenekler&&secenekler.value?secenekler.value.split(',').map(function(s){return s.trim();}).filter(function(s){return s;}):['Evet','Hayır']);
   try{
     await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'OYLAMA_EKLE',baslik:baslik.value.trim(),tur:tur?tur.value:'Anket',aciklama:aciklama?aciklama.value:'',secenekler:JSON.stringify(secArr),oylar:'{}',olusturan:SESSION.rumuz,tarih:new Date().toISOString().split('T')[0],aktif:true})});
+      body:JSON.stringify({action:'OYLAMA_EKLE',token:getToken(),baslik:baslik.value.trim(),tur:tur?tur.value:'Anket',aciklama:aciklama?aciklama.value:'',secenekler:JSON.stringify(secArr),oylar:'{}',olusturan:SESSION.rumuz,tarih:new Date().toISOString().split('T')[0],aktif:true})});
     addLog('Oylama oluşturuldu',baslik.value.trim());save();
     closeModal();renderOylama();
   }catch(e){alert('Hata: '+e.message);}
@@ -2774,6 +2786,25 @@ if(typeof pasiflikKontrol==='undefined'){
 }
 </script>
 <script>
+const IZIN_ETIKETLER = {
+  '🔥 KRİTİK / STRATEJİK': '__baslik__',
+  rutbeDegistir:'Rütbe Değiştir', disiplinUygula:'Disiplin Uygula',
+  uyeSil:'Üye Sil', sifreSifirla:'Şifre Sıfırla',
+  tuzukDuzenle:'Tüzük Düzenle', sezonKapat:'Sezon Kapat',
+  butceDuzenle:'Bütçe Düzenle', uyeDuzenle:'Üye Düzenle',
+  basvuruOnayla:'Başvuru Onayla/Reddet', uyeEkle:'Üye Ekle',
+  '⚔️ OPERASYONEL YÖNETİM': '__baslik__',
+  gorevAta:'Görev Ata', davetYonet:'Davet Yönet',
+  kodUret:'Davet Kodu Üret', kodGor:'Davet Kodlarını Gör',
+  etkinlikEkle:'Etkinlik Ekle', etkinlikSil:'Etkinlik Sil',
+  puanDuzenle:'Puan Düzenle', duyuruEkle:'Duyuru Ekle',
+  duyuruSil:'Duyuru Sil', oylamaEkle:'Oylama Oluştur',
+  '📊 TAKİP / GÖZLEM': '__baslik__',
+  basvuruGor:'Başvuru Gör', butceGor:'Bütçe Gör', logGor:'Log Gör',
+  '🧹 BAKIM / DESTEK': '__baslik__',
+  logSil:'Log Temizle'
+};
+
 // ============================================================
 // ERİŞİM YÖNETİMİ
 // ============================================================
@@ -2786,7 +2817,7 @@ async function renderErisimBoard(){
   var el=document.getElementById('izinBoard');if(!el)return;
   if(SESSION.rol!=='Lider'){el.innerHTML='<div style="padding:2rem;text-align:center;color:#555">Sadece Lider erişebilir.</div>';return;}
   try{
-    var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'IZIN_OKU'})});
+    var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'IZIN_OKU',token:getToken()})});
     var data=await res.json();
     if(data.result){aktifIzinler=Object.assign({},IZINLER||{},data.result);Object.assign(IZINLER||{},data.result);}
   }catch(e){}
@@ -3231,7 +3262,7 @@ async function reqSifreSifirla(id,rumuz){
     try{
       var defaultHash='306924655af1a88cf0e9de5c449e0daf5edf17d06599722c8ee6fdb35ec91b6f'; // qgang123
       var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'SIFRE_SIFIRLA',id:id,sifreHash:defaultHash})});
+        body:JSON.stringify({action:'SIFRE_SIFIRLA',token:getToken(),id:id,sifreHash:defaultHash})});
       var data=await res.json();
       if(data.success||data.result){
         addLog('Şifre sıfırlandı',rumuz);save();
@@ -3384,6 +3415,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ============================================================
 function renderOrg() {
   var el = document.getElementById('orgChart');
+  if(el){el.style.cssText='overflow-x:auto;width:100%;-webkit-overflow-scrolling:touch;';}
   if (!el) { var tab = document.getElementById('tab-org'); if (tab) { el = document.createElement('div'); el.id = 'orgChart'; tab.appendChild(el); } else return; }
   if (!members || !members.length) { el.innerHTML = '<div style="color:#555;font-size:12px;padding:2rem;text-align:center">Üye verisi yüklenmedi.</div>'; return; }
 
@@ -3742,12 +3774,7 @@ function renderGenelPuanTablosu() {
   el.innerHTML = html;
 }
 
-// renderPuan'ı override et - genel tablo ekle
-var _origRenderPuan = renderPuan;
-function renderPuan() {
-  _origRenderPuan();
-  renderGenelPuanTablosu();
-}
+// renderGenelPuanTablosu renderPuan içinde çağrılıyor
 </script>
 </body>
 </html>
