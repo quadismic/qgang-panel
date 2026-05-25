@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel</title>
+<title>Q-GANG Panel v1.1</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -66,7 +66,9 @@ body{font-family:Arial,sans-serif;background:#111;color:#d3d1c7;padding:12px}
 .duyuru-scroll{display:flex;align-items:center;height:100%;white-space:nowrap;will-change:transform;animation:duyuruKay 20s linear infinite}
 .duyuru-scroll:hover{animation-play-state:paused!important}
 @keyframes duyuruKay{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.duyuru-item{display:inline-flex;align-items:center;gap:6px;margin-right:80px;font-size:12px;color:#fac775}
+@keyframes orgFadeDown{0%{opacity:0;transform:translateY(-12px)}100%{opacity:1;transform:translateY(0)}}
+.org-row-anim{animation:orgFadeDown .35s ease both}
+.duyuru-item{display:inline-flex;align-items:center;gap:6px;margin-right:80px;font-size:12px;color:#fac775;white-space:nowrap}
 .duyuru-item::before{content:'◆';font-size:8px;color:#854f0b;margin-right:4px}
 
 /* DOĞUM GÜNÜ BANNER */
@@ -560,7 +562,7 @@ async function cmsYaz(action,data){
       if(action==='EVENT_ADD')events.push(Object.assign({},item,{katilimcilar:parseKat(item.katilimcilar)}));
 
       if(action==='BUDGET_ADD')butce.push(item);
-      if(action==='DUYURU_ADD')duyurular.unshift(item);
+      // DUYURU_ADD local push reqSaveDuyuru'da yapılıyor - burada kaldırıldı
       if(action==='DUYURU_UPDATE'){var du=duyurular.findIndex(function(d){return d._id===item._id||d.id===item.id;});if(du>-1)duyurular[du]=Object.assign({},duyurular[du],item);}
 
     }
@@ -1158,7 +1160,7 @@ async function sezonuKapat(){
     await cmsYaz('AYAR_SET',{anahtar:'sonSezon',deger:JSON.stringify({ad:sezon.ad,baslangic:baslangic,bitis:bitis,sampiyon:sampiyon,sirali:sirali2.slice(0,10)})});
     addLog('Sezon kapatildi',sezon.ad+' — Sampiyon: '+sampiyon);save();
     var mc=document.getElementById('modalContainer');
-    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()" style="background:rgba(0,0,0,.88)">'
+    mc.innerHTML='<div class="modal-overlay" style="background:rgba(0,0,0,.88)">'
       +'<div class="modal-box" style="text-align:center;max-width:380px;padding:2.5rem 2rem">'
       +'<div style="font-size:44px;margin-bottom:12px">🏆</div>'
       +'<div style="font-family:Vanilla Whale,monospace;font-size:18px;color:#fac775;letter-spacing:1px;margin-bottom:8px">'+sezon.ad+' Bitti!</div>'
@@ -1437,7 +1439,7 @@ async function gorevTalebiGonder(){
   closeModal();
   // Ozenli basari mesaji
   const mc2=document.getElementById('modalContainer');
-  mc2.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()" style="background:rgba(0,0,0,.85)">'
+  mc2.innerHTML='<div class="modal-overlay" style="background:rgba(0,0,0,.85)">'
     +'<div class="modal-box" style="text-align:center;max-width:380px;padding:2.5rem 2rem">'
     +'<div style="font-size:40px;margin-bottom:12px">✅</div>'
     +'<div style="font-size:16px;font-weight:600;color:#fac775;margin-bottom:8px">Talep İletildi</div>'
@@ -2064,6 +2066,7 @@ function renderDuyuruBanner(){
   <div id="puanList"></div>
   <div id="puanEditor"></div>
   <hr class="sep">
+  <div id="genelPuanTablosu" style="margin-bottom:.8rem"></div>
   <div id="puanArsivWrap"></div>
 </div>
 
@@ -2451,7 +2454,7 @@ function openModal(type, data){
   var mc=document.getElementById('modalContainer');
   if(!mc)return;
   if(type==='sifreDegistir'){
-    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+    mc.innerHTML='<div class="modal-overlay">'
       +'<div class="modal-box"><h3><i class="ti ti-key"></i> Şifre Değiştir</h3>'
       +'<div class="form-group" style="margin-bottom:8px"><label>Mevcut Şifre</label><input type="password" id="sd_eski" placeholder="Mevcut şifren..."></div>'
       +'<div class="form-group" style="margin-bottom:8px"><label>Yeni Şifre</label><input type="password" id="sd_yeni" placeholder="Yeni şifre..."></div>'
@@ -2470,7 +2473,7 @@ function openModal(type, data){
     var _mk=parseKat(evObj.katilimcilar);
     var _op=_sr.map(function(m){return'<option value="'+m.rumuz+'" '+((_mk.includes(m.rumuz))?'selected':'')+'>'+m.rumuz+' ('+m.rutbe+')</option>';}).join('');
     var mc2=mc;
-    mc2.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'+'<div class="modal-box"><h3><i class="ti ti-edit"></i> Etkinliği Düzenle</h3>'+'<div class="form-row"><div class="form-group"><label>Tür</label><input id="ee_tur" value="'+evObj.tur+'"></div>'+'<div class="form-group"><label>Tarih</label><input type="date" id="ee_tarih" value="'+evObj.tarih+'"></div>'+'<div class="form-group"><label>Puan</label><input type="number" id="ee_puan" value="'+(evObj.puan||10)+'"></div></div>'+'<div class="form-group" style="margin-bottom:8px"><label>Katılımcılar</label>'+'<select id="ee_kat" multiple style="height:160px">'+_op+'</select></div>'+'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'+'<button class="btn btn-warn" id="btnEG"><i class="ti ti-check"></i> Güncelle</button>'+'</div></div></div>';
+    mc2.innerHTML='<div class="modal-overlay">'+'<div class="modal-box"><h3><i class="ti ti-edit"></i> Etkinliği Düzenle</h3>'+'<div class="form-row"><div class="form-group"><label>Tür</label><input id="ee_tur" value="'+evObj.tur+'"></div>'+'<div class="form-group"><label>Tarih</label><input type="date" id="ee_tarih" value="'+evObj.tarih+'"></div>'+'<div class="form-group"><label>Puan</label><input type="number" id="ee_puan" value="'+(evObj.puan||10)+'"></div></div>'+'<div class="form-group" style="margin-bottom:8px"><label>Katılımcılar</label>'+'<select id="ee_kat" multiple style="height:160px">'+_op+'</select></div>'+'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'+'<button class="btn btn-warn" id="btnEG"><i class="ti ti-check"></i> Güncelle</button>'+'</div></div></div>';
     setTimeout(function(){var b=document.getElementById('btnEG');if(b)(function(id){b.onclick=function(){reqUpdateEvent(id);};})(eid);},50);
     return;
   }
@@ -2480,7 +2483,7 @@ function openModal(type, data){
     var rOpts=RUTBELER.map(function(r){return'<option'+(r==='Gözlemci'?' selected':'')+'>'+r+'</option>';}).join('');
     var dOpts=DURUMLAR.map(function(d){return'<option'+(d==='Aktif'?' selected':'')+'>'+d+'</option>';}).join('');
     var gOpts=GOREVLER.map(function(g){return'<option'+(g==='Yok'?' selected':'')+'>'+g+'</option>';}).join('');
-    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+    mc.innerHTML='<div class="modal-overlay">'
       +'<div class="modal-box"><h3>Yeni Üye</h3>'
       +'<div class="form-row"><div class="form-group"><label>Rumuz</label><input id="m_rumuz" placeholder="Rumuz"></div>'
       +'<div class="form-group"><label>Rütbe</label><select id="m_rutbe">'+rOpts+'</select></div></div>'
@@ -2501,7 +2504,7 @@ function openModal(type, data){
     var rO=RUTBELER.map(function(r){return'<option'+(r===m.rutbe?' selected':'')+'>'+r+'</option>';}).join('');
     var dO=DURUMLAR.map(function(d){return'<option'+(d===m.durum?' selected':'')+'>'+d+'</option>';}).join('');
     var gO=GOREVLER.map(function(g){return'<option'+(g===m.gorev?' selected':'')+'>'+g+'</option>';}).join('');
-    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+    mc.innerHTML='<div class="modal-overlay">'
       +'<div class="modal-box"><h3>'+m.rumuz+' — Düzenle</h3>'
       +'<div class="form-row"><div class="form-group"><label>Rumuz</label><input id="e_rumuz" value="'+(m.rumuz||'')+'"></div>'
       +'<div class="form-group"><label>Rütbe</label><select id="e_rutbe">'+rO+'</select></div></div>'
@@ -2522,7 +2525,7 @@ function openModal(type, data){
     var siraliE=[...members].sort(function(a,b){return getRtbEtk(a.rutbe)-getRtbEtk(b.rutbe)||a.rumuz.localeCompare(b.rumuz,'tr');});
     var eOpts=ETK_TURLERI.map(function(t){return'<option>'+t+'</option>';}).join('');
     var katOpts=siraliE.map(function(m){return'<option value="'+m.rumuz+'">'+m.rumuz+' ('+m.rutbe+')</option>';}).join('');
-    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+    mc.innerHTML='<div class="modal-overlay">'
       +'<div class="modal-box"><h3>Yeni Etkinlik</h3>'
       +'<div class="form-row"><div class="form-group"><label>Tür</label><select id="e_tur">'+eOpts+'</select></div>'
       +'<div class="form-group"><label>Tarih</label><input type="date" id="e_date" value="'+today3+'"></div></div>'
@@ -2537,7 +2540,7 @@ function openModal(type, data){
     var duyuruObj=duyurular.find(function(d){return String(d._id)===String(data)||String(d.id)===String(data);});
     if(!duyuruObj)return;
     var did2=duyuruObj._id||duyuruObj.id;
-    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+    mc.innerHTML='<div class="modal-overlay">'
       +'<div class="modal-box"><h3>Duyuru Düzenle</h3>'
       +'<div class="form-group" style="margin-bottom:8px"><label>Başlık</label><input id="de_baslik" value="'+duyuruObj.baslik+'"></div>'
       +'<div class="form-group" style="margin-bottom:8px"><label>İçerik</label><textarea id="de_icerik" style="min-height:80px">'+duyuruObj.icerik+'</textarea></div>'
@@ -2547,7 +2550,7 @@ function openModal(type, data){
       +'</div></div></div>';
     setTimeout(function(){var b=document.getElementById('btnDuyuruGuncelle');if(b)(function(id){b.onclick=function(){reqUpdateDuyuru(id);};})(did2);},50);
   } else if(type==='addDuyuru'&&(izin('duyuruEkle')||SESSION.rol==='Lider')){
-    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+    mc.innerHTML='<div class="modal-overlay">'
       +'<div class="modal-box"><h3>Yeni Duyuru</h3>'
       +'<div class="form-group" style="margin-bottom:8px"><label>Başlık</label><input id="d_baslik" placeholder="Duyuru başlığı..."></div>'
       +'<div class="form-group" style="margin-bottom:8px"><label>İçerik <span style="font-size:10px;color:#555">— Max 200 karakter</span></label><textarea id="d_icerik" style="min-height:80px;resize:vertical;max-height:150px;overflow-y:auto" placeholder="Duyuru içeriği..." maxlength="200"></textarea></div>'
@@ -2557,7 +2560,7 @@ function openModal(type, data){
       +'</div></div></div>';
   } else if(type==='gorevTalep'){
     var gOpts2=(GOREVLER||[]).map(function(g){return'<option>'+g+'</option>';}).join('');
-    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+    mc.innerHTML='<div class="modal-overlay">'
       +'<div class="modal-box"><h3>Görev Talebi Gönder</h3>'
       +'<div class="form-group" style="margin-bottom:8px"><label>Görev Türü</label><select id="gt_tur">'+gOpts2+'</select></div>'
       +'<div class="form-group" style="margin-bottom:8px"><label>Açıklama</label><textarea id="gt_aciklama" placeholder="Neden bu görevi almak istiyorsunuz?"></textarea></div>'
@@ -2565,7 +2568,7 @@ function openModal(type, data){
       +'<button class="btn btn-warn" onclick="reqGorevTalepGonder()"><i class="ti ti-send"></i> Gönder</button>'
       +'</div></div></div>';
   } else if(type==='addOylama'&&(izin('oylamaEkle')||SESSION.rol==='Lider')){
-    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+    mc.innerHTML='<div class="modal-overlay">'
       +'<div class="modal-box"><h3>Yeni Oylama</h3>'
       +'<div class="form-group" style="margin-bottom:8px"><label>Başlık</label><input id="oy_baslik" placeholder="Oylama başlığı..."></div>'
       +'<div class="form-group" style="margin-bottom:8px"><label>Tür</label><select id="oy_tur"><option>Anket</option><option>Secim</option></select></div>'
@@ -2575,7 +2578,7 @@ function openModal(type, data){
       +'<button class="btn btn-warn" onclick="reqOylamaOlustur()"><i class="ti ti-check"></i> Oluştur</button>'
       +'</div></div></div>';
   } else if(type==='addButce'&&(izin('butceDuzenle')||SESSION.rol==='Lider')){
-    mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+    mc.innerHTML='<div class="modal-overlay">'
       +'<div class="modal-box"><h3>Bütçe Kaydı Ekle</h3>'
       +'<div class="form-row"><div class="form-group"><label>Tür</label><select id="b_tur"><option value="gelir">Gelir</option><option value="gider">Gider</option></select></div>'
       +'<div class="form-group"><label>Tutar (₺)</label><input type="number" id="b_tutar" placeholder="0.00" step="0.01"></div></div>'
@@ -2662,8 +2665,7 @@ async function reqBasvuruOnayla(id,rumuz){
 
 async function reqBasvuruReddet(id,rumuz){
   confirm2('Başvuruyu reddet','<strong>'+rumuz+'</strong> başvurusu reddedilecek.',async function(){
-    await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'BASVURU_REDDET',id:id})});
+    await cmsYaz('BASVURU_REDDET',id);
     addLog('Başvuru reddedildi',rumuz);save();
     renderDavet();basvuruSayisiniGuncelle();
   });
@@ -2985,7 +2987,7 @@ async function reqGorevTalepGonder(){
   renderGorev();
   renderDashboard();
   var mc=document.getElementById('modalContainer');
-  mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()" style="background:rgba(0,0,0,.88)">'
+  mc.innerHTML='<div class="modal-overlay" style="background:rgba(0,0,0,.88)">'
     +'<div class="modal-box" style="text-align:center;max-width:380px;padding:2.5rem 2rem">'
     +'<div style="font-size:40px;margin-bottom:12px">✅</div>'
     +'<div style="font-size:16px;font-weight:600;color:#fac775;margin-bottom:8px">Talep İletildi</div>'
@@ -3142,7 +3144,7 @@ async function reqDavetKoduUret(){
         addLog('Davet kodu üretildi',kod);save();
         renderDavetKodlari();
         var mc=document.getElementById('modalContainer');
-        mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+        mc.innerHTML='<div class="modal-overlay">'
           +'<div class="modal-box" style="text-align:center;max-width:360px;padding:2rem">'
           +'<div style="font-size:32px;margin-bottom:12px">🎟️</div>'
           +'<div style="font-size:14px;font-weight:600;color:#fac775;margin-bottom:8px">Kod Oluşturuldu!</div>'
@@ -3172,7 +3174,7 @@ function reqDisiplinEkle(){
     .map(function(m){return'<option value="'+m.rumuz+'">'+m.rumuz+' ('+m.rutbe+')</option>';}).join('');
   var cezaOpts=(typeof CEZA_TURLERI!=='undefined'?CEZA_TURLERI:['Uyarı','Kısıtlama','Uzaklaştırma','İhraç'])
     .map(function(t){return'<option>'+t+'</option>';}).join('');
-  mc.innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+  mc.innerHTML='<div class="modal-overlay">'
     +'<div class="modal-box"><h3><i class="ti ti-gavel"></i> Disiplin Kaydı Ekle</h3>'
     +'<div class="form-row"><div class="form-group"><label>Üye</label><select id="dis_uye">'+uyeOpts+'</select></div>'
     +'<div class="form-group"><label>Ceza Türü</label><select id="dis_ceza">'+cezaOpts+'</select></div></div>'
@@ -3427,6 +3429,7 @@ function renderOrg() {
 
     // Kutucuk grid
     var grid = document.createElement('div');
+    grid.setAttribute('data-rutbe-grid', rutbe);
     grid.style.cssText = 'display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;padding:0 16px';
 
     listesi.forEach(function(m) {
@@ -3456,7 +3459,18 @@ function renderOrg() {
   footer.textContent = 'TOPLAM ' + members.length + ' ÜYE';
   wrap.appendChild(footer);
 
+  // Wrap'i ekle ve animasyonla aç
+  el.innerHTML = '';
   el.appendChild(wrap);
+  // Her rutbe grubunu (grid) sırayla aşağıdan aç
+  var grids = wrap.querySelectorAll('[data-rutbe-grid]');
+  grids.forEach(function(g, i) {
+    g.style.cssText += 'opacity:0;transform:translateY(-8px);transition:opacity .3s ease ' + (i*0.08) + 's, transform .3s ease ' + (i*0.08) + 's';
+    setTimeout(function() {
+      g.style.opacity = '1';
+      g.style.transform = 'translateY(0)';
+    }, 30);
+  });
 }
 </script>
 <script>
@@ -3624,6 +3638,99 @@ async function renderBasvuruArsiv() {
   } catch(e) {
     el.innerHTML = '<div style="color:#e24b4a;font-size:12px">Hata: '+e.message+'</div>';
   }
+}
+</script>
+<script>
+// ============================================================
+// PUAN ARŞİVİ DÜZELTMESİ - arsivFiltrele yeniden yaz
+// ============================================================
+async function arsivFiltrele(rumuzParam) {
+  var sel = document.getElementById('arsivFilter');
+  var rumuz = rumuzParam || (sel ? sel.value : '') || '';
+  var listeEl = document.getElementById('arsivListe');
+  if (!listeEl) return;
+  listeEl.innerHTML = '<div style="font-size:12px;color:#555;padding:8px">Yükleniyor...</div>';
+  try {
+    var res = await fetch(API_URL, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ action: 'PUAN_ARSIV_LIST', item: rumuz ? { rumuz: rumuz } : {} })
+    });
+    var data = await res.json();
+    var liste = data.result || [];
+    if (!liste.length) {
+      listeEl.innerHTML = '<div style="font-size:12px;color:#555;padding:8px">Kayıt bulunamadı.</div>';
+      return;
+    }
+    // Üye rütbesi - members dizisinden bul
+    var wrap = document.createElement('div'); wrap.className = 'table-wrap';
+    var tbl = document.createElement('table');
+    tbl.innerHTML = '<thead><tr><th>Tarih</th><th>Üye</th><th>Miktar</th><th>Gerekçe</th><th>Tür</th></tr></thead>';
+    var tb = document.createElement('tbody');
+    liste.forEach(function(a) {
+      var tr = document.createElement('tr');
+      var renk = a.miktar > 0 ? '#4caf7d' : '#e24b4a';
+      var isaret = a.miktar > 0 ? '+' : '';
+      var turClass = a.tur === 'etkinlik' ? 'badge-mavi' : 'badge-sari';
+      // Üye rütbesini bul
+      var uyeM = members.find(function(m) { return m.rumuz === a.rumuz; });
+      var rutbeStr = uyeM ? ' <span style="font-size:10px;color:#555">('+uyeM.rutbe+')</span>' : '';
+      tr.innerHTML = '<td style="font-size:11px;color:#555">' + (a.tarih || '—') + '</td>'
+        + '<td style="font-size:12px">' + (a.rumuz || '') + rutbeStr + '</td>'
+        + '<td style="font-weight:600;color:' + renk + '">' + isaret + (a.miktar || 0) + '</td>'
+        + '<td style="font-size:12px;color:#888;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + (a.gerekce || '') + '">' + (a.gerekce || '—') + '</td>'
+        + '<td><span class="badge ' + turClass + '" style="font-size:10px">' + (a.tur || 'manuel') + '</span></td>';
+      tb.appendChild(tr);
+    });
+    tbl.appendChild(tb); wrap.appendChild(tbl);
+    listeEl.innerHTML = '';
+    listeEl.appendChild(wrap);
+  } catch(e) {
+    listeEl.innerHTML = '<div style="color:#e24b4a;font-size:12px;padding:8px">Hata: ' + e.message + '</div>';
+  }
+}
+
+// ============================================================
+// GENEL PUAN TABLOSU - Top 5
+// ============================================================
+function renderGenelPuanTablosu() {
+  var el = document.getElementById('genelPuanTablosu');
+  if (!el) return;
+  var sorted = [...members]
+    .filter(function(m) { return m.rutbe !== 'Gözlemci'; })
+    .sort(function(a, b) { return (Number(b.puan) || 0) - (Number(a.puan) || 0); })
+    .slice(0, 5);
+  if (!sorted.length) { el.innerHTML = ''; return; }
+  var medallar = ['🥇', '🥈', '🥉', '4.', '5.'];
+  var html = '<div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-trophy"></i> Genel Puan Tablosu — Top 5</div>'
+    + '<div class="card" style="padding:0;overflow:hidden">';
+  sorted.forEach(function(m, i) {
+    var puan = Number(m.puan) || 0;
+    var maxPuan = Number(sorted[0].puan) || 1;
+    var yuzde = Math.round(puan / maxPuan * 100);
+    var gold = i === 0;
+    html += '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;'
+      + (i < sorted.length - 1 ? 'border-bottom:0.5px solid #1a1a1a;' : '') + '">'
+      + '<div style="font-size:' + (gold ? '20px' : '14px') + ';min-width:24px;text-align:center">' + medallar[i] + '</div>'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">'
+      + '<span style="font-size:13px;font-weight:' + (gold ? '700' : '500') + ';color:' + (gold ? '#fac775' : '#d3d1c7') + '">' + m.rumuz + '</span>'
+      + '<span style="font-size:12px;font-weight:600;color:' + (gold ? '#fac775' : '#9fe1cb') + '">' + puan + ' P</span>'
+      + '</div>'
+      + '<div style="height:3px;background:#1a1a1a;border-radius:2px;overflow:hidden">'
+      + '<div style="height:100%;width:' + yuzde + '%;background:' + (gold ? '#fac775' : '#555') + ';border-radius:2px;transition:width .4s"></div>'
+      + '</div>'
+      + '<span style="font-size:10px;color:#555">' + (m.rutbe || '') + '</span>'
+      + '</div></div>';
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// renderPuan'ı override et - genel tablo ekle
+var _origRenderPuan = renderPuan;
+function renderPuan() {
+  _origRenderPuan();
+  renderGenelPuanTablosu();
 }
 </script>
 </body>
