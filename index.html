@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel - Alpha</title>
+<title>Q-GANG Panel</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -1010,6 +1010,16 @@ async function reqPuan(){
   });
 }
 
+async function renderPuanArsiv(rumuz){
+  try{
+    var payload={action:'PUAN_ARSIV_LIST',token:getToken(),item:{}};
+    if(rumuz)payload.item={rumuz:rumuz};
+    var r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    var d=await r.json();
+    return d.result||[];
+  }catch(e){return[];}
+}
+
 async function arsivFiltrele(){
   const selEl=document.getElementById('arsivFilter');
   const rumuz=selEl?selEl.value:'';
@@ -1485,9 +1495,12 @@ async function gorevTalepYanitla(id,durum){
     if(talep&&talep.rumuz){
       var uye=members.find(function(m){return m.rumuz===talep.rumuz;});
       if(uye){
-        var gorevMetni=talep.tur+(talep.aciklama?' — '+talep.aciklama:'');
+        var gorevMetni=talep.tur; // Sadece kategori, açıklama org'a yazılmaz
         await cmsYaz('MEMBER_UPDATE',Object.assign({},uye,{_id:uye._id||uye.id,gorev:gorevMetni}));
         uye.gorev=gorevMetni; // Local güncelle
+        // members dizisindeki üyeyi de güncelle
+        var mIdx=members.findIndex(function(x){return x.rumuz===talep.rumuz;});
+        if(mIdx>-1)members[mIdx].gorev=gorevMetni;
         cmsStatusGoster('ok','<i class="ti ti-check"></i> Görev atandı: '+talep.rumuz);
       }
     }
@@ -3508,7 +3521,7 @@ function renderOrg() {
       box.innerHTML = '<div style="width:6px;height:6px;background:' + durumRenk
         + ';border-radius:50%;position:absolute;top:8px;right:8px"></div>'
         + '<div style="font-size:12px;font-weight:700;color:' + renk.txt + ';margin-bottom:3px">' + m.rumuz + '</div>'
-        + '<div style="font-size:10px;color:#555">' + (m.gorev && m.gorev !== 'Yok' ? m.gorev : '—') + '</div>';
+        + '<div style="font-size:10px;color:#555">' + (m.gorev && m.gorev !== 'Yok' ? m.gorev.split('—')[0].trim() : '—') + '</div>';
 
       grid.appendChild(box);
     });
