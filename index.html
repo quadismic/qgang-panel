@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel v1.0</title>
+<title>Q-GANG Panel</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -3759,6 +3759,80 @@ function renderGenelPuanTablosu() {
 }
 
 // renderGenelPuanTablosu renderPuan içinde çağrılıyor
+</script>
+<script>
+// ============================================================
+// reqUpdateEvent - Etkinlik düzenleme
+// Yeni eklenen katılımcılara puan ver, çıkarılanlardan al
+// ============================================================
+async function reqUpdateEvent(id) {
+  if (!izin('etkinlikEkle') && SESSION.rol !== 'Lider') { alert('Yetkiniz yok.'); return; }
+  var turEl = document.getElementById('ee_tur');
+  var tarihEl = document.getElementById('ee_tarih');
+  var puanEl = document.getElementById('ee_puan');
+  var katEl = document.getElementById('ee_kat');
+  if (!turEl || !tarihEl) { alert('Form alanları bulunamadı.'); return; }
+
+  var yeniTur = turEl.value.trim();
+  var yeniTarih = tarihEl.value;
+  var yeniPuan = Number(puanEl ? puanEl.value : 10) || 10;
+  var yeniKatArr = katEl ? Array.from(katEl.selectedOptions).map(function(o){ return o.value.trim(); }) : [];
+  var yeniKat = yeniKatArr.join(',');
+
+  if (!yeniTur || !yeniTarih) { alert('Tür ve tarih gerekli!'); return; }
+
+  // Mevcut etkinliği bul
+  var evObj = events.find(function(e){ return String(e._id) === String(id) || String(e.id) === String(id); });
+  if (!evObj) { alert('Etkinlik bulunamadı.'); return; }
+
+  var eskiKatArr = parseKat(evObj.katilimcilar);
+  var eskiPuan = Number(evObj.puan) || 10;
+
+  confirm2('Etkinliği güncelle', '<strong>' + yeniTur + '</strong> — ' + fmtDate(yeniTarih), async function() {
+    // Güncellenen etkinliği backend'e yaz
+    var guncEvObj = Object.assign({}, evObj, {
+      _id: evObj._id || evObj.id,
+      tur: yeniTur, tarih: yeniTarih, puan: yeniPuan, katilimcilar: yeniKat
+    });
+    await cmsYaz('EVENT_UPDATE', guncEvObj);
+
+    // Yeni eklenenler (eskide yok, yenide var) → puan ver
+    var eklenenler = yeniKatArr.filter(function(r){ return r && !eskiKatArr.includes(r); });
+    // Çıkarılanlar (eskide var, yenide yok) → puan geri al
+    var cikarilanlar = eskiKatArr.filter(function(r){ return r && !yeniKatArr.includes(r); });
+
+    for (var i = 0; i < eklenenler.length; i++) {
+      var r = eklenenler[i];
+      var m = members.find(function(x){ return x.rumuz === r; });
+      if (m) {
+        m.puan = (Number(m.puan) || 0) + yeniPuan;
+        await cmsYaz('MEMBER_UPDATE', Object.assign({}, m, { _id: m._id || m.id }));
+        await puanArsivEkle(r, yeniPuan, yeniTur + ' (sonradan eklendi)', 'etkinlik', id);
+      }
+    }
+
+    for (var j = 0; j < cikarilanlar.length; j++) {
+      var r2 = cikarilanlar[j];
+      var m2 = members.find(function(x){ return x.rumuz === r2; });
+      if (m2) {
+        m2.puan = Math.max(0, (Number(m2.puan) || 0) - eskiPuan);
+        await cmsYaz('MEMBER_UPDATE', Object.assign({}, m2, { _id: m2._id || m2.id }));
+        await puanArsivEkle(r2, -eskiPuan, yeniTur + ' (çıkarıldı)', 'etkinlik', id);
+      }
+    }
+
+    // Local events güncelle
+    var evIdx = events.findIndex(function(e){ return String(e._id) === String(id) || String(e.id) === String(id); });
+    if (evIdx > -1) events[evIdx] = Object.assign({}, events[evIdx], { tur: yeniTur, tarih: yeniTarih, puan: yeniPuan, katilimcilar: yeniKat });
+
+    addLog('Etkinlik güncellendi', yeniTur + ' — ' + fmtDate(yeniTarih)); save();
+    closeModal();
+    renderEvents(); renderPuan(); renderDashboard();
+    cmsStatusGoster('ok', '<i class="ti ti-check"></i> Etkinlik güncellendi'
+      + (eklenenler.length ? ' · +' + eklenenler.length + ' katılımcı' : '')
+      + (cikarilanlar.length ? ' · -' + cikarilanlar.length + ' katılımcı' : ''));
+  });
+}
 </script>
 </body>
 </html>
