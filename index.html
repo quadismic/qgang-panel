@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel</title>
+<title>Q-GANG Panel - Alpha</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -753,7 +753,7 @@ function _showTabContent(name){
     tab.classList.add('tab-animating');
   }
   const fns={
-    dashboard:renderDashboard, members:renderMembers, puan:function(){renderPuan();renderGenelPuanTablosu();},
+    dashboard:renderDashboard, members:renderMembers, puan:renderPuan,
     gorev:renderGorev, etkinlik:renderEvents, butce:renderButce,
     duyurular:renderDuyurular, davet:function(){renderDavetKodlari();renderDavet();uiAyarla();}, tuzuk:function(){renderTuzuk();renderDisiplin();uiAyarla();},
     oylama:renderOylama, basvurular:renderBasvurular,
@@ -912,20 +912,7 @@ function renderPuan(){
   // Puan tablosu
   const sorted=[...members].sort(function(a,b){return (Number(b.puan)||0)-(Number(a.puan)||0);});
   const maxP=sorted.reduce(function(acc,m){return Math.max(acc,Number(m.puan)||0);},1);
-  // Genel puan listesi kaldırıldı - sadece sezon listesi
-  const puanEl=document.getElementById('puanList');
-  if(puanEl) puanEl.innerHTML='';
-  sorted.forEach(function(m,i){ if(true) {
-    const puan=Number(m.puan)||0;
-    const yuzde=Math.round(puan/maxP*100);
-    const div=document.createElement('div');div.className='puan-row';
-    div.innerHTML='<div style="width:18px;font-size:11px;color:#555">'+(i+1)+'</div>'
-      +'<div style="width:95px;font-size:12px;font-weight:500;color:#d3d1c7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+m.rumuz+'</div>'
-      +'<div class="puan-bar-bg"><div class="puan-bar" style="width:'+yuzde+'%"></div></div>'
-      +'<div style="width:32px;font-size:12px;font-weight:500;color:#d3d1c7;text-align:right">'+puan+'</div>'
-      +'<div style="width:65px">'+rutbeBadge(m.rutbe)+'</div>';
-    if(puanEl) puanEl.appendChild(div);
-  } });
+  // puanList kaldırıldı - Top5 aşağıda gösterilecek
 
   // Puan düzenleme editörü
   const editor=document.getElementById('puanEditor');
@@ -966,6 +953,9 @@ function renderPuan(){
     card2.appendChild(bRow);
     editor.appendChild(card2);
   }
+
+  // Top5 Genel Puan Tablosu - puan düzenlemenin üstünde
+  renderGenelPuanTablosu();
 
   // Arsiv bolumu - DOM API ile
   const arsivWrap=document.getElementById('puanArsivWrap');
@@ -1058,7 +1048,7 @@ async function arsivFiltrele(){
   // Async veriler - donmadan arka planda yükle
   Promise.all([
     fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'RUTBE_GECMISI_LIST',item:{rumuz:rumuz},token:getToken()})}).then(function(r){return r.json();}).catch(function(){return {result:[]};}).then(function(d){return d.result||[];}),
-    fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_LIST',token:getToken(),item:{rumuz:rumuz},token:getToken()})}).then(function(r){return r.json();}).catch(function(){return {result:[]};}).then(function(d){return d.result||[];})
+    fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_LIST',token:getToken(),item:{rumuz:rumuz}})}).then(function(r){return r.json();}).catch(function(){return {result:[]};}).then(function(d){return d.result||[];})
   ]).then(function(results){
     var rgData=results[0];var paData=results[1];
     // Rütbe timeline
@@ -1139,7 +1129,7 @@ function renderPuanSezon(){
     kapatBtn.innerHTML='<i class="ti ti-flag"></i> Sezonu Kapat';kapatBtn.onclick=sezonuKapat;headerDiv.appendChild(kapatBtn);
   }
   wrap.appendChild(headerDiv);
-  fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_LIST',token:getToken(),item:{},token:getToken()})})
+  fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_LIST',token:getToken(),item:{}})})
   .then(function(r){return r.json();}).then(function(data){
     var arsiv=data.result||[];
     var sezonB=new Date(baslangic);
@@ -1481,7 +1471,17 @@ async function gorevTalepYanitla(id,durum){
   await cmsYaz('GOREV_TALEP_UPDATE',{_id:id,durum:durum});
   // Onaylandıysa üyenin görev field'ını da güncelle
   if(durum==='Onaylandi'){
+    // gorevTalepleri boşsa API'den al
     var talep=gorevTalepleri&&gorevTalepleri.find(function(t){return String(t._id)===String(id)||String(t.id)===String(id);});
+    if(!talep){
+      try{
+        var talepRes=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'GOREV_TALEP_LIST',token:getToken()})});
+        var talepData=await talepRes.json();
+        if(talepData.result){gorevTalepleri=talepData.result;}
+        talep=gorevTalepleri&&gorevTalepleri.find(function(t){return String(t._id)===String(id)||String(t.id)===String(id);});
+      }catch(e){}
+    }
     if(talep&&talep.rumuz){
       var uye=members.find(function(m){return m.rumuz===talep.rumuz;});
       if(uye){
@@ -2104,7 +2104,6 @@ function renderDuyuruBanner(){
 <div id="tab-puan" class="tab">
   <div id="puanSezonWrap"></div>
   <div class="section-title"></div>
-  <div id="puanList"></div>
   <div id="puanEditor"></div>
   <hr class="sep">
   <div id="genelPuanTablosu" style="margin-bottom:.8rem"></div>
@@ -3765,7 +3764,7 @@ function renderGenelPuanTablosu() {
     .slice(0, 5);
   if (!sorted.length) { el.innerHTML = ''; return; }
   var medallar = ['🥇', '🥈', '🥉', '4.', '5.'];
-  var html = '<div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-trophy"></i> Genel Puan Tablosu — Top 5</div>'
+  var html = '<div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-trophy"></i> Genel Puan Tablosu — İlk 5</div>'
     + '<div class="card" style="padding:0;overflow:hidden">';
   sorted.forEach(function(m, i) {
     var puan = Number(m.puan) || 0;
