@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel v1.0.0</title>
+<title>Q-GANG Panel</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -1058,7 +1058,7 @@ async function arsivFiltrele(){
   // Async veriler - donmadan arka planda yükle
   Promise.all([
     fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'RUTBE_GECMISI_LIST',item:{rumuz:rumuz}})}).then(function(r){return r.json();}).catch(function(){return {result:[]};}).then(function(d){return d.result||[];}),
-    fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_LIST',item:{rumuz:rumuz}})}).then(function(r){return r.json();}).catch(function(){return {result:[]};}).then(function(d){return d.result||[];})
+    fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_LIST',item:{rumuz:rumuz},token:getToken()})}).then(function(r){return r.json();}).catch(function(){return {result:[]};}).then(function(d){return d.result||[];})
   ]).then(function(results){
     var rgData=results[0];var paData=results[1];
     // Rütbe timeline
@@ -2663,8 +2663,11 @@ async function onlineListeGuncelle(){
     var liste=data.result||[];
     var sayEl=document.getElementById('onlineCount');
     var listEl=document.getElementById('onlineList');
-    if(sayEl)sayEl.textContent=liste.length||0;
-    if(listEl)listEl.textContent=liste.map(function(o){return o.rumuz;}).join(', ');
+    // Aynı üyeyi tekrar gösterme - unique rumuzları al
+    var uniqueRumuzlar=[];
+    liste.forEach(function(o){if(o.rumuz&&uniqueRumuzlar.indexOf(o.rumuz)<0)uniqueRumuzlar.push(o.rumuz);});
+    if(sayEl)sayEl.textContent=uniqueRumuzlar.length||0;
+    if(listEl)listEl.textContent=uniqueRumuzlar.join(', ');
   }catch(e){}
 }
 
