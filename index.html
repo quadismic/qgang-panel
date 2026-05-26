@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel</title>
+<title>Q-GANG Panel v1.0</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -3720,50 +3720,6 @@ async function renderBasvuruArsiv() {
 // ============================================================
 // PUAN ARŞİVİ DÜZELTMESİ - arsivFiltrele yeniden yaz
 // ============================================================
-async function arsivFiltrele(rumuzParam) {
-  var sel = document.getElementById('arsivFilter');
-  var rumuz = rumuzParam || (sel ? sel.value : '') || '';
-  var listeEl = document.getElementById('arsivListe');
-  if (!listeEl) return;
-  listeEl.innerHTML = '<div style="font-size:12px;color:#555;padding:8px">Yükleniyor...</div>';
-  try {
-    var res = await fetch(API_URL, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ action: 'PUAN_ARSIV_LIST', item: rumuz ? { rumuz: rumuz } : {} })
-    });
-    var data = await res.json();
-    var liste = data.result || [];
-    if (!liste.length) {
-      listeEl.innerHTML = '<div style="font-size:12px;color:#555;padding:8px">Kayıt bulunamadı.</div>';
-      return;
-    }
-    // Üye rütbesi - members dizisinden bul
-    var wrap = document.createElement('div'); wrap.className = 'table-wrap';
-    var tbl = document.createElement('table');
-    tbl.innerHTML = '<thead><tr><th>Tarih</th><th>Üye</th><th>Miktar</th><th>Gerekçe</th><th>Tür</th></tr></thead>';
-    var tb = document.createElement('tbody');
-    liste.forEach(function(a) {
-      var tr = document.createElement('tr');
-      var renk = a.miktar > 0 ? '#4caf7d' : '#e24b4a';
-      var isaret = a.miktar > 0 ? '+' : '';
-      var turClass = a.tur === 'etkinlik' ? 'badge-mavi' : 'badge-sari';
-      // Üye rütbesini bul
-      var uyeM = members.find(function(m) { return m.rumuz === a.rumuz; });
-      var rutbeStr = uyeM ? ' <span style="font-size:10px;color:#555">('+uyeM.rutbe+')</span>' : '';
-      tr.innerHTML = '<td style="font-size:11px;color:#555">' + (a.tarih || '—') + '</td>'
-        + '<td style="font-size:12px">' + (a.rumuz || '') + rutbeStr + '</td>'
-        + '<td style="font-weight:600;color:' + renk + '">' + isaret + (a.miktar || 0) + '</td>'
-        + '<td style="font-size:12px;color:#888;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + (a.gerekce || '') + '">' + (a.gerekce || '—') + '</td>'
-        + '<td><span class="badge ' + turClass + '" style="font-size:10px">' + (a.tur || 'manuel') + '</span></td>';
-      tb.appendChild(tr);
-    });
-    tbl.appendChild(tb); wrap.appendChild(tbl);
-    listeEl.innerHTML = '';
-    listeEl.appendChild(wrap);
-  } catch(e) {
-    listeEl.innerHTML = '<div style="color:#e24b4a;font-size:12px;padding:8px">Hata: ' + e.message + '</div>';
-  }
-}
 
 // ============================================================
 // GENEL PUAN TABLOSU - Top 5
