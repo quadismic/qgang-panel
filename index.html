@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel</title>
+<title>Q-GANG Panel v1.0</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -303,25 +303,28 @@ async function hashSifre(s){
 let SESSION={rumuz:'Ziyaretçi',rol:'Gözlemci',girisZamani:new Date().toISOString()};
 function izin(key){
   const rol=SESSION.rol||'Gozlemci';
-  // Direkt eşleşme
-  if(IZINLER[rol]) return !!(IZINLER[rol][key]);
-  // Normalize edilmiş eşleşme (Unicode farklılıklarına karşı)
   const normalize=function(s){
     return s.replace(/ç/g,'c').replace(/ş/g,'s').replace(/ğ/g,'g')
              .replace(/ü/g,'u').replace(/ö/g,'o').replace(/ı/g,'i')
-             .replace(/ä/g,'a').replace(/Ü/g,'U').replace(/Ö/g,'O')
-             .replace(/Ç/g,'C').replace(/Ş/g,'S').replace(/Ğ/g,'G')
-             .replace(/İ/g,'I');
+             .replace(/İ/g,'I').replace(/Ü/g,'U').replace(/Ö/g,'O')
+             .replace(/Ç/g,'C').replace(/Ş/g,'S').replace(/Ğ/g,'G');
   };
   const rolN=normalize(rol);
-  for(const k in IZINLER){
-    if(normalize(k)===rolN) return !!(IZINLER[k][key]);
-  }
-  // CMS'den gelen özel izinler
+  // 1. ÖNCELİK: aktifIzinler (CMS'den gelen, kullanıcı tarafından değiştirilebilir)
   if(aktifIzinler){
     for(const k in aktifIzinler){
-      if(k===rol||normalize(k)===rolN) return !!(aktifIzinler[k][key]);
+      if(k===rol||normalize(k)===rolN){
+        // aktifIzinler'de bu key tanımlıysa (0 veya 1), CMS değerini kullan
+        if(aktifIzinler[k]&&typeof aktifIzinler[k][key]!=='undefined'){
+          return !!(aktifIzinler[k][key]);
+        }
+        break;
+      }
     }
+  }
+  // 2. FALLBACK: Hardcoded IZINLER (CMS'de tanımlı değilse)
+  for(const k in IZINLER){
+    if(k===rol||normalize(k)===rolN) return !!(IZINLER[k][key]);
   }
   return false;
 }
@@ -517,6 +520,11 @@ async function panelAc(rumuz,rol){
       if(veri.disiplin&&veri.disiplin.length)disiplin=veri.disiplin.map(function(d){return Object.assign({},d,{id:d._id||d.id});});
 
       if(veri.tuzuk)tuzuk=veri.tuzuk;
+    // İzinleri yükle - aktifIzinler CMS değerlerine göre güncellenir
+    if(veri.izinler&&Object.keys(veri.izinler).length){
+      Object.assign(aktifIzinler,veri.izinler);
+      for(var _r in veri.izinler){if(typeof IZINLER[_r]==='object')Object.assign(IZINLER[_r],veri.izinler[_r]);}
+    }
       cmsStatusGoster('ok','<i class="ti ti-check"></i> Hazır');
     }
   }
@@ -1428,9 +1436,14 @@ async function reqSifreSifirla(mid,rumuz){
   if(!izin('sifreSifirla')&&SESSION.rol!=='Lider')return;
   confirm2('Sifre sifirla','<strong>'+rumuz+'</strong> sifresi varsayilana sifirlanacak.<br><span style="font-size:12px;color:#555">Yeni sifre: qgang123</span>',async function(){
     const VARSAYILAN_HASH='306924655af1a88cf0e9de5c449e0daf5edf17d06599722c8ee6fdb35ec91b6f';
-    await cmsYaz('USER_UPDATE',{_id:mid,sifre:VARSAYILAN_HASH,varsayilanSifre:true});
-    addLog('Sifre sifirlanda',rumuz+' -- Yonetici tarafindan');save();
-    alert(rumuz+' sifresi qgang123 olarak sifirlanda!');
+    // SIFRE_SIFIRLA action'ı - hem sifreHash hem sifre alanını günceller
+    var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'SIFRE_SIFIRLA',id:mid,sifreHash:VARSAYILAN_HASH,token:getToken()})});
+    var data=await res.json();
+    if(data.success||data.result){
+      addLog('Şifre sıfırlandı',rumuz+' — Yönetici tarafından');save();
+      alert(rumuz+' şifresi qgang123 olarak sıfırlandı!');
+    }else{alert('Hata: '+(data.error||'İşlem başarısız'));}
   });
 }
 
@@ -2892,7 +2905,16 @@ async function izinKaydet(){
   ROLLER_LISTE.forEach(function(r){kayit[r]=aktifIzinler[r]||{};});
   var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'IZIN_KAYDET',token:getToken(),item:kayit})});
   var data=await res.json();
-  if(data.success){Object.assign(IZINLER||{},kayit);addLog('Erişim izinleri güncellendi','Lider');save();cmsStatusGoster('ok','<i class="ti ti-check"></i> İzinler kaydedildi');}
+  if(data.success){
+    // aktifIzinler'i güncelle - izin() bunu okuyacak
+    Object.assign(aktifIzinler, kayit);
+    // IZINLER'i de güncelle (geriye dönük uyumluluk)
+    ROLLER_LISTE.forEach(function(r){if(!IZINLER[r])IZINLER[r]={};Object.assign(IZINLER[r],kayit[r]||{});});
+    addLog('Erişim izinleri güncellendi','Lider');save();
+    cmsStatusGoster('ok','<i class="ti ti-check"></i> İzinler kaydedildi');
+    // uiAyarla'yı yenile - yeni izinlere göre butonları güncelle
+    uiAyarla();
+  }
 }
 
 // ============================================================
@@ -3404,7 +3426,7 @@ async function reqSifreDegistir() {
     if (!data.success) { hataEl.textContent = 'Mevcut şifre hatalı.'; hataEl.style.display = 'block'; return; }
     // Şifreyi güncelle
     var res2 = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'SIFRE_GUNCELLE', rumuz: SESSION.rumuz, sifreHash: yeniHash }) });
+      body: JSON.stringify({ action: 'SIFRE_GUNCELLE', rumuz: SESSION.rumuz, sifreHash: yeniHash, token: getToken() }) });
     var data2 = await res2.json();
     if (data2.success || data2.result) {
       addLog('Şifre değiştirildi', SESSION.rumuz); save();
