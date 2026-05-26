@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel v1.1.1</title>
+<title>Q-GANG Panel v100</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -1057,8 +1057,8 @@ async function arsivFiltrele(){
 
   // Async veriler - donmadan arka planda yükle
   Promise.all([
-    fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'RUTBE_GECMISI_LIST',item:{rumuz:rumuz}})}).then(function(r){return r.json();}).catch(function(){return {result:[]};}).then(function(d){return d.result||[];}),
-    fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_LIST',item:{rumuz:rumuz},token:getToken()})}).then(function(r){return r.json();}).catch(function(){return {result:[]};}).then(function(d){return d.result||[];})
+    fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'RUTBE_GECMISI_LIST',item:{rumuz:rumuz},token:getToken()})}).then(function(r){return r.json();}).catch(function(){return {result:[]};}).then(function(d){return d.result||[];}),
+    fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_LIST',token:getToken(),item:{rumuz:rumuz},token:getToken()})}).then(function(r){return r.json();}).catch(function(){return {result:[]};}).then(function(d){return d.result||[];})
   ]).then(function(results){
     var rgData=results[0];var paData=results[1];
     // Rütbe timeline
@@ -1139,7 +1139,7 @@ function renderPuanSezon(){
     kapatBtn.innerHTML='<i class="ti ti-flag"></i> Sezonu Kapat';kapatBtn.onclick=sezonuKapat;headerDiv.appendChild(kapatBtn);
   }
   wrap.appendChild(headerDiv);
-  fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_LIST',item:{}})})
+  fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_LIST',token:getToken(),item:{},token:getToken()})})
   .then(function(r){return r.json();}).then(function(data){
     var arsiv=data.result||[];
     var sezonB=new Date(baslangic);
@@ -1176,7 +1176,7 @@ async function sezonuKapat(){
   confirm2('Sezonu Kapat','<strong>'+sezon.ad+'</strong> sezonu kapatılacak. Sıralama arşivlenir.',async function(){
     var baslangic=getSezonAyBaslangic();
     var bitis=new Date().toISOString().split('T')[0];
-    var ar=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_LIST',item:{}})});
+    var ar=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_LIST',token:getToken(),item:{}})});
     var arData=await ar.json();var arsiv2=arData.result||[];
     var sezonB2=new Date(baslangic);
     var filtered2=arsiv2.filter(function(a){return a.miktar>0&&new Date(a.tarih)>=sezonB2;});
@@ -1300,7 +1300,7 @@ async function icerikOkundu(tur,icerikId){
   if(okunduListesi.includes(icerikId))return;
   okunduListesi.push(icerikId);
   await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({action:'OKUNDU_EKLE',item:{
+    body:JSON.stringify({action:'OKUNDU_EKLE',token:getToken(),item:{
       rumuz:SESSION.rumuz,tur:tur,icerikId:icerikId,
       tarih:new Date().toISOString()
     }})});
@@ -1309,7 +1309,7 @@ async function icerikOkundu(tur,icerikId){
 // RUTBE GECMISi
 async function rutbeGecmisiEkle(rumuz,eskiRutbe,yeniRutbe,aciklama){
   await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({action:'RUTBE_GECMISI_EKLE',item:{
+    body:JSON.stringify({action:'RUTBE_GECMISI_EKLE',token:getToken(),item:{
       rumuz:rumuz,eskiRutbe:eskiRutbe,yeniRutbe:yeniRutbe,
       tarih:new Date().toISOString().split('T')[0],
       aciklama:aciklama||'',yapan:SESSION.rumuz
@@ -1443,7 +1443,7 @@ async function yeniMesajGonder(){
   const mesajEl=document.getElementById('yeniMesajIcerik');
   if(!aliciEl||!mesajEl||!mesajEl.value.trim())return;
   await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({action:'MESAJ_GONDER',item:{
+    body:JSON.stringify({action:'MESAJ_GONDER',token:getToken(),item:{
       gonderen:SESSION.rumuz,alici:aliciEl.value,
       mesaj:mesajEl.value.trim(),tarih:new Date().toISOString(),okundu:false
     }})});
@@ -1479,6 +1479,19 @@ async function gorevTalebiGonder(){
 async function gorevTalepYanitla(id,durum){
   var gorGosteren=durum==='Onaylandi'?'Onaylandı':'Reddedildi';
   await cmsYaz('GOREV_TALEP_UPDATE',{_id:id,durum:durum});
+  // Onaylandıysa üyenin görev field'ını da güncelle
+  if(durum==='Onaylandi'){
+    var talep=gorevTalepleri&&gorevTalepleri.find(function(t){return String(t._id)===String(id)||String(t.id)===String(id);});
+    if(talep&&talep.rumuz){
+      var uye=members.find(function(m){return m.rumuz===talep.rumuz;});
+      if(uye){
+        var gorevMetni=talep.tur+(talep.aciklama?' — '+talep.aciklama:'');
+        await cmsYaz('MEMBER_UPDATE',Object.assign({},uye,{_id:uye._id||uye.id,gorev:gorevMetni}));
+        uye.gorev=gorevMetni; // Local güncelle
+        cmsStatusGoster('ok','<i class="ti ti-check"></i> Görev atandı: '+talep.rumuz);
+      }
+    }
+  }
   addLog('Görev talebi '+gorGosteren,id);save();
   // gorevTalepleri local güncelle
   if(gorevTalepleri){
@@ -1487,7 +1500,7 @@ async function gorevTalepYanitla(id,durum){
   }
   await renderGorevTalepleri();
   renderGorev();
-  renderDashboard(); // Dashboard uyarı kutusunu anında günceller
+  renderDashboard();
 }
 
 async function renderGorevTalepleri(){
@@ -2350,7 +2363,7 @@ async function renderDavet(){
   const el=document.getElementById('davetIcerik');if(!el)return;
   el.innerHTML='<div style="font-size:12px;color:#555">Yükleniyor...</div>';
   try{
-    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'BASVURU_LIST'})});
+    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'BASVURU_LIST',token:getToken()})});
     const data=await res.json();
     const basvurular=data.result||[];
     el.innerHTML='';
@@ -2649,7 +2662,7 @@ async function oturumPing(){
 async function oturumKapat(){
   try{
     await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'OTURUM_KAPAT',item:{rumuz:SESSION.rumuz}})});
+      body:JSON.stringify({action:'OTURUM_KAPAT',token:getToken(),item:{rumuz:SESSION.rumuz}})});
   }catch(e){}
 }
 
@@ -2759,7 +2772,7 @@ async function reqOylamaSil(oid){
   confirm2('Oylamayı sil','Bu oylama kalıcı olarak silinecek.',async function(){
     try{
       await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'OYLAMA_DELETE',id:oid})});
+        body:JSON.stringify({action:'OYLAMA_DELETE',id:oid,token:getToken()})});
       addLog('Oylama silindi','ID: '+oid);
       renderOylama();
     }catch(e){}
@@ -2865,7 +2878,7 @@ async function renderErisimBoard(){
 async function izinKaydet(){
   var kayit={};
   ROLLER_LISTE.forEach(function(r){kayit[r]=aktifIzinler[r]||{};});
-  var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'IZIN_KAYDET',item:kayit})});
+  var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'IZIN_KAYDET',token:getToken(),item:kayit})});
   var data=await res.json();
   if(data.success){Object.assign(IZINLER||{},kayit);addLog('Erişim izinleri güncellendi','Lider');save();cmsStatusGoster('ok','<i class="ti ti-check"></i> İzinler kaydedildi');}
 }
@@ -3053,7 +3066,7 @@ async function reqGorevTalepGonder(){
 async function puanArsivEkle(rumuz,miktar,gerekce,tip,refId){
   try{
     var kayit={rumuz:rumuz,miktar:miktar,gerekce:gerekce,tip:tip||'manuel',refId:refId||'',tarih:new Date().toISOString().split('T')[0],ekleyen:SESSION.rumuz};
-    await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_ADD',item:kayit})});
+    await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'PUAN_ARSIV_ADD',token:getToken(),item:kayit})});
   }catch(e){}
 }
 
@@ -3146,7 +3159,7 @@ async function renderDavetKodlari(){
   el.innerHTML='<div style="font-size:12px;color:#555">Yükleniyor...</div>';
   try{
     var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'DAVET_KOD_LIST'})});
+      body:JSON.stringify({action:'DAVET_KOD_LIST',token:getToken()})});
     var data=await res.json();
     var kodlar=data.result||[];
     if(!kodlar.length){el.innerHTML='<div style="font-size:12px;color:#555;padding:.5rem">Henüz kod üretilmedi.</div>';return;}
@@ -3188,7 +3201,7 @@ async function reqDavetKoduUret(){
       var rastgele=Math.random().toString(36).substring(2,6).toUpperCase();
       var kod='QGANG-'+rastgele;
       var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'DAVET_KOD_EKLE',item:{kod:kod,olusturan:SESSION.rumuz,tarih:new Date().toISOString().split('T')[0],kullanildi:false,aktif:true}})});
+        body:JSON.stringify({action:'DAVET_KOD_EKLE',item:{kod:kod,olusturan:SESSION.rumuz,tarih:new Date().toISOString().split('T')[0],kullanildi:false,aktif:true},token:getToken()})});
       var data=await res.json();
       if(data.success||data.result){
         addLog('Davet kodu üretildi',kod);save();
