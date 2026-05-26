@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel</title>
+<title>Q-GANG Panel v1.0</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -2812,10 +2812,21 @@ async function reqOylamaOlustur(){
   if(!baslik||!baslik.value.trim()){alert('Başlık gerekli!');return;}
   var secArr=(secenekler&&secenekler.value?secenekler.value.split(',').map(function(s){return s.trim();}).filter(function(s){return s;}):['Evet','Hayır']);
   try{
-    await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'OYLAMA_EKLE',token:getToken(),baslik:baslik.value.trim(),tur:tur?tur.value:'Anket',aciklama:aciklama?aciklama.value:'',secenekler:JSON.stringify(secArr),oylar:'{}',olusturan:SESSION.rumuz,tarih:new Date().toISOString().split('T')[0],aktif:true})});
-    addLog('Oylama oluşturuldu',baslik.value.trim());save();
-    closeModal();renderOylama();
+    var oylamaBaslik=baslik.value.trim();
+    var oyRes=await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'OYLAMA_EKLE',token:getToken(),baslik:oylamaBaslik,tur:tur?tur.value:'Anket',aciklama:aciklama?aciklama.value:'',secenekler:JSON.stringify(secArr),oylar:'{}',olusturan:SESSION.rumuz,tarih:new Date().toISOString().split('T')[0],aktif:true})});
+    var oyData=await oyRes.json();
+    if(!oyData.success&&!oyData.result){
+      alert('Hata: '+(oyData.error||'Oylama oluşturulamadı'));return;
+    }
+    // Yeni oylamayı local diziye ekle (renderOylama tekrar fetch etmeden görsün)
+    var yeniOylama=Object.assign({baslik:oylamaBaslik,tur:tur?tur.value:'Anket',aciklama:aciklama?aciklama.value:'',secenekler:JSON.stringify(secArr),oylar:'{}',olusturan:SESSION.rumuz,tarih:new Date().toISOString().split('T')[0],aktif:true},{_id:oyData.result?._id||oyData.result?.id||'tmp-'+Date.now()});
+    if(!oylamalar)oylamalar=[];
+    oylamalar.unshift(yeniOylama);
+    addLog('Oylama oluşturuldu',oylamaBaslik);save();
+    closeModal();
+    renderOylama();
+    cmsStatusGoster('ok','<i class="ti ti-check"></i> Oylama oluşturuldu!');
   }catch(e){alert('Hata: '+e.message);}
 }
 
