@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel v1.0</title>
+<title>Q-GANG Panel</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -2972,7 +2972,11 @@ function reqUpdateMember(id){
     if(idx>-1)members[idx]=gunc;
     addLog('Üye güncellendi',newRumuz);save();closeModal();
     await cmsYaz('MEMBER_UPDATE',gunc);
-    renderMembers();renderDashboard();
+    // QKullanicilar'daki rol field'ını da güncelle (login session için)
+    if(newRutbe !== m.rutbe){
+      await cmsYaz('USER_RUTBE_SYNC',{rumuz:newRumuz,rutbe:newRutbe});
+    }
+    renderMembers();renderDashboard();renderOrg();
   });
 }
 
@@ -3470,7 +3474,7 @@ function renderOrg() {
   if (!members || !members.length) { el.innerHTML = '<div style="color:#555;font-size:12px;padding:2rem;text-align:center">Üye verisi yüklenmedi.</div>'; return; }
 
   var RENKLER = {
-    'Lider':     { bg: '#1a0e00', border: '#fac775', txt: '#fac775', badge: '#3a2000' },
+    'Lider':     { bg: '#000000', border: '#e8e8e8', txt: '#ffffff', badge: '#1a1a1a' },
     'Vekilharç': { bg: '#1a0000', border: '#d45555', txt: '#e07070', badge: '#3a0a0a' },
     'Kaptan':    { bg: '#001020', border: '#4a9fd4', txt: '#7abde8', badge: '#001a30' },
     'Teğmen':    { bg: '#001200', border: '#4a9a55', txt: '#7aba80', badge: '#001a05' },
@@ -3614,6 +3618,29 @@ async function tuzukKaydet() {
 // ============================================================
 // uiAyarla ve renderTuzuk - TEMİZ TANIMLAR
 // ============================================================
+
+// Sağ üst kullanıcı bilgisini güncelle
+function navKullaniciBilgisiGuncelle(rumuz, rol) {
+  var rolClass = {
+    'Lider':'lider','Vekilharç':'vekil','Kaptan':'kaptan',
+    'Teğmen':'tegmen','Üye':'uye','Gözlemci':'gozlemci'
+  };
+  var badge = document.getElementById('userRolBadge');
+  var rumuzEl = document.getElementById('userRumuz');
+  if(badge) badge.innerHTML = '<span class="rol-badge rol-'+(rolClass[rol]||'uye')+'">'+rol+'</span>';
+  if(rumuzEl) rumuzEl.textContent = rumuz || SESSION.rumuz;
+  SESSION.rol = rol;
+  SESSION.rumuz = rumuz || SESSION.rumuz;
+  // Storage güncelle - token koruyarak
+  try {
+    var _sq = localStorage.getItem('qg_session') || sessionStorage.getItem('qg_session') || '{}';
+    var _ss = JSON.parse(_sq);
+    _ss.rol = rol;
+    _ss.rumuz = rumuz || SESSION.rumuz;
+    if(localStorage.getItem('qg_session')) localStorage.setItem('qg_session', JSON.stringify(_ss));
+    else sessionStorage.setItem('qg_session', JSON.stringify(_ss));
+  } catch(e) {}
+}
 
 function uiAyarla(){
   var lider=SESSION.rol==='Lider';
