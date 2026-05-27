@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel v1.1</title>
+<title>Q-GANG Panel v1.2</title>
 <!-- v10-clean: duplicate modal wrappers and legacy override removed -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
@@ -1828,16 +1828,15 @@ function renderDuyuruBanner(){
       +'<span style="color:#c9aa7a;font-weight:400">'+metin+'</span></span>';
   }).join('');
   // İki kopya koy - seamless CSS loop için
-  scroll.innerHTML = icerik + icerik;
+  scroll.innerHTML = icerik;
   // Toplam karakter uzunluğuna göre süre hesapla (her 40 karakter ~1 saniye)
   var toplamKarakter=aktif.reduce(function(s,d){return s+(d.baslik||'').length+(d.icerik||'').length;},0);
-  var duration=Math.max(15,Math.round(toplamKarakter/25));
-  if(duration>60)duration=60; // max 60 saniye
+  var duration=Math.max(30,Math.round(toplamKarakter/10));
+  if(duration>120)duration=120;
   scroll.style.animation='none';
   void scroll.offsetWidth; // reflow
   scroll.style.animation='duyuruKay '+duration+'s linear infinite';
 }
-
 
 </script>
 
