@@ -506,7 +506,8 @@ async function panelAc(rumuz,rol){
   // Veri henüz yüklenmediyse çek
   if(!members.length||!events.length){
     cmsStatusGoster('loading','<i class="ti ti-loader"></i> Veriler yükleniyor...');
-    const veri=await cmsOku();
+    // Veri window.onload'da yüklendiyse tekrar çekme
+    var veri = await cmsOku();
     if(veri){
       if(veri.members&&veri.members.length)members=veri.members.map(function(m){return Object.assign({},m,{id:m._id||m.id,katilimcilar:parseKat(m.katilimcilar)});});
 
@@ -634,6 +635,11 @@ window.addEventListener('load',async function(){
           if(veri.disiplin&&veri.disiplin.length)disiplin=veri.disiplin.map(function(d){return Object.assign({},d,{id:d._id||d.id});});
 
           if(veri.tuzuk)tuzuk=veri.tuzuk;
+          // İzinler yükle
+          if(veri.izinler&&Object.keys(veri.izinler).length){
+            Object.assign(aktifIzinler,veri.izinler);
+            for(var _ri in veri.izinler){if(typeof IZINLER[_ri]==='object')Object.assign(IZINLER[_ri],veri.izinler[_ri]);}
+          }
         }
         panelAc(s.rumuz,s.rol);
         return;
