@@ -6,7 +6,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel v1.0 Clean</title>
+<title>Q-GANG Panel v1.0</title>
+<!-- v10-clean: duplicate modal wrappers and legacy override removed -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -614,6 +615,23 @@ async function cmsYaz(action,data){
 
     return result;
   }catch(e){console.error('CMS yazma hatası:',e);cmsStatusGoster('err','<i class="ti ti-x"></i> Kayıt hatası');}
+}
+
+async function izinKaydet(){
+  try{
+    await cmsYaz('IZIN_KAYDET', aktifIzinler);
+
+    // Hardcoded izinleri de güncel tut
+    Object.keys(aktifIzinler).forEach(function(r){
+      if(!IZINLER[r]) IZINLER[r] = {};
+      Object.assign(IZINLER[r], aktifIzinler[r]);
+    });
+
+    cmsStatusGoster('ok','<i class="ti ti-check"></i> İzinler kaydedildi');
+  }catch(e){
+    console.error(e);
+    cmsStatusGoster('err','<i class="ti ti-alert-circle"></i> İzin kaydedilemedi');
+  }
 }
 
 // Panel yuklenince
