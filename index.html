@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel</title>
+<title>Q-GANG Panel V60</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -2603,7 +2603,8 @@ function openModal(type, data){
       +'<button class="btn btn-warn" onclick="reqSaveDuyuru()"><i class="ti ti-check"></i> Yayınla</button>'
       +'</div></div></div>';
   } else if(type==='gorevTalep'){
-    var gOpts2=(GOREVLER||[]).map(function(g){return'<option>'+g+'</option>';}).join('');
+    var gorevListesi = (Array.isArray(GOREVLER) && GOREVLER.length) ? GOREVLER : ['Yok', 'Etkinlik', 'Organizasyon', 'Destek'];
+var gOpts2 = gorevListesi.map(function(g){return '<option>'+g+'</option>';}).join('');
     mc.innerHTML='<div class="modal-overlay">'
       +'<div class="modal-box"><h3>Görev Talebi Gönder</h3>'
       +'<div class="form-group" style="margin-bottom:8px"><label>Görev Türü</label><select id="gt_tur">'+gOpts2+'</select></div>'
@@ -2639,7 +2640,7 @@ function closeModal(){
 function onlineSistemiBaslat(){
   oturumPing();
   onlineListeGuncelle();
-  setInterval(function(){oturumPing();onlineListeGuncelle();},2*60*1000);
+  setInterval(function(){oturumPing();onlineListeGuncelle();},5*60*1000);
   window.addEventListener('beforeunload',function(){oturumKapat();});
   setTimeout(pasiflikKontrol,10000);
   setInterval(pasiflikKontrol,5*60*1000);
@@ -2657,7 +2658,7 @@ async function oturumPing(){
 async function oturumKapat(){
   try{
     await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'OTURUM_KAPAT',token:getToken(),item:{rumuz:SESSION.rumuz}})});
+      body:JSON.stringify({action:'OTURUM_CIKIS',token:getToken(),item:{rumuz:SESSION.rumuz}})});
   }catch(e){}
 }
 
@@ -2784,7 +2785,11 @@ function reqSaveMember(){
 }
 
 function reqUpdateMember(id){
-  var m=members.find(function(x){return String(x._id)===String(id)||String(x.id)===String(id);});if(!m)return;
+  var m=members.find(function(x){return String(x._id)===String(id)||String(x.id)===String(id);});if(!m){
+  alert('Üye bulunamadı. Sayfayı yenileyip tekrar deneyin.');
+  return;
+}
+
   function getRtbSec(r){if(r==='Lider')return 0;if(r&&r.includes('Vekil'))return 1;if(r==='Kaptan')return 2;if(r&&r.includes('Te'))return 3;if(r&&r.includes('ye'))return 4;return 5;}
   if(SESSION.rol!=='Lider'&&getRtbSec(m.rutbe)<=getRtbSec(SESSION.rol)){alert('Bu üyeyi düzenleyemezsiniz.');return;}
   var eRumuz=document.getElementById('e_rumuz');
@@ -2905,7 +2910,10 @@ async function reqSaveButce(){
 async function reqGorevTalepGonder(){
   var turEl=document.getElementById('gt_tur');
   var aciklamaEl=document.getElementById('gt_aciklama');
-  if(!turEl){closeModal();return;}
+if(!turEl){
+  alert('Görev talebi formu açılamadı. Sayfayı yenileyip tekrar deneyin.');
+  return;
+}
   var talep={rumuz:SESSION.rumuz,tur:turEl.value,aciklama:aciklamaEl?aciklamaEl.value:'',tarih:new Date().toISOString().split('T')[0],durum:'beklemede'};
   var talepRes=await cmsYaz('GOREV_TALEP_ADD',talep);
   // ID'yi al - Wix'ten dönen ID varsa onu kullan
