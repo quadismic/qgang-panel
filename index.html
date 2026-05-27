@@ -1167,7 +1167,7 @@ function renderPuanSezon(){
   .then(function(r){return r.json();}).then(function(data){
     var arsiv=data.result||[];
     var sezonB=new Date(baslangic);
-    var filtered=arsiv.filter(function(a){return a.miktar>0&&new Date(a.tarih)>=sezonB;});
+    var filtered=arsiv.filter(function(a){return new Date(a.tarih)>=sezonB;});
     var sp={};filtered.forEach(function(a){sp[a.rumuz]=(sp[a.rumuz]||0)+Number(a.miktar);});
     var sirali=Object.entries(sp).sort(function(a,b){return b[1]-a[1];}).slice(0,10);
     var listeDiv=document.createElement('div');
