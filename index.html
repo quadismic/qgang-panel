@@ -6,7 +6,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel</title>
+<title>Q-GANG Panel v1.0 Clean</title>
+<!-- v10-clean: duplicate modal wrappers and legacy override removed -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -2437,9 +2438,6 @@ function renderLog(){
 
 </script>
 <script>
-// ============================================================
-// MODAL SİSTEMİ
-// ============================================================
 function openModal(type, data){
   var mc=document.getElementById('modalContainer');
   if(!mc)return;
@@ -2488,61 +2486,7 @@ function openModal(type, data){
       +'</div></div></div>';
   } else if(type==='editMember'&&data){
     var m=members.find(function(x){return String(x._id)===String(data)||String(x.id)===String(data);});
-    if(!m)return;
-    var mid=m._id||m.id;
-    var today2=new Date().toISO
-// ============================================================
-// MODAL SİSTEMİ
-// ============================================================
-function openModal(type, data){
-  var mc=document.getElementById('modalContainer');
-  if(!mc)return;
-  if(type==='sifreDegistir'){
-    mc.innerHTML='<div class="modal-overlay">'
-      +'<div class="modal-box"><h3><i class="ti ti-key"></i> Şifre Değiştir</h3>'
-      +'<div class="form-group" style="margin-bottom:8px"><label>Mevcut Şifre</label><input type="password" id="sd_eski" placeholder="Mevcut şifren..."></div>'
-      +'<div class="form-group" style="margin-bottom:8px"><label>Yeni Şifre</label><input type="password" id="sd_yeni" placeholder="Yeni şifre..."></div>'
-      +'<div class="form-group" style="margin-bottom:8px"><label>Yeni Şifre (Tekrar)</label><input type="password" id="sd_yeni2" placeholder="Tekrar gir..."></div>'
-      +'<div id="sd_hata" style="color:#e24b4a;font-size:12px;display:none;margin-bottom:8px"></div>'
-      +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
-      +'<button class="btn btn-warn" onclick="reqSifreDegistir()"><i class="ti ti-check"></i> Değiştir</button>'
-      +'</div></div></div>';
-    return;
-  }
-  if(type==='addDisiplin'){reqDisiplinEkle();return;}
-  if(type==='editEvent'){
-    var eid=data;var evObj=events.find(function(ev){return String(ev._id)===String(eid)||String(ev.id)===String(eid);});if(!evObj)return;
-    function _gR(r){if(r==='Lider')return 0;if(r&&r.includes('Vekil'))return 1;if(r==='Kaptan')return 2;if(r&&r.includes('Te'))return 3;if(r&&r.includes('ye'))return 4;return 5;}
-    var _sr=[...members].sort(function(a,b){return _gR(a.rutbe)-_gR(b.rutbe)||a.rumuz.localeCompare(b.rumuz,'tr');});
-    var _mk=parseKat(evObj.katilimcilar);
-    var _op=_sr.map(function(m){return'<option value="'+m.rumuz+'" '+((_mk.includes(m.rumuz))?'selected':'')+'>'+m.rumuz+' ('+m.rutbe+')</option>';}).join('');
-    var mc2=mc;
-    mc2.innerHTML='<div class="modal-overlay">'+'<div class="modal-box"><h3><i class="ti ti-edit"></i> Etkinliği Düzenle</h3>'+'<div class="form-row"><div class="form-group"><label>Tür</label><input id="ee_tur" value="'+evObj.tur+'"></div>'+'<div class="form-group"><label>Tarih</label><input type="date" id="ee_tarih" value="'+evObj.tarih+'"></div>'+'<div class="form-group"><label>Puan</label><input type="number" id="ee_puan" value="'+(evObj.puan||10)+'"></div></div>'+'<div class="form-group" style="margin-bottom:8px"><label>Katılımcılar</label>'+'<select id="ee_kat" multiple style="height:160px">'+_op+'</select></div>'+'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'+'<button class="btn btn-warn" id="btnEG"><i class="ti ti-check"></i> Güncelle</button>'+'</div></div></div>';
-    setTimeout(function(){var b=document.getElementById('btnEG');if(b)(function(id){b.onclick=function(){reqUpdateEvent(id);};})(eid);},50);
-    return;
-  }
-  mc.innerHTML='';
-  if(type==='addMember'&&(izin('uyeEkle')||SESSION.rol==='Lider')){
-    var today=new Date().toISOString().split('T')[0];
-    var rOpts=RUTBELER.map(function(r){return'<option'+(r==='Gözlemci'?' selected':'')+'>'+r+'</option>';}).join('');
-    var dOpts=DURUMLAR.map(function(d){return'<option'+(d==='Aktif'?' selected':'')+'>'+d+'</option>';}).join('');
-    var gOpts=GOREVLER.map(function(g){return'<option'+(g==='Yok'?' selected':'')+'>'+g+'</option>';}).join('');
-    mc.innerHTML='<div class="modal-overlay">'
-      +'<div class="modal-box"><h3>Yeni Üye</h3>'
-      +'<div class="form-row"><div class="form-group"><label>Rumuz</label><input id="m_rumuz" placeholder="Rumuz"></div>'
-      +'<div class="form-group"><label>Rütbe</label><select id="m_rutbe">'+rOpts+'</select></div></div>'
-      +'<div class="form-row"><div class="form-group"><label>Durum</label><select id="m_durum">'+dOpts+'</select></div>'
-      +'<div class="form-group"><label>Görev</label><select id="m_gorev">'+gOpts+'</select></div></div>'
-      +'<div class="form-row"><div class="form-group"><label>Katılım</label><input type="date" id="m_katilim" value="'+today+'"></div>'
-      +'<div class="form-group"><label>Doğum</label><input type="date" id="m_dogum"></div></div>'
-      +'<div class="form-group" style="margin-bottom:8px"><label>Referans</label><input id="m_ref" placeholder="Kim getirdi?"></div>'
-      +'<div class="form-group" style="margin-bottom:8px"><label>Not</label><textarea id="m_not" placeholder="Lider notu..."></textarea></div>'
-      +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
-      +'<button class="btn btn-warn" onclick="reqSaveMember()"><i class="ti ti-check"></i> Kaydet</button>'
-      +'</div></div></div>';
-  } else if(type==='editMember'&&data){
-    var m=members.find(function(x){return String(x._id)===String(data)||String(x.id)===String(data);});
-    if(!m)return;
+    if(!m){alert('Üye bulunamadı. Sayfayı yenileyip tekrar deneyin.');return;}
     var mid=m._id||m.id;
     var today2=new Date().toISOString().split('T')[0];
     var rO=RUTBELER.map(function(r){return'<option'+(r===m.rutbe?' selected':'')+'>'+r+'</option>';}).join('');
@@ -2626,80 +2570,7 @@ var gOpts2 = gorevListesi.map(function(g){return '<option>'+g+'</option>';}).joi
     // confirm2 kendi işler
   }
 }
-}
-}
 
-var eskiOpenModal = openModal;
-
-window.openModal = function(type, data) {
-  var mc = document.getElementById('modalContainer');
-  if (!mc) return;
-
-  if (type === 'editMember' && data) {
-    var m = members.find(function(x){
-      return String(x._id) === String(data) || String(x.id) === String(data);
-    });
-
-    if (!m) {
-      alert('Üye bulunamadı. Sayfayı yenileyip tekrar deneyin.');
-      return;
-    }
-
-    var mid = m._id || m.id;
-    var today = new Date().toISOString().split('T')[0];
-
-    var rO = RUTBELER.map(function(r){
-      return '<option' + (r === m.rutbe ? ' selected' : '') + '>' + r + '</option>';
-    }).join('');
-
-    var dO = DURUMLAR.map(function(d){
-      return '<option' + (d === m.durum ? ' selected' : '') + '>' + d + '</option>';
-    }).join('');
-
-    var gO = GOREVLER.map(function(g){
-      return '<option' + (g === m.gorev ? ' selected' : '') + '>' + g + '</option>';
-    }).join('');
-
-    mc.innerHTML =
-      '<div class="modal-overlay">' +
-      '<div class="modal-box"><h3>' + (m.rumuz || '') + ' — Düzenle</h3>' +
-      '<div class="form-row"><div class="form-group"><label>Rumuz</label><input id="e_rumuz" value="' + (m.rumuz || '') + '"></div>' +
-      '<div class="form-group"><label>Rütbe</label><select id="e_rutbe">' + rO + '</select></div></div>' +
-      '<div class="form-row"><div class="form-group"><label>Durum</label><select id="e_durum">' + dO + '</select></div>' +
-      '<div class="form-group"><label>Görev</label><select id="e_gorev">' + gO + '</select></div></div>' +
-      '<div class="form-row"><div class="form-group"><label>Puan</label><input type="number" id="e_puan" value="' + (m.puan || 0) + '"></div>' +
-      '<div class="form-group"><label>Katılım</label><input type="date" id="e_katilim" value="' + (m.katilim || today) + '"></div></div>' +
-      '<div class="form-row"><div class="form-group"><label>Doğum</label><input type="date" id="e_dogum" value="' + (m.dogum || '') + '"></div>' +
-      '<div class="form-group"><label>Referans</label><input id="e_ref" value="' + (m.ref || '') + '"></div></div>' +
-      '<div class="form-group" style="margin-bottom:8px"><label>Not</label><textarea id="e_not">' + (m.not || '') + '</textarea></div>' +
-      '<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>' +
-      '<button class="btn btn-warn" onclick="reqUpdateMember(\'' + mid + '\')"><i class="ti ti-check"></i> Güncelle</button>' +
-      '</div></div></div>';
-
-    return;
-  }
-
-  if (type === 'gorevTalep') {
-    var gorevListesi = (Array.isArray(GOREVLER) && GOREVLER.length) ? GOREVLER : ['Yok', 'Etkinlik', 'Organizasyon', 'Destek'];
-
-    var gOpts = gorevListesi.map(function(g){
-      return '<option>' + g + '</option>';
-    }).join('');
-
-    mc.innerHTML =
-      '<div class="modal-overlay">' +
-      '<div class="modal-box"><h3>Görev Talebi Gönder</h3>' +
-      '<div class="form-group" style="margin-bottom:8px"><label>Görev Türü</label><select id="gt_tur">' + gOpts + '</select></div>' +
-      '<div class="form-group" style="margin-bottom:8px"><label>Açıklama</label><textarea id="gt_aciklama" placeholder="Neden bu görevi almak istiyorsunuz?"></textarea></div>' +
-      '<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>' +
-      '<button class="btn btn-warn" onclick="reqGorevTalepGonder()"><i class="ti ti-send"></i> Gönder</button>' +
-      '</div></div></div>';
-
-    return;
-  }
-
-  return eskiOpenModal(type, data);
-};
 function closeModal(){
   var mc=document.getElementById('modalContainer');
   if(mc)mc.innerHTML='';
