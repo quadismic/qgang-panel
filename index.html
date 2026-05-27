@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel ad</title>
+<title>Q-GANG Panel</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -275,6 +275,8 @@ const IZINLER = {
   'Üye':         {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,sifreSifirla:0,sezonKapat:0,rutbeGecmisiSifirla:1},
   'Gözlemci':    {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,sifreSifirla:0,sezonKapat:0,rutbeGecmisiSifirla:0}
 };
+var aktifIzinler = {}; // CMS'den gelen izinler burada tutulur
+
 
 async function cikisYap(){
   oturumKapat();
