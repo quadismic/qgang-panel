@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel v1.0</title>
+<title>Q-GANG Panel Pre-Alpha</title>
 <!-- v10-clean: duplicate modal wrappers and legacy override removed -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
@@ -3111,9 +3111,15 @@ async function reqSifreSifirla(id,rumuz){
   if(!izin('sifreSifirla')&&SESSION.rol!=='Lider'){alert('Yetkiniz yok.');return;}
   confirm2('Şifreyi sıfırla','<strong>'+rumuz+'</strong> şifresi varsayılana sıfırlanacak.',async function(){
     try{
-      var defaultHash='94b617208064162c825408794fb45d2f7df44cba3c32f52d3c9cedf7200a2f74'; // qgang123
+      var defaultHash='306924655af1a88cf0e9de5c449e0daf5edf17d06599722c8ee6fdb35ec91b6f'; // qgang123
       var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'SIFRE_SIFIRLA',token:getToken(),id:id,sifreHash:defaultHash})});
+        body:JSON.stringify({
+        action:'SIFRE_SIFIRLA',
+        token:getToken(),
+        id:id,
+        rumuz:rumuz,
+        sifreHash:defaultHash
+})
       var data=await res.json();
       if(data.success||data.result){
         addLog('Şifre sıfırlandı',rumuz);save();
