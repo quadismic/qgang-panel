@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel v1.0</title>
+<title>Q-GANG Panel v1.1</title>
 <!-- v10-clean: duplicate modal wrappers and legacy override removed -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
@@ -66,7 +66,10 @@ body{font-family:Arial,sans-serif;background:#111;color:#d3d1c7;padding:12px}
 .duyuru-track{flex:1;overflow:hidden;position:relative;height:34px;-webkit-mask-image:linear-gradient(90deg,transparent 0%,black 4%,black 88%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,black 4%,black 88%,transparent 100%)}
 .duyuru-scroll{display:flex;align-items:center;height:100%;white-space:nowrap;will-change:transform;animation:duyuruKay 20s linear infinite}
 .duyuru-scroll:hover{animation-play-state:paused!important}
-@keyframes duyuruKay{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes duyuruKay{
+  0%{transform:translateX(100%)}
+  100%{transform:translateX(-100%)}
+}
 #tab-org{overflow-x:auto;-webkit-overflow-scrolling:touch}
 #orgChart{min-width:280px;width:100%}
 @keyframes orgFadeDown{0%{opacity:0;transform:translateY(-12px)}100%{opacity:1;transform:translateY(0)}}
