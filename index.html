@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-GANG Panel v1.0</title>
+<title>Q-GANG Panel</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -268,12 +268,12 @@ const ROL_SIRASI = ['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
 var CEZA_RENK={'Uyarı':'badge-sari','Kısıtlama':'badge-turuncu','Uzaklaştırma':'badge-kirmizi','İhraç':'badge-kirmizi'};
 var CEZA_TURLERI=['Uyarı','Kısıtlama','Uzaklaştırma','İhraç'];
 const IZINLER = {
-  Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,kodGor:1,duyuruEkle:1,duyuruSil:1,basvuruGor:1,basvuruOnayla:1,davetYonet:1,disiplinUygula:1,tuzukDuzenle:1,oylamaEkle:1,sifreSifirla:1,sezonKapat:1,rutbeGecmisiSifirla:1},
-  'Vekilharç':   {uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:0,logGor:1,logSil:0,kodUret:1,kodGor:1,duyuruEkle:1,duyuruSil:0,basvuruGor:1,basvuruOnayla:1,davetYonet:0,disiplinUygula:1,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:1,sezonKapat:0,rutbeGecmisiSifirla:1},
-  Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:0,sezonKapat:0,rutbeGecmisiSifirla:1},
-  'Teğmen':      {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:1,sifreSifirla:0,sezonKapat:0,rutbeGecmisiSifirla:1},
-  'Üye':         {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:0,sifreSifirla:0,sezonKapat:0,rutbeGecmisiSifirla:1},
-  'Gözlemci':    {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,oylamaEkle:0,sifreSifirla:0,sezonKapat:0,rutbeGecmisiSifirla:0}
+  Lider:         {uyeEkle:1,uyeSil:1,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:1,kodUret:1,kodGor:1,duyuruEkle:1,duyuruSil:1,basvuruGor:1,basvuruOnayla:1,davetYonet:1,disiplinUygula:1,tuzukDuzenle:1,sifreSifirla:1,sezonKapat:1,rutbeGecmisiSifirla:1},
+  'Vekilharç':   {uyeEkle:1,uyeSil:0,uyeDuzenle:1,rutbeDegistir:1,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:1,butceGor:1,butceDuzenle:1,logGor:1,logSil:0,kodUret:1,kodGor:1,duyuruEkle:1,duyuruSil:0,basvuruGor:1,basvuruOnayla:1,davetYonet:0,disiplinUygula:1,tuzukDuzenle:0,sifreSifirla:1,sezonKapat:0,rutbeGecmisiSifirla:1},
+  Kaptan:        {uyeEkle:0,uyeSil:0,uyeDuzenle:1,rutbeDegistir:0,puanDuzenle:1,gorevAta:1,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,sifreSifirla:0,sezonKapat:0,rutbeGecmisiSifirla:1},
+  'Teğmen':      {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:1,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:1,kodGor:1,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,sifreSifirla:0,sezonKapat:0,rutbeGecmisiSifirla:1},
+  'Üye':         {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,sifreSifirla:0,sezonKapat:0,rutbeGecmisiSifirla:1},
+  'Gözlemci':    {uyeEkle:0,uyeSil:0,uyeDuzenle:0,rutbeDegistir:0,puanDuzenle:0,gorevAta:0,etkinlikEkle:0,etkinlikSil:0,butceGor:0,butceDuzenle:0,logGor:0,logSil:0,kodUret:0,kodGor:0,duyuruEkle:0,duyuruSil:0,basvuruGor:0,basvuruOnayla:0,davetYonet:0,disiplinUygula:0,tuzukDuzenle:0,sifreSifirla:0,sezonKapat:0,rutbeGecmisiSifirla:0}
 };
 
 async function cikisYap(){
@@ -334,7 +334,6 @@ function izin(key){
 //
 const AUTH_URL = 'https://www.q-gang.com/_functions/qgang';
 const API_URL = 'https://www.q-gang.com/_functions/qgang';
-const OYLAMA_URL = 'https://www.q-gang.com/_functions/qoylama';
 
 // AUTH FONKSIYONLARI ----------------------
 function authTab(tab){
@@ -763,8 +762,7 @@ function _showTabContent(name){
   const fns={
     dashboard:renderDashboard, members:renderMembers, puan:renderPuan,
     gorev:renderGorev, etkinlik:renderEvents, butce:renderButce,
-    duyurular:renderDuyurular, davet:function(){renderDavetKodlari();renderDavet();uiAyarla();}, tuzuk:function(){renderTuzuk();renderDisiplin();uiAyarla();},
-    oylama:renderOylama, basvurular:renderBasvurular,
+    duyurular:renderDuyurular, davet:function(){renderDavetKodlari();renderDavet();uiAyarla();}, tuzuk:function(){renderTuzuk();renderDisiplin();uiAyarla();}, basvurular:renderBasvurular,
     erisim:renderErisimBoard, org:renderOrg, log:renderLog, 
   };
   if(fns[name]) fns[name]();
@@ -813,18 +811,8 @@ function renderDashboard(){
   if(bekleyenTalepler.length&&(izin('gorevAta')||SESSION.rol==='Lider')){
     alerts+='<div class="alert-row alert-info" style="cursor:pointer" onclick="showTabDD(\'gorev\',\'ddTopluluk\',\'navToplulukBtn\')"><i class="ti ti-clipboard-list"></i> <strong>'+bekleyenTalepler.length+' bekleyen görev talebi</strong></div>';
   }
-  
-  // Aktif oylama bildirimi
-  if(typeof oylamalar!=='undefined'&&oylamalar.length){
-    var aktifOy=oylamalar.filter(function(o){return o.aktif!==false;});
-    if(aktifOy.length){
-      alerts+='<div class="alert-row alert-warn" style="cursor:pointer" id="oylamaBildirimAlert"><i class="ti ti-checkup-list"></i> <strong>'+aktifOy.length+' aktif oylama</strong> devam ediyor</div>';
-    }
-  }
   document.getElementById('alertsBox').innerHTML=alerts||'<div style="font-size:12px;color:#555">Uyarı yok</div>';
-  // Oylama alert onclick - tırnak sorunu DOM API ile çöz
-  var oyAlert=document.getElementById('oylamaBildirimAlert');
-  if(oyAlert)oyAlert.onclick=function(){showTabDD('oylama','ddTopluluk','navToplulukBtn');};
+  // Oylama bildirimi kaldırıldı
   // Gorev talebi butonu - Uye ve uzeri
   const gtWrap=document.getElementById('gorevTalepBtnWrap');
   if(gtWrap){
@@ -1712,7 +1700,7 @@ function renderButce(){
   const net=gelir-gider;
   const netRenk=net>=0?'#9fe1cb':'#e24b4a';
   let editForm='';
-  if(izin('butceDuzenle')){
+  if(izin('butceDuzenle')||SESSION.rol==='Lider'){
     editForm='<div class="card" style="margin-bottom:1rem">'
       +'<div class="form-row">'
       +'<div class="form-group"><label>Tür</label><select id="b_tur"><option value="gelir">Gelir</option><option value="gider">Gider</option></select></div>'
@@ -1760,7 +1748,7 @@ function renderButce(){
 }
 
 async function reqButce(){
-  if(!izin('butceDuzenle'))return;
+  if(!izin('butceDuzenle')){alert('Bu işlem için yetkiniz yok.');return;}
   const tur=document.getElementById('b_tur').value,tarih=document.getElementById('b_tarih').value;
   const tutar=parseFloat(document.getElementById('b_tutar').value)||0;
   const aciklama=document.getElementById('b_aciklama').value.trim();
@@ -1777,7 +1765,7 @@ async function reqButce(){
 }
 
 async function reqDeleteButce(id){
-  if(!izin('butceDuzenle'))return;
+  if(!izin('butceDuzenle')){return;}
   const b=butce.find(function(b){return String(b._id)===String(id)||String(b.id)===String(id);});if(!b)return;
 
   confirm2('İşlemi sil','<strong>'+(b.tur==='gelir'?'Gelir':'Gider')+'</strong>: '+fmtTL(Number(b.tutar))+' — '+b.aciklama,async function(){
@@ -2046,7 +2034,6 @@ function renderDuyuruBanner(){
       <div class="nav-dd-item" onclick="showTabDD('members','ddTopluluk','navToplulukBtn')"><i class="ti ti-users"></i> Üyeler</div>
       <div class="nav-dd-item" onclick="showTabDD('puan','ddTopluluk','navToplulukBtn')"><i class="ti ti-star"></i> Puanlar</div>
       <div class="nav-dd-item" onclick="showTabDD('gorev','ddTopluluk','navToplulukBtn')"><i class="ti ti-check"></i> Görevler</div>
-      <div class="nav-dd-item" onclick="showTabDD('oylama','ddTopluluk','navToplulukBtn')"><i class="ti ti-checkup-list"></i> Oylamalar</div>
       <div class="nav-dd-item" onclick="showTabDD('org','ddTopluluk','navToplulukBtn')"><i class="ti ti-hierarchy"></i> Organizasyon</div>
     </div>
   </div>
@@ -2257,19 +2244,7 @@ function renderDuyuruBanner(){
 </div>
 
 <!-- OYLAMALAR -->
-<div id="tab-oylama" class="tab">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
-    <div class="section-title" style="margin:0"><i class="ti ti-ballot"></i> Oylamalar</div>
-    <button class="btn btn-warn btn-sm" id="btnOylamaEkle" onclick="openModal('addOylama')" style="display:none"><i class="ti ti-plus"></i> Oylama Oluştur</button>
-  </div>
-  <div id="oylamaList"></div>
-</div><!-- ORGANİZASYON -->
-<div id="tab-org" class="tab" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-  <div id="orgChart"></div>
 
-</div>
-
-<!-- LOG -->
 <div id="tab-log" class="tab">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;flex-wrap:wrap;gap:8px">
     <div class="section-title" style="margin:0">Değişiklik geçmişi</div>
@@ -2445,74 +2420,63 @@ function renderLog(){
 }
 
 
-async function renderOylama(){
-  const el=document.getElementById('oylamaList');if(!el)return;
-  el.innerHTML='<div style="font-size:12px;color:#555">Yükleniyor...</div>';
-  try{
-    const res=await fetch(OYLAMA_URL,{method:'GET',headers:{'Accept':'application/json'}});
-    if(!res.ok){oylamalar=[];console.warn('Oylama API hatası:',res.status);
-    }else{
-      const text=await res.text();
-      try{
-        const data=JSON.parse(text);
-        const parsed=data&&data.body&&typeof data.body==='string'?JSON.parse(data.body):data;
-        oylamalar=parsed.items||parsed||[];
-      }catch(e){oylamalar=[];}
-    }
-  }catch(e){oylamalar=[];}
-  el.innerHTML='';
-  if(!oylamalar.length){el.innerHTML='<div class="card" style="text-align:center;color:#555;font-size:12px;padding:2rem">Henüz oylama yok.</div>';return;}
-  const rolSira={Lider:0,'Vekilharç':1,Kaptan:2,'Teğmen':3,'Üye':4,'Gözlemci':5};
-  var secimYetkisi=(rolSira[SESSION.rol]!==undefined?rolSira[SESSION.rol]:9)<=4;
-  oylamalar.forEach(function(oy){
-    var oid=oy._id||oy.id;
-    var oylarObj={};try{oylarObj=oy.oylar?JSON.parse(oy.oylar):{};}catch(e){}
-    var secenekler=[];try{secenekler=oy.secenekler?JSON.parse(oy.secenekler):[];}catch(e){}
-    var benimOyum=oylarObj[SESSION.rumuz];
-    var secimMi=oy.tur==='Secim';
-    var katilabilir=!secimMi||secimYetkisi;
-    var oySayilari={};secenekler.forEach(function(s){oySayilari[s]=0;});
-    Object.values(oylarObj).forEach(function(v){if(oySayilari[v]!==undefined)oySayilari[v]++;});
-    var toplamOy=Object.values(oylarObj).length;
-    var kart=document.createElement('div');kart.className='card';kart.style.marginBottom='10px';
-    var hdrDiv=document.createElement('div');hdrDiv.style.cssText='display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:10px';
-    hdrDiv.innerHTML='<div><span class="badge badge-mavi" style="margin-right:6px">'+(oy.tur||'Anket')+'</span><strong style="font-size:13px;color:#d3d1c7">'+oy.baslik+'</strong>'+(oy.aktif===false?'<span class="badge badge-pasif" style="margin-left:6px">Kapalı</span>':'')+'</div>';
-    if(izin('oylamaEkle')||SESSION.rol==='Lider'){
-      var btnDiv=document.createElement('div');btnDiv.style.cssText='display:flex;gap:4px';
-      var lb=document.createElement('button');lb.className='btn btn-sm';lb.innerHTML='<i class="ti ti-'+(oy.aktif===false?'lock-open':'lock')+'"></i>';
-      (function(id,a){lb.onclick=function(){reqOylakapat(id,a);};})(oid,!oy.aktif);btnDiv.appendChild(lb);
-      var db=document.createElement('button');db.className='btn btn-danger btn-sm';db.innerHTML='<i class="ti ti-trash"></i>';
-      (function(id){db.onclick=function(){reqOylamaSil(id);};})(oid);btnDiv.appendChild(db);
-      hdrDiv.appendChild(btnDiv);
-    }
-    kart.appendChild(hdrDiv);
-    if(oy.aciklama){var ac=document.createElement('div');ac.style.cssText='font-size:12px;color:#555;margin-bottom:10px';ac.textContent=oy.aciklama;kart.appendChild(ac);}
-    var secDiv=document.createElement('div');secDiv.style.cssText='display:flex;flex-direction:column;gap:6px;margin-bottom:10px';
-    secenekler.forEach(function(s){
-      var yuzde=toplamOy?Math.round(oySayilari[s]/toplamOy*100):0;
-      var aktifKatil=oy.aktif!==false&&katilabilir&&!benimOyum;
-      var secildi=benimOyum===s;
-      var item=document.createElement('div');
-      var satir=document.createElement('div');satir.style.cssText='display:flex;justify-content:space-between;align-items:center;margin-bottom:3px';
-      var sol=document.createElement('div');sol.style.cssText='display:flex;align-items:center;gap:6px';
-      if(aktifKatil){var ob=document.createElement('button');ob.className='btn btn-sm';ob.style.cssText='padding:2px 8px;font-size:11px';ob.textContent=s;(function(id,sec){ob.onclick=function(){reqOyVer(id,sec);};})(oid,s);sol.appendChild(ob);}
-      else{var lbl=document.createElement('span');lbl.style.cssText='font-size:12px;color:'+(secildi?'#fac775':'#888')+';font-weight:'+(secildi?'600':'400');lbl.textContent=s+(secildi?' ✓':'');sol.appendChild(lbl);}
-      satir.appendChild(sol);
-      var sayac=document.createElement('span');sayac.style.cssText='font-size:11px;color:#555';sayac.textContent=oySayilari[s]+' oy ('+yuzde+'%)';satir.appendChild(sayac);
-      item.appendChild(satir);
-      var bar=document.createElement('div');bar.style.cssText='background:#1a1a1a;border-radius:4px;height:4px;overflow:hidden';
-      var dolgu=document.createElement('div');dolgu.style.cssText='background:#fac775;height:100%;width:'+yuzde+'%;transition:width .5s';
-      bar.appendChild(dolgu);item.appendChild(bar);secDiv.appendChild(item);
-    });
-    kart.appendChild(secDiv);
-    var alt=document.createElement('div');alt.style.cssText='font-size:10px;color:#444';
-    alt.textContent=(oy.olusturan||'')+(oy.tarih?' - '+oy.tarih:'')+' - '+toplamOy+' oy'+(secimMi?' · Üye+ katılabilir':'');
-    kart.appendChild(alt);el.appendChild(kart);
-  });
-}
 
 </script>
 <script>
+// ============================================================
+// MODAL SİSTEMİ
+// ============================================================
+function openModal(type, data){
+  var mc=document.getElementById('modalContainer');
+  if(!mc)return;
+  if(type==='sifreDegistir'){
+    mc.innerHTML='<div class="modal-overlay">'
+      +'<div class="modal-box"><h3><i class="ti ti-key"></i> Şifre Değiştir</h3>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Mevcut Şifre</label><input type="password" id="sd_eski" placeholder="Mevcut şifren..."></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Yeni Şifre</label><input type="password" id="sd_yeni" placeholder="Yeni şifre..."></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Yeni Şifre (Tekrar)</label><input type="password" id="sd_yeni2" placeholder="Tekrar gir..."></div>'
+      +'<div id="sd_hata" style="color:#e24b4a;font-size:12px;display:none;margin-bottom:8px"></div>'
+      +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" onclick="reqSifreDegistir()"><i class="ti ti-check"></i> Değiştir</button>'
+      +'</div></div></div>';
+    return;
+  }
+  if(type==='addDisiplin'){reqDisiplinEkle();return;}
+  if(type==='editEvent'){
+    var eid=data;var evObj=events.find(function(ev){return String(ev._id)===String(eid)||String(ev.id)===String(eid);});if(!evObj)return;
+    function _gR(r){if(r==='Lider')return 0;if(r&&r.includes('Vekil'))return 1;if(r==='Kaptan')return 2;if(r&&r.includes('Te'))return 3;if(r&&r.includes('ye'))return 4;return 5;}
+    var _sr=[...members].sort(function(a,b){return _gR(a.rutbe)-_gR(b.rutbe)||a.rumuz.localeCompare(b.rumuz,'tr');});
+    var _mk=parseKat(evObj.katilimcilar);
+    var _op=_sr.map(function(m){return'<option value="'+m.rumuz+'" '+((_mk.includes(m.rumuz))?'selected':'')+'>'+m.rumuz+' ('+m.rutbe+')</option>';}).join('');
+    var mc2=mc;
+    mc2.innerHTML='<div class="modal-overlay">'+'<div class="modal-box"><h3><i class="ti ti-edit"></i> Etkinliği Düzenle</h3>'+'<div class="form-row"><div class="form-group"><label>Tür</label><input id="ee_tur" value="'+evObj.tur+'"></div>'+'<div class="form-group"><label>Tarih</label><input type="date" id="ee_tarih" value="'+evObj.tarih+'"></div>'+'<div class="form-group"><label>Puan</label><input type="number" id="ee_puan" value="'+(evObj.puan||10)+'"></div></div>'+'<div class="form-group" style="margin-bottom:8px"><label>Katılımcılar</label>'+'<select id="ee_kat" multiple style="height:160px">'+_op+'</select></div>'+'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'+'<button class="btn btn-warn" id="btnEG"><i class="ti ti-check"></i> Güncelle</button>'+'</div></div></div>';
+    setTimeout(function(){var b=document.getElementById('btnEG');if(b)(function(id){b.onclick=function(){reqUpdateEvent(id);};})(eid);},50);
+    return;
+  }
+  mc.innerHTML='';
+  if(type==='addMember'&&(izin('uyeEkle')||SESSION.rol==='Lider')){
+    var today=new Date().toISOString().split('T')[0];
+    var rOpts=RUTBELER.map(function(r){return'<option'+(r==='Gözlemci'?' selected':'')+'>'+r+'</option>';}).join('');
+    var dOpts=DURUMLAR.map(function(d){return'<option'+(d==='Aktif'?' selected':'')+'>'+d+'</option>';}).join('');
+    var gOpts=GOREVLER.map(function(g){return'<option'+(g==='Yok'?' selected':'')+'>'+g+'</option>';}).join('');
+    mc.innerHTML='<div class="modal-overlay">'
+      +'<div class="modal-box"><h3>Yeni Üye</h3>'
+      +'<div class="form-row"><div class="form-group"><label>Rumuz</label><input id="m_rumuz" placeholder="Rumuz"></div>'
+      +'<div class="form-group"><label>Rütbe</label><select id="m_rutbe">'+rOpts+'</select></div></div>'
+      +'<div class="form-row"><div class="form-group"><label>Durum</label><select id="m_durum">'+dOpts+'</select></div>'
+      +'<div class="form-group"><label>Görev</label><select id="m_gorev">'+gOpts+'</select></div></div>'
+      +'<div class="form-row"><div class="form-group"><label>Katılım</label><input type="date" id="m_katilim" value="'+today+'"></div>'
+      +'<div class="form-group"><label>Doğum</label><input type="date" id="m_dogum"></div></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Referans</label><input id="m_ref" placeholder="Kim getirdi?"></div>'
+      +'<div class="form-group" style="margin-bottom:8px"><label>Not</label><textarea id="m_not" placeholder="Lider notu..."></textarea></div>'
+      +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
+      +'<button class="btn btn-warn" onclick="reqSaveMember()"><i class="ti ti-check"></i> Kaydet</button>'
+      +'</div></div></div>';
+  } else if(type==='editMember'&&data){
+    var m=members.find(function(x){return String(x._id)===String(data)||String(x.id)===String(data);});
+    if(!m)return;
+    var mid=m._id||m.id;
+    var today2=new Date().toISO
 // ============================================================
 // MODAL SİSTEMİ
 // ============================================================
@@ -2633,16 +2597,6 @@ function openModal(type, data){
       +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
       +'<button class="btn btn-warn" onclick="reqGorevTalepGonder()"><i class="ti ti-send"></i> Gönder</button>'
       +'</div></div></div>';
-  } else if(type==='addOylama'&&(izin('oylamaEkle')||SESSION.rol==='Lider')){
-    mc.innerHTML='<div class="modal-overlay">'
-      +'<div class="modal-box"><h3>Yeni Oylama</h3>'
-      +'<div class="form-group" style="margin-bottom:8px"><label>Başlık</label><input id="oy_baslik" placeholder="Oylama başlığı..."></div>'
-      +'<div class="form-group" style="margin-bottom:8px"><label>Tür</label><select id="oy_tur"><option>Anket</option><option>Secim</option></select></div>'
-      +'<div class="form-group" style="margin-bottom:8px"><label>Açıklama</label><textarea id="oy_aciklama" placeholder="Açıklama..."></textarea></div>'
-      +'<div class="form-group" style="margin-bottom:8px"><label>Seçenekler (virgülle ayır)</label><input id="oy_secenekler" placeholder="Evet, Hayır, Çekimser"></div>'
-      +'<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button>'
-      +'<button class="btn btn-warn" onclick="reqOylamaOlustur()"><i class="ti ti-check"></i> Oluştur</button>'
-      +'</div></div></div>';
   } else if(type==='addButce'&&(izin('butceDuzenle')||SESSION.rol==='Lider')){
     mc.innerHTML='<div class="modal-overlay">'
       +'<div class="modal-box"><h3>Bütçe Kaydı Ekle</h3>'
@@ -2656,6 +2610,8 @@ function openModal(type, data){
   } else if(type==='confirm2'&&data){
     // confirm2 kendi işler
   }
+}
+}
 }
 
 function closeModal(){
@@ -2768,67 +2724,9 @@ async function reqDisiplinSil(id){
 // ============================================================
 // OYLAMA CRUD
 // ============================================================
-async function reqOyVer(oid,secim){
-  try{
-    await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'OY_VER',token:getToken(),id:oid,rumuz:SESSION.rumuz,secim:secim})});
-    addLog('Oy verildi',secim);
-    renderOylama();
-  }catch(e){alert('Hata: '+e.message);}
-}
 
-async function reqOylakapat(oid,aktif){
-  try{
-    // Mevcut oylamayı bul - aktif alanını güncelle
-    var mevcut=oylamalar.find(function(o){return String(o._id)===String(oid)||String(o.id)===String(oid);});
-    if(!mevcut){renderOylama();return;}
-    var gunc=Object.assign({},mevcut,{_id:mevcut._id||mevcut.id,aktif:aktif});
-    await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'OYLAMA_UPDATE',token:getToken(),item:gunc})});
-    // Local state güncelle
-    var idx=oylamalar.findIndex(function(o){return String(o._id)===String(oid)||String(o.id)===String(oid);});
-    if(idx>-1)oylamalar[idx]=Object.assign({},oylamalar[idx],{aktif:aktif});
-    addLog(aktif?'Oylama açıldı':'Oylama kapatıldı',mevcut.baslik||'ID: '+oid);
-    renderOylama();
-  }catch(e){console.error('Oylama hatası:',e);}
-}
 
-async function reqOylamaSil(oid){
-  confirm2('Oylamayı sil','Bu oylama kalıcı olarak silinecek.',async function(){
-    try{
-      await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'OYLAMA_DELETE',id:oid,token:getToken()})});
-      addLog('Oylama silindi','ID: '+oid);
-      renderOylama();
-    }catch(e){}
-  });
-}
 
-async function reqOylamaOlustur(){
-  var baslik=document.getElementById('oy_baslik');
-  var tur=document.getElementById('oy_tur');
-  var aciklama=document.getElementById('oy_aciklama');
-  var secenekler=document.getElementById('oy_secenekler');
-  if(!baslik||!baslik.value.trim()){alert('Başlık gerekli!');return;}
-  var secArr=(secenekler&&secenekler.value?secenekler.value.split(',').map(function(s){return s.trim();}).filter(function(s){return s;}):['Evet','Hayır']);
-  try{
-    var oylamaBaslik=baslik.value.trim();
-    var oyRes=await fetch(OYLAMA_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'OYLAMA_EKLE',token:getToken(),baslik:oylamaBaslik,tur:tur?tur.value:'Anket',aciklama:aciklama?aciklama.value:'',secenekler:JSON.stringify(secArr),oylar:'{}',olusturan:SESSION.rumuz,tarih:new Date().toISOString().split('T')[0],aktif:true})});
-    var oyData=await oyRes.json();
-    if(!oyData.success&&!oyData.result){
-      alert('Hata: '+(oyData.error||'Oylama oluşturulamadı'));return;
-    }
-    // Yeni oylamayı local diziye ekle (renderOylama tekrar fetch etmeden görsün)
-    var yeniOylama=Object.assign({baslik:oylamaBaslik,tur:tur?tur.value:'Anket',aciklama:aciklama?aciklama.value:'',secenekler:JSON.stringify(secArr),oylar:'{}',olusturan:SESSION.rumuz,tarih:new Date().toISOString().split('T')[0],aktif:true},{_id:oyData.result?._id||oyData.result?.id||'tmp-'+Date.now()});
-    if(!oylamalar)oylamalar=[];
-    oylamalar.unshift(yeniOylama);
-    addLog('Oylama oluşturuldu',oylamaBaslik);save();
-    closeModal();
-    renderOylama();
-    cmsStatusGoster('ok','<i class="ti ti-check"></i> Oylama oluşturuldu!');
-  }catch(e){alert('Hata: '+e.message);}
-}
 
 // ============================================================
 // PASIFLIK KONTROLÜ (placeholder - ana fonksiyon zaten var)
@@ -2836,99 +2734,7 @@ async function reqOylamaOlustur(){
 if(typeof pasiflikKontrol==='undefined'){
   function pasiflikKontrol(){}
 }
-</script>
-<script>
-const IZIN_ETIKETLER = {
-  '🔥 KRİTİK / STRATEJİK': '__baslik__',
-  rutbeDegistir:'Rütbe Değiştir', disiplinUygula:'Disiplin Uygula',
-  uyeSil:'Üye Sil', sifreSifirla:'Şifre Sıfırla',
-  tuzukDuzenle:'Tüzük Düzenle', sezonKapat:'Sezon Kapat',
-  butceDuzenle:'Bütçe Düzenle', uyeDuzenle:'Üye Düzenle',
-  basvuruOnayla:'Başvuru Onayla/Reddet', uyeEkle:'Üye Ekle',
-  '⚔️ OPERASYONEL YÖNETİM': '__baslik__',
-  gorevAta:'Görev Ata', davetYonet:'Davet Yönet',
-  kodUret:'Davet Kodu Üret', kodGor:'Davet Kodlarını Gör',
-  etkinlikEkle:'Etkinlik Ekle', etkinlikSil:'Etkinlik Sil',
-  puanDuzenle:'Puan Düzenle', duyuruEkle:'Duyuru Ekle',
-  duyuruSil:'Duyuru Sil', oylamaEkle:'Oylama Oluştur',
-  '📊 TAKİP / GÖZLEM': '__baslik__',
-  basvuruGor:'Başvuru Gör', butceGor:'Bütçe Gör', logGor:'Log Gör',
-  '🧹 BAKIM / DESTEK': '__baslik__',
-  logSil:'Log Temizle'
-};
-
-// ============================================================
-// ERİŞİM YÖNETİMİ
-// ============================================================
-var ROLLER_LISTE=['Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
-// aktifIzinler lazy init - renderErisimBoard çalışınca set edilecek
-var aktifIzinler={};
-function _initAktifIzinler(){if(!Object.keys(aktifIzinler).length&&typeof IZINLER!=='undefined')aktifIzinler=JSON.parse(JSON.stringify(IZINLER));}
-
-async function renderErisimBoard(){
-  var el=document.getElementById('izinBoard');if(!el)return;
-  if(SESSION.rol!=='Lider'){el.innerHTML='<div style="padding:2rem;text-align:center;color:#555">Sadece Lider erişebilir.</div>';return;}
-  try{
-    var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'IZIN_OKU',token:getToken()})});
-    var data=await res.json();
-    if(data.result){aktifIzinler=Object.assign({},IZINLER||{},data.result);Object.assign(IZINLER||{},data.result);}
-  }catch(e){}
-  var izinler=Object.keys(IZIN_ETIKETLER||{});
-  var thHtml='<tr><th style="text-align:left;padding:8px;color:#888;border-bottom:0.5px solid #333;min-width:160px">İzin</th>';
-  ROLLER_LISTE.forEach(function(r){thHtml+='<th style="text-align:center;padding:8px;color:#888;border-bottom:0.5px solid #333;white-space:nowrap;font-size:11px">'+r+'</th>';});
-  thHtml+='</tr>';
-  var tbl=document.createElement('table');tbl.style.cssText='width:100%;border-collapse:collapse;font-size:12px';
-  var thead=document.createElement('thead');thead.innerHTML=thHtml;tbl.appendChild(thead);
-  var tbody=document.createElement('tbody');
-  izinler.forEach(function(key){
-    var deger=(IZIN_ETIKETLER||{})[key]||key;
-    // Kategori başlığı kontrolü
-    if(deger==='__baslik__'){
-      var tr=document.createElement('tr');
-      var td=document.createElement('td');
-      td.colSpan=ROLLER_LISTE.length+1;
-      td.style.cssText='padding:12px 8px 6px;font-size:11px;font-weight:700;color:#fac775;letter-spacing:1px;border-bottom:0.5px solid #333;background:#0f0f0f';
-      td.textContent=key;
-      tr.appendChild(td);tbody.appendChild(tr);
-      return;
-    }
-    var tr=document.createElement('tr');
-    var lbl=document.createElement('td');lbl.style.cssText='padding:7px 8px;border-bottom:0.5px solid #111;color:#d3d1c7;padding-left:16px';lbl.textContent=deger;tr.appendChild(lbl);
-    ROLLER_LISTE.forEach(function(rol){
-      var td=document.createElement('td');td.style.cssText='text-align:center;padding:7px 8px;border-bottom:0.5px solid #111';
-      var inp=document.createElement('input');inp.type='checkbox';inp.checked=!!(aktifIzinler[rol]&&aktifIzinler[rol][key]);
-      inp.style.cssText='width:16px;height:16px;cursor:pointer;accent-color:#fac775';
-      (function(r,k){inp.onchange=function(){if(!aktifIzinler[r])aktifIzinler[r]={};aktifIzinler[r][k]=this.checked?1:0;};})(rol,key);
-      td.appendChild(inp);tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
-  });
-  tbl.appendChild(tbody);
-  var wrap=document.createElement('div');wrap.style.overflowX='auto';wrap.appendChild(tbl);
-  el.innerHTML='';el.appendChild(wrap);
-  // Kaydet butonu
-  var saveBtn=document.getElementById('btnIzinKaydet');
-  if(saveBtn)saveBtn.style.display='';
-}
-
-async function izinKaydet(){
-  var kayit={};
-  ROLLER_LISTE.forEach(function(r){kayit[r]=aktifIzinler[r]||{};});
-  var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'IZIN_KAYDET',token:getToken(),item:kayit})});
-  var data=await res.json();
-  if(data.success){
-    // aktifIzinler'i güncelle - izin() bunu okuyacak
-    Object.assign(aktifIzinler, kayit);
-    // IZINLER'i de güncelle (geriye dönük uyumluluk)
-    ROLLER_LISTE.forEach(function(r){if(!IZINLER[r])IZINLER[r]={};Object.assign(IZINLER[r],kayit[r]||{});});
-    addLog('Erişim izinleri güncellendi','Lider');save();
-    cmsStatusGoster('ok','<i class="ti ti-check"></i> İzinler kaydedildi');
-    // uiAyarla'yı yenile - yeni izinlere göre butonları güncelle
-    uiAyarla();
-  }
-}
-
-// ============================================================
+// =======================================
 // ÜYE CRUD
 // ============================================================
 function reqAddMember(){
@@ -3154,11 +2960,6 @@ function saveToCSV(){
 // ============================================================
 
 // Puan arşivi sorgula
-function arsivSorgula(){
-  var sel=document.getElementById('arsivFilter');
-  var rumuz=sel?sel.value:'';
-  arsivFiltrele(rumuz);
-}
 
 // JSON export
 function exportJSON(){
@@ -3666,7 +3467,6 @@ function uiAyarla(){
   showIfIzin('btnLogTemizle','logSil');
   showIfIzin('btnDuyuruEkle','duyuruEkle');
   showIfIzin('btnDisiplinEkle','disiplinUygula');
-  showIfIzin('btnOylamaEkle','oylamaEkle');
   showIfIzin('btnDavetEkle','kodUret');
 
   if(!izin('butceGor')&&!lider){var nb=document.getElementById('navButceDD');if(nb)nb.style.display='none';}
@@ -3892,6 +3692,115 @@ async function reqUpdateEvent(id) {
       + (eklenenler.length ? ' · +' + eklenenler.length + ' katılımcı' : '')
       + (cikarilanlar.length ? ' · -' + cikarilanlar.length + ' katılımcı' : ''));
   });
+}
+</script>
+<script>
+// ============================================================
+// ERİŞİM YÖNETİMİ - IZIN_ETIKETLER ve renderErisimBoard
+// ============================================================
+
+var ROLLER_LISTE = ['Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
+
+const IZIN_ETIKETLER = {
+  '🔥 KRİTİK / STRATEJİK': '__baslik__',
+  rutbeDegistir:'Rütbe Değiştir',
+  disiplinUygula:'Disiplin Uygula',
+  uyeSil:'Üye Sil',
+  sifreSifirla:'Şifre Sıfırla',
+  tuzukDuzenle:'Tüzük Düzenle',
+  sezonKapat:'Sezon Kapat',
+  butceDuzenle:'Bütçe Düzenle',
+  uyeDuzenle:'Üye Düzenle',
+  basvuruOnayla:'Başvuru Onayla/Reddet',
+  uyeEkle:'Üye Ekle',
+  '⚔️ OPERASYONEL YÖNETİM': '__baslik__',
+  gorevAta:'Görev Ata',
+  davetYonet:'Davet Yönet',
+  kodUret:'Davet Kodu Üret',
+  kodGor:'Davet Kodlarını Gör',
+  etkinlikEkle:'Etkinlik Ekle',
+  etkinlikSil:'Etkinlik Sil',
+  puanDuzenle:'Puan Düzenle',
+  duyuruEkle:'Duyuru Ekle',
+  duyuruSil:'Duyuru Sil',
+  '📊 TAKİP / GÖZLEM': '__baslik__',
+  basvuruGor:'Başvuru Gör',
+  butceGor:'Bütçe Gör',
+  logGor:'Log Gör',
+  '🧹 BAKIM / DESTEK': '__baslik__',
+  logSil:'Log Temizle'
+};
+
+async function renderErisimBoard(){
+  var el=document.getElementById('izinBoard');
+  if(!el)return;
+  if(SESSION.rol!=='Lider'){
+    el.innerHTML='<div style="padding:2rem;text-align:center;color:#555"><i class="ti ti-lock"></i> Sadece Lider erişebilir.</div>';
+    return;
+  }
+  try{
+    var res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'IZIN_OKU',token:getToken()})});
+    var data=await res.json();
+    if(data.result){
+      Object.assign(aktifIzinler,data.result);
+      ROLLER_LISTE.forEach(function(r){if(!aktifIzinler[r])aktifIzinler[r]={};});
+    }
+  }catch(e){}
+
+  var izinler=Object.keys(IZIN_ETIKETLER||{});
+  var thHtml='<tr><th style="text-align:left;padding:8px;color:#888;border-bottom:0.5px solid #333;min-width:160px">İzin</th>';
+  ROLLER_LISTE.forEach(function(r){
+    thHtml+='<th style="text-align:center;padding:8px;color:#888;border-bottom:0.5px solid #333;white-space:nowrap;font-size:11px">'+r+'</th>';
+  });
+  thHtml+='</tr>';
+
+  var tbl=document.createElement('table');
+  tbl.style.cssText='width:100%;border-collapse:collapse;font-size:12px';
+  var thead=document.createElement('thead');thead.innerHTML=thHtml;tbl.appendChild(thead);
+  var tbody=document.createElement('tbody');
+
+  izinler.forEach(function(key){
+    var deger=(IZIN_ETIKETLER||{})[key]||key;
+    if(deger==='__baslik__'){
+      var tr=document.createElement('tr');
+      var td=document.createElement('td');
+      td.colSpan=ROLLER_LISTE.length+1;
+      td.style.cssText='padding:12px 8px 6px;font-size:11px;font-weight:700;color:#fac775;letter-spacing:1px;border-bottom:0.5px solid #333;background:#0f0f0f';
+      td.textContent=key;
+      tr.appendChild(td);tbody.appendChild(tr);
+      return;
+    }
+    var tr=document.createElement('tr');
+    var lbl=document.createElement('td');
+    lbl.style.cssText='padding:7px 8px;border-bottom:0.5px solid #111;color:#d3d1c7;padding-left:16px';
+    lbl.textContent=deger;
+    tr.appendChild(lbl);
+    ROLLER_LISTE.forEach(function(rol){
+      var td=document.createElement('td');
+      td.style.cssText='text-align:center;padding:7px 8px;border-bottom:0.5px solid #111';
+      var inp=document.createElement('input');
+      inp.type='checkbox';
+      inp.checked=!!(aktifIzinler[rol]&&aktifIzinler[rol][key]);
+      inp.style.cssText='width:16px;height:16px;cursor:pointer;accent-color:#fac775';
+      (function(r,k){inp.onchange=function(){
+        if(!aktifIzinler[r])aktifIzinler[r]={};
+        aktifIzinler[r][k]=this.checked?1:0;
+      };})(rol,key);
+      td.appendChild(inp);tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+
+  var saveBtn=document.createElement('button');
+  saveBtn.className='btn btn-warn';
+  saveBtn.style.marginTop='1rem';
+  saveBtn.innerHTML='<i class="ti ti-check"></i> Kaydet';
+  saveBtn.onclick=function(){izinKaydet();};
+
+  var wrap=document.createElement('div');wrap.style.overflowX='auto';wrap.appendChild(tbl);
+  el.innerHTML='';el.appendChild(wrap);el.appendChild(saveBtn);
 }
 </script>
 </body>
