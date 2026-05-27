@@ -7,7 +7,6 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Q-GANG Panel v1.0 Clean</title>
-<!-- v10-clean: duplicate modal wrappers and legacy override removed -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet">
@@ -548,8 +547,10 @@ async function panelAc(rumuz,rol){
     setInterval(basvuruSayisiniGuncelle,30000);
   }
   // Gorev taleplerini yükle
+  if (izin('gorevAta')) {
   renderGorevTalepleri();
-  setInterval(renderGorevTalepleri,60000);
+  setInterval(renderGorevTalepleri, 60000);
+  }
   // Bildirim ve mesaj sistemi
   }
 
