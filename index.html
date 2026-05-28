@@ -3230,6 +3230,7 @@
         }
         document.getElementById("alertsBox").innerHTML =
           alerts || '<div style="font-size:12px;color:#555">Uyarı yok</div>';
+        qgRenderGorevBildirimOzeti();
         // Oylama bildirimi kaldırıldı
         // Gorev talebi butonu - Uye ve uzeri
         const gtWrap = document.getElementById("gorevTalepBtnWrap");
@@ -5174,6 +5175,80 @@
         );
       }
       // DUYURULAR
+
+      async function qgRenderGorevBildirimOzeti() {
+        var box = document.getElementById("alertsBox");
+        if (!box) return;
+
+        // Yalnızca yönetim tarafı görsün: Lider, Vekilharç, Kaptan.
+        var rol = (SESSION && SESSION.rol) || "";
+        var yetkili = rol === "Lider" || rol === "Vekilharç" || rol === "Kaptan";
+        if (!yetkili) return;
+
+        try {
+          var onceki = document.getElementById("qgGorevBildirimUyari");
+          if (onceki) onceki.remove();
+
+          if (typeof gorevAPI !== "function") return;
+          var res = await gorevAPI("GOREV_BILDIRIM_OZET", {});
+          if (!res || res.success === false) return;
+
+          var ozet = res.result || {};
+          var toplam = Number(ozet.total || 0);
+          if (!toplam) return;
+
+          var mevcut = box.innerHTML || "";
+          if (mevcut.indexOf("Uyarı yok") !== -1) box.innerHTML = "";
+
+          var detay = "";
+          var byCat = ozet.byCategory || {};
+          var cats = Object.keys(byCat);
+          if (cats.length) {
+            detay = cats
+              .map(function (k) { return k + ": " + byCat[k]; })
+              .join(" • ");
+          }
+
+          var mesaj = "";
+          if (rol === "Kaptan" && cats.length === 1) {
+            mesaj = toplam + " " + cats[0] + " görev teklifi bekliyor";
+          } else if (rol === "Kaptan") {
+            mesaj = toplam + " kategori görev teklifi bekliyor";
+          } else {
+            mesaj = toplam + " görev teklifi bekliyor";
+          }
+
+          if (Number(ozet.overdue || 0) > 0) {
+            mesaj += " • " + Number(ozet.overdue || 0) + " gecikmiş";
+          }
+
+          var row = document.createElement("div");
+          row.id = "qgGorevBildirimUyari";
+          row.className = Number(ozet.overdue || 0) > 0
+            ? "alert-row alert-danger"
+            : "alert-row alert-warn";
+          row.style.cursor = "pointer";
+          row.onclick = function () {
+            try {
+              showTabDD("gorev", "ddTopluluk", "navToplulukBtn");
+              setTimeout(function () {
+                if (typeof gorevSekmeAc === "function") gorevSekmeAc("muzakere");
+              }, 150);
+            } catch (e) {}
+          };
+          row.innerHTML =
+            '<i class="ti ti-clipboard-list"></i> <strong>' +
+            mesaj +
+            '</strong>' +
+            (detay ? '<span style="opacity:.72;margin-left:6px">(' + detay + ')</span>' : '');
+
+          box.appendChild(row);
+        } catch (e) {
+          // Dashboard bildirimi ana paneli kilitlemesin.
+          try { console.warn("[QG] Görev bildirim özeti alınamadı:", e.message || e); } catch (_) {}
+        }
+      }
+
       function renderDuyuruBanner() {
         // Max 5 duyuru bannerde göster
         var aktif = duyurular
@@ -10294,7 +10369,8 @@ function deadlineStyle(dl) {
     function isGorevRead(action) {
       return action === "GOREV_LIST" ||
         action === "GOREV_STAGE_LIST" ||
-        action === "GOREV_KATEGORI_KAPTAN_LIST";
+        action === "GOREV_KATEGORI_KAPTAN_LIST" ||
+        action === "GOREV_BILDIRIM_OZET";
     }
 
     function ttlFor(action) {
