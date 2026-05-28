@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-Panel Alpha v1</title>
+<title>Q-Panel Alpha v1.0</title>
 <!-- v10-clean: duplicate modal wrappers and legacy override removed -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
@@ -3242,34 +3242,52 @@ function openModalAddDisiplin(){reqDisiplinEkle();}
 // ============================================================
 
 
-async function reqSifreDegistir() {
-  var eskiEl = document.getElementById('sd_eski');
-  var yeniEl = document.getElementById('sd_yeni');
-  var yeni2El = document.getElementById('sd_yeni2');
-  var hataEl = document.getElementById('sd_hata');
-  if (!eskiEl || !yeniEl || !yeni2El) return;
-  var eski = eskiEl.value; var yeni = yeniEl.value; var yeni2 = yeni2El.value;
-  if (!eski || !yeni || !yeni2) { hataEl.textContent = 'Tüm alanları doldur.'; hataEl.style.display = 'block'; return; }
-  if (yeni !== yeni2) { hataEl.textContent = 'Yeni şifreler eşleşmiyor.'; hataEl.style.display = 'block'; return; }
-  if (yeni.length < 6) { hataEl.textContent = 'Şifre en az 6 karakter olmalı.'; hataEl.style.display = 'block'; return; }
-  try {
-    var eskiHash = await hashStr(eski);
-    var yeniHash = await hashStr(yeni);
-    // Önce mevcut şifreyi doğrula
-    var res = await fetch(AUTH_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'LOGIN', rumuz: SESSION.rumuz, sifreHash: eskiHash }) });
-    var data = await res.json();
-    if (!data.success) { hataEl.textContent = 'Mevcut şifre hatalı.'; hataEl.style.display = 'block'; return; }
-    // Şifreyi güncelle
-    var res2 = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'SIFRE_GUNCELLE', rumuz: SESSION.rumuz, sifreHash: yeniHash, token: getToken() }) });
-    var data2 = await res2.json();
-    if (data2.success || data2.result) {
-      addLog('Şifre değiştirildi', SESSION.rumuz); save();
+async function reqSifreDegistir(){
+  var eskiEl=document.getElementById('sd_eski');
+  var yeniEl=document.getElementById('sd_yeni');
+  var yeni2El=document.getElementById('sd_yeni2');
+  var hataEl=document.getElementById('sd_hata');
+  if(!eskiEl||!yeniEl||!yeni2El)return;
+
+  var eski=eskiEl.value;
+  var yeni=yeniEl.value;
+  var yeni2=yeni2El.value;
+
+  if(!eski||!yeni||!yeni2){hataEl.textContent='Tüm alanları doldur.';hataEl.style.display='block';return;}
+  if(yeni!==yeni2){hataEl.textContent='Yeni şifreler eşleşmiyor.';hataEl.style.display='block';return;}
+  if(yeni.length<6){hataEl.textContent='Şifre en az 6 karakter olmalı.';hataEl.style.display='block';return;}
+
+  try{
+    var eskiHash=await hashStr(eski);
+    var yeniHash=await hashStr(yeni);
+
+    var res=await fetch(API_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        action:'SIFRE_GUNCELLE',
+        token:getToken(),
+        rumuz:SESSION.rumuz,
+        eskiHash:eskiHash,
+        sifreHash:yeniHash
+      })
+    });
+
+    var data=await res.json();
+
+    if(data.success&&(!data.result||data.result.success!==false)){
+      addLog('Şifre değiştirildi',SESSION.rumuz);
+      save();
       closeModal();
       alert('Şifren başarıyla değiştirildi!');
-    } else { hataEl.textContent = 'Güncelleme başarısız: ' + (data2.error || ''); hataEl.style.display = 'block'; }
-  } catch (e) { hataEl.textContent = 'Hata: ' + e.message; hataEl.style.display = 'block'; }
+    }else{
+      hataEl.textContent='Güncelleme başarısız: '+((data.result&&data.result.error)||data.error||'');
+      hataEl.style.display='block';
+    }
+  }catch(e){
+    hataEl.textContent='Hata: '+e.message;
+    hataEl.style.display='block';
+  }
 }
 
 // gorevTalepleri panelAc'ta yüklenmiyorsa - cmsOku'ya ekle
