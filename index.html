@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.2.6 — Birthday Hotfix</title>
-    <!-- v2.2.6: birthday timezone fix + subtle confetti hotfix -->
+    <title>Q-Panel v2.2.7 — Performance Hotfix</title>
+    <!-- v2.2.7: performance cache + lazy task/org hotfix -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -10252,6 +10252,235 @@ function deadlineStyle(dl) {
   if (diff <= 3) return { style: 'color:#fb923c', gecmis: false };
   return { style: 'color:#555', gecmis: false };
 }
+</script>
+
+<script>
+  // ═══════════════════════════════════════════════════
+  // Q-PANEL v2.2.7 — Performance Hotfix
+  // - Görev API read-cache + inflight dedupe
+  // - cmsOku kısa süreli cache + inflight dedupe
+  // - Org chart meta cache TTL artırımı
+  // - Onay bekleyen aşamalar paralel stage fetch
+  // ═══════════════════════════════════════════════════
+  (function qPanelPerformanceHotfix() {
+    if (window.__QG_PERF_HOTFIX_V227__) return;
+    window.__QG_PERF_HOTFIX_V227__ = true;
+
+    var PERF = window.__QG_PERF__ = window.__QG_PERF__ || {
+      apiCache: {},
+      inflight: {},
+      cmsCache: null,
+      cmsInflight: null,
+      stats: { hit: 0, miss: 0, inflight: 0 }
+    };
+
+    var READ_TTL = 45000;        // görev listeleri: 45 sn
+    var STAGE_TTL = 60000;       // aşama listeleri: 60 sn
+    var KATEGORI_TTL = 180000;   // kategori kaptanları: 3 dk
+    var CMS_TTL = 20000;         // ana CMS GET: 20 sn
+
+    function stableStringify(obj) {
+      if (!obj || typeof obj !== "object") return String(obj || "");
+      if (Array.isArray(obj)) return "[" + obj.map(stableStringify).join(",") + "]";
+      return "{" + Object.keys(obj).sort().map(function (k) {
+        return JSON.stringify(k) + ":" + stableStringify(obj[k]);
+      }).join(",") + "}";
+    }
+
+    function cacheKey(action, payload) {
+      return action + "::" + stableStringify(payload || {});
+    }
+
+    function isGorevRead(action) {
+      return action === "GOREV_LIST" ||
+        action === "GOREV_STAGE_LIST" ||
+        action === "GOREV_KATEGORI_KAPTAN_LIST";
+    }
+
+    function ttlFor(action) {
+      if (action === "GOREV_STAGE_LIST") return STAGE_TTL;
+      if (action === "GOREV_KATEGORI_KAPTAN_LIST") return KATEGORI_TTL;
+      return READ_TTL;
+    }
+
+    function clearGorevCaches() {
+      PERF.apiCache = {};
+      PERF.inflight = {};
+      try { QG_ORG_META_CACHE = { time: 0, data: null }; } catch (e) {}
+    }
+    window.qgClearPerformanceCache = clearGorevCaches;
+
+    // 1) cmsOku: login/panel açılışında aynı GET'in tekrarını engelle
+    if (typeof window.cmsOku === "function" && !window.cmsOku.__perfWrapped) {
+      var _cmsOku = window.cmsOku;
+      window.cmsOku = async function cmsOkuPerf(force) {
+        var now = Date.now();
+        if (!force && PERF.cmsCache && now - PERF.cmsCache.time < CMS_TTL) {
+          PERF.stats.hit++;
+          return PERF.cmsCache.data;
+        }
+        if (!force && PERF.cmsInflight) {
+          PERF.stats.inflight++;
+          return PERF.cmsInflight;
+        }
+        PERF.stats.miss++;
+        PERF.cmsInflight = Promise.resolve(_cmsOku.apply(this, arguments)).then(function (data) {
+          if (data) PERF.cmsCache = { time: Date.now(), data: data };
+          return data;
+        }).finally(function () {
+          PERF.cmsInflight = null;
+        });
+        return PERF.cmsInflight;
+      };
+      window.cmsOku.__perfWrapped = true;
+    }
+
+    // 2) cmsYaz: veri değişince cache temizle
+    if (typeof window.cmsYaz === "function" && !window.cmsYaz.__perfWrapped) {
+      var _cmsYaz = window.cmsYaz;
+      window.cmsYaz = async function cmsYazPerf(action, data) {
+        var res = await _cmsYaz.apply(this, arguments);
+        if (action && !String(action).includes("LIST") && !String(action).includes("OKU")) {
+          PERF.cmsCache = null;
+          clearGorevCaches();
+        }
+        return res;
+      };
+      window.cmsYaz.__perfWrapped = true;
+    }
+
+    // 3) gorevAPI: read action cache + aynı anda gelen istekleri tek isteğe indir
+    if (typeof window.gorevAPI === "function" && !window.gorevAPI.__perfWrapped) {
+      var _gorevAPI = window.gorevAPI;
+      window.gorevAPI = async function gorevAPIPerf(action, payload, opts) {
+        opts = opts || {};
+        var read = isGorevRead(action);
+        var key = cacheKey(action, payload || {});
+        var now = Date.now();
+
+        if (read && !opts.force) {
+          var hit = PERF.apiCache[key];
+          if (hit && now - hit.time < ttlFor(action)) {
+            PERF.stats.hit++;
+            return hit.data;
+          }
+          if (PERF.inflight[key]) {
+            PERF.stats.inflight++;
+            return PERF.inflight[key];
+          }
+        }
+
+        PERF.stats.miss++;
+        var p = Promise.resolve(_gorevAPI.apply(this, arguments)).then(function (data) {
+          if (read && data && data.success !== false) {
+            PERF.apiCache[key] = { time: Date.now(), data: data };
+          }
+          if (!read && action && String(action).indexOf("GOREV_") === 0) {
+            clearGorevCaches();
+          }
+          return data;
+        }).finally(function () {
+          delete PERF.inflight[key];
+        });
+
+        if (read && !opts.force) PERF.inflight[key] = p;
+        return p;
+      };
+      window.gorevAPI.__perfWrapped = true;
+    }
+
+    // 4) Org meta: 60sn yerine 5dk cache + inflight dedupe
+    if (typeof window.getOrgGorevMeta === "function" && !window.getOrgGorevMeta.__perfWrapped) {
+      var _getOrgGorevMeta = window.getOrgGorevMeta;
+      var orgInflight = null;
+      window.getOrgGorevMeta = async function getOrgGorevMetaPerf(force) {
+        var now = Date.now();
+        try {
+          if (!force && QG_ORG_META_CACHE && QG_ORG_META_CACHE.data && now - QG_ORG_META_CACHE.time < 300000) {
+            return QG_ORG_META_CACHE.data;
+          }
+        } catch (e) {}
+        if (!force && orgInflight) return orgInflight;
+        orgInflight = Promise.resolve(_getOrgGorevMeta.apply(this, arguments)).finally(function () {
+          orgInflight = null;
+        });
+        return orgInflight;
+      };
+      window.getOrgGorevMeta.__perfWrapped = true;
+    }
+
+    // 5) Onay bekleyen aşamalar: N+1'i paralelleştir, stage cache'ten faydalan
+    if (typeof window.renderOnayBekleyenler === "function" && !window.renderOnayBekleyenler.__perfWrapped) {
+      window.renderOnayBekleyenler = async function renderOnayBekleyenlerPerf() {
+        var el = document.getElementById('gOnayListe');
+        if (!el) return;
+        el.innerHTML = '<div style="color:#555;font-size:12px;padding:8px">Yükleniyor...</div>';
+
+        var data = await gorevAPI('GOREV_LIST', { item: { durum: 'aktif' } });
+        if (!data.success) {
+          el.innerHTML = '<div style="color:#f87171;font-size:12px">Hata: ' + htmlEsc(data.error || 'Bilinmeyen') + '</div>';
+          return;
+        }
+
+        var gorevler = data.result || [];
+        var stageResults = await Promise.all(gorevler.map(function (g) {
+          return gorevAPI('GOREV_STAGE_LIST', { item: { gorevId: g._id || g.id } })
+            .then(function (asamaData) { return { g: g, asamalar: ((asamaData && asamaData.result) || []).filter(function(a){ return a.durum === 'incelemede'; }) }; })
+            .catch(function () { return { g: g, asamalar: [] }; });
+        }));
+
+        var html = '';
+        var bulunan = 0;
+        stageResults.forEach(function (row) {
+          var g = row.g;
+          var asamalar = row.asamalar || [];
+          if (!asamalar.length) return;
+          bulunan++;
+          html += '<div class="gorev-kart">';
+          html += '<div class="gorev-kart-baslik">' + htmlEsc(g.baslik) + '</div>';
+          html += '<div class="gorev-kart-meta">';
+          html += '<span class="gorev-badge ' + gorevDurumClass(g.durum) + '">' + htmlEsc(g.durum) + '</span>';
+          html += '<span class="gorev-badge" style="background:#111;color:#888;border:0.5px solid #333">@' + htmlEsc(g.rumuz) + '</span>';
+          html += '<span class="gorev-badge" style="background:#111;color:#888;border:0.5px solid #333">' + htmlEsc(g.kategori) + '</span>';
+          html += '</div>';
+          asamalar.forEach(function(a) {
+            html += '<div class="asama-kart asama-aktif" style="margin-top:8px">';
+            html += '<div style="font-size:12px;font-weight:600;color:#d3d1c7;margin-bottom:6px">Aşama ' + htmlEsc(a.asamaNo) + ': ' + htmlEsc(a.baslik) + '</div>';
+            html += '<div style="font-size:11px;color:#888;margin-bottom:8px;white-space:pre-wrap">' + htmlEsc(a.rapor || '') + '</div>';
+            html += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
+            html += '<button class="btn btn-sm" style="background:#003a10;color:#4ade80;border:0.5px solid #005020" onclick="gorevAsamaOnayla(\'' + a._id + '\',\'' + (g._id || g.id) + '\')"><i class="ti ti-check"></i> Onayla</button>';
+            html += '<button class="btn btn-sm" style="background:#1a0a00;color:#fb923c;border:0.5px solid #3a1500" onclick="gorevRevizeIste(\'' + a._id + '\',\'' + (g._id || g.id) + '\')"><i class="ti ti-refresh"></i> Revize</button>';
+            html += '<button class="btn btn-sm" style="background:#1a0000;color:#f87171;border:0.5px solid #3a0000" onclick="gorevAsamaReddet(\'' + a._id + '\',\'' + (g._id || g.id) + '\')"><i class="ti ti-x"></i> Başarısız</button>';
+            html += '</div></div>';
+          });
+          html += '<button class="btn btn-sm" style="margin-top:8px;width:100%" onclick="gorevDetayAc(\'' + (g._id || g.id) + '\')"><i class="ti ti-eye"></i> Tüm Detaylar</button>';
+          html += '</div>';
+        });
+
+        if (!bulunan) {
+          el.innerHTML = '<div style="color:#555;font-size:12px;padding:8px">Onay bekleyen aşama yok. ✅</div>';
+          return;
+        }
+        el.innerHTML = html;
+      };
+      window.renderOnayBekleyenler.__perfWrapped = true;
+    }
+
+    // 6) Tab render tekrarları: aynı sekmeye hızlı basınca peş peşe fetch yapma
+    if (typeof window.gorevSekmeAc === "function" && !window.gorevSekmeAc.__perfWrapped) {
+      var _gorevSekmeAc = window.gorevSekmeAc;
+      var lastTab = { id: '', time: 0 };
+      window.gorevSekmeAc = function gorevSekmeAcPerf(id, btn) {
+        var now = Date.now();
+        if (lastTab.id === id && now - lastTab.time < 750) return;
+        lastTab = { id: id, time: now };
+        return _gorevSekmeAc.apply(this, arguments);
+      };
+      window.gorevSekmeAc.__perfWrapped = true;
+    }
+
+    console.info('[QG] Performance hotfix v2.2.7 aktif. Cache temizlemek için: qgClearPerformanceCache()');
+  })();
 </script>
 </body>
 </html>
