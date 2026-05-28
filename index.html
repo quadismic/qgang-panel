@@ -1786,6 +1786,11 @@
       }
 
       async function apiGet() {
+        const token = getActiveToken();
+        if (!token) {
+          console.warn("[QG] Token yok; güvenli GET iptal edildi.");
+          throw new Error("Token bulunamadı");
+        }
         const res = await secureApiFetch(API_URL, { method: "GET" });
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res;
@@ -2178,6 +2183,10 @@
 
       async function cmsOku() {
         try {
+          if (!getActiveToken()) {
+            console.warn("[QG] Token yok; cmsOku çalıştırılmadı.");
+            return null;
+          }
           const res = await apiGet();
           const text = await res.text();
           const data = typeof text === "string" ? JSON.parse(text) : text;
@@ -2363,107 +2372,34 @@
         }
       }
 
-      // Panel yuklenince
+      // Panel yüklenince
+      // Güvenli backend v2 ile login öncesi CMS okuması yapılmaz.
+      // Eski akışta burada tokensız cmsOku() çalışıyor ve 403 üretiyordu.
       window.addEventListener("load", async function () {
-        // Kaydedilmis oturum var mi? Önce localStorage, sonra sessionStorage
         const saved =
           localStorage.getItem("qg_session") ||
           sessionStorage.getItem("qg_session");
+
         if (saved) {
           try {
             const s = JSON.parse(saved);
             const otuzGun = 30 * 24 * 60 * 60 * 1000;
-            if (Date.now() - s.zaman < otuzGun) {
-              // Oturum gecerli — veri cek ve ac
-              const veri = await cmsOku();
-              if (veri) {
-                if (veri.members && veri.members.length)
-                  members = veri.members.map(function (m) {
-                    return Object.assign({}, m, {
-                      id: m._id || m.id,
-                      katilimcilar: parseKat(m.katilimcilar),
-                    });
-                  });
-
-                if (veri.events && veri.events.length)
-                  events = veri.events.map(function (e) {
-                    return Object.assign({}, e, {
-                      id: e._id || e.id,
-                      katilimcilar: parseKat(e.katilimcilar),
-                    });
-                  });
-
-                if (veri.budget && veri.budget.length)
-                  butce = veri.budget.map(function (b) {
-                    return Object.assign({}, b, { id: b._id || b.id });
-                  });
-
-                if (veri.duyurular && veri.duyurular.length)
-                  duyurular = veri.duyurular.map(function (d) {
-                    return Object.assign({}, d, { id: d._id || d.id });
-                  });
-
-                if (veri.disiplin && veri.disiplin.length)
-                  disiplin = veri.disiplin.map(function (d) {
-                    return Object.assign({}, d, { id: d._id || d.id });
-                  });
-
-                if (veri.tuzuk) tuzuk = veri.tuzuk;
-                // İzinler yükle
-                if (veri.izinler && Object.keys(veri.izinler).length) {
-                  Object.assign(aktifIzinler, veri.izinler);
-                  for (var _ri in veri.izinler) {
-                    if (typeof IZINLER[_ri] === "object")
-                      Object.assign(IZINLER[_ri], veri.izinler[_ri]);
-                  }
-                }
-              }
-              panelAc(s.rumuz, s.rol);
+            if (s && s.token && Date.now() - s.zaman < otuzGun) {
+              await panelAc(s.rumuz, s.rol);
               return;
-            } else {
-              localStorage.removeItem("qg_session");
             }
-          } catch (e) {
-            localStorage.removeItem("qg_session");
-          }
+          } catch (e) {}
+
+          localStorage.removeItem("qg_session");
+          sessionStorage.removeItem("qg_session");
         }
-        // Oturum yok — auth ekranini goster (veri arka planda cekiliyor)
-        cmsOku().then(function (veri) {
-          if (veri) {
-            if (veri.members && veri.members.length)
-              members = veri.members.map(function (m) {
-                return Object.assign({}, m, {
-                  id: m._id || m.id,
-                  katilimcilar: parseKat(m.katilimcilar),
-                });
-              });
 
-            if (veri.events && veri.events.length)
-              events = veri.events.map(function (e) {
-                return Object.assign({}, e, {
-                  id: e._id || e.id,
-                  katilimcilar: parseKat(e.katilimcilar),
-                });
-              });
-
-            if (veri.budget && veri.budget.length)
-              butce = veri.budget.map(function (b) {
-                return Object.assign({}, b, { id: b._id || b.id });
-              });
-
-            if (veri.duyurular && veri.duyurular.length)
-              duyurular = veri.duyurular.map(function (d) {
-                return Object.assign({}, d, { id: d._id || d.id });
-              });
-
-            if (veri.disiplin && veri.disiplin.length)
-              disiplin = veri.disiplin.map(function (d) {
-                return Object.assign({}, d, { id: d._id || d.id });
-              });
-
-            if (veri.tuzuk) tuzuk = veri.tuzuk;
-          }
-        });
+        // Oturum yoksa yalnızca auth ekranı kalır.
+        // Public veri çekme devri kapandı: tüm CMS okuma işlemleri token sonrası yapılır.
+        var auth = document.getElementById("authScreen");
+        var main = document.getElementById("mainPanel");
+        if (auth) auth.style.display = "flex";
+        if (main) main.style.display = "none";
       });
 
       function parseKat(k) {
