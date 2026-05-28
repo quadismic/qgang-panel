@@ -1648,14 +1648,6 @@
         location.reload();
       }
 
-      async function hashSifre(s) {
-        const enc = new TextEncoder().encode(s);
-        const buf = await crypto.subtle.digest("SHA-256", enc);
-        return Array.from(new Uint8Array(buf))
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join("");
-      }
-
       let SESSION = {
         rumuz: "Ziyaretçi",
         rol: "Gözlemci",
@@ -2117,102 +2109,137 @@
           "DAVET_KOD_SIL",
           "SIFRE_SIFIRLA",
         ];
-        var basePayload = idActions.some(function (a) {
+
+        const basePayload = idActions.some(function (a) {
           return action.includes(a);
         })
-          ? { action, id: data }
-          : { action, item: data };
-        // Sadece token gönder - backend sadece token'a güvenir
-        var _sqg = "";
+          ? { action: action, id: data }
+          : { action: action, item: data };
+
+        let sessionRaw = "";
         try {
-          _sqg =
+          sessionRaw =
             localStorage.getItem("qg_session") ||
             sessionStorage.getItem("qg_session") ||
             "";
         } catch (e) {}
-        var _sess = {};
+
+        let session = {};
         try {
-          _sess = JSON.parse(_sqg);
+          session = JSON.parse(sessionRaw);
         } catch (e) {}
-        var payload = Object.assign({}, basePayload, {
-          token: _sess.token || "",
+
+        const payload = Object.assign({}, basePayload, {
+          token: session.token || "",
         });
+
         try {
           cmsStatusGoster(
             "loading",
             '<i class="ti ti-loader"></i> Kaydediliyor...',
           );
+
           const res = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
-          if (!res.ok) throw new Error("HTTP " + res.status);
-          const result = await res.json();
+
+          let result = {};
+          try {
+            result = await res.json();
+          } catch (e) {
+            result = {};
+          }
+
+          if (!res.ok || result.success === false) {
+            const mesaj =
+              result.error ||
+              (result.result && result.result.error) ||
+              "İşlem başarısız. HTTP " + res.status;
+
+            cmsStatusGoster("err", '<i class="ti ti-lock"></i> ' + mesaj);
+            alert(mesaj);
+            return result;
+          }
+
           cmsStatusGoster("ok", '<i class="ti ti-check"></i> Kaydedildi');
           document.getElementById("lastSaved").textContent =
             "Son kayıt: " + new Date().toLocaleTimeString("tr-TR");
-          // Local guncelle
+
+          // Local güncelle
           if (result.result) {
             const item = Object.assign({}, result.result, {
               id: result.result._id || result.result.id,
             });
 
-            if (action === "MEMBER_ADD")
+            if (action === "MEMBER_ADD") {
               members.push(
                 Object.assign({}, item, {
                   katilimcilar: parseKat(item.katilimcilar),
                 }),
               );
+            }
 
             if (action === "MEMBER_UPDATE") {
-              var mu = members.findIndex(function (m) {
+              const mu = members.findIndex(function (m) {
                 return m._id === item._id || m.id === item.id;
               });
               if (mu > -1) members[mu] = Object.assign({}, members[mu], item);
             }
 
-            if (action === "EVENT_ADD")
+            if (action === "EVENT_ADD") {
               events.push(
                 Object.assign({}, item, {
                   katilimcilar: parseKat(item.katilimcilar),
                 }),
               );
+            }
 
             if (action === "BUDGET_ADD") butce.push(item);
-            // DUYURU_ADD local push reqSaveDuyuru'da yapılıyor - burada kaldırıldı
+
+            // DUYURU_ADD local push reqSaveDuyuru içinde yapılıyor.
             if (action === "DUYURU_UPDATE") {
-              var du = duyurular.findIndex(function (d) {
+              const du = duyurular.findIndex(function (d) {
                 return d._id === item._id || d.id === item.id;
               });
-              if (du > -1)
+              if (du > -1) {
                 duyurular[du] = Object.assign({}, duyurular[du], item);
+              }
             }
           }
-          if (action === "MEMBER_DELETE")
+
+          if (action === "MEMBER_DELETE") {
             members = members.filter(function (m) {
               return m._id !== data && m.id !== data;
             });
+          }
 
-          if (action === "EVENT_DELETE")
+          if (action === "EVENT_DELETE") {
             events = events.filter(function (e) {
               return e._id !== data && e.id !== data;
             });
+          }
 
-          if (action === "BUDGET_DELETE")
+          if (action === "BUDGET_DELETE") {
             butce = butce.filter(function (b) {
               return b._id !== data && b.id !== data;
             });
+          }
 
-          if (action === "DUYURU_DELETE")
+          if (action === "DUYURU_DELETE") {
             duyurular = duyurular.filter(function (d) {
               return d._id !== data && d.id !== data;
             });
+          }
 
           return result;
         } catch (e) {
           console.error("CMS yazma hatası:", e);
-          cmsStatusGoster("err", '<i class="ti ti-x"></i> Kayıt hatası');
+          const mesaj = (e && e.message) || "İşlem başarısız";
+          cmsStatusGoster("err", '<i class="ti ti-lock"></i> ' + mesaj);
+          alert(mesaj);
+          return { success: false, error: mesaj };
         }
       }
 
