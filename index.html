@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.2.9 — Görev Puan Hotfix</title>
-    <!-- v2.2.9: görev teklifinde aşama puan otomatik dağıtım hotfix -->
+    <title>Q-Panel v2.2.10 — Role Sync + Date Icon Hotfix</title>
+    <!-- v2.2.10: role sync hotfix + date icon visibility -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -1491,6 +1491,15 @@
 .deadline-gecmis { color: #f87171; }
 .deadline-yakin  { color: #fb923c; }
 .deadline-ok     { color: #888780; }
+
+/* Q-PANEL v2.2.10 — date input calendar icon visibility */
+input[type="date"] { color-scheme: dark; }
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.8) sepia(0.18) saturate(1.2);
+  opacity: .85;
+  cursor: pointer;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
       @media (max-width: 600px) {
         body {
@@ -6019,10 +6028,9 @@
           </button>
         </div>
         <div id="gf_asamalar"></div>
-        <div id="gf_puan_ozet" style="margin-top:10px;font-size:12px;color:#888780"></div>
       </div>
       
-      <button id="gf_teklif_gonder_btn" class="btn btn-warn" style="width:100%;margin-top:16px" onclick="gorevTeklifGonder()">
+      <button class="btn btn-warn" style="width:100%;margin-top:16px" onclick="gorevTeklifGonder()">
         <i class="ti ti-send"></i> Teklifi Gönder
       </button>
     </div>
@@ -9952,17 +9960,16 @@ function gorevAsamaEkle() {
   var el = document.getElementById('gf_asamalar');
   if (!el) return;
   var n = ++gorevData.asamaSayaci;
-  if (n > 10) { alert('En fazla 10 aşama eklenebilir.'); gorevData.asamaSayaci--; return; }
+  if (n > 10) { alert('En fazla 10 aşama eklenebilir.'); return; }
 
   var div = document.createElement('div');
   div.className = 'asama-form-row';
   div.id = 'asama_row_' + n;
-  div.setAttribute('data-asama-index', String(n));
-  div.innerHTML =
+  div.innerHTML = 
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
-    '<span class="qg-asama-label" style="font-size:12px;font-weight:600;color:#fac775">Aşama ' + n + '</span>' +
+    '<span style="font-size:12px;font-weight:600;color:#fac775">Aşama ' + n + '</span>' +
     '<button class="btn btn-sm" style="background:#1a0000;color:#f87171;border:0.5px solid #3a0000;padding:2px 8px" ' +
-    'onclick="gorevAsamaSil(' + n + ')"><i class="ti ti-x"></i></button>' +
+    'onclick="document.getElementById(\'asama_row_' + n + '\').remove()"><i class="ti ti-x"></i></button>' +
     '</div>' +
     '<div class="form-group">' +
     '<input id="a' + n + '_baslik" class="form-input" placeholder="Aşama başlığı" maxlength="100">' +
@@ -9974,99 +9981,10 @@ function gorevAsamaEkle() {
     '<div class="form-group"><label style="font-size:11px">Deadline</label>' +
     '<input id="a' + n + '_deadline" class="form-input" type="date" style="font-size:12px"></div>' +
     '<div class="form-group"><label style="font-size:11px">Önerilen Puan</label>' +
-    '<input id="a' + n + '_puan" class="form-input qg-asama-puan" type="number" min="0" max="500" value="0" style="font-size:12px" oninput="gorevPuanToplamKontrolEt()"></div>' +
+    '<input id="a' + n + '_puan" class="form-input" type="number" min="0" max="200" value="5" style="font-size:12px"></div>' +
     '</div>';
   el.appendChild(div);
-  gorevPuanlariEsitDagit();
 }
-
-function gorevAktifAsamaSatirlari() {
-  return Array.from(document.querySelectorAll('#gf_asamalar .asama-form-row'))
-    .filter(function(row) { return row && row.parentNode; })
-    .sort(function(a, b) {
-      return Number(a.getAttribute('data-asama-index') || 0) - Number(b.getAttribute('data-asama-index') || 0);
-    });
-}
-
-function gorevAsamaSil(n) {
-  var row = document.getElementById('asama_row_' + n);
-  if (row) row.remove();
-  gorevAsamaEtiketleriniYenile();
-  gorevPuanlariEsitDagit();
-}
-
-function gorevAsamaEtiketleriniYenile() {
-  gorevAktifAsamaSatirlari().forEach(function(row, i) {
-    var label = row.querySelector('.qg-asama-label');
-    if (label) label.textContent = 'Aşama ' + (i + 1);
-  });
-}
-
-function gorevPuanlariEsitDagit() {
-  var toplam = Math.max(0, Math.floor(Number((document.getElementById('gf_puan') || {}).value) || 0));
-  var rows = gorevAktifAsamaSatirlari();
-  var adet = rows.length;
-  if (!adet) {
-    gorevPuanToplamKontrolEt();
-    return;
-  }
-
-  var taban = Math.floor(toplam / adet);
-  var kalan = toplam % adet;
-
-  rows.forEach(function(row, i) {
-    var input = row.querySelector('.qg-asama-puan');
-    if (input) input.value = String(taban + (i < kalan ? 1 : 0));
-  });
-
-  gorevPuanToplamKontrolEt();
-}
-
-function gorevPuanToplamKontrolEt() {
-  var hedef = Math.max(0, Math.floor(Number((document.getElementById('gf_puan') || {}).value) || 0));
-  var toplam = 0;
-  gorevAktifAsamaSatirlari().forEach(function(row) {
-    var input = row.querySelector('.qg-asama-puan');
-    toplam += Math.max(0, Math.floor(Number(input && input.value) || 0));
-  });
-
-  var ozet = document.getElementById('gf_puan_ozet');
-  var btn = document.getElementById('gf_teklif_gonder_btn');
-  var esit = hedef === toplam;
-  var rows = gorevAktifAsamaSatirlari();
-
-  if (ozet) {
-    if (!rows.length) {
-      ozet.innerHTML = '<span style="color:#888780">Aşama eklediğinde puanlar otomatik dağıtılır.</span>';
-    } else if (esit) {
-      ozet.innerHTML = '<span style="color:#9fe1cb">✓ Aşama puanları toplamı: ' + toplam + ' / ' + hedef + '</span>';
-    } else if (toplam < hedef) {
-      ozet.innerHTML = '<span style="color:#fac775">⚠ Aşama puanları toplamı eksik: ' + toplam + ' / ' + hedef + '</span>';
-    } else {
-      ozet.innerHTML = '<span style="color:#e24b4a">✖ Aşama puanları toplamı fazla: ' + toplam + ' / ' + hedef + '</span>';
-    }
-  }
-
-  if (btn) {
-    btn.disabled = rows.length > 0 && !esit;
-    btn.style.opacity = btn.disabled ? '0.55' : '1';
-    btn.style.cursor = btn.disabled ? 'not-allowed' : 'pointer';
-  }
-
-  return esit;
-}
-
-function gorevPuanHotfixBaslat() {
-  var puan = document.getElementById('gf_puan');
-  if (puan && !puan.dataset.qgPuanHotfix) {
-    puan.dataset.qgPuanHotfix = '1';
-    puan.addEventListener('input', gorevPuanlariEsitDagit);
-    puan.addEventListener('change', gorevPuanlariEsitDagit);
-  }
-  gorevPuanToplamKontrolEt();
-}
-
-setTimeout(gorevPuanHotfixBaslat, 0);
 
 // ─────────────────────────────────────
 // Teklif gönder
@@ -10097,7 +10015,6 @@ async function gorevTeklifGonder() {
   }
 
   if (!asamalar.length) { alert('En az 1 aşama eklemelisin.'); return; }
-  if (!gorevPuanToplamKontrolEt()) { alert('Aşama puanları toplamı istenen puana eşit olmalı.'); return; }
 
   var data = await gorevAPI('GOREV_CREATE', {
     item: { kategori, baslik, aciklama, zorluk, istenenPuan: puan, asamalar },
@@ -10112,7 +10029,6 @@ async function gorevTeklifGonder() {
     document.getElementById('gf_puan').value = '20';
     document.getElementById('gf_asamalar').innerHTML = '';
     gorevData.asamaSayaci = 0;
-    gorevPuanToplamKontrolEt();
     // Görevlerim sekmesine geç
     gorevSekmeAc('gBenim', document.querySelector('.gsekme-btn'));
   } else {
