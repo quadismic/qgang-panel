@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.0 — Secure Refactor</title>
-    <!-- secure-refactor-v2: merkezi tokenlı API katmanı, güvenli backend uyumu ve gereksiz bridge ihtiyacı kaldırıldı -->
+    <title>Q-Panel v2.1 — Dynamic RBAC</title>
+    <!-- secure-refactor-v2.1: hardcoded izin fallback kaldırıldı; frontend izin kaynağı QAyarlar/aktifIzinler olarak tekilleştirildi -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -1467,164 +1467,182 @@
         İhraç: "badge-kirmizi",
       };
       var CEZA_TURLERI = ["Uyarı", "Kısıtlama", "Uzaklaştırma", "İhraç"];
-      const IZINLER = {
-        Lider: {
-          uyeEkle: 1,
-          uyeSil: 1,
-          uyeDuzenle: 1,
+      const ERISIM_VARSAYILANLARI = {
+        // Lider erişimi UI seviyesinde her zaman tam yetkilidir.
+        // Bu tablo Erişim Yönetimi ekranı için varsayılan başlangıç değeridir.
+        Vekilharç: {
           rutbeDegistir: 1,
-          puanDuzenle: 1,
-          gorevAta: 1,
-          etkinlikEkle: 1,
-          etkinlikSil: 1,
-          butceGor: 1,
+          disiplinUygula: 1,
+          uyeSil: 1,
+          sifreSifirla: 1,
+          tuzukDuzenle: 0,
+          sezonKapat: 0,
           butceDuzenle: 1,
-          logGor: 1,
-          logSil: 1,
+          uyeDuzenle: 1,
+          basvuruOnayla: 1,
+          uyeEkle: 1,
+          gorevAta: 1,
+          davetYonet: 1,
           kodUret: 1,
           kodGor: 1,
+          etkinlikEkle: 1,
+          etkinlikSil: 1,
+          puanDuzenle: 1,
           duyuruEkle: 1,
           duyuruSil: 1,
           basvuruGor: 1,
-          basvuruOnayla: 1,
-          davetYonet: 1,
-          disiplinUygula: 1,
-          tuzukDuzenle: 1,
-          sifreSifirla: 1,
-          sezonKapat: 1,
-          rutbeGecmisiSifirla: 1,
-        },
-        Vekilharç: {
-          uyeEkle: 1,
-          uyeSil: 0,
-          uyeDuzenle: 1,
-          rutbeDegistir: 1,
-          puanDuzenle: 1,
-          gorevAta: 1,
-          etkinlikEkle: 1,
-          etkinlikSil: 1,
           butceGor: 1,
-          butceDuzenle: 1,
           logGor: 1,
           logSil: 0,
-          kodUret: 1,
-          kodGor: 1,
-          duyuruEkle: 1,
-          duyuruSil: 0,
-          basvuruGor: 1,
-          basvuruOnayla: 1,
-          davetYonet: 0,
-          disiplinUygula: 1,
-          tuzukDuzenle: 0,
-          sifreSifirla: 1,
-          sezonKapat: 0,
-          rutbeGecmisiSifirla: 1,
         },
         Kaptan: {
-          uyeEkle: 0,
-          uyeSil: 0,
-          uyeDuzenle: 1,
           rutbeDegistir: 0,
-          puanDuzenle: 1,
-          gorevAta: 1,
-          etkinlikEkle: 1,
-          etkinlikSil: 0,
-          butceGor: 0,
+          disiplinUygula: 0,
+          uyeSil: 0,
+          sifreSifirla: 0,
+          tuzukDuzenle: 0,
+          sezonKapat: 0,
           butceDuzenle: 0,
-          logGor: 0,
-          logSil: 0,
+          uyeDuzenle: 0,
+          basvuruOnayla: 0,
+          uyeEkle: 0,
+          gorevAta: 1,
+          davetYonet: 1,
           kodUret: 1,
           kodGor: 1,
+          etkinlikEkle: 1,
+          etkinlikSil: 1,
+          puanDuzenle: 1,
           duyuruEkle: 0,
           duyuruSil: 0,
-          basvuruGor: 0,
-          basvuruOnayla: 0,
-          davetYonet: 0,
-          disiplinUygula: 0,
-          tuzukDuzenle: 0,
-          sifreSifirla: 0,
-          sezonKapat: 0,
-          rutbeGecmisiSifirla: 1,
+          basvuruGor: 1,
+          butceGor: 1,
+          logGor: 0,
+          logSil: 0,
         },
         Teğmen: {
-          uyeEkle: 0,
-          uyeSil: 0,
-          uyeDuzenle: 0,
           rutbeDegistir: 0,
-          puanDuzenle: 0,
-          gorevAta: 0,
-          etkinlikEkle: 1,
-          etkinlikSil: 0,
-          butceGor: 0,
+          disiplinUygula: 0,
+          uyeSil: 0,
+          sifreSifirla: 0,
+          tuzukDuzenle: 0,
+          sezonKapat: 0,
           butceDuzenle: 0,
-          logGor: 0,
-          logSil: 0,
+          uyeDuzenle: 0,
+          basvuruOnayla: 0,
+          uyeEkle: 0,
+          gorevAta: 0,
+          davetYonet: 0,
           kodUret: 1,
           kodGor: 1,
+          etkinlikEkle: 0,
+          etkinlikSil: 0,
+          puanDuzenle: 0,
           duyuruEkle: 0,
           duyuruSil: 0,
           basvuruGor: 0,
-          basvuruOnayla: 0,
-          davetYonet: 0,
-          disiplinUygula: 0,
-          tuzukDuzenle: 0,
-          sifreSifirla: 0,
-          sezonKapat: 0,
-          rutbeGecmisiSifirla: 1,
+          butceGor: 0,
+          logGor: 0,
+          logSil: 0,
         },
         Üye: {
-          uyeEkle: 0,
-          uyeSil: 0,
-          uyeDuzenle: 0,
           rutbeDegistir: 0,
-          puanDuzenle: 0,
-          gorevAta: 0,
-          etkinlikEkle: 0,
-          etkinlikSil: 0,
-          butceGor: 0,
+          disiplinUygula: 0,
+          uyeSil: 0,
+          sifreSifirla: 0,
+          tuzukDuzenle: 0,
+          sezonKapat: 0,
           butceDuzenle: 0,
-          logGor: 0,
-          logSil: 0,
+          uyeDuzenle: 0,
+          basvuruOnayla: 0,
+          uyeEkle: 0,
+          gorevAta: 0,
+          davetYonet: 0,
           kodUret: 0,
           kodGor: 0,
+          etkinlikEkle: 0,
+          etkinlikSil: 0,
+          puanDuzenle: 0,
           duyuruEkle: 0,
           duyuruSil: 0,
           basvuruGor: 0,
-          basvuruOnayla: 0,
-          davetYonet: 0,
-          disiplinUygula: 0,
-          tuzukDuzenle: 0,
-          sifreSifirla: 0,
-          sezonKapat: 0,
-          rutbeGecmisiSifirla: 1,
+          butceGor: 0,
+          logGor: 0,
+          logSil: 0,
         },
         Gözlemci: {
-          uyeEkle: 0,
-          uyeSil: 0,
-          uyeDuzenle: 0,
           rutbeDegistir: 0,
-          puanDuzenle: 0,
-          gorevAta: 0,
-          etkinlikEkle: 0,
-          etkinlikSil: 0,
-          butceGor: 0,
+          disiplinUygula: 0,
+          uyeSil: 0,
+          sifreSifirla: 0,
+          tuzukDuzenle: 0,
+          sezonKapat: 0,
           butceDuzenle: 0,
-          logGor: 0,
-          logSil: 0,
+          uyeDuzenle: 0,
+          basvuruOnayla: 0,
+          uyeEkle: 0,
+          gorevAta: 0,
+          davetYonet: 0,
           kodUret: 0,
           kodGor: 0,
+          etkinlikEkle: 0,
+          etkinlikSil: 0,
+          puanDuzenle: 0,
           duyuruEkle: 0,
           duyuruSil: 0,
           basvuruGor: 0,
-          basvuruOnayla: 0,
-          davetYonet: 0,
-          disiplinUygula: 0,
-          tuzukDuzenle: 0,
-          sifreSifirla: 0,
-          sezonKapat: 0,
-          rutbeGecmisiSifirla: 0,
+          butceGor: 0,
+          logGor: 0,
+          logSil: 0,
         },
       };
+
+      function cloneIzinler(obj) {
+        try {
+          return JSON.parse(JSON.stringify(obj || {}));
+        } catch (e) {
+          return {};
+        }
+      }
+
+      function normalizeRolAdi(s) {
+        return String(s || "")
+          .replace(/ç/g, "c")
+          .replace(/ş/g, "s")
+          .replace(/ğ/g, "g")
+          .replace(/ü/g, "u")
+          .replace(/ö/g, "o")
+          .replace(/ı/g, "i")
+          .replace(/İ/g, "I")
+          .replace(/Ü/g, "U")
+          .replace(/Ö/g, "O")
+          .replace(/Ç/g, "C")
+          .replace(/Ş/g, "S")
+          .replace(/Ğ/g, "G");
+      }
+
+      function rolIzinleriniBul(kaynak, rol) {
+        kaynak = kaynak || {};
+        var rolN = normalizeRolAdi(rol);
+        for (var k in kaynak) {
+          if (k === rol || normalizeRolAdi(k) === rolN) return kaynak[k] || {};
+        }
+        return null;
+      }
+
+      function setAktifIzinler(yeniIzinler) {
+        var temiz = cloneIzinler(yeniIzinler);
+        if (!temiz || !Object.keys(temiz).length) {
+          temiz = cloneIzinler(ERISIM_VARSAYILANLARI);
+        }
+        aktifIzinler = temiz;
+        try {
+          window.aktifIzinler = aktifIzinler;
+        } catch (e) {}
+        return aktifIzinler;
+      }
+
+      var aktifIzinler = cloneIzinler(ERISIM_VARSAYILANLARI); // Tek frontend izin kaynağı: QAyarlar/aktifIzinler
       var aktifIzinler = {}; // CMS'den gelen izinler burada tutulur
 
       async function cikisYap() {
@@ -1659,44 +1677,23 @@
         girisZamani: new Date().toISOString(),
       };
       function izin(key) {
-        const rol = SESSION.rol || "Gozlemci";
-        const normalize = function (s) {
-          return s
-            .replace(/ç/g, "c")
-            .replace(/ş/g, "s")
-            .replace(/ğ/g, "g")
-            .replace(/ü/g, "u")
-            .replace(/ö/g, "o")
-            .replace(/ı/g, "i")
-            .replace(/İ/g, "I")
-            .replace(/Ü/g, "U")
-            .replace(/Ö/g, "O")
-            .replace(/Ç/g, "C")
-            .replace(/Ş/g, "S")
-            .replace(/Ğ/g, "G");
-        };
-        const rolN = normalize(rol);
-        // 1. ÖNCELİK: aktifIzinler (CMS'den gelen, kullanıcı tarafından değiştirilebilir)
-        if (aktifIzinler) {
-          for (const k in aktifIzinler) {
-            if (k === rol || normalize(k) === rolN) {
-              // aktifIzinler'de bu key tanımlıysa (0 veya 1), CMS değerini kullan
-              if (
-                aktifIzinler[k] &&
-                typeof aktifIzinler[k][key] !== "undefined"
-              ) {
-                return !!aktifIzinler[k][key];
-              }
-              break;
-            }
-          }
+        const rol = SESSION.rol || "Gözlemci";
+
+        // Lider UI seviyesinde her zaman tam yetkilidir.
+        // Gerçek güvenlik yine backend tarafından ayrıca denetlenir.
+        if (rol === "Lider") return true;
+
+        const rolIzinleri = rolIzinleriniBul(aktifIzinler, rol);
+
+        // Artık hardcoded fallback yok.
+        // Tek frontend izin kaynağı: QAyarlar'dan gelen aktifIzinler.
+        if (rolIzinleri && typeof rolIzinleri[key] !== "undefined") {
+          return !!rolIzinleri[key];
         }
-        // 2. FALLBACK: Hardcoded IZINLER (CMS'de tanımlı değilse)
-        for (const k in IZINLER) {
-          if (k === rol || normalize(k) === rolN) return !!IZINLER[k][key];
-        }
+
         return false;
       }
+
       // ═══════════════════════════════════════════════════
       // MODULE 03 — API BRIDGE
       // ═══════════════════════════════════════════════════
@@ -2132,11 +2129,9 @@
             if (veri.tuzuk) tuzuk = veri.tuzuk;
             // İzinleri yükle - aktifIzinler CMS değerlerine göre güncellenir
             if (veri.izinler && Object.keys(veri.izinler).length) {
-              Object.assign(aktifIzinler, veri.izinler);
-              for (var _r in veri.izinler) {
-                if (typeof IZINLER[_r] === "object")
-                  Object.assign(IZINLER[_r], veri.izinler[_r]);
-              }
+              setAktifIzinler(veri.izinler);
+            } else {
+              setAktifIzinler(ERISIM_VARSAYILANLARI);
             }
             cmsStatusGoster("ok", '<i class="ti ti-check"></i> Hazır');
           }
@@ -2352,12 +2347,6 @@
       async function izinKaydet() {
         try {
           await cmsYaz("IZIN_KAYDET", aktifIzinler);
-
-          // Hardcoded izinleri de güncel tut
-          Object.keys(aktifIzinler).forEach(function (r) {
-            if (!IZINLER[r]) IZINLER[r] = {};
-            Object.assign(IZINLER[r], aktifIzinler[r]);
-          });
 
           cmsStatusGoster(
             "ok",
@@ -7399,7 +7388,7 @@
       // Erişim sıfırla
       function izinSifirla() {
         if (!confirm("Tüm izinler varsayılana dönecek. Emin misin?")) return;
-        window.aktifIzinler = JSON.parse(JSON.stringify(IZINLER));
+        setAktifIzinler(ERISIM_VARSAYILANLARI);
         renderErisimBoard();
       }
 
@@ -8789,12 +8778,14 @@
             body: JSON.stringify({ action: "IZIN_OKU", token: getToken() }),
           });
           var data = await res.json();
-          if (data.result) {
-            Object.assign(aktifIzinler, data.result);
-            ROLLER_LISTE.forEach(function (r) {
-              if (!aktifIzinler[r]) aktifIzinler[r] = {};
-            });
+          if (data.result && Object.keys(data.result).length) {
+            setAktifIzinler(data.result);
+          } else {
+            setAktifIzinler(ERISIM_VARSAYILANLARI);
           }
+          ROLLER_LISTE.forEach(function (r) {
+            if (!aktifIzinler[r]) aktifIzinler[r] = {};
+          });
         } catch (e) {}
 
         var izinler = Object.keys(IZIN_ETIKETLER || {});
