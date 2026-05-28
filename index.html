@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v1.0 — Compact Clean</title>
-    <!-- compact-clean-v1: stable sürüm üstünden gereksiz tekrar/boşluk/debug temizliği yapıldı -->
+    <title>Q-Panel v1.1 — Internal Modular Clean</title>
+    <!-- internal-modular-v1: tek dosya korunarak CONFIG / SESSION / API / AUTH / UI / RENDER / INIT blokları düzenlendi -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -1423,6 +1423,10 @@
     </style>
 
     <script>
+      // ═══════════════════════════════════════════════════
+      // MODULE 01 — CONFIG & SESSION HELPERS
+      // ═══════════════════════════════════════════════════
+
       // Token yardımcı - tüm fetch'lerde kullan
       function getToken() {
         var s = "";
@@ -1441,6 +1445,10 @@
       function authBody(extra) {
         return Object.assign({ token: getToken() }, extra || {});
       }
+      // ═══════════════════════════════════════════════════
+      // MODULE 02 — ROLE & PERMISSION MATRIX
+      // ═══════════════════════════════════════════════════
+
       // ROL VE IZIN SISTEMI
       // Yeni hiyerarsi: Lider > Vekilharc > Kaptan > Tegmen > Uye > Gozlemci
       const ROL_SIRASI = [
@@ -1689,9 +1697,39 @@
         }
         return false;
       }
+      // ═══════════════════════════════════════════════════
+      // MODULE 03 — API BRIDGE
+      // ═══════════════════════════════════════════════════
+
       // CMS KOPRUSU — HTTP API
       const AUTH_URL = "https://www.q-gang.com/_functions/qgang";
       const API_URL = "https://www.q-gang.com/_functions/qgang";
+
+      async function apiPost(payload) {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const result = await res.json();
+        if (!res.ok || result.success === false) {
+          const mesaj =
+            result.error ||
+            (result.result && result.result.error) ||
+            ("HTTP " + res.status);
+          throw new Error(mesaj);
+        }
+        return result;
+      }
+
+      async function apiGet() {
+        const res = await fetch(API_URL, { method: "GET" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res;
+      }
+      // ═══════════════════════════════════════════════════
+      // MODULE 04 — AUTH FLOW
+      // ═══════════════════════════════════════════════════
 
       // AUTH FONKSIYONLARI ----------------------
       function authTab(tab) {
@@ -1984,6 +2022,11 @@
             "loading",
             '<i class="ti ti-loader"></i> Veriler yükleniyor...',
           );
+
+      // ═══════════════════════════════════════════════════
+      // MODULE 99 — INIT / BOOTSTRAP
+      // ═══════════════════════════════════════════════════
+
           // Veri window.onload'da yüklendiyse tekrar çekme
           var veri = await cmsOku();
           if (veri) {
@@ -2057,6 +2100,9 @@
         }
         // Bildirim ve mesaj sistemi
       }
+      // ═══════════════════════════════════════════════════
+      // MODULE 05 — CMS READ / WRITE
+      // ═══════════════════════════════════════════════════
 
       // CMS FONKSIYONLARI -----------------------
       function cmsStatusGoster(tip, mesaj) {
@@ -2069,8 +2115,7 @@
 
       async function cmsOku() {
         try {
-          const res = await fetch(API_URL, { method: "GET" });
-          if (!res.ok) throw new Error("HTTP " + res.status);
+          const res = await apiGet();
           const text = await res.text();
           const data = typeof text === "string" ? JSON.parse(text) : text;
           // Wix HTTP Functions bazen {body: "..."} şeklinde döner
@@ -2640,6 +2685,11 @@
         };
       }
       // DASHBOARD
+
+      // ═══════════════════════════════════════════════════
+      // MODULE 07 — DASHBOARD RENDERERS
+      // ═══════════════════════════════════════════════════
+
       function renderDashboard() {
         const total = members.length,
           aktif = members.filter(function (m) {
@@ -2853,6 +2903,11 @@
         ).join("");
       }
       // UYELER
+
+      // ═══════════════════════════════════════════════════
+      // MODULE 08 — MEMBER RENDERERS
+      // ═══════════════════════════════════════════════════
+
       function renderMembers() {
         const q = (
           document.getElementById("searchBox").value || ""
@@ -4344,6 +4399,11 @@
         );
       }
       // ETKINLIK
+
+      // ═══════════════════════════════════════════════════
+      // MODULE 10 — EVENT RENDERERS
+      // ═══════════════════════════════════════════════════
+
       function renderEvents() {
         const sorted = [...events].sort(
           (a, b) => new Date(b.tarih) - new Date(a.tarih),
@@ -4481,6 +4541,11 @@
         );
       }
       // BUTCE
+
+      // ═══════════════════════════════════════════════════
+      // MODULE 12 — BUDGET RENDERERS
+      // ═══════════════════════════════════════════════════
+
       function renderButce() {
         if (!izin("butceGor")) {
           document.getElementById("butceContent").innerHTML = engelEkrani();
@@ -4587,6 +4652,10 @@
           tbody +
           "</tbody></table></div>";
       }
+
+      // ═══════════════════════════════════════════════════
+      // MODULE 13 — BUDGET ACTIONS
+      // ═══════════════════════════════════════════════════
 
       async function reqButce() {
         if (!izin("butceDuzenle")) {
@@ -8218,6 +8287,10 @@
           else sessionStorage.setItem("qg_session", JSON.stringify(_ss));
         } catch (e) {}
       }
+
+      // ═══════════════════════════════════════════════════
+      // MODULE 06 — UI ACCESS CONTROL
+      // ═══════════════════════════════════════════════════
 
       function uiAyarla() {
         var lider = SESSION.rol === "Lider";
