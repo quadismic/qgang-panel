@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.1.1 — Access Hotfix</title>
-    <!-- secure-refactor-v2.1.1: erişim yönetimi hotfix — tek kaydet butonu, varsayılan izin sıfırlama düzeltildi -->
+    <title>Q-Panel v2.1.2 — Erişim Hotfix Stable</title>
+    <!-- v2.1.2: dynamic RBAC + erişim yönetimi hotfix stable -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -1467,165 +1467,197 @@
         İhraç: "badge-kirmizi",
       };
       var CEZA_TURLERI = ["Uyarı", "Kısıtlama", "Uzaklaştırma", "İhraç"];
-      const IZINLER = {
-        Lider: {
-          uyeEkle: 1,
-          uyeSil: 1,
-          uyeDuzenle: 1,
-          rutbeDegistir: 1,
-          puanDuzenle: 1,
-          gorevAta: 1,
-          etkinlikEkle: 1,
-          etkinlikSil: 1,
-          butceGor: 1,
-          butceDuzenle: 1,
-          logGor: 1,
-          logSil: 1,
-          kodUret: 1,
-          kodGor: 1,
-          duyuruEkle: 1,
-          duyuruSil: 1,
-          basvuruGor: 1,
-          basvuruOnayla: 1,
-          davetYonet: 1,
-          disiplinUygula: 1,
-          tuzukDuzenle: 1,
-          sifreSifirla: 1,
-          sezonKapat: 1,
-          rutbeGecmisiSifirla: 1,
+      const DEFAULT_IZINLER = {
+        "Lider": {
+                "uyeEkle": 1,
+                "uyeSil": 1,
+                "uyeDuzenle": 1,
+                "rutbeDegistir": 1,
+                "puanDuzenle": 1,
+                "gorevAta": 1,
+                "etkinlikEkle": 1,
+                "etkinlikSil": 1,
+                "butceGor": 1,
+                "butceDuzenle": 1,
+                "logGor": 1,
+                "logSil": 1,
+                "kodUret": 1,
+                "kodGor": 1,
+                "duyuruEkle": 1,
+                "duyuruSil": 1,
+                "basvuruGor": 1,
+                "basvuruOnayla": 1,
+                "davetYonet": 1,
+                "disiplinUygula": 1,
+                "tuzukDuzenle": 1,
+                "sifreSifirla": 1,
+                "sezonKapat": 1,
+                "rutbeGecmisiSifirla": 1
         },
-        Vekilharç: {
-          uyeEkle: 1,
-          uyeSil: 0,
-          uyeDuzenle: 1,
-          rutbeDegistir: 1,
-          puanDuzenle: 1,
-          gorevAta: 1,
-          etkinlikEkle: 1,
-          etkinlikSil: 1,
-          butceGor: 1,
-          butceDuzenle: 1,
-          logGor: 1,
-          logSil: 0,
-          kodUret: 1,
-          kodGor: 1,
-          duyuruEkle: 1,
-          duyuruSil: 0,
-          basvuruGor: 1,
-          basvuruOnayla: 1,
-          davetYonet: 0,
-          disiplinUygula: 1,
-          tuzukDuzenle: 0,
-          sifreSifirla: 1,
-          sezonKapat: 0,
-          rutbeGecmisiSifirla: 1,
+        "Vekilharç": {
+                "uyeEkle": 1,
+                "uyeSil": 1,
+                "uyeDuzenle": 1,
+                "rutbeDegistir": 1,
+                "puanDuzenle": 1,
+                "gorevAta": 1,
+                "etkinlikEkle": 1,
+                "etkinlikSil": 1,
+                "butceGor": 1,
+                "butceDuzenle": 1,
+                "logGor": 1,
+                "logSil": 0,
+                "kodUret": 1,
+                "kodGor": 1,
+                "duyuruEkle": 1,
+                "duyuruSil": 1,
+                "basvuruGor": 1,
+                "basvuruOnayla": 1,
+                "davetYonet": 1,
+                "disiplinUygula": 1,
+                "tuzukDuzenle": 0,
+                "sifreSifirla": 1,
+                "sezonKapat": 1,
+                "rutbeGecmisiSifirla": 1
         },
-        Kaptan: {
-          uyeEkle: 0,
-          uyeSil: 0,
-          uyeDuzenle: 1,
-          rutbeDegistir: 0,
-          puanDuzenle: 1,
-          gorevAta: 1,
-          etkinlikEkle: 1,
-          etkinlikSil: 0,
-          butceGor: 0,
-          butceDuzenle: 0,
-          logGor: 0,
-          logSil: 0,
-          kodUret: 1,
-          kodGor: 1,
-          duyuruEkle: 0,
-          duyuruSil: 0,
-          basvuruGor: 0,
-          basvuruOnayla: 0,
-          davetYonet: 0,
-          disiplinUygula: 0,
-          tuzukDuzenle: 0,
-          sifreSifirla: 0,
-          sezonKapat: 0,
-          rutbeGecmisiSifirla: 1,
+        "Kaptan": {
+                "uyeEkle": 0,
+                "uyeSil": 0,
+                "uyeDuzenle": 1,
+                "rutbeDegistir": 0,
+                "puanDuzenle": 1,
+                "gorevAta": 1,
+                "etkinlikEkle": 1,
+                "etkinlikSil": 1,
+                "butceGor": 1,
+                "butceDuzenle": 0,
+                "logGor": 0,
+                "logSil": 0,
+                "kodUret": 1,
+                "kodGor": 1,
+                "duyuruEkle": 0,
+                "duyuruSil": 0,
+                "basvuruGor": 1,
+                "basvuruOnayla": 0,
+                "davetYonet": 1,
+                "disiplinUygula": 0,
+                "tuzukDuzenle": 0,
+                "sifreSifirla": 0,
+                "sezonKapat": 0,
+                "rutbeGecmisiSifirla": 1
         },
-        Teğmen: {
-          uyeEkle: 0,
-          uyeSil: 0,
-          uyeDuzenle: 0,
-          rutbeDegistir: 0,
-          puanDuzenle: 0,
-          gorevAta: 0,
-          etkinlikEkle: 1,
-          etkinlikSil: 0,
-          butceGor: 0,
-          butceDuzenle: 0,
-          logGor: 0,
-          logSil: 0,
-          kodUret: 1,
-          kodGor: 1,
-          duyuruEkle: 0,
-          duyuruSil: 0,
-          basvuruGor: 0,
-          basvuruOnayla: 0,
-          davetYonet: 0,
-          disiplinUygula: 0,
-          tuzukDuzenle: 0,
-          sifreSifirla: 0,
-          sezonKapat: 0,
-          rutbeGecmisiSifirla: 1,
+        "Teğmen": {
+                "uyeEkle": 0,
+                "uyeSil": 0,
+                "uyeDuzenle": 0,
+                "rutbeDegistir": 0,
+                "puanDuzenle": 0,
+                "gorevAta": 0,
+                "etkinlikEkle": 0,
+                "etkinlikSil": 0,
+                "butceGor": 0,
+                "butceDuzenle": 0,
+                "logGor": 0,
+                "logSil": 0,
+                "kodUret": 1,
+                "kodGor": 1,
+                "duyuruEkle": 0,
+                "duyuruSil": 0,
+                "basvuruGor": 0,
+                "basvuruOnayla": 0,
+                "davetYonet": 0,
+                "disiplinUygula": 0,
+                "tuzukDuzenle": 0,
+                "sifreSifirla": 0,
+                "sezonKapat": 0,
+                "rutbeGecmisiSifirla": 1
         },
-        Üye: {
-          uyeEkle: 0,
-          uyeSil: 0,
-          uyeDuzenle: 0,
-          rutbeDegistir: 0,
-          puanDuzenle: 0,
-          gorevAta: 0,
-          etkinlikEkle: 0,
-          etkinlikSil: 0,
-          butceGor: 0,
-          butceDuzenle: 0,
-          logGor: 0,
-          logSil: 0,
-          kodUret: 0,
-          kodGor: 0,
-          duyuruEkle: 0,
-          duyuruSil: 0,
-          basvuruGor: 0,
-          basvuruOnayla: 0,
-          davetYonet: 0,
-          disiplinUygula: 0,
-          tuzukDuzenle: 0,
-          sifreSifirla: 0,
-          sezonKapat: 0,
-          rutbeGecmisiSifirla: 1,
+        "Üye": {
+                "uyeEkle": 0,
+                "uyeSil": 0,
+                "uyeDuzenle": 0,
+                "rutbeDegistir": 0,
+                "puanDuzenle": 0,
+                "gorevAta": 0,
+                "etkinlikEkle": 0,
+                "etkinlikSil": 0,
+                "butceGor": 0,
+                "butceDuzenle": 0,
+                "logGor": 0,
+                "logSil": 0,
+                "kodUret": 0,
+                "kodGor": 0,
+                "duyuruEkle": 0,
+                "duyuruSil": 0,
+                "basvuruGor": 0,
+                "basvuruOnayla": 0,
+                "davetYonet": 0,
+                "disiplinUygula": 0,
+                "tuzukDuzenle": 0,
+                "sifreSifirla": 0,
+                "sezonKapat": 0,
+                "rutbeGecmisiSifirla": 1
         },
-        Gözlemci: {
-          uyeEkle: 0,
-          uyeSil: 0,
-          uyeDuzenle: 0,
-          rutbeDegistir: 0,
-          puanDuzenle: 0,
-          gorevAta: 0,
-          etkinlikEkle: 0,
-          etkinlikSil: 0,
-          butceGor: 0,
-          butceDuzenle: 0,
-          logGor: 0,
-          logSil: 0,
-          kodUret: 0,
-          kodGor: 0,
-          duyuruEkle: 0,
-          duyuruSil: 0,
-          basvuruGor: 0,
-          basvuruOnayla: 0,
-          davetYonet: 0,
-          disiplinUygula: 0,
-          tuzukDuzenle: 0,
-          sifreSifirla: 0,
-          sezonKapat: 0,
-          rutbeGecmisiSifirla: 0,
-        },
-      };
-      var aktifIzinler = {}; // CMS'den gelen izinler burada tutulur
+        "Gözlemci": {
+                "uyeEkle": 0,
+                "uyeSil": 0,
+                "uyeDuzenle": 0,
+                "rutbeDegistir": 0,
+                "puanDuzenle": 0,
+                "gorevAta": 0,
+                "etkinlikEkle": 0,
+                "etkinlikSil": 0,
+                "butceGor": 0,
+                "butceDuzenle": 0,
+                "logGor": 0,
+                "logSil": 0,
+                "kodUret": 0,
+                "kodGor": 0,
+                "duyuruEkle": 0,
+                "duyuruSil": 0,
+                "basvuruGor": 0,
+                "basvuruOnayla": 0,
+                "davetYonet": 0,
+                "disiplinUygula": 0,
+                "tuzukDuzenle": 0,
+                "sifreSifirla": 0,
+                "sezonKapat": 0,
+                "rutbeGecmisiSifirla": 0
+        }
+};
+      var aktifIzinler = JSON.parse(JSON.stringify(DEFAULT_IZINLER)); // QAyarlar/CMS'den gelen izinler burada tutulur
+
+      function deepCloneIzinler(obj) {
+        return JSON.parse(JSON.stringify(obj || {}));
+      }
+
+      function normalizeRolAd(s) {
+        return String(s || "")
+          .replace(/ç/g, "c")
+          .replace(/ş/g, "s")
+          .replace(/ğ/g, "g")
+          .replace(/ü/g, "u")
+          .replace(/ö/g, "o")
+          .replace(/ı/g, "i")
+          .replace(/İ/g, "I")
+          .replace(/Ü/g, "U")
+          .replace(/Ö/g, "O")
+          .replace(/Ç/g, "C")
+          .replace(/Ş/g, "S")
+          .replace(/Ğ/g, "G");
+      }
+
+      function applyIzinlerFromCMS(cmsIzinler) {
+        var merged = deepCloneIzinler(DEFAULT_IZINLER);
+        cmsIzinler = cmsIzinler || {};
+        Object.keys(cmsIzinler).forEach(function (rol) {
+          if (!merged[rol]) merged[rol] = {};
+          Object.assign(merged[rol], cmsIzinler[rol] || {});
+        });
+        aktifIzinler = merged;
+        window.aktifIzinler = aktifIzinler;
+        return aktifIzinler;
+      }
 
       async function cikisYap() {
         oturumKapat();
@@ -1659,45 +1691,18 @@
         girisZamani: new Date().toISOString(),
       };
       function izin(key) {
-        const rol = SESSION.rol || "Gozlemci";
-        const normalize = function (s) {
-          return s
-            .replace(/ç/g, "c")
-            .replace(/ş/g, "s")
-            .replace(/ğ/g, "g")
-            .replace(/ü/g, "u")
-            .replace(/ö/g, "o")
-            .replace(/ı/g, "i")
-            .replace(/İ/g, "I")
-            .replace(/Ü/g, "U")
-            .replace(/Ö/g, "O")
-            .replace(/Ç/g, "C")
-            .replace(/Ş/g, "S")
-            .replace(/Ğ/g, "G");
-        };
-        const rolN = normalize(rol);
-        // 1. ÖNCELİK: aktifIzinler (CMS'den gelen, kullanıcı tarafından değiştirilebilir)
+        const rol = SESSION.rol || "Gözlemci";
+        if (rol === "Lider") return true;
+        const rolN = normalizeRolAd(rol);
         if (aktifIzinler) {
           for (const k in aktifIzinler) {
-            if (k === rol || normalize(k) === rolN) {
-              // aktifIzinler'de bu key tanımlıysa (0 veya 1), CMS değerini kullan
-              if (
-                aktifIzinler[k] &&
-                typeof aktifIzinler[k][key] !== "undefined"
-              ) {
-                return !!aktifIzinler[k][key];
-              }
-              break;
+            if (k === rol || normalizeRolAd(k) === rolN) {
+              return !!(aktifIzinler[k] && aktifIzinler[k][key]);
             }
           }
         }
-        // 2. FALLBACK: Hardcoded IZINLER (CMS'de tanımlı değilse)
-        for (const k in IZINLER) {
-          if (k === rol || normalize(k) === rolN) return !!IZINLER[k][key];
-        }
         return false;
-      }
-      // ═══════════════════════════════════════════════════
+      }// ═══════════════════════════════════════════════════
       // MODULE 03 — API BRIDGE
       // ═══════════════════════════════════════════════════
 
@@ -2132,11 +2137,7 @@
             if (veri.tuzuk) tuzuk = veri.tuzuk;
             // İzinleri yükle - aktifIzinler CMS değerlerine göre güncellenir
             if (veri.izinler && Object.keys(veri.izinler).length) {
-              Object.assign(aktifIzinler, veri.izinler);
-              for (var _r in veri.izinler) {
-                if (typeof IZINLER[_r] === "object")
-                  Object.assign(IZINLER[_r], veri.izinler[_r]);
-              }
+              applyIzinlerFromCMS(veri.izinler);
             }
             cmsStatusGoster("ok", '<i class="ti ti-check"></i> Hazır');
           }
@@ -2352,9 +2353,6 @@
       async function izinKaydet() {
         try {
           await cmsYaz("IZIN_KAYDET", aktifIzinler);
-
-          // Frontend tek kaynak olarak aktifIzinler'i kullanır; kalıcı kaynak QAyarlar'dır.
-
           cmsStatusGoster(
             "ok",
             '<i class="ti ti-check"></i> İzinler kaydedildi',
@@ -2366,9 +2364,7 @@
             '<i class="ti ti-alert-circle"></i> İzin kaydedilemedi',
           );
         }
-      }
-
-      // Panel yüklenince
+      }// Panel yüklenince
       // Güvenli backend v2 ile login öncesi CMS okuması yapılmaz.
       // Eski akışta burada tokensız cmsOku() çalışıyor ve 403 üretiyordu.
       window.addEventListener("load", async function () {
@@ -7295,7 +7291,6 @@
           '<i class="ti ti-loader"></i> Yedek hazırlanıyor...',
         );
         try {
-          if (loadFromServer) {
           var res = await secureApiFetch(API_URL, { method: "GET" });
           var text = await res.text();
           var cmsVeri = typeof text === "string" ? JSON.parse(text) : text;
@@ -7396,15 +7391,14 @@
       // Erişim sıfırla
       function izinSifirla() {
         if (!confirm("Tüm izinler varsayılana dönecek. Emin misin?")) return;
-        aktifIzinler = JSON.parse(JSON.stringify(DEFAULT_ERISIM_IZINLER));
-        renderErisimBoard(false);
+        aktifIzinler = deepCloneIzinler(DEFAULT_IZINLER);
+        window.aktifIzinler = aktifIzinler;
+        renderErisimBoard(true);
         cmsStatusGoster(
           "loading",
-          '<i class="ti ti-refresh"></i> Varsayılan izinler yüklendi. Kalıcı yapmak için Kaydet.'
+          '<i class="ti ti-refresh"></i> Varsayılan izinler yüklendi. Kalıcı yapmak için Kaydet.',
         );
-      }
-
-      // kayitGoner alias (yazım hatası - kayitGonder'in alternatifi)
+      }// kayitGoner alias (yazım hatası - kayitGonder'in alternatifi)
       function kayitGoner() {
         kayitGonder();
       }
@@ -8745,137 +8739,6 @@
 
       var ROLLER_LISTE = ["Vekilharç", "Kaptan", "Teğmen", "Üye", "Gözlemci"];
 
-      // Erişim Yönetimi varsayılan permission seti.
-      // Sıfırla butonu artık bu tek kaynaktan beslenir.
-      const DEFAULT_ERISIM_IZINLER = {
-        "Vekilharç": {
-          rutbeDegistir: 1,
-          disiplinUygula: 1,
-          uyeSil: 1,
-          sifreSifirla: 1,
-          tuzukDuzenle: 0,
-          sezonKapat: 1,
-          butceDuzenle: 1,
-          uyeDuzenle: 1,
-          basvuruOnayla: 1,
-          uyeEkle: 1,
-          gorevAta: 1,
-          davetYonet: 1,
-          kodUret: 1,
-          kodGor: 1,
-          etkinlikEkle: 1,
-          etkinlikSil: 1,
-          puanDuzenle: 1,
-          duyuruEkle: 1,
-          duyuruSil: 1,
-          basvuruGor: 1,
-          butceGor: 1,
-          logGor: 1,
-          logSil: 0,
-        },
-        Kaptan: {
-          rutbeDegistir: 0,
-          disiplinUygula: 0,
-          uyeSil: 0,
-          sifreSifirla: 0,
-          tuzukDuzenle: 0,
-          sezonKapat: 0,
-          butceDuzenle: 0,
-          uyeDuzenle: 0,
-          basvuruOnayla: 0,
-          uyeEkle: 0,
-          gorevAta: 1,
-          davetYonet: 1,
-          kodUret: 1,
-          kodGor: 1,
-          etkinlikEkle: 1,
-          etkinlikSil: 1,
-          puanDuzenle: 1,
-          duyuruEkle: 0,
-          duyuruSil: 0,
-          basvuruGor: 1,
-          butceGor: 1,
-          logGor: 0,
-          logSil: 0,
-        },
-        "Teğmen": {
-          rutbeDegistir: 0,
-          disiplinUygula: 0,
-          uyeSil: 0,
-          sifreSifirla: 0,
-          tuzukDuzenle: 0,
-          sezonKapat: 0,
-          butceDuzenle: 0,
-          uyeDuzenle: 0,
-          basvuruOnayla: 0,
-          uyeEkle: 0,
-          gorevAta: 0,
-          davetYonet: 0,
-          kodUret: 1,
-          kodGor: 1,
-          etkinlikEkle: 0,
-          etkinlikSil: 0,
-          puanDuzenle: 0,
-          duyuruEkle: 0,
-          duyuruSil: 0,
-          basvuruGor: 0,
-          butceGor: 0,
-          logGor: 0,
-          logSil: 0,
-        },
-        "Üye": {
-          rutbeDegistir: 0,
-          disiplinUygula: 0,
-          uyeSil: 0,
-          sifreSifirla: 0,
-          tuzukDuzenle: 0,
-          sezonKapat: 0,
-          butceDuzenle: 0,
-          uyeDuzenle: 0,
-          basvuruOnayla: 0,
-          uyeEkle: 0,
-          gorevAta: 0,
-          davetYonet: 0,
-          kodUret: 0,
-          kodGor: 0,
-          etkinlikEkle: 0,
-          etkinlikSil: 0,
-          puanDuzenle: 0,
-          duyuruEkle: 0,
-          duyuruSil: 0,
-          basvuruGor: 0,
-          butceGor: 0,
-          logGor: 0,
-          logSil: 0,
-        },
-        "Gözlemci": {
-          rutbeDegistir: 0,
-          disiplinUygula: 0,
-          uyeSil: 0,
-          sifreSifirla: 0,
-          tuzukDuzenle: 0,
-          sezonKapat: 0,
-          butceDuzenle: 0,
-          uyeDuzenle: 0,
-          basvuruOnayla: 0,
-          uyeEkle: 0,
-          gorevAta: 0,
-          davetYonet: 0,
-          kodUret: 0,
-          kodGor: 0,
-          etkinlikEkle: 0,
-          etkinlikSil: 0,
-          puanDuzenle: 0,
-          duyuruEkle: 0,
-          duyuruSil: 0,
-          basvuruGor: 0,
-          butceGor: 0,
-          logGor: 0,
-          logSil: 0,
-        },
-      };
-
-
       const IZIN_ETIKETLER = {
         "🔥 KRİTİK / STRATEJİK": "__baslik__",
         rutbeDegistir: "Rütbe Değiştir",
@@ -8906,8 +8769,7 @@
         logSil: "Log Temizle",
       };
 
-      async function renderErisimBoard(loadFromServer) {
-        if (typeof loadFromServer === "undefined") loadFromServer = true;
+      async function renderErisimBoard(skipFetch) {
         var el = document.getElementById("izinBoard");
         if (!el) return;
         if (SESSION.rol !== "Lider") {
@@ -8915,21 +8777,22 @@
             '<div style="padding:2rem;text-align:center;color:#555"><i class="ti ti-lock"></i> Sadece Lider erişebilir.</div>';
           return;
         }
-        try {
-          var res = await secureApiFetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "IZIN_OKU", token: getToken() }),
-          });
-          var data = await res.json();
-          if (data.result) {
-            Object.assign(aktifIzinler, data.result);
-            ROLLER_LISTE.forEach(function (r) {
-              if (!aktifIzinler[r]) aktifIzinler[r] = {};
+        if (!skipFetch) {
+          try {
+            var res = await secureApiFetch(API_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "IZIN_OKU", token: getToken() }),
             });
-          }
-          }
-        } catch (e) {}
+            var data = await res.json();
+            if (data.result) {
+              applyIzinlerFromCMS(data.result);
+              ROLLER_LISTE.forEach(function (r) {
+                if (!aktifIzinler[r]) aktifIzinler[r] = {};
+              });
+            }
+          } catch (e) {}
+        }
 
         var izinler = Object.keys(IZIN_ETIKETLER || {});
         var thHtml =
@@ -8990,8 +8853,6 @@
           tbody.appendChild(tr);
         });
         tbl.appendChild(tbody);
-
-        // Alt kaydet butonu kaldırıldı; tek Kaydet butonu üst başlıkta bırakıldı.
 
         var wrap = document.createElement("div");
         wrap.style.overflowX = "auto";
