@@ -1456,7 +1456,7 @@ async function reqSifreSifirla(id,rumuz){
 
   confirm2('Şifreyi sıfırla','<strong>'+rumuz+'</strong> şifresi varsayılana sıfırlanacak.',async function(){
     try{
-      var defaultHash='94b617208064162c825408794fb45d2f7df44cba3c32f52d3c9cedf7200a2f74';
+      var defaultHash=await hashStr('qgang123');
 
       var res=await fetch(API_URL,{
         method:'POST',
