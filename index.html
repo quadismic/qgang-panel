@@ -3008,13 +3008,13 @@
             piece.className = "qg-birthday-confetti-piece" + (i % 3 === 0 ? " alt" : "");
             piece.style.left = Math.random() * 100 + "vw";
             piece.style.animationDelay = (Math.random() * 0.55).toFixed(2) + "s";
-            piece.style.animationDuration = (1.9 + Math.random() * 1.0).toFixed(2) + "s";
+            piece.style.animationDuration = (3.2 + Math.random() * 1.2).toFixed(2) + "s";
             piece.style.setProperty("--qg-x", (Math.random() * 120 - 60).toFixed(0) + "px");
             piece.style.setProperty("--qg-r", (240 + Math.random() * 520).toFixed(0) + "deg");
             layer.appendChild(piece);
           }
 
-          setTimeout(function () { try { layer.remove(); } catch (e) {} }, 3300);
+          setTimeout(function () { try { layer.remove(); } catch (e) {} }, 5000);
         } catch (e) {}
       }
       function engelEkrani() {
