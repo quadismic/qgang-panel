@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v1.1 — Internal Modular Clean</title>
-    <!-- internal-modular-v1: tek dosya korunarak CONFIG / SESSION / API / AUTH / UI / RENDER / INIT blokları düzenlendi -->
+    <title>Q-Panel v2.0 — Secure Refactor</title>
+    <!-- secure-refactor-v2: merkezi tokenlı API katmanı, güvenli backend uyumu ve gereksiz bridge ihtiyacı kaldırıldı -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -1637,7 +1637,7 @@
           if (_cqs) {
             var _cs = JSON.parse(_cqs);
             if (_cs && _cs.token) {
-              fetch(API_URL, {
+              secureApiFetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -1701,17 +1701,80 @@
       // MODULE 03 — API BRIDGE
       // ═══════════════════════════════════════════════════
 
-      // CMS KOPRUSU — HTTP API
+      // CMS KÖPRÜSÜ — GÜVENLİ HTTP API
       const AUTH_URL = "https://www.q-gang.com/_functions/qgang";
       const API_URL = "https://www.q-gang.com/_functions/qgang";
 
+      function getSessionData() {
+        var raw = "";
+        try {
+          raw =
+            localStorage.getItem("qg_session") ||
+            sessionStorage.getItem("qg_session") ||
+            "";
+        } catch (e) {}
+        try {
+          return raw ? JSON.parse(raw) || {} : {};
+        } catch (e) {
+          return {};
+        }
+      }
+
+      function getActiveToken() {
+        var session = getSessionData();
+        return session && session.token ? session.token : "";
+      }
+
+      function normalizeApiPayload(payload) {
+        var data = Object.assign({}, payload || {});
+        var publicActions = { LOGIN: true, KAYIT: true };
+        if (data.action && !publicActions[data.action] && !data.token) {
+          data.token = getActiveToken();
+        }
+        return data;
+      }
+
+      async function secureApiFetch(url, options) {
+        var opts = Object.assign({}, options || {});
+        var method = String(opts.method || "GET").toUpperCase();
+        var finalUrl = url;
+
+        if (url === API_URL || url === AUTH_URL) {
+          if (method === "GET") {
+            var token = getActiveToken();
+            if (token && finalUrl.indexOf("token=") === -1) {
+              finalUrl += (finalUrl.indexOf("?") === -1 ? "?" : "&") +
+                "token=" + encodeURIComponent(token);
+            }
+          } else if (opts.body && typeof opts.body === "string") {
+            try {
+              var parsed = JSON.parse(opts.body);
+              opts.body = JSON.stringify(normalizeApiPayload(parsed));
+            } catch (e) {}
+          }
+
+          opts.headers = Object.assign(
+            { "Content-Type": "application/json" },
+            opts.headers || {},
+          );
+          opts.credentials = opts.credentials || "include";
+        }
+
+        return fetch(finalUrl, opts);
+      }
+
       async function apiPost(payload) {
-        const res = await fetch(API_URL, {
+        const res = await secureApiFetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(normalizeApiPayload(payload)),
         });
-        const result = await res.json();
+        let result = {};
+        try {
+          result = await res.json();
+        } catch (e) {
+          result = {};
+        }
         if (!res.ok || result.success === false) {
           const mesaj =
             result.error ||
@@ -1723,7 +1786,7 @@
       }
 
       async function apiGet() {
-        const res = await fetch(API_URL, { method: "GET" });
+        const res = await secureApiFetch(API_URL, { method: "GET" });
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res;
       }
@@ -1866,7 +1929,7 @@
         btn.textContent = "Gönderiliyor...";
         btn.disabled = true;
         try {
-          const res = await fetch(AUTH_URL, {
+          const res = await secureApiFetch(AUTH_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -1944,7 +2007,7 @@
         }
         const sifreHash = await hashStr(sifre);
         try {
-          const res = await fetch(AUTH_URL, {
+          const res = await secureApiFetch(AUTH_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -2173,7 +2236,7 @@
             '<i class="ti ti-loader"></i> Kaydediliyor...',
           );
 
-          const res = await fetch(API_URL, {
+          const res = await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -3237,7 +3300,7 @@
             item: {},
           };
           if (rumuz) payload.item = { rumuz: rumuz };
-          var r = await fetch(API_URL, {
+          var r = await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -3309,7 +3372,7 @@
 
         // Async veriler - donmadan arka planda yükle
         Promise.all([
-          fetch(API_URL, {
+          secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -3327,7 +3390,7 @@
             .then(function (d) {
               return d.result || [];
             }),
-          fetch(API_URL, {
+          secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -3477,7 +3540,7 @@
           headerDiv.appendChild(kapatBtn);
         }
         wrap.appendChild(headerDiv);
-        fetch(API_URL, {
+        secureApiFetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -3563,7 +3626,7 @@
           async function () {
             var baslangic = getSezonAyBaslangic();
             var bitis = new Date().toISOString().split("T")[0];
-            var ar = await fetch(API_URL, {
+            var ar = await secureApiFetch(API_URL, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -3713,7 +3776,7 @@
       async function bildirimKontrol() {
         // Son verileri cek ve okunmamislari bul
         try {
-          const res = await fetch(API_URL, { method: "GET" });
+          const res = await secureApiFetch(API_URL, { method: "GET" });
           const data = await res.json();
           let yeniSayi = 0;
           const rutbeSiraB = {
@@ -3759,7 +3822,7 @@
       async function icerikOkundu(tur, icerikId) {
         if (okunduListesi.includes(icerikId)) return;
         okunduListesi.push(icerikId);
-        await fetch(API_URL, {
+        await secureApiFetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -3777,7 +3840,7 @@
 
       // RUTBE GECMISi
       async function rutbeGecmisiEkle(rumuz, eskiRutbe, yeniRutbe, aciklama) {
-        await fetch(API_URL, {
+        await secureApiFetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -4002,7 +4065,7 @@
             try {
               var defaultHash = await hashStr("qgang123");
 
-              var res = await fetch(API_URL, {
+              var res = await secureApiFetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -4038,7 +4101,7 @@
         const aliciEl = document.getElementById("mesajAlici");
         const mesajEl = document.getElementById("yeniMesajIcerik");
         if (!aliciEl || !mesajEl || !mesajEl.value.trim()) return;
-        await fetch(API_URL, {
+        await secureApiFetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -4112,7 +4175,7 @@
             });
           if (!talep) {
             try {
-              var talepRes = await fetch(API_URL, {
+              var talepRes = await secureApiFetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -4189,7 +4252,7 @@
           try {
             _gtSess = JSON.parse(_gtSqg);
           } catch (e) {}
-          const res = await fetch(API_URL, {
+          const res = await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -5885,7 +5948,7 @@
 
       async function basvuruSayisiniGuncelle() {
         try {
-          const res = await fetch(API_URL, {
+          const res = await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: "BASVURU_LIST", token: getToken() }),
@@ -6104,7 +6167,7 @@
         el.innerHTML =
           '<div style="font-size:12px;color:#555">Yükleniyor...</div>';
         try {
-          const res = await fetch(API_URL, {
+          const res = await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: "BASVURU_LIST", token: getToken() }),
@@ -6669,7 +6732,7 @@
 
       async function oturumPing() {
         try {
-          await fetch(API_URL, {
+          await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -6683,7 +6746,7 @@
 
       async function oturumKapat() {
         try {
-          await fetch(API_URL, {
+          await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -6699,7 +6762,7 @@
         try {
           var ob = document.getElementById("onlineBar");
           if (ob && ob.style.display === "none") ob.style.display = "flex";
-          var res = await fetch(API_URL, {
+          var res = await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: "OTURUM_LIST", token: getToken() }),
@@ -7279,7 +7342,7 @@
             tarih: new Date().toISOString().split("T")[0],
             ekleyen: SESSION.rumuz,
           };
-          await fetch(API_URL, {
+          await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -7300,7 +7363,7 @@
           '<i class="ti ti-loader"></i> Yedek hazırlanıyor...',
         );
         try {
-          var res = await fetch(API_URL, { method: "GET" });
+          var res = await secureApiFetch(API_URL, { method: "GET" });
           var text = await res.text();
           var cmsVeri = typeof text === "string" ? JSON.parse(text) : text;
           var parsed =
@@ -7426,7 +7489,7 @@
         el.innerHTML =
           '<div style="font-size:12px;color:#555">Yükleniyor...</div>';
         try {
-          var res = await fetch(API_URL, {
+          var res = await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -7517,7 +7580,7 @@
                 .substring(2, 6)
                 .toUpperCase();
               var kod = "QGANG-" + rastgele;
-              var res = await fetch(API_URL, {
+              var res = await secureApiFetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -7702,7 +7765,7 @@
             try {
               var defaultHash = await hashStr("qgang123");
 
-              var res = await fetch(API_URL, {
+              var res = await secureApiFetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -7910,7 +7973,7 @@
           var eskiHash = await hashStr(eski);
           var yeniHash = await hashStr(yeni);
 
-          var res = await fetch(API_URL, {
+          var res = await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -7948,7 +8011,7 @@
       // Görev taleplerini cmsOku'ya ekle - panelAc sonunda yükle
       async function gorevTalepleriniYukle() {
         try {
-          var res = await fetch(API_URL, {
+          var res = await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: "GOREV_TALEP_LIST" }),
@@ -8404,7 +8467,7 @@
           var filtre = document.getElementById("arsivFiltreMekan")
             ? document.getElementById("arsivFiltreMekan").value.trim()
             : "";
-          var res = await fetch(API_URL, {
+          var res = await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -8784,7 +8847,7 @@
           return;
         }
         try {
-          var res = await fetch(API_URL, {
+          var res = await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: "IZIN_OKU", token: getToken() }),
