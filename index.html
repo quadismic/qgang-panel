@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.2.2 — Görev Stable</title>
+    <title>Q-Panel v2.2.2 — Stable</title>
     <!-- v2.2.2: dynamic RBAC + görev progress module stable -->
     <link
       rel="stylesheet"
@@ -1533,6 +1533,146 @@
           padding: 5px 6px;
         }
       }
+
+
+      /* ═══════════════════════════════════════════════════
+         Q-GÖREV v2.2.4 — UI polish + org chart duty sync
+         ═══════════════════════════════════════════════════ */
+      #gorevModul {
+        background: #0f0f0f !important;
+        border: 0.5px solid #242424 !important;
+        border-radius: 14px !important;
+        overflow: hidden !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,.18) !important;
+      }
+      #gorevAltSekmeler {
+        padding: 12px !important;
+        gap: 8px !important;
+        background: linear-gradient(180deg, #141414 0%, #101010 100%) !important;
+        border-bottom: 0.5px solid #292929 !important;
+        margin-bottom: 0 !important;
+      }
+      .gsekme-btn {
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        padding: 8px 13px !important;
+        min-height: 34px !important;
+        background: #121212 !important;
+        border: 0.5px solid #343434 !important;
+        color: #8f8d85 !important;
+        border-radius: 9px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        cursor: pointer !important;
+        transition: background .15s ease, color .15s ease, border-color .15s ease, transform .15s ease !important;
+      }
+      .gsekme-btn:hover {
+        background: #1b1b1b !important;
+        color: #d3d1c7 !important;
+        border-color: #4a4a4a !important;
+        transform: translateY(-1px) !important;
+      }
+      .gsekme-btn.gsekme-aktif {
+        background: #2a1800 !important;
+        color: #fac775 !important;
+        border-color: #854f0b !important;
+        box-shadow: inset 0 0 0 1px rgba(250,199,117,.08) !important;
+      }
+      .gsekme-icerik {
+        background: #0f0f0f !important;
+        min-height: 260px !important;
+      }
+      #gBenimListe, #gMuzakereListe, #gOnayListe, #gTamamlandiListe, #gKatYonetIcerik {
+        padding: 14px !important;
+      }
+      .gorev-kart {
+        background: linear-gradient(180deg, #171717 0%, #111 100%) !important;
+        border: 0.5px solid #2d2d2d !important;
+        border-radius: 12px !important;
+        padding: 14px !important;
+        margin-bottom: 12px !important;
+      }
+      .gorev-kart:hover {
+        border-color: #4a3a20 !important;
+        box-shadow: 0 8px 22px rgba(0,0,0,.22) !important;
+      }
+      .gorev-kart-baslik {
+        font-size: 14px !important;
+        color: #e1dfd6 !important;
+      }
+      .gorev-badge {
+        border-radius: 999px !important;
+        padding: 4px 9px !important;
+        font-size: 10.5px !important;
+        line-height: 1 !important;
+      }
+      .gorev-progress-wrap {
+        height: 7px !important;
+        background: #242424 !important;
+        border-radius: 999px !important;
+        margin: 10px 0 6px !important;
+      }
+      .gorev-progress-bar {
+        background: linear-gradient(90deg, #854f0b, #fac775) !important;
+        border-radius: 999px !important;
+      }
+      .asama-kart {
+        background: #141414 !important;
+        border: 0.5px solid #2b2b2b !important;
+        border-radius: 10px !important;
+      }
+      .asama-kart.asama-aktif {
+        border-color: #854f0b !important;
+        box-shadow: inset 0 0 0 1px rgba(250,199,117,.05) !important;
+      }
+      #gKatYonetIcerik .form-group input,
+      #gTeklif .form-input,
+      #gorevDetayIcerik .form-input {
+        background: #171717 !important;
+        border-color: #3a3a3a !important;
+        border-radius: 9px !important;
+      }
+      #gorevDetayOverlay {
+        backdrop-filter: blur(4px) !important;
+      }
+      .qg-org-meta-line {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 5px;
+      }
+      .qg-org-chip {
+        display: inline-flex;
+        align-items: center;
+        max-width: 112px;
+        padding: 2px 6px;
+        border-radius: 999px;
+        font-size: 8.5px;
+        line-height: 1.3;
+        border: .5px solid #333;
+        background: #121212;
+        color: #777;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .qg-org-chip.cat { color:#fac775; border-color:#5b3a0a; background:#1a1100; }
+      .qg-org-chip.task { color:#9fe1cb; border-color:#0f4a38; background:#001a10; }
+      .qg-org-chip.base { color:#777; border-color:#2c2c2c; background:#111; }
+      @media (max-width: 600px) {
+        #gorevAltSekmeler { padding: 10px 8px !important; }
+        .gsekme-btn { padding: 8px 11px !important; font-size: 11px !important; }
+        #gorevModul { border-radius: 11px !important; }
+        .gorev-kart { border-radius: 11px !important; }
+      }
+
     </style>
 
     <script>
@@ -8228,10 +8368,86 @@
       // gorevTalepleri cmsOku wrap kaldırıldı - renderGorevTalepleri ayrı çağrılıyor
     </script>
     <script>
+
+      // ============================================================
+      // ORG CHART — görev/kategori senkron yardımcıları
+      // ============================================================
+      var QG_ORG_META_CACHE = { time: 0, data: null };
+
+      async function getOrgGorevMeta(force) {
+        var now = Date.now();
+        if (!force && QG_ORG_META_CACHE.data && now - QG_ORG_META_CACHE.time < 60000) {
+          return QG_ORG_META_CACHE.data;
+        }
+        var meta = {
+          kaptanKategorileri: {},
+          gorevKategorileri: {},
+          gorevSayilari: {},
+        };
+        try {
+          if (typeof gorevAPI === "function") {
+            var katRes = await gorevAPI("GOREV_KATEGORI_KAPTAN_LIST", {});
+            var atamalar = katRes && katRes.success && katRes.result ? katRes.result : {};
+            Object.keys(atamalar || {}).forEach(function (kategori) {
+              (atamalar[kategori] || []).forEach(function (rumuz) {
+                if (!rumuz) return;
+                if (!meta.kaptanKategorileri[rumuz]) meta.kaptanKategorileri[rumuz] = [];
+                if (!meta.kaptanKategorileri[rumuz].includes(kategori)) meta.kaptanKategorileri[rumuz].push(kategori);
+              });
+            });
+
+            var gorevRes = await gorevAPI("GOREV_LIST", {});
+            var gorevler = gorevRes && gorevRes.success && Array.isArray(gorevRes.result) ? gorevRes.result : [];
+            gorevler.forEach(function (g) {
+              if (!g || !g.rumuz) return;
+              if (["iptal", "basarisiz", "arsiv"].includes(g.durum)) return;
+              if (!meta.gorevKategorileri[g.rumuz]) meta.gorevKategorileri[g.rumuz] = [];
+              if (!meta.gorevSayilari[g.rumuz]) meta.gorevSayilari[g.rumuz] = {};
+              var kat = g.kategori || "Görev";
+              if (!meta.gorevKategorileri[g.rumuz].includes(kat)) meta.gorevKategorileri[g.rumuz].push(kat);
+              meta.gorevSayilari[g.rumuz][kat] = (meta.gorevSayilari[g.rumuz][kat] || 0) + 1;
+            });
+          }
+        } catch (e) {
+          console.warn("[QG] Org görev meta yüklenemedi:", e);
+        }
+        QG_ORG_META_CACHE = { time: now, data: meta };
+        return meta;
+      }
+
+      function qgOrgChip(text, type) {
+        return '<span class="qg-org-chip ' + (type || "base") + '">' + htmlEsc(text) + '</span>';
+      }
+
+      function buildOrgMemberMetaLine(m, rutbe, meta) {
+        var rumuz = m.rumuz || "";
+        var html = "";
+        var kaptanKats = (meta && meta.kaptanKategorileri && meta.kaptanKategorileri[rumuz]) || [];
+        var gorevKats = (meta && meta.gorevKategorileri && meta.gorevKategorileri[rumuz]) || [];
+        var sayilar = (meta && meta.gorevSayilari && meta.gorevSayilari[rumuz]) || {};
+
+        if (kaptanKats.length) {
+          html += '<div class="qg-org-meta-line">' + kaptanKats.map(function (k) {
+            return qgOrgChip("Kaptan: " + k, "cat");
+          }).join("") + '</div>';
+        }
+        if (gorevKats.length) {
+          html += '<div class="qg-org-meta-line">' + gorevKats.map(function (k) {
+            var adet = sayilar[k] || 1;
+            return qgOrgChip("Görev: " + k + (adet > 1 ? " ×" + adet : ""), "task");
+          }).join("") + '</div>';
+        }
+        if (!html) {
+          var mevcut = m.gorev && m.gorev !== "Yok" ? m.gorev.split("—")[0].trim() : "—";
+          html = '<div class="qg-org-meta-line">' + qgOrgChip(mevcut, "base") + '</div>';
+        }
+        return html;
+      }
+
       // ============================================================
       // ORG CHART - SVG TABANLI HİYERARŞİK KURUMSAL YAPI
       // ============================================================
-      function renderOrg() {
+      async function renderOrg() {
         var el = document.getElementById("orgChart");
         if (el) {
           el.style.cssText =
@@ -8297,6 +8513,8 @@
           "Üye",
           "Gözlemci",
         ];
+
+        var orgMeta = await getOrgGorevMeta(false);
 
         var gruplar = {};
         SIRALA.forEach(function (r) {
@@ -8406,13 +8624,9 @@
               '<div style="font-size:12px;font-weight:700;color:' +
               renk.txt +
               ';margin-bottom:3px">' +
-              m.rumuz +
+              htmlEsc(m.rumuz) +
               "</div>" +
-              '<div style="font-size:10px;color:#555">' +
-              (m.gorev && m.gorev !== "Yok"
-                ? m.gorev.split("—")[0].trim()
-                : "—") +
-              "</div>";
+              buildOrgMemberMetaLine(m, rutbe, orgMeta);
 
             grid.appendChild(box);
           });
@@ -9781,15 +9995,16 @@ async function renderKategoriYonetimi() {
   var kaptanlar = (data.success && data.result) ? data.result : {};
   var kategoriler = ['Yönetim', 'Klan', 'Sosyal Medya', 'Özel'];
 
-  var html = '<div style="max-width:500px">';
-  html += '<h3 style="font-size:14px;color:#d3d1c7;margin:0 0 14px">Kategori Kaptan Atamaları</h3>';
+  var html = '<div style="max-width:560px">';
+  html += '<h3 style="font-size:14px;color:#d3d1c7;margin:0 0 6px">Kategori Kaptan Atamaları</h3>';
+  html += '<div style="font-size:11px;color:#666;line-height:1.5;margin-bottom:14px">Bu alan yalnızca <b style="color:#888">Kaptan</b> delegasyonu içindir. Lider ve Vekilharç tüm kategorileri zaten yönetebilir. Rumuzları virgülle ayır.</div>';
   
   kategoriler.forEach(function(kat) {
     var mevcut = (kaptanlar[kat] || []).join(', ');
     html += '<div class="form-group" style="margin-bottom:12px">';
     html += '<label style="font-size:12px;color:#888780">' + kat + ' — Kaptan(lar)</label>';
     html += '<input id="kat_' + kat.replace(/\s/g,'_') + '" class="form-input" value="' + htmlEsc(mevcut) + '" ';
-    html += 'placeholder="rumuz1, rumuz2 (virgülle ayır)">';
+    html += 'placeholder="Kaptan rumuzu, ikinci kaptan...">';
     html += '</div>';
   });
 
@@ -9810,6 +10025,7 @@ async function katKaptanKaydet() {
 
   var data = await gorevAPI('GOREV_KATEGORI_KAPTAN_SAVE', { item: kaptanlar });
   if (data.success) {
+    QG_ORG_META_CACHE = { time: 0, data: null };
     cmsStatusGoster('ok', '<i class="ti ti-check"></i> Kategori kaptanları kaydedildi!');
   } else {
     alert('Hata: ' + (data.error || 'Bilinmeyen'));
