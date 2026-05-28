@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.2.2 — Stable</title>
+    <title>Q-Panel v2.2.5 — Org Sync</title>
     <!-- v2.2.2: dynamic RBAC + görev progress module stable -->
     <link
       rel="stylesheet"
@@ -3028,7 +3028,7 @@
           '<div class="stat-card"><div class="label">Riskli</div><div class="value" style="color:#e24b4a">' +
           riskli +
           "</div></div>" +
-          '<div class="stat-card"><div class="label">Görevsiz</div><div class="value" style="color:#fac775">' +
+          '<div class="stat-card"><div class="label">Atamasız</div><div class="value" style="color:#fac775">' +
           gorevSiz +
           "</div></div>" +
           (izin("butceGor")
@@ -3054,7 +3054,7 @@
           alerts +=
             '<div class="alert-row alert-info"><i class="ti ti-briefcase"></i> ' +
             gorevSiz +
-            " üye görevsiz</div>";
+            " üye atamasız</div>";
         if (net < 0 && izin("butceGor"))
           alerts +=
             '<div class="alert-row alert-danger"><i class="ti ti-currency-lira"></i> Kasa negatife düştü!</div>';
@@ -3204,13 +3204,14 @@
       // MODULE 08 — MEMBER RENDERERS
       // ═══════════════════════════════════════════════════
 
-      function renderMembers() {
+      async function renderMembers() {
         const q = (
           document.getElementById("searchBox").value || ""
         ).toLowerCase();
         const fr = document.getElementById("filterRutbe").value;
         const fd = document.getElementById("filterDurum").value;
         const fg = document.getElementById("filterGorev").value;
+        const orgMeta = await getOrgGorevMeta(false);
         const rutbeSira = {
           Lider: 0,
           "Vekilhar\u00e7": 1,
@@ -3225,7 +3226,7 @@
               (!q || m.rumuz.toLowerCase().includes(q)) &&
               (!fr || m.rutbe === fr) &&
               (!fd || m.durum === fd) &&
-              (!fg || m.gorev === fg)
+              (!fg || getMemberGorevAlanlari(m, orgMeta).includes(fg))
             );
           })
           .sort(function (a, b) {
@@ -3284,7 +3285,7 @@
             durumBadge(m.durum) +
             "</td>" +
             '<td style="font-size:11px;color:#888">' +
-            (m.gorev || "Yok") +
+            renderMemberGorevAlanCell(m, orgMeta) +
             "</td>" +
             '<td style="font-weight:500">' +
             (m.puan || 0) +
@@ -5758,7 +5759,7 @@
             <option>Arşiv</option>
           </select>
           <select id="filterGorev" onchange="renderMembers()">
-            <option value="">Tüm görevler</option>
+            <option value="">Tüm görev alanları</option>
             <option>Klan</option>
             <option>Sosyal Medya</option>
             <option>Yönetim</option>
@@ -5774,7 +5775,7 @@
                 <th style="width: 100px">Rumuz</th>
                 <th style="width: 72px">Rütbe</th>
                 <th style="width: 64px">Durum</th>
-                <th style="width: 80px">Görev</th>
+                <th style="width: 110px">Görev Alanı</th>
                 <th style="width: 44px">Puan</th>
                 <th style="width: 80px">Katılım</th>
                 <th style="width: 70px">İşlem</th>
@@ -6799,9 +6800,6 @@
             "</select></div></div>" +
             '<div class="form-row"><div class="form-group"><label>Durum</label><select id="m_durum">' +
             dOpts +
-            "</select></div>" +
-            '<div class="form-group"><label>Görev</label><select id="m_gorev">' +
-            gOpts +
             "</select></div></div>" +
             '<div class="form-row"><div class="form-group"><label>Katılım</label><input type="date" id="m_katilim" value="' +
             today +
@@ -6864,9 +6862,6 @@
             "</select></div></div>" +
             '<div class="form-row"><div class="form-group"><label>Durum</label><select id="e_durum">' +
             dO +
-            "</select></div>" +
-            '<div class="form-group"><label>Görev</label><select id="e_gorev">' +
-            gO +
             "</select></div></div>" +
             '<div class="form-row"><div class="form-group"><label>Puan</label><input type="number" id="e_puan" value="' +
             (m.puan || 0) +
@@ -8419,29 +8414,55 @@
         return '<span class="qg-org-chip ' + (type || "base") + '">' + htmlEsc(text) + '</span>';
       }
 
+      function getMemberGorevAlanlari(m, meta) {
+        var rumuz = (m && m.rumuz) || "";
+        var rutbe = (m && (m.rutbe || m.rol)) || "Üye";
+
+        if (rutbe === "Lider" || rutbe === "Vekilharç") return ["Global Yönetim"];
+
+        if (rutbe === "Kaptan") {
+          var kaptanKats = (meta && meta.kaptanKategorileri && meta.kaptanKategorileri[rumuz]) || [];
+          return kaptanKats.length ? kaptanKats : ["Atama Yok"];
+        }
+
+        var gorevKats = (meta && meta.gorevKategorileri && meta.gorevKategorileri[rumuz]) || [];
+        return gorevKats.length ? gorevKats : ["Atama Yok"];
+      }
+
+      function renderMemberGorevAlanCell(m, meta) {
+        return getMemberGorevAlanlari(m, meta).map(function (k) {
+          var tip = k === "Global Yönetim" ? "global" : (k === "Atama Yok" ? "base" : "task");
+          return qgOrgChip(k, tip);
+        }).join("");
+      }
+
       function buildOrgMemberMetaLine(m, rutbe, meta) {
-        var rumuz = m.rumuz || "";
+        var rumuz = (m && m.rumuz) || "";
         var html = "";
-        var kaptanKats = (meta && meta.kaptanKategorileri && meta.kaptanKategorileri[rumuz]) || [];
+
+        if (rutbe === "Lider" || rutbe === "Vekilharç") {
+          return '<div class="qg-org-meta-line">' + qgOrgChip("Global Yönetim", "global") + '</div>';
+        }
+
+        if (rutbe === "Kaptan") {
+          var kaptanKats = (meta && meta.kaptanKategorileri && meta.kaptanKategorileri[rumuz]) || [];
+          if (kaptanKats.length) {
+            html += '<div class="qg-org-meta-line">' + kaptanKats.map(function (k) {
+              return qgOrgChip("Kaptan: " + k, "cat");
+            }).join("") + '</div>';
+          }
+          return html || '<div class="qg-org-meta-line">' + qgOrgChip("Atama Yok", "base") + '</div>';
+        }
+
         var gorevKats = (meta && meta.gorevKategorileri && meta.gorevKategorileri[rumuz]) || [];
         var sayilar = (meta && meta.gorevSayilari && meta.gorevSayilari[rumuz]) || {};
-
-        if (kaptanKats.length) {
-          html += '<div class="qg-org-meta-line">' + kaptanKats.map(function (k) {
-            return qgOrgChip("Kaptan: " + k, "cat");
-          }).join("") + '</div>';
-        }
         if (gorevKats.length) {
           html += '<div class="qg-org-meta-line">' + gorevKats.map(function (k) {
             var adet = sayilar[k] || 1;
-            return qgOrgChip("Görev: " + k + (adet > 1 ? " ×" + adet : ""), "task");
+            return qgOrgChip("Görev Alanı: " + k + (adet > 1 ? " ×" + adet : ""), "task");
           }).join("") + '</div>';
         }
-        if (!html) {
-          var mevcut = m.gorev && m.gorev !== "Yok" ? m.gorev.split("—")[0].trim() : "—";
-          html = '<div class="qg-org-meta-line">' + qgOrgChip(mevcut, "base") + '</div>';
-        }
-        return html;
+        return html || '<div class="qg-org-meta-line">' + qgOrgChip("Atama Yok", "base") + '</div>';
       }
 
       // ============================================================
