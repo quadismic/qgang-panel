@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Q-Panel Alpha</title>
+<title>Q-Panel Alpha v1</title>
 <!-- v10-clean: duplicate modal wrappers and legacy override removed -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet">
@@ -3132,7 +3132,7 @@ async function reqSifreSifirla(id,rumuz){
 
   confirm2('Şifreyi sıfırla','<strong>'+rumuz+'</strong> şifresi varsayılana sıfırlanacak.',async function(){
     try{
-      var defaultHash='94b617208064162c825408794fb45d2f7df44cba3c32f52d3c9cedf7200a2f74';
+      var defaultHash=await hashStr('qgang123');
 
       var res=await fetch(API_URL,{
         method:'POST',
@@ -3148,12 +3148,12 @@ async function reqSifreSifirla(id,rumuz){
 
       var data=await res.json();
 
-      if(data.success||data.result){
+      if(data.success && (!data.result || data.result.success!==false)){
         addLog('Şifre sıfırlandı',rumuz);
         save();
         alert(rumuz+' şifresi "qgang123" olarak sıfırlandı.');
       }else{
-        alert('Hata: '+(data.error||'İşlem başarısız'));
+        alert('Hata: '+((data.result&&data.result.error)||data.error||'İşlem başarısız'));
       }
 
     }catch(e){
@@ -3161,10 +3161,6 @@ async function reqSifreSifirla(id,rumuz){
     }
   });
 }
-
-// renderOrg - organizasyon şeması (düzeltilmiş)
-
-// renderTuzuk (düzeltilmiş)
 
 // Puan azaltma düzeltme - negatif değer kontrolü
 var _origReqPuan = typeof reqPuan !== 'undefined' ? reqPuan : null;
