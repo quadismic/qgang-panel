@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.2.5 — Org Sync</title>
-    <!-- v2.2.2: dynamic RBAC + görev progress module stable -->
+    <title>Q-Panel v2.2.6 — Birthday Hotfix</title>
+    <!-- v2.2.6: birthday timezone fix + subtle confetti hotfix -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -1673,6 +1673,70 @@
         .gorev-kart { border-radius: 11px !important; }
       }
 
+      /* ═══════════════════════════════════════════════════
+         Q-PANEL v2.2.6 — Birthday Istanbul TZ + subtle confetti
+         ═══════════════════════════════════════════════════ */
+      .qg-birthday-confetti-layer {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 10000;
+      }
+      .qg-birthday-confetti-piece {
+        position: absolute;
+        top: -12px;
+        width: 5px;
+        height: 12px;
+        border-radius: 2px;
+        opacity: 0;
+        background: #fac775;
+        box-shadow: 0 0 8px rgba(250, 199, 117, 0.28);
+        animation: qgBirthdayConfettiFall 2.4s cubic-bezier(.16,.68,.43,.99) forwards;
+      }
+      .qg-birthday-confetti-piece.alt {
+        width: 4px;
+        height: 8px;
+        background: #854f0b;
+        box-shadow: 0 0 6px rgba(133, 79, 11, 0.24);
+      }
+      .qg-birthday-toast {
+        position: fixed;
+        left: 50%;
+        top: 18px;
+        transform: translateX(-50%) translateY(-8px);
+        z-index: 10001;
+        max-width: min(92vw, 460px);
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: .5px solid #854f0b;
+        background: linear-gradient(180deg, #1a1100, #111);
+        color: #fac775;
+        font-size: 12px;
+        line-height: 1.35;
+        letter-spacing: .02em;
+        box-shadow: 0 12px 34px rgba(0,0,0,.38), inset 0 0 0 1px rgba(250,199,117,.04);
+        opacity: 0;
+        animation: qgBirthdayToast 2.8s ease forwards;
+        pointer-events: none;
+        text-align: center;
+      }
+      @keyframes qgBirthdayToast {
+        0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+        12% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        78% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        100% { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+      }
+      @keyframes qgBirthdayConfettiFall {
+        0% { opacity: 0; transform: translate3d(0, -12px, 0) rotate(0deg); }
+        8% { opacity: .9; }
+        100% { opacity: 0; transform: translate3d(var(--qg-x, 0px), 104vh, 0) rotate(var(--qg-r, 420deg)); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .qg-birthday-confetti-layer,
+        .qg-birthday-toast { display: none !important; }
+      }
+
     </style>
 
     <script>
@@ -2853,11 +2917,105 @@
       }
       function daysUntil(s) {
         if (!s) return null;
-        const n = new Date();
-        n.setHours(0, 0, 0, 0);
-        const d = new Date(s);
-        d.setHours(0, 0, 0, 0);
-        return Math.ceil((d - n) / 864e5);
+        // Date-only string parsing is UTC-sensitive in JS. Use Istanbul calendar day.
+        var parsed = qgParseDateParts(s);
+        if (!parsed) return null;
+        var today = qgIstanbulTodayParts();
+        var current = Date.UTC(today.y, today.m - 1, today.d);
+        var target = Date.UTC(parsed.y, parsed.m - 1, parsed.d);
+        return Math.ceil((target - current) / 864e5);
+      }
+
+      function qgIstanbulTodayParts() {
+        var fmt = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "Europe/Istanbul",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        });
+        var parts = fmt.formatToParts(new Date());
+        var out = {};
+        parts.forEach(function (p) {
+          if (p.type !== "literal") out[p.type] = p.value;
+        });
+        return {
+          y: parseInt(out.year, 10),
+          m: parseInt(out.month, 10),
+          d: parseInt(out.day, 10),
+        };
+      }
+
+      function qgParseDateParts(value) {
+        if (!value) return null;
+        var s = String(value).trim();
+        var m;
+        // YYYY-MM-DD / YYYY/MM/DD
+        m = s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
+        if (m) {
+          return { y: parseInt(m[1], 10), m: parseInt(m[2], 10), d: parseInt(m[3], 10) };
+        }
+        // DD.MM.YYYY / DD-MM-YYYY / DD/MM/YYYY
+        m = s.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})/);
+        if (m) {
+          return { y: parseInt(m[3], 10), m: parseInt(m[2], 10), d: parseInt(m[1], 10) };
+        }
+        return null;
+      }
+
+      function qgBirthdayDiff(dogum) {
+        var p = qgParseDateParts(dogum);
+        if (!p) return null;
+        var today = qgIstanbulTodayParts();
+        var current = Date.UTC(today.y, today.m - 1, today.d);
+        var target = Date.UTC(today.y, p.m - 1, p.d);
+        if (target < current) target = Date.UTC(today.y + 1, p.m - 1, p.d);
+        return Math.round((target - current) / 864e5);
+      }
+
+      function qgGetTodayBirthdayMembers(list) {
+        return (list || []).filter(function (m) {
+          return qgBirthdayDiff(m && m.dogum) === 0;
+        });
+      }
+
+      function qgMaybeBirthdayConfetti(todayBirthdays) {
+        try {
+          if (!todayBirthdays || !todayBirthdays.length) return;
+          var key = "qg_birthday_confetti_" + qgIstanbulTodayParts().y + "_" + qgIstanbulTodayParts().m + "_" + qgIstanbulTodayParts().d;
+          if (sessionStorage.getItem(key)) return;
+          sessionStorage.setItem(key, "1");
+
+          var names = todayBirthdays.slice(0, 3).map(function (m) { return m.rumuz || m.ad || "Q-GANG"; }).join(", ");
+          var toast = document.createElement("div");
+          toast.className = "qg-birthday-toast";
+          toast.innerHTML = "🎂 " + htmlEsc(names) + " doğum günü kutlu olsun";
+          document.body.appendChild(toast);
+          setTimeout(function () { try { toast.remove(); } catch (e) {} }, 3000);
+
+          qgRunSubtleBirthdayConfetti();
+        } catch (e) {}
+      }
+
+      function qgRunSubtleBirthdayConfetti() {
+        try {
+          var layer = document.createElement("div");
+          layer.className = "qg-birthday-confetti-layer";
+          document.body.appendChild(layer);
+
+          var count = Math.min(90, Math.max(42, Math.floor(window.innerWidth / 12)));
+          for (var i = 0; i < count; i++) {
+            var piece = document.createElement("span");
+            piece.className = "qg-birthday-confetti-piece" + (i % 3 === 0 ? " alt" : "");
+            piece.style.left = Math.random() * 100 + "vw";
+            piece.style.animationDelay = (Math.random() * 0.55).toFixed(2) + "s";
+            piece.style.animationDuration = (1.9 + Math.random() * 1.0).toFixed(2) + "s";
+            piece.style.setProperty("--qg-x", (Math.random() * 120 - 60).toFixed(0) + "px");
+            piece.style.setProperty("--qg-r", (240 + Math.random() * 520).toFixed(0) + "deg");
+            layer.appendChild(piece);
+          }
+
+          setTimeout(function () { try { layer.remove(); } catch (e) {} }, 3300);
+        } catch (e) {}
       }
       function engelEkrani() {
         return '<div class="erisim-engel"><i class="ti ti-lock"></i>Bu bölüme erişim yetkiniz yok.</div>';
@@ -3114,24 +3272,26 @@
               .join("")
           : '<div style="font-size:12px;color:#555">30 gün içinde etkinlik yok</div>';
 
-        const today = new Date();
         const bd = members
           .filter(function (m) {
             return m.dogum;
           })
           .map(function (m) {
-            var d = new Date(m.dogum);
-            d.setFullYear(today.getFullYear());
-            if (d < today) d.setFullYear(today.getFullYear() + 1);
-            var diff = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
+            var diff = qgBirthdayDiff(m.dogum);
             return Object.assign({}, m, { diff: diff });
           })
           .filter(function (m) {
-            return m.diff <= 30;
+            return m.diff !== null && m.diff <= 30;
           })
           .sort(function (a, b) {
             return a.diff - b.diff;
           });
+
+        qgMaybeBirthdayConfetti(
+          bd.filter(function (m) {
+            return m.diff === 0;
+          })
+        );
 
         document.getElementById("birthdaysBox").innerHTML = bd.length
           ? bd
@@ -3940,24 +4100,10 @@
       }
 
       function getSeason() {
-        const now = new Date();
-        const ay = now.getMonth() + 1;
-        const gun = now.getDate();
-        // Doğum günü kontrolü
-        const bugunDogum = members.some(function (m) {
-          if (!m.dogum) return false;
-          var dStr = m.dogum;
-          // Farklı format desteği: YYYY-MM-DD veya DD.MM.YYYY
-          var parts;
-          if (dStr.includes("-")) parts = dStr.split("-");
-          else if (dStr.includes(".")) {
-            var p = dStr.split(".");
-            parts = [p[2], p[1], p[0]];
-          } else return false;
-          var dAy = parseInt(parts[1], 10);
-          var dGun = parseInt(parts[2], 10);
-          return dAy === ay && dGun === gun;
-        });
+        const trToday = qgIstanbulTodayParts();
+        const ay = trToday.m;
+        // Doğum günü kontrolü — Europe/Istanbul takvim gününe göre
+        const bugunDogum = qgGetTodayBirthdayMembers(members).length > 0;
         if (bugunDogum) return "dogumgunu";
         if (ay >= 3 && ay <= 5) return "ilkbahar";
         if (ay >= 6 && ay <= 8) return "yaz";
@@ -3966,7 +4112,7 @@
       }
 
       function getSeasonLabel(s) {
-        const yil = new Date().getFullYear();
+        const yil = qgIstanbulTodayParts().y;
         const labels = {
           kis: "Kış",
           ilkbahar: "İlkbahar",
