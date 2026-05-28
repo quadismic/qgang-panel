@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.2 — Q-Görev Integrated</title>
-    <!-- v2.2: dynamic RBAC + erişim yönetimi hotfix stable + Q-Görev progress module -->
+    <title>Q-Panel v2.2.2 — Görev Stable</title>
+    <!-- v2.2.2: dynamic RBAC + görev progress module stable -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -1379,6 +1379,119 @@
         color: #b5d4f4;
         border: 0.5px solid #185fa5;
       }
+.gsekme-btn {
+  padding: 7px 14px;
+  background: #111;
+  border: 0.5px solid #333;
+  color: #888780;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all .2s;
+}
+.gsekme-btn:hover { background: #1a1a1a; color: #d3d1c7; }
+.gsekme-btn.gsekme-aktif { background: #1a1a1a; color: #fac775; border-color: #fac775; }
+.gsekme-icerik { min-height: 200px; }
+
+/* Görev Kartı */
+.gorev-kart {
+  background: #0f0f0f;
+  border: 0.5px solid #222;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+  transition: border-color .2s;
+}
+.gorev-kart:hover { border-color: #333; }
+.gorev-kart-baslik {
+  font-size: 14px;
+  font-weight: 600;
+  color: #d3d1c7;
+  margin-bottom: 6px;
+}
+.gorev-kart-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.gorev-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Durum renkleri */
+.gd-muzakerede  { background: #1a1500; color: #fac775; border: 0.5px solid #3a3000; }
+.gd-aktif       { background: #001a10; color: #4ade80; border: 0.5px solid #003020; }
+.gd-gecikmede   { background: #1a0a00; color: #fb923c; border: 0.5px solid #3a1500; }
+.gd-tamamlandi  { background: #001015; color: #60a5fa; border: 0.5px solid #002030; }
+.gd-iptal       { background: #111; color: #888; border: 0.5px solid #333; }
+.gd-basarisiz   { background: #1a0000; color: #f87171; border: 0.5px solid #3a0000; }
+.gd-arsiv       { background: #111; color: #888; border: 0.5px solid #333; }
+
+/* Zorluk renkleri */
+.gz-kolay  { background: #001a05; color: #4ade80; }
+.gz-orta   { background: #1a1200; color: #fbbf24; }
+.gz-zor    { background: #1a0800; color: #fb923c; }
+.gz-kritik { background: #1a0000; color: #f87171; }
+
+/* Progress bar */
+.gorev-progress-wrap {
+  background: #1a1a1a;
+  border-radius: 4px;
+  height: 6px;
+  overflow: hidden;
+  margin: 8px 0 4px;
+}
+.gorev-progress-bar {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #fac775, #f97316);
+  transition: width .5s ease;
+}
+
+/* Aşama kartı */
+.asama-kart {
+  background: #111;
+  border: 0.5px solid #222;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.asama-kart.asama-aktif { border-color: #fac775; }
+.asama-kart.asama-tamamlandi { opacity: .65; }
+.asama-kart.asama-gecikmede { border-color: #fb923c; }
+
+/* Yorum balonu */
+.yorum-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  max-width: 90%;
+}
+.yorum-uye     { background: #111; border: 0.5px solid #222; margin-left: auto; }
+.yorum-yetkili { background: #0d1a0d; border: 0.5px solid #1a3a1a; }
+.yorum-sistem  { background: #0a0a14; border: 0.5px solid #1a1a3a; width: 100%; max-width: 100%; }
+
+/* Aşama form */
+.asama-form-row {
+  background: #111;
+  border: 0.5px solid #222;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+/* Deadline uyarı */
+.deadline-gecmis { color: #f87171; }
+.deadline-yakin  { color: #fb923c; }
+.deadline-ok     { color: #888780; }
+
       @media (max-width: 600px) {
         body {
           padding: 8px;
@@ -1420,125 +1533,7 @@
           padding: 5px 6px;
         }
       }
-    
-
-      /* ═════════ Q-GÖREV MODULE — MOBILE FIRST ═════════ */
-bloğuna ekle                                       -->
-      <!-- ═════════════════════════════════════════════════════════════════ -->
-      <style>
-      .gsekme-btn {
-        padding: 7px 14px;
-        background: #111;
-        border: 0.5px solid #333;
-        color: #888780;
-        border-radius: 6px;
-        font-size: 12px;
-        white-space: nowrap;
-        cursor: pointer;
-        transition: all .2s;
-      }
-      .gsekme-btn:hover { background: #1a1a1a; color: #d3d1c7; }
-      .gsekme-btn.gsekme-aktif { background: #1a1a1a; color: #fac775; border-color: #fac775; }
-      .gsekme-icerik { min-height: 200px; }
-      
-      /* Görev Kartı */
-      .gorev-kart {
-        background: #0f0f0f;
-        border: 0.5px solid #222;
-        border-radius: 10px;
-        padding: 14px;
-        margin-bottom: 12px;
-        transition: border-color .2s;
-      }
-      .gorev-kart:hover { border-color: #333; }
-      .gorev-kart-baslik {
-        font-size: 14px;
-        font-weight: 600;
-        color: #d3d1c7;
-        margin-bottom: 6px;
-      }
-      .gorev-kart-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-bottom: 10px;
-      }
-      .gorev-badge {
-        display: inline-block;
-        padding: 3px 8px;
-        border-radius: 4px;
-        font-size: 11px;
-        font-weight: 600;
-      }
-      
-      /* Durum renkleri */
-      .gd-muzakerede  { background: #1a1500; color: #fac775; border: 0.5px solid #3a3000; }
-      .gd-aktif       { background: #001a10; color: #4ade80; border: 0.5px solid #003020; }
-      .gd-gecikmede   { background: #1a0a00; color: #fb923c; border: 0.5px solid #3a1500; }
-      .gd-tamamlandi  { background: #001015; color: #60a5fa; border: 0.5px solid #002030; }
-      .gd-iptal       { background: #111; color: #888; border: 0.5px solid #333; }
-      .gd-basarisiz   { background: #1a0000; color: #f87171; border: 0.5px solid #3a0000; }
-      .gd-arsiv       { background: #111; color: #888; border: 0.5px solid #333; }
-      
-      /* Zorluk renkleri */
-      .gz-kolay  { background: #001a05; color: #4ade80; }
-      .gz-orta   { background: #1a1200; color: #fbbf24; }
-      .gz-zor    { background: #1a0800; color: #fb923c; }
-      .gz-kritik { background: #1a0000; color: #f87171; }
-      
-      /* Progress bar */
-      .gorev-progress-wrap {
-        background: #1a1a1a;
-        border-radius: 4px;
-        height: 6px;
-        overflow: hidden;
-        margin: 8px 0 4px;
-      }
-      .gorev-progress-bar {
-        height: 100%;
-        border-radius: 4px;
-        background: linear-gradient(90deg, #fac775, #f97316);
-        transition: width .5s ease;
-      }
-      
-      /* Aşama kartı */
-      .asama-kart {
-        background: #111;
-        border: 0.5px solid #222;
-        border-radius: 8px;
-        padding: 12px;
-        margin-bottom: 8px;
-      }
-      .asama-kart.asama-aktif { border-color: #fac775; }
-      .asama-kart.asama-tamamlandi { opacity: .65; }
-      .asama-kart.asama-gecikmede { border-color: #fb923c; }
-      
-      /* Yorum balonu */
-      .yorum-item {
-        padding: 10px 12px;
-        border-radius: 8px;
-        margin-bottom: 8px;
-        max-width: 90%;
-      }
-      .yorum-uye     { background: #111; border: 0.5px solid #222; margin-left: auto; }
-      .yorum-yetkili { background: #0d1a0d; border: 0.5px solid #1a3a1a; }
-      .yorum-sistem  { background: #0a0a14; border: 0.5px solid #1a1a3a; width: 100%; max-width: 100%; }
-      
-      /* Aşama form */
-      .asama-form-row {
-        background: #111;
-        border: 0.5px solid #222;
-        border-radius: 8px;
-        padding: 12px;
-        margin-bottom: 10px;
-        position: relative;
-      }
-      
-      /* Deadline uyarı */
-      .deadline-gecmis { color: #f87171; }
-      .deadline-yakin  { color: #fb923c; }
-      .deadline-ok     { color: #888780; }
-</style>
+    </style>
 
     <script>
       // ═══════════════════════════════════════════════════
@@ -1547,18 +1542,25 @@ bloğuna ekle                                       -->
 
       // Token yardımcı - tüm fetch'lerde kullan
       function getToken() {
-        var s = "";
+        function parseSession(raw) {
+          try {
+            return raw ? JSON.parse(raw) || {} : {};
+          } catch (e) {
+            return {};
+          }
+        }
         try {
-          s =
-            localStorage.getItem("qg_session") ||
-            sessionStorage.getItem("qg_session") ||
-            "";
+          var local = parseSession(localStorage.getItem("qg_session") || "");
+          if (local && local.token) return local.token;
         } catch (e) {}
         try {
-          return JSON.parse(s).token || "";
-        } catch (e) {
-          return "";
-        }
+          var sess = parseSession(sessionStorage.getItem("qg_session") || "");
+          if (sess && sess.token) return sess.token;
+        } catch (e) {}
+        try {
+          if (SESSION && SESSION.token) return SESSION.token;
+        } catch (e) {}
+        return "";
       }
       function authBody(extra) {
         return Object.assign({ token: getToken() }, extra || {});
@@ -1871,23 +1873,26 @@ bloğuna ekle                                       -->
       const API_URL = "https://www.q-gang.com/_functions/qgang";
 
       function getSessionData() {
-        var raw = "";
+        function parseSession(raw) {
+          try {
+            return raw ? JSON.parse(raw) || {} : {};
+          } catch (e) {
+            return {};
+          }
+        }
         try {
-          raw =
-            localStorage.getItem("qg_session") ||
-            sessionStorage.getItem("qg_session") ||
-            "";
+          var local = parseSession(localStorage.getItem("qg_session") || "");
+          if (local && local.token) return local;
         } catch (e) {}
         try {
-          return raw ? JSON.parse(raw) || {} : {};
-        } catch (e) {
-          return {};
-        }
+          var sess = parseSession(sessionStorage.getItem("qg_session") || "");
+          if (sess && sess.token) return sess;
+        } catch (e) {}
+        return {};
       }
 
       function getActiveToken() {
-        var session = getSessionData();
-        return session && session.token ? session.token : "";
+        return getToken();
       }
 
       function normalizeApiPayload(payload) {
@@ -5652,7 +5657,6 @@ bloğuna ekle                                       -->
 
       <!-- GÖREVLER -->
       <div id="tab-gorev" class="tab">
-<!-- ═════════════════════════════════════════════════════════════════ -->
 <div id="gorevModul" style="padding:0">
 
   <!-- Alt Sekmeler -->
@@ -9015,12 +9019,11 @@ bloğuna ekle                                       -->
         uyeEkle: "Üye Ekle",
         "⚔️ OPERASYONEL YÖNETİM": "__baslik__",
         gorevAta: "Görev Ata",
-        "🎯 Q-GÖREV / PROGRESS": "__baslik__",
         gorevOlustur: "Görev Oluştur",
-        gorevGor: "Görev Gör",
+        gorevGor: "Görevleri Gör",
         gorevYonet: "Görev Yönet",
         gorevOnayla: "Görev/Aşama Onayla",
-        gorevPuanOnayla: "Görev Puanı Onayla",
+        gorevPuanOnayla: "Görev Puan Onayla",
         gorevKategoriYonet: "Görev Kategori Yönet",
         gorevArsivGor: "Görev Arşivi Gör",
         davetYonet: "Davet Yönet",
@@ -9131,9 +9134,7 @@ bloğuna ekle                                       -->
         el.appendChild(wrap);
       }
     </script>
-  
-<script>
-
+  <script>
 // ═══════════════════════════════════════════════════════════════════
 // Q-GÖREV MODULE — FRONTEND JS
 // ═══════════════════════════════════════════════════════════════════
@@ -9150,20 +9151,43 @@ var gorevData = {
 // ─────────────────────────────────────
 async function gorevAPI(action, payload) {
   try {
-    if (typeof apiPost === "function") {
-      return await apiPost(Object.assign({ action: action }, payload || {}));
+    var token = getToken();
+    if (!token) {
+      try { token = getActiveToken(); } catch (e) {}
     }
-    var body = Object.assign({ action: action, token: getToken() }, payload || {});
-    var res = await secureApiFetch(API_URL, {
+    if (!token) {
+      return { success: false, error: "Oturum token bulunamadı. Lütfen çıkış yapıp tekrar giriş yap." };
+    }
+
+    var body = Object.assign({ action: action, token: token }, payload || {});
+
+    // Mevcut Q-PANEL API katmanı varsa onu kullan; yoksa güvenli fetch'e düş.
+    if (typeof apiPost === "function") {
+      return await apiPost(body);
+    }
+
+    var res = await fetch(API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+        "x-qgang-token": token
+      },
+      credentials: "include",
       body: JSON.stringify(body),
     });
-    return await res.json();
+    var data = await res.json();
+    if (!res.ok || data.success === false) {
+      return { success: false, error: data.error || ("HTTP " + res.status) };
+    }
+    return data;
   } catch (e) {
     return { success: false, error: e.message };
   }
 }
+
+// Eski görev talebi polling'ini yeni modül için sessize al
+window.renderGorevTalepleri = async function () { return null; };
 
 // ─────────────────────────────────────
 // Sekme yönetimi
@@ -9845,7 +9869,6 @@ function deadlineStyle(dl) {
   if (diff <= 3) return { style: 'color:#fb923c', gecmis: false };
   return { style: 'color:#555', gecmis: false };
 }
-
 </script>
 </body>
 </html>
