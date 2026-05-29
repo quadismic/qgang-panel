@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.4.3 — Görev Merkezi Access Gate Hotfix</title>
+    <title>Q-Panel v2.4.5 — Görev Merkezi 403 Hotfix</title>
     <!-- v2.4.0: görev merkezi + aşama bazlı puan + deadline workflow -->
     <link
       rel="stylesheet"
@@ -11221,7 +11221,6 @@ function deadlineStyle(dl) {
 <script>
 (function(){
   'use strict';
-  console.log('[QG] v2.4.3 görev merkezi erişim hotfix aktif');
 
   function roleRank(r) {
     if (r === 'Lider') return 0;
@@ -11512,7 +11511,6 @@ function deadlineStyle(dl) {
 (function qPanelV242VisibilityHotfix(){
   if (window.__QG_V242_VISIBILITY_HOTFIX__) return;
   window.__QG_V242_VISIBILITY_HOTFIX__ = true;
-  console.log('[QG] v2.4.2 görev merkezi görünürlük hotfix aktif');
 
   function esc(s) {
     try { if (typeof htmlEsc === 'function') return htmlEsc(s); } catch(e) {}
@@ -11733,7 +11731,6 @@ function deadlineStyle(dl) {
 <script>
 (function(){
   // Q-PANEL v2.4.3 — final access-gate safety patch
-  console.log('[QG] v2.4.3 görev merkezi erişim hotfix aktif');
   function esc243(s){
     if (typeof htmlEsc === 'function') return htmlEsc(s);
     return String(s == null ? '' : s).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});
@@ -11856,6 +11853,337 @@ function deadlineStyle(dl) {
     return r;
   };
   setTimeout(function(){ try { window.qgRenderGorevDashboardUyariV243(); } catch(e){} }, 1000);
+})();
+</script>
+
+
+<script>
+(function(){
+  // Q-PANEL v2.4.4 — Görev Merkezi 403 noise/access safety patch
+  function qgEmptyStagesResult(){ return { success: true, result: [] }; }
+  var _gorevAPIV244 = window.gorevAPI;
+  if (typeof _gorevAPIV244 === 'function') {
+    window.gorevAPI = async function gorevAPIV244(action, payload, opts) {
+      try {
+        return await _gorevAPIV244.apply(this, arguments);
+      } catch (e) {
+        if (action === 'GOREV_STAGE_LIST') {
+          console.warn('[QG] v2.4.5: GOREV_STAGE_LIST yetki dışı/boş kabul edildi:', e && e.message ? e.message : e);
+          return qgEmptyStagesResult();
+        }
+        throw e;
+      }
+    };
+  }
+  var _apiPostV244 = window.apiPost;
+  if (typeof _apiPostV244 === 'function') {
+    window.apiPost = async function apiPostV244(action, payload, opts) {
+      try {
+        return await _apiPostV244.apply(this, arguments);
+      } catch (e) {
+        if (action === 'GOREV_STAGE_LIST') {
+          console.warn('[QG] v2.4.5: apiPost stage 403/boş kabul edildi:', e && e.message ? e.message : e);
+          return qgEmptyStagesResult();
+        }
+        throw e;
+      }
+    };
+  }
+  if (!document.querySelector('link[rel="icon"]')) {
+    var link = document.createElement('link');
+    link.rel = 'icon';
+    link.href = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22><text y=%2214%22 font-size=%2214%22>⚔️</text></svg>';
+    document.head.appendChild(link);
+  }
+})();
+</script>
+
+
+<style>
+/* Q-PANEL v2.4.5 — dashboard/task/date/progress cleanup */
+.qg-task-alert { cursor:pointer; }
+input[type="date"] {
+  color-scheme: dark !important;
+  padding-right: 38px !important;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 1 !important;
+  display: block !important;
+  filter: invert(1) brightness(2.4) contrast(1.15) drop-shadow(0 0 2px rgba(250,199,117,.35)) !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+.qg-date-wrap { position: relative !important; display:block !important; width:100% !important; }
+.qg-date-icon {
+  position: absolute !important;
+  right: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: #fac775 !important;
+  opacity: .95 !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+  text-shadow: 0 0 8px rgba(250,199,117,.35) !important;
+}
+.qg-stage-admin-actions[hidden],
+.qg-stage-admin-actions.qg-hidden { display:none !important; }
+</style>
+<script>
+(function(){
+  // Q-PANEL v2.4.5 — dashboard/task/date/progress cleanup
+  if (window.__QG_V245_TASK_CLEANUP__) return;
+  window.__QG_V245_TASK_CLEANUP__ = true;
+
+  function esc245(s){
+    try { if (typeof htmlEsc === 'function') return htmlEsc(s); } catch(e){}
+    return String(s == null ? '' : s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+  }
+  function role245(){
+    try { return (SESSION && SESSION.rol) || ''; } catch(e){ return ''; }
+  }
+  function rumuz245(){
+    try { return (SESSION && SESSION.rumuz) || ''; } catch(e){ return ''; }
+  }
+  function rank245(r){
+    r = String(r || '');
+    if (r === 'Lider') return 0;
+    if (r === 'Vekilharç' || r.indexOf('Vekil') >= 0) return 1;
+    if (r === 'Kaptan') return 2;
+    if (r === 'Teğmen' || r.indexOf('Te') >= 0) return 3;
+    if (r === 'Üye' || r.indexOf('ye') >= 0) return 4;
+    return 5;
+  }
+  function label245(s){ try { if (typeof gorevDurumEtiket === 'function') return gorevDurumEtiket(s); } catch(e){} return s || ''; }
+  function cls245(s){ try { if (typeof gorevDurumClass === 'function') return gorevDurumClass(s); } catch(e){} return 'gd-' + String(s || '').toLowerCase(); }
+  function forceClear245(){
+    try { if (typeof qgClearPerformanceCache === 'function') qgClearPerformanceCache(); } catch(e){}
+    try { if (typeof qgClearGorevCachesV231 === 'function') qgClearGorevCachesV231(); } catch(e){}
+    try { if (window.PERF && PERF.apiCache) PERF.apiCache = {}; } catch(e){}
+  }
+  async function api245(action, payload){
+    if (typeof gorevAPI !== 'function') throw new Error('gorevAPI bulunamadı');
+    try { return await gorevAPI(action, payload || {}, { force:true }); }
+    catch(e){ if (action === 'GOREV_STAGE_LIST') return {success:true,result:[]}; throw e; }
+  }
+  async function tasks245(){
+    var data = await api245('GOREV_LIST', { item: {} });
+    return (data && data.success && Array.isArray(data.result)) ? data.result : [];
+  }
+  async function stages245(gid){
+    var data = await api245('GOREV_STAGE_LIST', { item: { gorevId: gid } });
+    return (data && data.success && Array.isArray(data.result)) ? data.result : [];
+  }
+  var _katCache245 = { t:0, data:null };
+  async function kategoriKaptanlari245(){
+    if (Date.now() - _katCache245.t < 60000 && _katCache245.data) return _katCache245.data;
+    try {
+      var d = await api245('GOREV_KATEGORI_KAPTAN_LIST', { item:{} });
+      _katCache245 = { t: Date.now(), data: (d && d.success && d.result) ? d.result : {} };
+      return _katCache245.data || {};
+    } catch(e) { return {}; }
+  }
+  async function canManageStage245(g){
+    var r = role245();
+    if (r === 'Lider' || r === 'Vekilharç' || r.indexOf('Vekil') >= 0) return true;
+    if (r !== 'Kaptan') return false;
+    var map = await kategoriKaptanlari245();
+    var val = map && map[g.kategori];
+    var list = Array.isArray(val) ? val : String(val || '').split(',');
+    return list.map(function(x){return String(x).trim().toLowerCase();}).indexOf(String(rumuz245()).trim().toLowerCase()) >= 0;
+  }
+  function progressFromStages245(g, as){
+    if (g && g.durum === 'tamamlandi') return 100;
+    as = Array.isArray(as) ? as : [];
+    if (!as.length) return 0;
+    var done = as.filter(function(a){ return a && a.durum === 'tamamlandi'; }).length;
+    return Math.max(0, Math.min(100, Math.round((done / as.length) * 100)));
+  }
+  function card245(g, as){
+    var id = g._id || g.id || '';
+    var progress = progressFromStages245(g, as);
+    var h = '<div class="gorev-kart" onclick="gorevDetayAc(\'' + esc245(id) + '\')" style="cursor:pointer">';
+    h += '<div class="gorev-kart-baslik">' + esc245(g.baslik || '(Başlıksız)') + ' <span style="color:#555;font-weight:400">@' + esc245(g.rumuz || '') + '</span></div>';
+    h += '<div class="gorev-kart-meta"><span class="gorev-badge ' + cls245(g.durum) + '">' + esc245(label245(g.durum)) + '</span>';
+    h += '<span class="gorev-badge" style="background:#111;color:#888;border:.5px solid #333">' + esc245(g.kategori || '') + '</span>';
+    h += '<span class="gorev-badge" style="background:#111;color:#fac775;border:.5px solid #333">' + (Number(g.onaylananPuan || g.istenenPuan || 0)) + ' puan</span></div>';
+    if (g.durum === 'aktif' || g.durum === 'gecikmede') {
+      h += '<div class="gorev-progress-wrap"><div class="gorev-progress-bar" style="width:' + progress + '%"></div></div>';
+      h += '<div style="font-size:10px;color:#555;margin-bottom:4px">%' + progress + ' tamamlandı</div>';
+    }
+    if (g.aciklama) h += '<div style="font-size:12px;color:#888;white-space:pre-wrap;margin-top:8px">' + esc245(g.aciklama) + '</div>';
+    h += '</div>';
+    return h;
+  }
+
+  // Tek ve debounced dashboard görev uyarısı. Eski hotfix uyarı fonksiyonlarını da bununla değiştirir.
+  var dashSeq245 = 0;
+  async function renderGorevDashboardUyari245(){
+    var seq = ++dashSeq245;
+    var box = document.getElementById('alertsBox');
+    if (!box || typeof gorevAPI !== 'function') return;
+    Array.prototype.slice.call(box.querySelectorAll('.qg-task-alert, #qg-gorev-v243-uyari, #qg-gorev-v242-uyari, #qg-gorev-v241-uyari, #qg-gorev-v240-uyari, #qg-gorev-progress-uyari')).forEach(function(x){ x.remove(); });
+    try {
+      var list = await tasks245();
+      var muz = list.filter(function(g){ return g && g.durum === 'muzakerede'; });
+      var aktif = list.filter(function(g){ return g && (g.durum === 'aktif' || g.durum === 'gecikmede'); });
+      var stageLists = await Promise.all(aktif.map(function(g){ return stages245(g._id || g.id); }));
+      var inceleme = stageLists.reduce(function(sum, arr){ return sum + (arr || []).filter(function(a){ return a && a.durum === 'incelemede'; }).length; }, 0);
+      if (seq !== dashSeq245) return;
+      Array.prototype.slice.call(box.querySelectorAll('.qg-task-alert, #qg-gorev-v243-uyari, #qg-gorev-v242-uyari, #qg-gorev-v241-uyari, #qg-gorev-v240-uyari, #qg-gorev-progress-uyari')).forEach(function(x){ x.remove(); });
+      if (!muz.length && !inceleme) return;
+      if ((box.textContent || '').trim() === 'Uyarı yok') box.innerHTML = '';
+      var row = document.createElement('div');
+      row.id = 'qg-gorev-v245-uyari';
+      row.className = 'alert-row alert-warn qg-task-alert';
+      var parts = [];
+      if (muz.length) parts.push(muz.length + ' görev teklifi');
+      if (inceleme) parts.push(inceleme + ' aşama onayı');
+      row.innerHTML = '<i class="ti ti-clipboard-list"></i> <strong>' + parts.join(' / ') + ' bekliyor</strong>';
+      row.onclick = function(){
+        try { showTabDD('gorev','ddTopluluk','navToplulukBtn'); } catch(e) {}
+        setTimeout(function(){ try { gorevSekmeAc('gMuzakere'); } catch(e){} }, 80);
+      };
+      box.appendChild(row);
+    } catch(e) {}
+  }
+  window.qgRenderGorevDashboardUyariV240 =
+  window.qgRenderGorevDashboardUyariV241 =
+  window.qgRenderGorevDashboardUyariV242 =
+  window.qgRenderGorevDashboardUyariV243 =
+  window.qgRenderGorevDashboardUyariV245 = renderGorevDashboardUyari245;
+
+  var _renderDash245 = window.renderDashboard;
+  window.renderDashboard = function renderDashboardV245(){
+    var r = _renderDash245 ? _renderDash245.apply(this, arguments) : undefined;
+    renderGorevDashboardUyari245();
+    return r;
+  };
+
+  // Görev merkezi render: tek kaynak, tek dashboard uyarısı, yetkisiz işlem butonlarını gizler.
+  window.renderMuzakereler = async function renderGorevMerkeziV245(){
+    var el = document.getElementById('gMuzakereListe');
+    if (!el) return;
+    el.innerHTML = '<div style="color:#555;font-size:12px;padding:8px">Yükleniyor...</div>';
+    try {
+      var list = await tasks245();
+      var muz = list.filter(function(g){ return g && g.durum === 'muzakerede'; });
+      var aktif = list.filter(function(g){ return g && (g.durum === 'aktif' || g.durum === 'gecikmede'); });
+      var html = '';
+      if (muz.length) {
+        html += '<div style="font-size:12px;color:#fac775;font-weight:700;margin:4px 0 10px">💬 Müzakere Bekleyen Teklifler (' + muz.length + ')</div>';
+        html += muz.map(function(g){ return card245(g, []); }).join('');
+      }
+      var onayHtml = '', aktifHtml = '', onaySayisi = 0;
+      for (var i=0; i<aktif.length; i++) {
+        var g = aktif[i], gid = g._id || g.id;
+        var as = await stages245(gid);
+        var can = await canManageStage245(g);
+        var incelemede = as.filter(function(a){ return a && a.durum === 'incelemede'; });
+        if (incelemede.length) {
+          onaySayisi += incelemede.length;
+          onayHtml += '<div class="gorev-kart"><div class="gorev-kart-baslik">' + esc245(g.baslik || '') + ' <span style="color:#555;font-weight:400">@' + esc245(g.rumuz || '') + '</span></div>';
+          incelemede.forEach(function(a){
+            var aid = a._id || a.id || '';
+            onayHtml += '<div class="asama-kart asama-aktif" style="margin-top:8px">';
+            onayHtml += '<div style="font-size:12px;font-weight:600;color:#d3d1c7;margin-bottom:6px">Aşama ' + esc245(a.asamaNo || '') + ': ' + esc245(a.baslik || '') + '</div>';
+            onayHtml += '<div style="font-size:11px;color:#888;margin-bottom:8px;white-space:pre-wrap">' + esc245(a.rapor || '') + '</div>';
+            onayHtml += '<div style="font-size:11px;color:#fac775;margin-bottom:8px">🏆 ' + (Number(a.puan)||0) + ' puan</div>';
+            if (can) {
+              onayHtml += '<div class="qg-stage-admin-actions" style="display:flex;gap:8px;flex-wrap:wrap">';
+              onayHtml += '<button class="btn btn-sm" style="background:#003a10;color:#4ade80;border:.5px solid #005020" onclick="gorevAsamaOnayla(\'' + esc245(aid) + '\',\'' + esc245(gid) + '\')"><i class="ti ti-check"></i> Onayla +' + (Number(a.puan)||0) + '</button>';
+              onayHtml += '<button class="btn btn-sm" style="background:#1a0a00;color:#fb923c;border:.5px solid #3a1500" onclick="gorevRevizeIste(\'' + esc245(aid) + '\',\'' + esc245(gid) + '\')"><i class="ti ti-refresh"></i> Revize</button>';
+              onayHtml += '<button class="btn btn-sm" style="background:#1a0000;color:#f87171;border:.5px solid #3a0000" onclick="gorevAsamaReddet(\'' + esc245(aid) + '\',\'' + esc245(gid) + '\')"><i class="ti ti-x"></i> Başarısız</button>';
+              onayHtml += '</div>';
+            } else {
+              onayHtml += '<div style="font-size:11px;color:#555">Yetkili kaptan/yönetim onayı bekleniyor.</div>';
+            }
+            onayHtml += '</div>';
+          });
+          onayHtml += '<button class="btn btn-sm" style="margin-top:8px;width:100%" onclick="gorevDetayAc(\'' + esc245(gid) + '\')"><i class="ti ti-eye"></i> Tüm Detaylar</button></div>';
+        }
+        aktifHtml += card245(g, as);
+      }
+      if (onayHtml) html += '<div style="font-size:12px;color:#fac775;font-weight:700;margin:18px 0 10px">⚡ Aşama Onayı Bekleyenler (' + onaySayisi + ')</div>' + onayHtml;
+      if (aktifHtml) html += '<div style="font-size:12px;color:#9fe1cb;font-weight:700;margin:18px 0 10px">🔥 Aktif Görev Takibi</div>' + aktifHtml;
+      el.innerHTML = html || '<div style="color:#555;font-size:12px;padding:8px">Görev merkezinde işlem bekleyen kayıt yok.</div>';
+    } catch(e) {
+      el.innerHTML = '<div style="color:#f87171;font-size:12px;padding:8px">Hata: ' + esc245(e.message || e) + '</div>';
+      console.error('[QG] görev merkezi render hata:', e);
+    }
+  };
+
+  // Tarih inputları: native ikon görünür, custom ikon tıklamayı engellemez.
+  window.qgNormalizeDateInputs = function qgNormalizeDateInputsV245(root){
+    root = root || document;
+    var today = (typeof qgTodayYmd === 'function') ? qgTodayYmd() : (new Date().toISOString().slice(0,10));
+    root.querySelectorAll('input[type="date"]').forEach(function(inp){
+      inp.setAttribute('min', today);
+      inp.setAttribute('required', 'required');
+      var wrap = (inp.parentElement && inp.parentElement.classList && inp.parentElement.classList.contains('qg-date-wrap')) ? inp.parentElement : null;
+      if (!wrap) {
+        wrap = document.createElement('div');
+        wrap.className = 'qg-date-wrap';
+        inp.parentNode.insertBefore(wrap, inp);
+        wrap.appendChild(inp);
+      }
+      var icon = wrap.querySelector('.qg-date-icon');
+      if (!icon) {
+        icon = document.createElement('span');
+        icon.className = 'qg-date-icon';
+        icon.innerHTML = '<i class="ti ti-calendar-event"></i>';
+        wrap.appendChild(icon);
+      }
+      icon.onclick = null;
+      wrap.onclick = null;
+      inp.addEventListener('click', function(){ try { if (inp.showPicker) inp.showPicker(); } catch(e){} }, { once:false });
+    });
+  };
+
+  async function refreshCore245(){
+    try {
+      if (typeof cmsOku === 'function') {
+        var fresh = await cmsOku();
+        if (fresh) {
+          if (fresh.members) window.members = members = fresh.members.map(function(m){ return Object.assign({}, m, { id: m._id || m.id }); });
+          if (fresh.puanArsiv) window.puanArsiv = puanArsiv = fresh.puanArsiv;
+        }
+      }
+    } catch(e) {}
+    try { renderMembers(); } catch(e){}
+    try { renderOrg(); } catch(e){}
+    try { renderPuan(); } catch(e){}
+    try { renderDashboard(); } catch(e){}
+  }
+
+  ['gorevAsamaOnayla','gorevRevizeIste','gorevAsamaReddet','gorevOnayla','gorevRaporGonder'].forEach(function(fn){
+    var old = window[fn];
+    if (typeof old !== 'function' || old.__qg245) return;
+    var wrapped = async function(){
+      var r = await old.apply(this, arguments);
+      forceClear245();
+      try { await window.renderMuzakereler(); } catch(e){}
+      if (fn === 'gorevAsamaOnayla') await refreshCore245();
+      else { try { renderDashboard(); } catch(e){} }
+      return r;
+    };
+    wrapped.__qg245 = true;
+    window[fn] = wrapped;
+  });
+
+  var _sekme245 = window.gorevSekmeAc;
+  window.gorevSekmeAc = function gorevSekmeAcV245(id, btn){
+    var r = _sekme245 ? _sekme245.apply(this, arguments) : undefined;
+    if (id === 'gMuzakere') setTimeout(window.renderMuzakereler, 60);
+    if (id === 'gTeklif') setTimeout(function(){ try { qgNormalizeDateInputs(document.getElementById('gTeklif') || document); } catch(e){} }, 60);
+    return r;
+  };
+
+  function boot245(){
+    try { qgNormalizeDateInputs(document); } catch(e){}
+    renderGorevDashboardUyari245();
+    setTimeout(function(){ try { qgNormalizeDateInputs(document); } catch(e){} }, 500);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot245); else boot245();
 })();
 </script>
 
