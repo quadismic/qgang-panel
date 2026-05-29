@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.4.5 — Görev Merkezi 403 Hotfix</title>
-    <!-- v2.4.0: görev merkezi + aşama bazlı puan + deadline workflow -->
+    <title>Q-Panel v2.4.6 — Görev & Yetki Stabilizasyon Hotfix</title>
+    <!-- v2.4.6: görev revize puanı + yetki + puan senkron + dashboard revize hotfix -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -12184,6 +12184,178 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     setTimeout(function(){ try { qgNormalizeDateInputs(document); } catch(e){} }, 500);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot245); else boot245();
+})();
+</script>
+
+
+<script>
+// ═══════════════════════════════════════════════════
+// Q-PANEL v2.4.6 — görev/yetki/puan stabilizasyonu
+// ═══════════════════════════════════════════════════
+(function(){
+  'use strict';
+  window.QPANEL_VERSION = '2.4.6';
+
+  function qgEsc246(v){ return String(v == null ? '' : v).replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]); }); }
+  function qgRol(){ return (window.SESSION && SESSION.rol) || 'Gözlemci'; }
+  function qgIsLider(){ return qgRol() === 'Lider'; }
+  function qgIsVekil(){ return String(qgRol()).indexOf('Vekil') > -1; }
+  function qgCanKategoriYonet(){ return qgIsLider(); }
+  function qgCanButceGor(){ try { return qgIsLider() || (typeof izin === 'function' && izin('butceGor')); } catch(e){ return qgIsLider(); } }
+
+  // #2 Kategori sekmesi yalnızca Lider görsün.
+  function qgApplyCategoryVisibility246(){
+    var btn = document.getElementById('gKatYonetBtn');
+    var tab = document.getElementById('gKatYonet');
+    if (btn) btn.style.display = qgCanKategoriYonet() ? '' : 'none';
+    if (!qgCanKategoriYonet() && tab && tab.style.display !== 'none') {
+      tab.style.display = 'none';
+      try { if (typeof gorevSekmeAc === 'function') gorevSekmeAc('gMuzakere'); } catch(e) {}
+    }
+  }
+
+  // #8 Bütçe görme yetkisi dinamik izinle çalışsın.
+  function qgApplyBudgetVisibility246(){
+    var nb = document.getElementById('navButceDD');
+    if (nb) nb.style.display = qgCanButceGor() ? '' : 'none';
+    var yc = document.getElementById('navYonetimBtn');
+    if (yc) yc.style.display = '';
+  }
+
+  // #7 Puanı arşivden net hesapla: +70 -10 = 60.
+  function qgArchiveNet246(rumuz){
+    try {
+      var arr = Array.isArray(window.puanArsiv) ? window.puanArsiv : (typeof puanArsiv !== 'undefined' && Array.isArray(puanArsiv) ? puanArsiv : []);
+      var has = arr.some(function(x){ return x && x.rumuz === rumuz; });
+      if (!has) return null;
+      return arr.filter(function(x){ return x && x.rumuz === rumuz; }).reduce(function(sum,x){ return sum + (Number(x.miktar)||0); }, 0);
+    } catch(e){ return null; }
+  }
+  function qgSyncLocalMemberPoints246(){
+    try {
+      var list = Array.isArray(window.members) ? window.members : (typeof members !== 'undefined' ? members : []);
+      if (!Array.isArray(list)) return;
+      list.forEach(function(m){
+        var net = qgArchiveNet246(m.rumuz);
+        if (net !== null) m.puan = net;
+      });
+    } catch(e) {}
+  }
+
+  // #4 Arşivde teknik tür adı görünmesin.
+  var _renderPuanArsiv246 = window.renderPuanArsiv;
+  if (typeof _renderPuanArsiv246 === 'function' && !_renderPuanArsiv246.__qg246) {
+    window.renderPuanArsiv = async function(rumuz){
+      var r = await _renderPuanArsiv246.apply(this, arguments);
+      if (Array.isArray(r)) r.forEach(function(x){ if (x && (x.tur === 'gorev_asama' || x.tur === 'görev_asama')) x.tur = 'Görev'; if (x && x.tur === 'görev') x.tur = 'Görev'; });
+      return r;
+    };
+    window.renderPuanArsiv.__qg246 = true;
+  }
+
+  // #5 Revize bildirimi dashboard'a düşsün.
+  async function qgDashboardRevizeUyari246(){
+    var box = document.getElementById('alertsBox');
+    if (!box || typeof gorevAPI !== 'function') return;
+    try {
+      Array.prototype.slice.call(box.querySelectorAll('.qg-revize-alert-246')).forEach(function(x){ x.remove(); });
+      var taskData = await gorevAPI('GOREV_LIST', { item: {} });
+      var tasks = taskData && taskData.success && Array.isArray(taskData.result) ? taskData.result : [];
+      var benim = tasks.filter(function(g){ return g && g.rumuz === (SESSION && SESSION.rumuz) && (g.durum === 'aktif' || g.durum === 'gecikmede'); });
+      var count = 0;
+      for (var i=0;i<benim.length;i++){
+        var sd = await gorevAPI('GOREV_STAGE_LIST', { item: { gorevId: benim[i]._id || benim[i].id } });
+        var st = sd && sd.success && Array.isArray(sd.result) ? sd.result : [];
+        count += st.filter(function(a){ return a && a.durum === 'revize_istendi'; }).length;
+      }
+      if (!count) return;
+      if ((box.textContent || '').trim() === 'Uyarı yok') box.innerHTML = '';
+      var row = document.createElement('div');
+      row.className = 'alert-row alert-danger qg-revize-alert-246';
+      row.style.cursor = 'pointer';
+      row.innerHTML = '<i class="ti ti-refresh-alert"></i> <strong>' + count + ' görev aşaması için revize istendi</strong>';
+      row.onclick = function(){ try { showTabDD('gorev','ddTopluluk','navToplulukBtn'); setTimeout(function(){ gorevSekmeAc('gBenim'); },80); } catch(e){} };
+      box.insertBefore(row, box.firstChild);
+    } catch(e) {}
+  }
+
+  // #6 Org chart'ta “Görev Alanı: -” yazısını temizle.
+  function qgCleanOrg246(){
+    try {
+      var root = document.getElementById('orgChart') || document;
+      root.querySelectorAll('text, .qg-org-chip, .qg-org-meta-line span, div, span').forEach(function(n){
+        var t = (n.textContent || '').trim();
+        if (t === 'Görev Alanı: -' || t === 'Görev Alanı:-' || t === 'Görev Alanı' || t === '-') {
+          n.remove();
+        } else if (/^Görev Alanı:\s*-\s*$/.test(t)) {
+          n.remove();
+        } else if (/^Görev Alanı:\s*/.test(t)) {
+          n.textContent = t.replace(/^Görev Alanı:\s*/, '');
+        }
+      });
+    } catch(e) {}
+  }
+
+  // #3 Yönetim onaylanan puanı değiştirince aşama puanlarını otomatik yeniden dağıt.
+  function qgDagit246(total, n){
+    total = Math.max(0, Math.round(Number(total)||0)); n = Math.max(1, Math.round(Number(n)||1));
+    var base = Math.floor(total/n), rem = total % n, arr=[];
+    for(var i=0;i<n;i++) arr.push(base + (rem-- > 0 ? 1 : 0));
+    return arr;
+  }
+  function qgAutoDistributeVisibleStagePoints246(total){
+    var rows = [];
+    try { if (typeof gorevGetAsamaRows === 'function') rows = gorevGetAsamaRows() || []; } catch(e) {}
+    if (!rows.length) rows = Array.prototype.slice.call(document.querySelectorAll('.asama-form-row'));
+    if (!rows.length) return;
+    var vals = qgDagit246(total, rows.length);
+    rows.forEach(function(row, i){
+      var inp = row.querySelector('.asama-puan, input[name="puan"], input[id*="puan"], input[type="number"]');
+      if (inp) { inp.value = vals[i]; inp.dispatchEvent(new Event('input', { bubbles:true })); }
+    });
+    try { if (typeof gorevAsamaPuanToplamKontrol === 'function') gorevAsamaPuanToplamKontrol(false); } catch(e) {}
+  }
+  document.addEventListener('input', function(ev){
+    var id = ev.target && ev.target.id;
+    if (id && /onaylananPuan|istenenPuan|puan/i.test(id) && (ev.target.closest && ev.target.closest('#gorevDetayOverlay, #gTeklif, #gMuzakereListe'))) {
+      if (/onaylananPuan|gf_puan|istenenPuan/i.test(id)) qgAutoDistributeVisibleStagePoints246(ev.target.value);
+    }
+  }, true);
+
+  // Render wrapperları
+  function qgPostRender246(){
+    qgApplyCategoryVisibility246();
+    qgApplyBudgetVisibility246();
+    qgSyncLocalMemberPoints246();
+    qgCleanOrg246();
+    qgDashboardRevizeUyari246();
+  }
+  ['renderDashboard','renderMembers','renderPuan','renderOrg','renderGorev'].forEach(function(fn){
+    var old = window[fn];
+    if (typeof old === 'function' && !old.__qg246) {
+      var w = function(){ qgSyncLocalMemberPoints246(); var r = old.apply(this, arguments); setTimeout(qgPostRender246, 40); return r; };
+      w.__qg246 = true; window[fn] = w;
+    }
+  });
+  var _showTabDD246 = window.showTabDD;
+  if (typeof _showTabDD246 === 'function' && !_showTabDD246.__qg246) {
+    window.showTabDD = function(name){
+      if (name === 'butce' && !qgCanButceGor()) { alert('Bütçe görüntüleme yetkiniz yok.'); return; }
+      var r = _showTabDD246.apply(this, arguments); setTimeout(qgPostRender246, 60); return r;
+    };
+    window.showTabDD.__qg246 = true;
+  }
+  var _gorevSekmeAc246 = window.gorevSekmeAc;
+  if (typeof _gorevSekmeAc246 === 'function' && !_gorevSekmeAc246.__qg246) {
+    window.gorevSekmeAc = function(id){
+      if (id === 'gKatYonet' && !qgCanKategoriYonet()) { alert('Kategori yönetimi yalnızca Lider yetkisindedir.'); return; }
+      var r = _gorevSekmeAc246.apply(this, arguments); setTimeout(qgPostRender246, 80); return r;
+    };
+    window.gorevSekmeAc.__qg246 = true;
+  }
+
+  function boot246(){ qgPostRender246(); setTimeout(qgPostRender246, 700); setTimeout(qgPostRender246, 1800); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot246); else boot246();
 })();
 </script>
 
