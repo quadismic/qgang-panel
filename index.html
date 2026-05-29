@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.3.0 — Consolidated Stable</title>
+    <title>Q-Panel v2.3.1 — Stage Points Workflow</title>
     <!-- v2.3.0: 2.2.11 görev form UX + 2.2.12 org active task hotfix consolidated -->
     <link
       rel="stylesheet"
@@ -1804,6 +1804,51 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
         filter: grayscale(.25);
       }
 
+
+
+      /* ═══════════════════════════════════════════════════
+         Q-PANEL v2.3.1 — Stage workflow/date/comment UX
+         ═══════════════════════════════════════════════════ */
+      input[type="date"] {
+        color-scheme: dark !important;
+        color: #d3d1c7 !important;
+        background-color: #171717 !important;
+        position: relative;
+      }
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        display: block !important;
+        opacity: 1 !important;
+        cursor: pointer !important;
+        filter: invert(88%) sepia(18%) saturate(575%) hue-rotate(348deg) brightness(105%) contrast(96%) !important;
+        background-color: transparent !important;
+      }
+      input[type="date"]::-webkit-calendar-picker-indicator:hover {
+        filter: invert(94%) sepia(27%) saturate(810%) hue-rotate(348deg) brightness(104%) contrast(98%) !important;
+      }
+      #gorevDetayIcerik textarea,
+      #gorevDetayIcerik .form-input,
+      #gTeklif textarea,
+      #gTeklif input,
+      #gTeklif select {
+        color: #d3d1c7 !important;
+        caret-color: #fac775 !important;
+      }
+      #gorevDetayIcerik textarea::placeholder,
+      #gTeklif textarea::placeholder,
+      #gTeklif input::placeholder { color: #777 !important; }
+      #gorevDetayIcerik textarea[id^="yeniYorum_"],
+      #gorevDetayIcerik textarea[id^="rapor_"] {
+        min-height: 92px !important;
+        resize: vertical !important;
+        line-height: 1.55 !important;
+      }
+      .qg-stage-points-note {
+        margin-top: 5px;
+        color: #9fe1cb;
+        font-size: 11px;
+      }
+      .qg-stage-points-note.warn { color: #fb923c; }
+      .qg-stage-points-note.err { color: #f87171; }
 
     </style>
 
@@ -6023,7 +6068,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
     <button class="gsekme-btn gsekme-aktif" onclick="gorevSekmeAc('gBenim',this)">📋 Görevlerim</button>
     <button class="gsekme-btn" onclick="gorevSekmeAc('gTeklif',this)">✍️ Teklif Et</button>
     <button class="gsekme-btn" onclick="gorevSekmeAc('gMuzakere',this)">💬 Müzakere</button>
-    <button class="gsekme-btn" id="gOnayBtn" onclick="gorevSekmeAc('gOnay',this)" style="display:none">⚡ Onay Bekleyen</button>
+    <button class="gsekme-btn" id="gOnayBtn" onclick="gorevSekmeAc('gOnay',this)" style="display:none">⚡ Aşama Onayı</button>
     <button class="gsekme-btn" onclick="gorevSekmeAc('gTamamlandi',this)">✅ Tamamlananlar</button>
     <button class="gsekme-btn" id="gKatYonetBtn" onclick="gorevSekmeAc('gKatYonet',this)" style="display:none">⚙️ Kategori</button>
   </div>
@@ -10672,5 +10717,142 @@ function deadlineStyle(dl) {
     console.info('[QG] Performance hotfix v2.2.7 aktif. Cache temizlemek için: qgClearPerformanceCache()');
   })();
 </script>
+
+<script>
+  // ═══════════════════════════════════════════════════
+  // Q-PANEL v2.3.1 — Stage workflow + dashboard notification hotfix
+  // ═══════════════════════════════════════════════════
+  (function qPanelStageWorkflowHotfixV231() {
+    if (window.__QG_STAGE_WORKFLOW_V231__) return;
+    window.__QG_STAGE_WORKFLOW_V231__ = true;
+
+    function qgRoleRank(r) {
+      if (r === 'Lider') return 0;
+      if (r && r.indexOf('Vekil') > -1) return 1;
+      if (r === 'Kaptan') return 2;
+      if (r && r.indexOf('Te') > -1) return 3;
+      if (r && r.indexOf('Üye') > -1) return 4;
+      return 5;
+    }
+
+    function qgOpenGorevMuzakere() {
+      try { showTabDD('gorev','ddTopluluk','navToplulukBtn'); } catch (e) {}
+      setTimeout(function () {
+        try {
+          var btns = document.querySelectorAll('#gorevAltSekmeler .gsekme-btn');
+          for (var i = 0; i < btns.length; i++) {
+            if ((btns[i].textContent || '').indexOf('Müzakere') > -1) {
+              gorevSekmeAc('gMuzakere', btns[i]);
+              break;
+            }
+          }
+        } catch (e) {}
+      }, 80);
+    }
+    window.qgOpenGorevMuzakere = qgOpenGorevMuzakere;
+
+    async function qgRenderGorevTeklifUyarisiV231() {
+      var box = document.getElementById('alertsBox') || document.getElementById('basvuruUyari');
+      if (!box || typeof gorevAPI !== 'function') return;
+      var eski = document.getElementById('qg-gorev-progress-uyari');
+      if (eski) eski.remove();
+      if (qgRoleRank((window.SESSION && SESSION.rol) || '') > 2) return;
+      try {
+        var data = await gorevAPI('GOREV_LIST', { item: { durum: 'muzakerede' } });
+        var list = (data && data.success && data.result) ? data.result : [];
+        if (!list.length) return;
+        var row = document.createElement('div');
+        row.id = 'qg-gorev-progress-uyari';
+        row.className = 'alert-row alert-warn';
+        row.style.cursor = 'pointer';
+        row.onclick = qgOpenGorevMuzakere;
+        row.innerHTML = '<i class="ti ti-clipboard-list"></i> <strong>' + list.length + ' görev teklifi müzakere bekliyor</strong>';
+        box.appendChild(row);
+      } catch (e) {}
+    }
+    window.qgRenderGorevTeklifUyarisiV231 = qgRenderGorevTeklifUyarisiV231;
+
+    if (typeof window.renderDashboard === 'function' && !window.renderDashboard.__v231Wrapped) {
+      var _renderDashboardV231 = window.renderDashboard;
+      window.renderDashboard = function renderDashboardV231() {
+        var r = _renderDashboardV231.apply(this, arguments);
+        setTimeout(qgRenderGorevTeklifUyarisiV231, 120);
+        return r;
+      };
+      window.renderDashboard.__v231Wrapped = true;
+    }
+
+    function qgClearGorevCachesV231() {
+      try { if (typeof qgClearPerformanceCache === 'function') qgClearPerformanceCache(); } catch (e) {}
+      try {
+        if (window.__QG_PERF__) {
+          window.__QG_PERF__.apiCache = {};
+          window.__QG_PERF__.inflight = {};
+        }
+      } catch (e) {}
+      try { if (window.QG_ORG_META_CACHE) window.QG_ORG_META_CACHE = { time: 0, data: null }; } catch (e) {}
+    }
+    window.qgClearGorevCachesV231 = qgClearGorevCachesV231;
+
+    // Görev onayı sonrası kullanıcıyı aktif görev akışına yönlendir.
+    if (typeof window.gorevOnayla === 'function' && !window.gorevOnayla.__v231Wrapped) {
+      var _gorevOnaylaV231 = window.gorevOnayla;
+      window.gorevOnayla = async function gorevOnaylaV231(gorevId, puan) {
+        var data = await gorevAPI('GOREV_APPROVE', { id: gorevId, item: { onaylananPuan: puan } });
+        if (data.success) {
+          qgClearGorevCachesV231();
+          cmsStatusGoster('ok', '<i class="ti ti-check"></i> Görev onaylandı. Artık aşama aşama rapor/onay akışı başladı.');
+          try { gorevDetayKapat(); } catch (e) {}
+          try { await renderMuzakereler(); } catch (e) {}
+          try { await renderGorevlerim(); } catch (e) {}
+          try { await renderOnayBekleyenler(); } catch (e) {}
+          try { renderDashboard(); } catch (e) {}
+        } else {
+          alert('Hata: ' + (data.error || 'Bilinmeyen'));
+        }
+      };
+      window.gorevOnayla.__v231Wrapped = true;
+    }
+
+    // Aşama onayında puan mesajını görünür yap ve listeleri yenile.
+    if (typeof window.gorevAsamaOnayla === 'function' && !window.gorevAsamaOnayla.__v231Wrapped) {
+      window.gorevAsamaOnayla = async function gorevAsamaOnaylaV231(asamaId, gorevId) {
+        var data = await gorevAPI('GOREV_STAGE_APPROVE', { item: { asamaId: asamaId } });
+        if (data.success) {
+          qgClearGorevCachesV231();
+          var res = data.result || {};
+          var yatan = Number(res.yatanPuan || res.puan || 0);
+          var mesaj = yatan > 0
+            ? '<i class="ti ti-check"></i> Aşama onaylandı. +' + yatan + ' puan işlendi.'
+            : '<i class="ti ti-check"></i> Aşama onaylandı.';
+          if (res.gorevTamamlandi) mesaj += ' Görev tamamlandı.';
+          cmsStatusGoster('ok', mesaj);
+          if (window.gorevData && gorevData.aktifGorevId) await gorevDetayAc(gorevData.aktifGorevId);
+          else await renderOnayBekleyenler();
+          try { await renderGorevlerim(); } catch (e) {}
+          try { await renderTamamlananlar(); } catch (e) {}
+          try { if (typeof cmsOku === 'function') await cmsOku(true); } catch (e) {}
+        } else {
+          alert('Hata: ' + (data.error || 'Bilinmeyen'));
+        }
+      };
+      window.gorevAsamaOnayla.__v231Wrapped = true;
+    }
+
+    // Sekme adı daha anlaşılır olsun.
+    function qgRenameStageApprovalTab() {
+      try {
+        var btn = document.getElementById('gOnayBtn');
+        if (btn) btn.innerHTML = '⚡ Aşama Onayı';
+      } catch (e) {}
+    }
+    qgRenameStageApprovalTab();
+    document.addEventListener('DOMContentLoaded', function () {
+      qgRenameStageApprovalTab();
+      setTimeout(qgRenderGorevTeklifUyarisiV231, 600);
+    });
+  })();
+</script>
+
 </body>
 </html>
