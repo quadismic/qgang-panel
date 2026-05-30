@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.4.6 — Görev & Yetki Stabilizasyon Hotfix</title>
-    <!-- v2.4.6: görev revize puanı + yetki + puan senkron + dashboard revize hotfix -->
+    <title>Q-Panel v2.5.0 — Basit Görev Teklifi</title>
+    <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -6114,65 +6114,55 @@ input[type="date"]:required:invalid {
     <div id="gBenimListe" style="padding:12px"></div>
   </div>
 
-  <!-- Teklif Et -->
+  <!-- Teklif Et — v2.5.0 Basit Üye Formu -->
   <div id="gTeklif" class="gsekme-icerik" style="display:block">
-    <div style="padding:12px;max-width:600px;margin:0 auto">
-      <h3 style="margin:0 0 16px;font-size:15px;color:#d3d1c7">
-        <i class="ti ti-plus-circle"></i> Görev Teklifi Oluştur
-      </h3>
-      
-      <div class="form-group">
-        <label>Kategori</label>
-        <select id="gf_kategori" class="form-input">
-          <option value="">Seç...</option>
-          <option>Yönetim</option>
-          <option>Klan</option>
-          <option>Sosyal Medya</option>
-          <option>Özel</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label>Başlık</label>
-        <input id="gf_baslik" class="form-input" placeholder="Görev başlığı" maxlength="200">
-      </div>
-      
-      <div class="form-group">
-        <label>Açıklama</label>
-        <textarea id="gf_aciklama" class="form-input" rows="3"
-          placeholder="Görevin amacını, kapsamını açıkla..." style="resize:vertical"></textarea>
-      </div>
-      
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div style="padding:14px;max-width:620px;margin:0 auto">
+      <div style="background:linear-gradient(180deg,#171717 0%,#101010 100%);border:0.5px solid #2b2b2b;border-radius:14px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.18)">
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px">
+          <div style="width:34px;height:34px;border-radius:10px;background:#2a1800;color:#fac775;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-sparkles"></i></div>
+          <div>
+            <h3 style="margin:0 0 4px;font-size:15px;color:#d3d1c7">Görev Teklifi Oluştur</h3>
+            <div style="font-size:12px;color:#888;line-height:1.45">Kısa anlat, puanını öner, gönder. Aşama ve deadline planlamasını yönetim gerekirse düzenler.</div>
+          </div>
+        </div>
+
         <div class="form-group">
-          <label>Zorluk</label>
-          <select id="gf_zorluk" class="form-input">
-            <option value="kolay">🟢 Kolay</option>
-            <option value="orta" selected>🟡 Orta</option>
-            <option value="zor">🟠 Zor</option>
-            <option value="kritik">🔴 Kritik</option>
+          <label>Kategori</label>
+          <select id="gf_kategori" class="form-input">
+            <option value="">Seç...</option>
+            <option>Yönetim</option>
+            <option>Klan</option>
+            <option>Sosyal Medya</option>
+            <option>Özel</option>
           </select>
         </div>
+
         <div class="form-group">
-          <label>İstenen Puan</label>
-          <input id="gf_puan" class="form-input" type="number" min="1" max="500" value="20">
+          <label>Görev Başlığı</label>
+          <input id="gf_baslik" class="form-input" placeholder="Örn. Q-GANG reels serisi hazırlama" maxlength="200">
         </div>
-      </div>
-      
-      <!-- Dinamik Aşamalar -->
-      <div style="margin-top:16px;border-top:0.5px solid #222;padding-top:16px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <span style="font-size:13px;font-weight:600;color:#d3d1c7">Aşamalar</span>
-          <button class="btn btn-sm" onclick="gorevAsamaEkle()">
-            <i class="ti ti-plus"></i> Aşama Ekle
+
+        <div class="form-group">
+          <label>Ben ne yapacağım?</label>
+          <textarea id="gf_aciklama" class="form-input" rows="5"
+            placeholder="Görevi sade şekilde anlat. Ne yapacaksın, çıktısı ne olacak, Q-GANG'a ne katkı sağlayacak?" style="resize:vertical;min-height:116px"></textarea>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 150px;gap:12px;align-items:end">
+          <div class="form-group">
+            <label>İstediğim Puan</label>
+            <input id="gf_puan" class="form-input" type="number" min="1" max="500" value="20">
+          </div>
+          <input id="gf_zorluk" type="hidden" value="orta">
+          <button id="gorevTeklifGonderBtn" class="btn btn-warn" style="height:38px;width:100%" onclick="gorevTeklifGonder()">
+            <i class="ti ti-send"></i> Gönder
           </button>
         </div>
-        <div id="gf_asamalar"></div>
+
+        <div style="margin-top:12px;background:#111;border:0.5px solid #282828;border-radius:10px;padding:10px 12px;font-size:11.5px;color:#777;line-height:1.55">
+          <strong style="color:#fac775">Not:</strong> Teklifin yönetim paneline düşer. Kaptan/Vekilharç/Lider puanı düşürebilir, aşamalara bölebilir, deadline ekleyebilir veya senden revize isteyebilir.
+        </div>
       </div>
-      
-      <button class="btn btn-warn" style="width:100%;margin-top:16px" onclick="gorevTeklifGonder()">
-        <i class="ti ti-send"></i> Teklifi Gönder
-      </button>
     </div>
   </div>
 
@@ -10056,10 +10046,14 @@ async function gorevDetayAc(gorevId) {
 
   // Müzakere butonları (yönetici)
   if (g.durum === 'muzakerede' && isMgr) {
-    html += '<div style="padding:12px 16px;border-bottom:0.5px solid #1e1e1e;display:flex;gap:8px;flex-wrap:wrap">';
+    html += '<div style="padding:12px 16px;border-bottom:0.5px solid #1e1e1e">';
+    html += '<div style="background:#111;border:0.5px solid #2a2a2a;border-radius:9px;padding:10px;margin-bottom:10px;font-size:11.5px;color:#888;line-height:1.45">';
+    html += '<strong style="color:#fac775">Yönetici planlaması:</strong> Üye sadece teklif verdi. Puanı onay ekranında düşürebilir/yükseltebilirsin. Tek aşamalı görevlerde aşama puanı otomatik onaylanan puana eşitlenir.';
+    html += '</div>';
+    html += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
     html += '<button class="btn btn-warn" style="flex:1;font-size:12px" onclick="gorevOnaylaModal(\'' + gorevId + '\',\'' + g.istenenPuan + '\')"><i class="ti ti-check"></i> Onayla & Aktif Et</button>';
     html += '<button class="btn btn-sm" style="background:#1a0000;color:#f87171;border:0.5px solid #3a0000;flex:1;font-size:12px" onclick="gorevReddet(\'' + gorevId + '\')"><i class="ti ti-x"></i> Reddet</button>';
-    html += '</div>';
+    html += '</div></div>';
   }
 
   // İptal butonu (sahibi veya yönetici)
@@ -10254,64 +10248,53 @@ function gorevAsamaPuanToplamKontrol(showAlert) {
 }
 
 function gorevTeklifFormInit() {
+  // v2.5.0: Üye formu bilinçli olarak basit tutuldu.
+  // Aşama/deadline/puan dağıtımı yönetici tarafında yapılır.
   var puanInput = document.getElementById('gf_puan');
-  if (puanInput && !puanInput.getAttribute('data-qg-puan-bind')) {
-    puanInput.setAttribute('data-qg-puan-bind', '1');
-    puanInput.addEventListener('input', function() {
-      gorevDagitAsamaPuanlari(true);
+  if (puanInput && !puanInput.getAttribute('data-qg-simple-puan-bind')) {
+    puanInput.setAttribute('data-qg-simple-puan-bind', '1');
+    puanInput.addEventListener('input', function () {
+      var v = Number(puanInput.value) || 0;
+      if (v < 1) puanInput.value = '1';
+      if (v > 500) puanInput.value = '500';
     });
   }
-  gorevAsamaPuanToplamKontrol(false);
 }
 
 // ─────────────────────────────────────
-// Teklif gönder
+// Teklif gönder — v2.5.0 Basit Üye Akışı
 // ─────────────────────────────────────
 async function gorevTeklifGonder() {
   var kategori = document.getElementById('gf_kategori').value;
   var baslik = (document.getElementById('gf_baslik').value || '').trim();
   var aciklama = (document.getElementById('gf_aciklama').value || '').trim();
-  var zorluk = document.getElementById('gf_zorluk').value;
+  var zorlukEl = document.getElementById('gf_zorluk');
+  var zorluk = zorlukEl ? zorlukEl.value : 'orta';
   var puan = Number(document.getElementById('gf_puan').value) || 20;
 
   if (!kategori) { alert('Kategori seçmek zorunlu.'); return; }
-  if (!baslik) { alert('Başlık zorunlu.'); return; }
+  if (!baslik) { alert('Görev başlığı zorunlu.'); return; }
+  if (!aciklama || aciklama.length < 10) { alert('Görevi birkaç cümleyle açıkla.'); return; }
+  if (puan < 1 || puan > 500) { alert('Puan 1 ile 500 arasında olmalı.'); return; }
 
-  // Aşamaları topla
-  var asamalar = [];
-  for (var n = 1; n <= gorevData.asamaSayaci; n++) {
-    var row = document.getElementById('asama_row_' + n);
-    if (!row) continue;
-    var ab = (document.getElementById('a' + n + '_baslik').value || '').trim();
-    if (!ab) { alert('Aşama ' + n + ' başlığı boş bırakılamaz.'); return; }
-    asamalar.push({
-      baslik: ab,
-      aciklama: (document.getElementById('a' + n + '_aciklama').value || '').trim(),
-      deadline: document.getElementById('a' + n + '_deadline').value || '',
-      puan: Number(document.getElementById('a' + n + '_puan').value) || 0,
-    });
-  }
-
-  if (!asamalar.length) { alert('En az 1 aşama eklemelisin.'); return; }
-  if (!gorevAsamaPuanToplamKontrol(true)) { return; }
+  var btn = document.getElementById('gorevTeklifGonderBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2"></i> Gönderiliyor...'; }
 
   var data = await gorevAPI('GOREV_CREATE', {
-    item: { kategori, baslik, aciklama, zorluk, istenenPuan: puan, asamalar },
+    item: { kategori: kategori, baslik: baslik, aciklama: aciklama, zorluk: zorluk, istenenPuan: puan }
   });
 
+  if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> Gönder'; }
+
   if (data.success) {
-    cmsStatusGoster('ok', '<i class="ti ti-check"></i> Görev teklifi gönderildi! Yönetici inceleyecek.');
-    // Formu temizle
+    cmsStatusGoster('ok', '<i class="ti ti-check"></i> Görev teklifin gönderildi! Yönetim inceleyecek.');
     document.getElementById('gf_kategori').value = '';
     document.getElementById('gf_baslik').value = '';
     document.getElementById('gf_aciklama').value = '';
     document.getElementById('gf_puan').value = '20';
-    document.getElementById('gf_asamalar').innerHTML = '';
-    var _po = document.getElementById('gf_puan_ozet'); if (_po) _po.remove();
-    gorevData.asamaSayaci = 0;
-    gorevTeklifFormInit();
-    // Görevlerim sekmesine geç
-    gorevSekmeAc('gBenim', document.querySelector('.gsekme-btn'));
+    try { if (typeof qgClearGorevCachesV231 === 'function') qgClearGorevCachesV231(); } catch (e) {}
+    try { if (typeof qgRenderGorevTeklifUyarisiV231 === 'function') qgRenderGorevTeklifUyarisiV231(); } catch (e) {}
+    gorevSekmeAc('gBenim', document.querySelector('#gorevAltSekmeler .gsekme-btn:nth-child(4)'));
   } else {
     alert('Hata: ' + (data.error || 'Bilinmeyen'));
   }
@@ -12184,178 +12167,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     setTimeout(function(){ try { qgNormalizeDateInputs(document); } catch(e){} }, 500);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot245); else boot245();
-})();
-</script>
-
-
-<script>
-// ═══════════════════════════════════════════════════
-// Q-PANEL v2.4.6 — görev/yetki/puan stabilizasyonu
-// ═══════════════════════════════════════════════════
-(function(){
-  'use strict';
-  window.QPANEL_VERSION = '2.4.6';
-
-  function qgEsc246(v){ return String(v == null ? '' : v).replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]); }); }
-  function qgRol(){ return (window.SESSION && SESSION.rol) || 'Gözlemci'; }
-  function qgIsLider(){ return qgRol() === 'Lider'; }
-  function qgIsVekil(){ return String(qgRol()).indexOf('Vekil') > -1; }
-  function qgCanKategoriYonet(){ return qgIsLider(); }
-  function qgCanButceGor(){ try { return qgIsLider() || (typeof izin === 'function' && izin('butceGor')); } catch(e){ return qgIsLider(); } }
-
-  // #2 Kategori sekmesi yalnızca Lider görsün.
-  function qgApplyCategoryVisibility246(){
-    var btn = document.getElementById('gKatYonetBtn');
-    var tab = document.getElementById('gKatYonet');
-    if (btn) btn.style.display = qgCanKategoriYonet() ? '' : 'none';
-    if (!qgCanKategoriYonet() && tab && tab.style.display !== 'none') {
-      tab.style.display = 'none';
-      try { if (typeof gorevSekmeAc === 'function') gorevSekmeAc('gMuzakere'); } catch(e) {}
-    }
-  }
-
-  // #8 Bütçe görme yetkisi dinamik izinle çalışsın.
-  function qgApplyBudgetVisibility246(){
-    var nb = document.getElementById('navButceDD');
-    if (nb) nb.style.display = qgCanButceGor() ? '' : 'none';
-    var yc = document.getElementById('navYonetimBtn');
-    if (yc) yc.style.display = '';
-  }
-
-  // #7 Puanı arşivden net hesapla: +70 -10 = 60.
-  function qgArchiveNet246(rumuz){
-    try {
-      var arr = Array.isArray(window.puanArsiv) ? window.puanArsiv : (typeof puanArsiv !== 'undefined' && Array.isArray(puanArsiv) ? puanArsiv : []);
-      var has = arr.some(function(x){ return x && x.rumuz === rumuz; });
-      if (!has) return null;
-      return arr.filter(function(x){ return x && x.rumuz === rumuz; }).reduce(function(sum,x){ return sum + (Number(x.miktar)||0); }, 0);
-    } catch(e){ return null; }
-  }
-  function qgSyncLocalMemberPoints246(){
-    try {
-      var list = Array.isArray(window.members) ? window.members : (typeof members !== 'undefined' ? members : []);
-      if (!Array.isArray(list)) return;
-      list.forEach(function(m){
-        var net = qgArchiveNet246(m.rumuz);
-        if (net !== null) m.puan = net;
-      });
-    } catch(e) {}
-  }
-
-  // #4 Arşivde teknik tür adı görünmesin.
-  var _renderPuanArsiv246 = window.renderPuanArsiv;
-  if (typeof _renderPuanArsiv246 === 'function' && !_renderPuanArsiv246.__qg246) {
-    window.renderPuanArsiv = async function(rumuz){
-      var r = await _renderPuanArsiv246.apply(this, arguments);
-      if (Array.isArray(r)) r.forEach(function(x){ if (x && (x.tur === 'gorev_asama' || x.tur === 'görev_asama')) x.tur = 'Görev'; if (x && x.tur === 'görev') x.tur = 'Görev'; });
-      return r;
-    };
-    window.renderPuanArsiv.__qg246 = true;
-  }
-
-  // #5 Revize bildirimi dashboard'a düşsün.
-  async function qgDashboardRevizeUyari246(){
-    var box = document.getElementById('alertsBox');
-    if (!box || typeof gorevAPI !== 'function') return;
-    try {
-      Array.prototype.slice.call(box.querySelectorAll('.qg-revize-alert-246')).forEach(function(x){ x.remove(); });
-      var taskData = await gorevAPI('GOREV_LIST', { item: {} });
-      var tasks = taskData && taskData.success && Array.isArray(taskData.result) ? taskData.result : [];
-      var benim = tasks.filter(function(g){ return g && g.rumuz === (SESSION && SESSION.rumuz) && (g.durum === 'aktif' || g.durum === 'gecikmede'); });
-      var count = 0;
-      for (var i=0;i<benim.length;i++){
-        var sd = await gorevAPI('GOREV_STAGE_LIST', { item: { gorevId: benim[i]._id || benim[i].id } });
-        var st = sd && sd.success && Array.isArray(sd.result) ? sd.result : [];
-        count += st.filter(function(a){ return a && a.durum === 'revize_istendi'; }).length;
-      }
-      if (!count) return;
-      if ((box.textContent || '').trim() === 'Uyarı yok') box.innerHTML = '';
-      var row = document.createElement('div');
-      row.className = 'alert-row alert-danger qg-revize-alert-246';
-      row.style.cursor = 'pointer';
-      row.innerHTML = '<i class="ti ti-refresh-alert"></i> <strong>' + count + ' görev aşaması için revize istendi</strong>';
-      row.onclick = function(){ try { showTabDD('gorev','ddTopluluk','navToplulukBtn'); setTimeout(function(){ gorevSekmeAc('gBenim'); },80); } catch(e){} };
-      box.insertBefore(row, box.firstChild);
-    } catch(e) {}
-  }
-
-  // #6 Org chart'ta “Görev Alanı: -” yazısını temizle.
-  function qgCleanOrg246(){
-    try {
-      var root = document.getElementById('orgChart') || document;
-      root.querySelectorAll('text, .qg-org-chip, .qg-org-meta-line span, div, span').forEach(function(n){
-        var t = (n.textContent || '').trim();
-        if (t === 'Görev Alanı: -' || t === 'Görev Alanı:-' || t === 'Görev Alanı' || t === '-') {
-          n.remove();
-        } else if (/^Görev Alanı:\s*-\s*$/.test(t)) {
-          n.remove();
-        } else if (/^Görev Alanı:\s*/.test(t)) {
-          n.textContent = t.replace(/^Görev Alanı:\s*/, '');
-        }
-      });
-    } catch(e) {}
-  }
-
-  // #3 Yönetim onaylanan puanı değiştirince aşama puanlarını otomatik yeniden dağıt.
-  function qgDagit246(total, n){
-    total = Math.max(0, Math.round(Number(total)||0)); n = Math.max(1, Math.round(Number(n)||1));
-    var base = Math.floor(total/n), rem = total % n, arr=[];
-    for(var i=0;i<n;i++) arr.push(base + (rem-- > 0 ? 1 : 0));
-    return arr;
-  }
-  function qgAutoDistributeVisibleStagePoints246(total){
-    var rows = [];
-    try { if (typeof gorevGetAsamaRows === 'function') rows = gorevGetAsamaRows() || []; } catch(e) {}
-    if (!rows.length) rows = Array.prototype.slice.call(document.querySelectorAll('.asama-form-row'));
-    if (!rows.length) return;
-    var vals = qgDagit246(total, rows.length);
-    rows.forEach(function(row, i){
-      var inp = row.querySelector('.asama-puan, input[name="puan"], input[id*="puan"], input[type="number"]');
-      if (inp) { inp.value = vals[i]; inp.dispatchEvent(new Event('input', { bubbles:true })); }
-    });
-    try { if (typeof gorevAsamaPuanToplamKontrol === 'function') gorevAsamaPuanToplamKontrol(false); } catch(e) {}
-  }
-  document.addEventListener('input', function(ev){
-    var id = ev.target && ev.target.id;
-    if (id && /onaylananPuan|istenenPuan|puan/i.test(id) && (ev.target.closest && ev.target.closest('#gorevDetayOverlay, #gTeklif, #gMuzakereListe'))) {
-      if (/onaylananPuan|gf_puan|istenenPuan/i.test(id)) qgAutoDistributeVisibleStagePoints246(ev.target.value);
-    }
-  }, true);
-
-  // Render wrapperları
-  function qgPostRender246(){
-    qgApplyCategoryVisibility246();
-    qgApplyBudgetVisibility246();
-    qgSyncLocalMemberPoints246();
-    qgCleanOrg246();
-    qgDashboardRevizeUyari246();
-  }
-  ['renderDashboard','renderMembers','renderPuan','renderOrg','renderGorev'].forEach(function(fn){
-    var old = window[fn];
-    if (typeof old === 'function' && !old.__qg246) {
-      var w = function(){ qgSyncLocalMemberPoints246(); var r = old.apply(this, arguments); setTimeout(qgPostRender246, 40); return r; };
-      w.__qg246 = true; window[fn] = w;
-    }
-  });
-  var _showTabDD246 = window.showTabDD;
-  if (typeof _showTabDD246 === 'function' && !_showTabDD246.__qg246) {
-    window.showTabDD = function(name){
-      if (name === 'butce' && !qgCanButceGor()) { alert('Bütçe görüntüleme yetkiniz yok.'); return; }
-      var r = _showTabDD246.apply(this, arguments); setTimeout(qgPostRender246, 60); return r;
-    };
-    window.showTabDD.__qg246 = true;
-  }
-  var _gorevSekmeAc246 = window.gorevSekmeAc;
-  if (typeof _gorevSekmeAc246 === 'function' && !_gorevSekmeAc246.__qg246) {
-    window.gorevSekmeAc = function(id){
-      if (id === 'gKatYonet' && !qgCanKategoriYonet()) { alert('Kategori yönetimi yalnızca Lider yetkisindedir.'); return; }
-      var r = _gorevSekmeAc246.apply(this, arguments); setTimeout(qgPostRender246, 80); return r;
-    };
-    window.gorevSekmeAc.__qg246 = true;
-  }
-
-  function boot246(){ qgPostRender246(); setTimeout(qgPostRender246, 700); setTimeout(qgPostRender246, 1800); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot246); else boot246();
 })();
 </script>
 
