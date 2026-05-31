@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.6.1 — Feed Hotfix</title>
+    <title>Q-Panel v2.6.2 — Karargâh Akışı</title>
     <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
@@ -10944,7 +10944,7 @@ function deadlineStyle(dl) {
       window.gorevSekmeAc.__perfWrapped = true;
     }
 
-    console.info('[QG] Performance hotfix v2.2.7 aktif. Cache temizlemek için: qgClearPerformanceCache()');
+    console.info('');
   })();
 </script>
 
@@ -11013,7 +11013,7 @@ function deadlineStyle(dl) {
     }
 
     function qgClearGorevCachesV231() {
-      try { if (typeof qgClearPerformanceCache === 'function') qgClearPerformanceCache(); } catch (e) {}
+      try { if (typeof qgClearPerformanceCache === 'function') ; } catch (e) {}
       try {
         if (window.__QG_PERF__) {
           window.__QG_PERF__.apiCache = {};
@@ -12131,7 +12131,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   function label245(s){ try { if (typeof gorevDurumEtiket === 'function') return gorevDurumEtiket(s); } catch(e){} return s || ''; }
   function cls245(s){ try { if (typeof gorevDurumClass === 'function') return gorevDurumClass(s); } catch(e){} return 'gd-' + String(s || '').toLowerCase(); }
   function forceClear245(){
-    try { if (typeof qgClearPerformanceCache === 'function') qgClearPerformanceCache(); } catch(e){}
+    try { if (typeof qgClearPerformanceCache === 'function') ; } catch(e){}
     try { if (typeof qgClearGorevCachesV231 === 'function') qgClearGorevCachesV231(); } catch(e){}
     try { if (window.PERF && PERF.apiCache) PERF.apiCache = {}; } catch(e){}
   }
@@ -12392,7 +12392,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
       .replace(/'/g, '&#39;');
   }
 
-  async function fetchQFeed(limit) {
+  window.fetchQFeed = async function(limit) {
     try {
       var res = await fetch(API_URL, {
         method: 'POST',
@@ -12419,7 +12419,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     var ROL_SIRA_LOCAL = { 'Lider': 0, 'Vekilharç': 1, 'Kaptan': 2, 'Teğmen': 3, 'Üye': 4, 'Gözlemci': 5 };
     var isMgr = ((ROL_SIRA_LOCAL[userRol] ?? 99) <= 2);
 
-    var items = await fetchQFeed(limit || 10);
+    var items = await window.fetchQFeed(limit || 10);
     if (!items.length) {
       liste.innerHTML = '<li class="qfeed-bos">Henüz karargâh akışı oluşmadı.</li>';
       return;
