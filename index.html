@@ -9880,7 +9880,7 @@ async function gorevAPI(action, payload) {
       return await apiPost(body);
     }
 
-    var res = await fetch(API_URL, {
+    var res = await secureApiFetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
