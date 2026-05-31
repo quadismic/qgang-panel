@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.6.5 — Karargâh Akışı</title>
-    <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
+    <title>Q-Panel v2.7.0 —  Sezon Sistemi</title>
+
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -1596,6 +1596,43 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
         vertical-align: middle;
         line-height: 1.4;
       }
+
+
+      /* ═══════════════════════════════════════════════════
+         Q-HALL v2.7.0 — Şampiyonlar Salonu
+         ═══════════════════════════════════════════════════ */
+      .qhall-podyum-kart { background:#0a0a0a; border:0.5px solid #2a1f00; border-radius:10px; padding:14px; margin-top:14px; cursor:pointer; transition:border-color .2s; }
+      .qhall-podyum-kart:hover { border-color:#fac775; }
+      .qhall-podyum-baslik { font-size:11px; font-weight:700; letter-spacing:.8px; color:#888780; text-transform:uppercase; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+      .qhall-sezon-adi { font-size:11px; color:#555; margin-bottom:8px; }
+      .qhall-podyum-satir { display:flex; align-items:center; gap:8px; padding:5px 0; border-bottom:0.5px solid #111; font-size:12px; }
+      .qhall-podyum-satir:last-child { border-bottom:none; }
+      .qhall-madalya { font-size:16px; width:22px; text-align:center; flex-shrink:0; }
+      .qhall-rumuz { flex:1; font-weight:600; color:#d3d1c7; }
+      .qhall-puan { color:#fac775; font-weight:700; font-size:12px; }
+      .qhall-goto { font-size:10px; color:#444; text-align:right; margin-top:8px; padding-top:6px; border-top:0.5px solid #111; }
+      .qhall-header { padding:16px 12px 8px; border-bottom:0.5px solid #1e1e1e; }
+      .qhall-header h2 { font-size:18px; font-weight:700; color:#d3d1c7; margin:0 0 4px; }
+      .qhall-header p { font-size:12px; color:#555; margin:0; }
+      .qhall-sezon-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; padding:12px; }
+      .qhall-sezon-kart { background:#0a0a0a; border:0.5px solid #222; border-radius:10px; padding:14px; cursor:pointer; transition:border-color .2s, background .2s; }
+      .qhall-sezon-kart:hover { border-color:#fac775; background:#0f0f0f; }
+      .qhall-sezon-kart-baslik { font-size:14px; font-weight:700; color:#d3d1c7; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+      .qhall-sezon-kart-satir { display:flex; gap:6px; align-items:center; font-size:11px; color:#888780; margin-bottom:4px; }
+      .qhall-sezon-meta { display:flex; gap:10px; margin-top:8px; padding-top:8px; border-top:0.5px solid #1e1e1e; font-size:10px; color:#444; flex-wrap:wrap; }
+      .qhall-detay { padding:12px; }
+      .qhall-detay-baslik { font-size:15px; font-weight:700; color:#d3d1c7; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+      .qhall-detay-geri { font-size:12px; color:#555; cursor:pointer; margin-bottom:12px; display:inline-flex; align-items:center; gap:4px; padding:4px 0; }
+      .qhall-detay-geri:hover { color:#d3d1c7; }
+      .qhall-liderlik-satir { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:0.5px solid #111; }
+      .qhall-liderlik-satir:last-child { border-bottom:none; }
+      .qhall-liderlik-sira { width:22px; font-size:11px; color:#555; text-align:center; flex-shrink:0; }
+      .qhall-liderlik-rumuz { flex:1; font-size:13px; font-weight:600; color:#d3d1c7; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .qhall-liderlik-puan { font-size:12px; font-weight:700; color:#fac775; white-space:nowrap; }
+      .qhall-bar-wrap { width:80px; height:4px; background:#1a1a1a; border-radius:2px; overflow:hidden; margin:0 8px; }
+      .qhall-bar { height:100%; border-radius:2px; background:linear-gradient(90deg,#fac775,#f97316); transition:width .5s ease; }
+      .qhall-detay-meta { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:16px; font-size:11px; color:#555; }
+      .qhall-bos, .qhall-yukluyor { font-size:12px; color:#333; text-align:center; padding:30px 0; }
 
       @media (max-width: 600px) {
         body {
@@ -3429,6 +3466,7 @@ input[type="date"]:required:invalid {
           dashboard: renderDashboard,
           members: renderMembers,
           puan: renderPuan,
+          hall: renderQHall,
           gorev: renderGorev,
           etkinlik: renderEvents,
           butce: renderButce,
@@ -4343,64 +4381,36 @@ input[type="date"]:required:invalid {
       }
 
       async function sezonuKapat() {
-        var sezon = getMevcutSezonAdi();
+        if (!izin('sezonKapat') && (!window.SESSION || SESSION.rol !== 'Lider')) {
+          alert('Bu işlem için Lider yetkisi gerekli.');
+          return;
+        }
+
         confirm2(
-          "Sezonu Kapat",
-          "<strong>" +
-            sezon.ad +
-            "</strong> sezonu kapatılacak. Sıralama arşivlenir.",
+          'Sezonu Kapat',
+          'Mevcut sezon kalıcı olarak kapatılacak ve Şampiyonlar Salonu’na işlenecek. Bu işlem geri alınamaz.',
           async function () {
-            var baslangic = getSezonAyBaslangic();
-            var bitis = new Date().toISOString().split("T")[0];
-            var ar = await secureApiFetch(API_URL, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                action: "PUAN_ARSIV_LIST",
-                token: getToken(),
-                item: {},
-              }),
-            });
-            var arData = await ar.json();
-            var arsiv2 = arData.result || [];
-            var sezonB2 = new Date(baslangic);
-            var filtered2 = arsiv2.filter(function (a) {
-              return a.miktar > 0 && new Date(a.tarih) >= sezonB2;
-            });
-            var sp2 = {};
-            filtered2.forEach(function (a) {
-              sp2[a.rumuz] = (sp2[a.rumuz] || 0) + Number(a.miktar);
-            });
-            var sirali2 = Object.entries(sp2).sort(function (a, b) {
-              return b[1] - a[1];
-            });
-            var sampiyon = sirali2[0] ? sirali2[0][0] : "—";
-            await cmsYaz("AYAR_SET", {
-              anahtar: "sonSezon",
-              deger: JSON.stringify({
-                ad: sezon.ad,
-                baslangic: baslangic,
-                bitis: bitis,
-                sampiyon: sampiyon,
-                sirali: sirali2.slice(0, 10),
-              }),
-            });
-            addLog("Sezon kapatildi", sezon.ad + " — Sampiyon: " + sampiyon);
-            save();
-            var mc = document.getElementById("modalContainer");
-            mc.innerHTML =
-              '<div class="modal-overlay" style="background:rgba(0,0,0,.88)">' +
-              '<div class="modal-box" style="text-align:center;max-width:380px;padding:2.5rem 2rem">' +
-              '<div style="font-size:44px;margin-bottom:12px">🏆</div>' +
-              '<div style="font-family:Vanilla Whale,monospace;font-size:18px;color:#fac775;letter-spacing:1px;margin-bottom:8px">' +
-              sezon.ad +
-              " Bitti!</div>" +
-              '<div style="font-size:13px;color:#888;margin-bottom:16px">Sezon şampiyonu: <strong style="color:#d3d1c7">' +
-              sampiyon +
-              "</strong></div>" +
-              '<button class="btn btn-warn" onclick="closeModal();renderPuan()" style="width:100%">Yeni Sezon Başlasın 🚀</button>' +
-              "</div></div>";
-          },
+            var data = await qhallAPI('SEZON_KAPAT', {});
+            if (!data.success) {
+              alert('Hata: ' + (data.error || 'Sezon kapatılamadı.'));
+              return;
+            }
+
+            var r = data.result || {};
+            var mesaj = (r.sezonAdi || 'Sezon') + ' kapatıldı!\n'
+              + '🥇 Şampiyon: ' + (r.sampiyonRumuz || '—') + ' — ' + (r.sampiyonPuan || 0) + ' puan';
+            if (r.ikinciRumuz) mesaj += '\n🥈 ' + r.ikinciRumuz + ' — ' + (r.ikinciPuan || 0) + ' puan';
+            if (r.ucuncuRumuz) mesaj += '\n🥉 ' + r.ucuncuRumuz + ' — ' + (r.ucuncuPuan || 0) + ' puan';
+            mesaj += '\n\n👥 Toplam katılımcı: ' + (r.toplamKatilimci || 0);
+            alert(mesaj);
+
+            window._qhallSonSezon = r;
+            try { renderQHallPodyum(r); } catch(e) {}
+            try { renderDashboard(); } catch(e) {}
+            try { renderQHall(); } catch(e) {}
+            try { renderQFeed(); } catch(e) {}
+            try { renderPuan(); } catch(e) {}
+          }
         );
       }
 
@@ -6109,6 +6119,12 @@ input[type="date"]:required:invalid {
             </div>
             <div
               class="nav-dd-item"
+              onclick="showTabDD('hall', 'ddTopluluk', 'navToplulukBtn')"
+            >
+              <i class="ti ti-trophy"></i> Şampiyonlar
+            </div>
+            <div
+              class="nav-dd-item"
               onclick="showTabDD('gorev', 'ddTopluluk', 'navToplulukBtn')"
             >
               <i class="ti ti-check"></i> Görevler
@@ -6203,6 +6219,14 @@ input[type="date"]:required:invalid {
             </div>
             <div id="birthdaysBox"></div>
           </div>
+        </div>
+
+
+        <div class="qhall-podyum-kart" id="qhallPodyumKart" onclick="showTabDD('hall','ddTopluluk','navToplulukBtn')" style="display:none">
+          <div class="qhall-podyum-baslik">🏆 Son Sezon Podyumu</div>
+          <div class="qhall-sezon-adi" id="qhallPodyumSezonAdi">—</div>
+          <div id="qhallPodyumRows"></div>
+          <div class="qhall-goto">Şampiyonlar Salonu →</div>
         </div>
 
         <div class="qfeed-kart" id="qfeedKart">
@@ -6714,6 +6738,18 @@ input[type="date"]:required:invalid {
           <div style="font-size: 12px; color: #555">Yükleniyor...</div>
         </div>
       </div>
+
+      <!-- ŞAMPİYONLAR SALONU -->
+      <div id="tab-hall" class="tab">
+        <div class="qhall-header">
+          <h2>🏆 Şampiyonlar Salonu</h2>
+          <p>Q-GANG sezonlarının resmî başarı arşivi.</p>
+        </div>
+        <div id="qhallIcerik">
+          <div class="qhall-yukluyor">Yükleniyor...</div>
+        </div>
+      </div>
+
       <div id="tab-log" class="tab">
         <div
           style="
@@ -10409,27 +10445,12 @@ function gorevAsamaPuanToplamKontrol(showAlert) {
     }
   }
 
-  // v2.6.5: Üye görev teklifi basit akıştır.
-  // Aşama ve deadline planlaması yönetim tarafında yapılır.
-  // Bu nedenle üye formunda aşama yoksa gönder butonu kilitlenmez.
-  if (!rows.length) {
-    if (ozet) {
-      ozet.className = 'qg-puan-ozet qg-puan-ok';
-      ozet.innerHTML = '✓ Basit teklif modu: aşama planlaması yönetim tarafından yapılacak.';
-    }
-
-    var simpleBtn = document.getElementById('gorevTeklifGonderBtn');
-    if (simpleBtn) {
-      simpleBtn.disabled = false;
-      simpleBtn.classList.remove('qg-gonder-disabled');
-    }
-
-    return true;
-  }
-
-  var ok = toplam === hedef;
+  var ok = rows.length > 0 && toplam === hedef;
   if (ozet) {
-    if (ok) {
+    if (!rows.length) {
+      ozet.className = 'qg-puan-ozet qg-puan-warn';
+      ozet.innerHTML = '⚠ En az 1 aşama eklemelisin.';
+    } else if (ok) {
       ozet.className = 'qg-puan-ozet qg-puan-ok';
       ozet.innerHTML = '✓ Aşama puanları toplamı: ' + toplam + ' / ' + hedef;
     } else if (toplam < hedef) {
@@ -10788,7 +10809,6 @@ function deadlineStyle(dl) {
       PERF.inflight = {};
       try { QG_ORG_META_CACHE = { time: 0, data: null }; } catch (e) {}
     }
-    window.qgClearPerformanceCache = clearGorevCaches;
 
     // 1) cmsOku: login/panel açılışında aynı GET'in tekrarını engelle
     if (typeof window.cmsOku === "function" && !window.cmsOku.__perfWrapped) {
@@ -11028,7 +11048,7 @@ function deadlineStyle(dl) {
     }
 
     function qgClearGorevCachesV231() {
-      try { if (typeof qgClearPerformanceCache === 'function') ; } catch (e) {}
+      
       try {
         if (window.__QG_PERF__) {
           window.__QG_PERF__.apiCache = {};
@@ -12146,7 +12166,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   function label245(s){ try { if (typeof gorevDurumEtiket === 'function') return gorevDurumEtiket(s); } catch(e){} return s || ''; }
   function cls245(s){ try { if (typeof gorevDurumClass === 'function') return gorevDurumClass(s); } catch(e){} return 'gd-' + String(s || '').toLowerCase(); }
   function forceClear245(){
-    try { if (typeof qgClearPerformanceCache === 'function') ; } catch(e){}
+    
     try { if (typeof qgClearGorevCachesV231 === 'function') qgClearGorevCachesV231(); } catch(e){}
     try { if (window.PERF && PERF.apiCache) PERF.apiCache = {}; } catch(e){}
   }
@@ -12509,6 +12529,142 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   } else {
     try { window.qfeedBaslat(); } catch(e) {}
   }
+})();
+</script>
+
+
+<script>
+(function(){
+  'use strict';
+
+  window._qhallSezonlar = window._qhallSezonlar || [];
+  window._qhallSeciliId = null;
+  window._qhallSonSezon = window._qhallSonSezon || null;
+
+  window.qhEsc = function qhEsc(s) {
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  };
+
+  window.qhFmtTarih = function qhFmtTarih(iso) {
+    if (!iso) return '—';
+    try {
+      var d = new Date(iso);
+      if (isNaN(d.getTime())) return String(iso).split('T')[0] || '—';
+      return d.toLocaleDateString('tr-TR', { day:'numeric', month:'long', year:'numeric' });
+    } catch(e) { return String(iso).split('T')[0] || '—'; }
+  };
+
+  window.qhallAPI = async function qhallAPI(action, payload) {
+    try {
+      var token = (typeof getToken === 'function') ? getToken() : '';
+      if (!token) return { success:false, error:'Oturum bulunamadı.' };
+      var requester = (typeof secureApiFetch === 'function') ? secureApiFetch : fetch;
+      var res = await requester(API_URL, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify(Object.assign({ action: action, token: token }, payload || {})),
+      });
+      if (!res || res.status === 403) return { success:false, error:'Yetki veya oturum hatası.' };
+      return await res.json();
+    } catch(e) { return { success:false, error:e.message || 'Bilinmeyen hata' }; }
+  };
+
+  window.renderQHallPodyum = function renderQHallPodyum(sonSezon) {
+    var kart = document.getElementById('qhallPodyumKart');
+    var sezonAdiEl = document.getElementById('qhallPodyumSezonAdi');
+    var rowsEl = document.getElementById('qhallPodyumRows');
+    if (!kart || !sezonAdiEl || !rowsEl) return;
+    if (!sonSezon || !sonSezon.sampiyonRumuz) { kart.style.display = 'none'; return; }
+
+    kart.style.display = '';
+    sezonAdiEl.textContent = sonSezon.sezonAdi || '';
+    var podyum = [
+      { mal:'🥇', rumuz:sonSezon.sampiyonRumuz, puan:sonSezon.sampiyonPuan },
+      { mal:'🥈', rumuz:sonSezon.ikinciRumuz, puan:sonSezon.ikinciPuan },
+      { mal:'🥉', rumuz:sonSezon.ucuncuRumuz, puan:sonSezon.ucuncuPuan },
+    ].filter(function(p){ return !!p.rumuz; });
+
+    rowsEl.innerHTML = podyum.map(function(p){
+      return '<div class="qhall-podyum-satir">'
+        + '<span class="qhall-madalya">' + p.mal + '</span>'
+        + '<span class="qhall-rumuz">' + qhEsc(p.rumuz) + '</span>'
+        + '<span class="qhall-puan">' + (Number(p.puan) || 0) + ' P</span>'
+        + '</div>';
+    }).join('');
+  };
+
+  window.renderQHall = async function renderQHall() {
+    var el = document.getElementById('qhallIcerik');
+    if (!el) return;
+    el.innerHTML = '<div class="qhall-yukluyor">Yükleniyor...</div>';
+    var data = await qhallAPI('SEZON_LIST', { item:{ limit:20 } });
+    if (!data.success || !Array.isArray(data.result)) { el.innerHTML = '<div class="qhall-bos">Sezon verisi alınamadı.</div>'; return; }
+    window._qhallSezonlar = data.result;
+    if (!window._qhallSezonlar.length) { el.innerHTML = '<div class="qhall-bos">Henüz tamamlanmış sezon bulunmuyor.</div>'; return; }
+
+    el.innerHTML = '<div class="qhall-sezon-grid">' + window._qhallSezonlar.map(function(s){
+      return '<div class="qhall-sezon-kart" onclick="qhallDetayAc(\'' + qhEsc(s.id) + '\')">'
+        + '<div class="qhall-sezon-kart-baslik">🏆 ' + qhEsc(s.sezonAdi) + '</div>'
+        + '<div class="qhall-sezon-kart-satir">🥇 <strong>' + qhEsc(s.sampiyonRumuz) + '</strong> — ' + (s.sampiyonPuan || 0) + ' P</div>'
+        + (s.ikinciRumuz ? '<div class="qhall-sezon-kart-satir">🥈 ' + qhEsc(s.ikinciRumuz) + ' — ' + (s.ikinciPuan || 0) + ' P</div>' : '')
+        + (s.ucuncuRumuz ? '<div class="qhall-sezon-kart-satir">🥉 ' + qhEsc(s.ucuncuRumuz) + ' — ' + (s.ucuncuPuan || 0) + ' P</div>' : '')
+        + '<div class="qhall-sezon-meta"><span>👥 ' + (s.toplamKatilimci || 0) + ' katılımcı</span><span>📅 ' + qhEsc(s.kapanisTarihi ? String(s.kapanisTarihi).split('T')[0] : '—') + '</span></div>'
+        + '</div>';
+    }).join('') + '</div>';
+  };
+
+  window.qhallDetayAc = async function qhallDetayAc(sezonId) {
+    var el = document.getElementById('qhallIcerik');
+    if (!el) return;
+    el.innerHTML = '<div class="qhall-yukluyor">Detay yükleniyor...</div>';
+    var data = await qhallAPI('SEZON_GET', { id: sezonId });
+    if (!data.success || !data.result) {
+      el.innerHTML = '<div class="qhall-bos">Sezon bilgisi alınamadı.</div><div style="text-align:center;padding:10px"><button class="btn btn-sm" onclick="renderQHall()">← Geri</button></div>';
+      return;
+    }
+    var s = data.result;
+    var liderlik = Array.isArray(s.liderlikTablosu) ? s.liderlikTablosu : [];
+    var maxPuan = liderlik.length ? (Number(liderlik[0].puan) || 1) : 1;
+    var html = '<div class="qhall-detay"><div class="qhall-detay-geri" onclick="renderQHall()">← Tüm Sezonlar</div>';
+    html += '<div class="qhall-detay-baslik">🏆 ' + qhEsc(s.sezonAdi) + '</div>';
+    html += '<div class="qhall-detay-meta"><span>📅 Kapanış: ' + qhEsc(s.kapanisTarihi ? String(s.kapanisTarihi).split('T')[0] : '—') + '</span><span>👥 ' + (s.toplamKatilimci || 0) + ' katılımcı</span><span>🏅 Toplam: ' + (s.toplamPuan || 0) + ' puan</span></div>';
+    if (!liderlik.length) {
+      html += '<div class="qhall-bos">Liderlik tablosu verisi bulunamadı.</div>';
+    } else {
+      html += '<div style="background:#0a0a0a;border:0.5px solid #1e1e1e;border-radius:8px;padding:12px">';
+      html += liderlik.map(function(k){
+        var puan = Number(k.puan) || 0;
+        var yuzde = maxPuan > 0 ? Math.round((puan / maxPuan) * 100) : 0;
+        var madalya = k.sira === 1 ? '🥇' : k.sira === 2 ? '🥈' : k.sira === 3 ? '🥉' : '';
+        return '<div class="qhall-liderlik-satir"><div class="qhall-liderlik-sira">' + (madalya || k.sira) + '</div><div class="qhall-liderlik-rumuz">' + qhEsc(k.rumuz) + '</div><div class="qhall-bar-wrap"><div class="qhall-bar" style="width:' + yuzde + '%"></div></div><div class="qhall-liderlik-puan">' + puan + ' P</div></div>';
+      }).join('');
+      html += '</div>';
+    }
+    if (s.kapatanRumuz) html += '<div style="font-size:10px;color:#333;margin-top:12px">Kapatan: ' + qhEsc(s.kapatanRumuz) + '</div>';
+    html += '</div>';
+    el.innerHTML = html;
+  };
+
+  if (typeof window.cmsOku === 'function' && !window.cmsOku.__qhallWrapped) {
+    var _qhallCmsOku = window.cmsOku;
+    window.cmsOku = async function cmsOkuQHallWrap() {
+      var data = await _qhallCmsOku.apply(this, arguments);
+      if (data && data.sonSezon) {
+        window._qhallSonSezon = data.sonSezon;
+        try { renderQHallPodyum(data.sonSezon); } catch(e) {}
+      }
+      return data;
+    };
+    window.cmsOku.__qhallWrapped = true;
+  }
+
+  var _qhallRenderDashboard = window.renderDashboard;
+  window.renderDashboard = function renderDashboardQHall270() {
+    var r = _qhallRenderDashboard ? _qhallRenderDashboard.apply(this, arguments) : undefined;
+    try { renderQHallPodyum(window._qhallSonSezon); } catch(e) {}
+    return r;
+  };
 })();
 </script>
 
