@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.6.3 — Karargâh Akışı</title>
+    <title>Q-Panel v2.6.4 — Karargâh Akışı</title>
     <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
@@ -12445,33 +12445,66 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
   var _qfeedInterval = null;
   window.qfeedBaslat = function qfeedBaslat() {
-    try { window.renderQFeed(); } catch(e) {}
-    if (_qfeedInterval) {
-      clearInterval(_qfeedInterval);
-      _qfeedInterval = null;
-    }
-    _qfeedInterval = setInterval(function() {
-      var dashTab = document.getElementById('tab-dashboard');
-      if (dashTab && dashTab.classList.contains('active')) {
-        try { window.renderQFeed(); } catch(e) {}
-      }
-    }, 60000);
-  };
-
-  var _renderDashboardQFeed260 = window.renderDashboard;
-  window.renderDashboard = function renderDashboardV260(){
-    var r = _renderDashboardQFeed260 ? _renderDashboardQFeed260.apply(this, arguments) : undefined;
-    try { window.qfeedBaslat(); } catch(e) {}
-    return r;
-  };
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function(){ try { window.qfeedBaslat(); } catch(e) {} });
-  } else {
-    try { window.qfeedBaslat(); } catch(e) {}
+  // Token yokken QFeed'i hiç başlatma. Login tamamlanınca renderDashboard/panelAc tekrar çağırır.
+  if (typeof getToken === 'function' && !getToken()) {
+    return;
   }
+
+  renderQFeed();
+
+  if (_qfeedInterval) {
+    clearInterval(_qfeedInterval);
+    _qfeedInterval = null;
+  }
+
+  _qfeedInterval = setInterval(function() {
+    var dashTab = document.getElementById('tab-dashboard');
+    var hasToken = (typeof getToken === 'function') ? !!getToken() : false;
+
+    if (dashTab && dashTab.classList.contains('active') && hasToken) {
+      renderQFeed();
+    }
+  }, 60000);
 })();
 </script>
 
+<script>
+window.fetchQFeed = async function(limit) {
+  try {
+    var token = (typeof getToken === 'function') ? getToken() : '';
+
+    // Token yoksa backend'e hiç istek atma. Böylece 403 spamı oluşmaz.
+    if (!token) {
+      return [];
+    }
+
+    var requester = (typeof secureApiFetch === 'function') ? secureApiFetch : fetch;
+
+    var res = await requester(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'FEED_LIST',
+        token: token,
+        item: { limit: limit || 10 },
+      }),
+    });
+
+    // Oturum/izin kaynaklı 403 varsa console'u kirletmeden boş dön.
+    if (!res || res.status === 403) {
+      return [];
+    }
+
+    var data = await res.json();
+    if (data && data.success && Array.isArray(data.result)) {
+      return data.result;
+    }
+
+    return [];
+  } catch (e) {
+    return [];
+  }
+};
+</script>
 </body>
 </html>
