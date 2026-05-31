@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.7.2 — Karargâh Akışı</title>
+    <title>Q-Panel v2.7.3 — Fetch Control</title>
     <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
@@ -1599,7 +1599,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
 
       /* ═══════════════════════════════════════════════════
-         Q-HALL v2.7.2 — Şampiyonlar Salonu
+         Q-HALL v2.7.3 — Şampiyonlar Salonu
          ═══════════════════════════════════════════════════ */
       .qhall-podyum-kart { background:#0a0a0a; border:0.5px solid #2a1f00; border-radius:10px; padding:14px; margin-top:14px; cursor:pointer; transition:border-color .2s; }
       .qhall-podyum-kart:hover { border-color:#fac775; }
@@ -2108,7 +2108,7 @@ input[type="date"]:required:invalid {
 
     
 /* ═══════════════════════════════════════════════════
-   Q-HALL v2.7.2 — UI Polish
+   Q-HALL v2.7.3 — UI Polish
    ═══════════════════════════════════════════════════ */
 .qhall-header {
   padding: 22px 20px 14px !important;
@@ -12678,10 +12678,26 @@ input[type="date"]::-webkit-calendar-picker-indicator {
       body: JSON.stringify(Object.assign({ action: action, token: token }, payload || {})),
     });
 
-    if (!res || res.status === 403) return { success: false, error: 'Oturum geçersiz veya yetki yok.' };
-    return await res.json();
+    if (!res) return { success: false, error: 'Sunucudan cevap alınamadı.' };
+
+    var raw = '';
+    try { raw = await res.text(); } catch(e) { raw = ''; }
+
+    var data = {};
+    try { data = raw ? JSON.parse(raw) : {}; }
+    catch(e) { data = { success: false, error: raw || 'Geçersiz sunucu cevabı.' }; }
+
+    if (res.status === 403) {
+      return { success: false, error: (data && data.error) || 'Oturum geçersiz veya yetki yok.' };
+    }
+
+    if (!res.ok) {
+      return { success: false, error: (data && data.error) || ('HTTP ' + res.status) };
+    }
+
+    return data;
   } catch(e) {
-    return { success: false, error: e.message };
+    return { success: false, error: e && e.message ? e.message : 'Bilinmeyen hata' };
   }
 }
 
@@ -12715,7 +12731,7 @@ async function renderAktifSezonPuanlari() {
   if (!holder) return;
 
   var data = await qhallAPI('AKTIF_SEZON_GET', {});
-  if (!data.success || !data.result) {
+  if (!data || !data.success || !data.result) {
     holder.innerHTML = '';
     return;
   }
@@ -12745,24 +12761,47 @@ async function renderAktifSezonPuanlari() {
 }
 
 async function renderQHall() {
-    var el = document.getElementById('qhallIcerik');
-    if (!el) return;
-    el.innerHTML = '<div class="qhall-yukluyor">Yükleniyor...</div>';
-    var data = await qhallAPI('SEZON_LIST', { item:{ limit:20 } });
-    if (!data.success || !Array.isArray(data.result)) { el.innerHTML = '<div class="qhall-bos">Sezon verisi alınamadı.</div>'; return; }
-    window._qhallSezonlar = data.result;
-    if (!window._qhallSezonlar.length) { el.innerHTML = '<div class="qhall-bos">Henüz tamamlanmış sezon bulunmuyor.</div>'; return; }
+  var el = document.getElementById('qhallIcerik');
+  if (!el) return;
 
-    el.innerHTML = '<div class="qhall-sezon-grid">' + window._qhallSezonlar.map(function(s){
-      return '<div class="qhall-sezon-kart" onclick="qhallDetayAc(\'' + qhEsc(s.id) + '\')">'
-        + '<div class="qhall-sezon-kart-baslik">🏆 ' + qhEsc(s.sezonAdi) + '</div>'
-        + '<div class="qhall-sezon-kart-satir">🥇 <strong>' + qhEsc(s.sampiyonRumuz) + '</strong> — ' + (s.sampiyonPuan || 0) + ' P</div>'
-        + (s.ikinciRumuz ? '<div class="qhall-sezon-kart-satir">🥈 ' + qhEsc(s.ikinciRumuz) + ' — ' + (s.ikinciPuan || 0) + ' P</div>' : '')
-        + (s.ucuncuRumuz ? '<div class="qhall-sezon-kart-satir">🥉 ' + qhEsc(s.ucuncuRumuz) + ' — ' + (s.ucuncuPuan || 0) + ' P</div>' : '')
-        + '<div class="qhall-sezon-meta"><span>👥 ' + (s.toplamKatilimci || 0) + ' katılımcı</span><span>📅 ' + qhEsc(s.kapanisTarihi ? String(s.kapanisTarihi).split('T')[0] : '—') + '</span></div>'
-        + '</div>';
-    }).join('') + '</div>';
-  };
+  try { renderAktifSezonPuanlari(); } catch(e) {}
+
+  el.innerHTML = '<div class="qhall-yukluyor">Yükleniyor...</div>';
+
+  var data = await qhallAPI('SEZON_LIST', { item: { limit: 20 } });
+
+  if (!data || !data.success || !Array.isArray(data.result)) {
+    var msg = (data && data.error) ? data.error : 'Sezon verisi alınamadı.';
+    el.innerHTML = '<div class="qhall-bos">Sezon verisi alınamadı.<br><span style="font-size:10px;color:#555">'
+      + qhEsc(msg)
+      + '</span></div>';
+    return;
+  }
+
+  _qhallSezonlar = data.result;
+  _qhallSeciliId = null;
+
+  if (!_qhallSezonlar.length) {
+    el.innerHTML = '<div class="qhall-bos">Henüz tamamlanmış sezon bulunmuyor.</div>';
+    return;
+  }
+
+  var gridHtml = '<div class="qhall-sezon-grid">'
+    + _qhallSezonlar.map(function(s) {
+        return '<div class="qhall-sezon-kart" onclick="qhallDetayAc(\'' + qhEsc(s.id) + '\')">'
+          + '<div class="qhall-sezon-kart-baslik">🏆 ' + qhEsc(s.sezonAdi || '') + '</div>'
+          + '<div class="qhall-sezon-kart-satir">🥇 <strong>' + qhEsc(s.sampiyonRumuz || '') + '</strong> — ' + (s.sampiyonPuan || 0) + ' P</div>'
+          + (s.ikinciRumuz ? '<div class="qhall-sezon-kart-satir">🥈 ' + qhEsc(s.ikinciRumuz) + ' — ' + (s.ikinciPuan || 0) + ' P</div>' : '')
+          + (s.ucuncuRumuz ? '<div class="qhall-sezon-kart-satir">🥉 ' + qhEsc(s.ucuncuRumuz) + ' — ' + (s.ucuncuPuan || 0) + ' P</div>' : '')
+          + '<div class="qhall-sezon-meta">'
+          + '<span>👥 ' + (s.toplamKatilimci || 0) + ' katılımcı</span>'
+          + '<span>📅 ' + qhEsc(s.kapanisTarihi ? String(s.kapanisTarihi).split('T')[0] : '—') + '</span>'
+          + '</div></div>';
+      }).join('')
+    + '</div>';
+
+  el.innerHTML = gridHtml;
+}
 
   window.qhallDetayAc = async function qhallDetayAc(sezonId) {
     var el = document.getElementById('qhallIcerik');
