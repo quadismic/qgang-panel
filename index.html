@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.7.5 — Fetch Control</title>
+    <title>Q-Panel v2.7.6 — Karargâh Akışı</title>
     <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
@@ -1599,7 +1599,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
 
       /* ═══════════════════════════════════════════════════
-         Q-HALL v2.7.4 — Şampiyonlar Salonu
+         Q-HALL v2.7.6 — Şampiyonlar Salonu
          ═══════════════════════════════════════════════════ */
       .qhall-podyum-kart { background:#0a0a0a; border:0.5px solid #2a1f00; border-radius:10px; padding:14px; margin-top:14px; cursor:pointer; transition:border-color .2s; }
       .qhall-podyum-kart:hover { border-color:#fac775; }
@@ -2108,7 +2108,7 @@ input[type="date"]:required:invalid {
 
     
 /* ═══════════════════════════════════════════════════
-   Q-HALL v2.7.4 — UI Polish
+   Q-HALL v2.7.6 — UI Polish
    ═══════════════════════════════════════════════════ */
 .qhall-header {
   padding: 22px 20px 14px !important;
@@ -2470,7 +2470,8 @@ input[type="date"]:required:invalid {
                 "gorevArsivGor": 0
         }
 };
-      var aktifIzinler = JSON.parse(JSON.stringify(DEFAULT_IZINLER)); // QAyarlar/CMS'den gelen izinler burada tutulur
+      var aktifIzinler = JSON.parse(JSON.stringify(DEFAULT_IZINLER)); // Lider/Vekilharç için tam izin matrisi
+      var myPermissions = {}; // Alt roller için sadece kendi efektif izinleri
 
       function deepCloneIzinler(obj) {
         return JSON.parse(JSON.stringify(obj || {}));
@@ -2504,7 +2505,21 @@ input[type="date"]:required:invalid {
         return aktifIzinler;
       }
 
-      async function cikisYap() {
+      function applyMyPermissionsFromCMS(perms) {
+        myPermissions = perms || {};
+        window.myPermissions = myPermissions;
+        return myPermissions;
+      }
+
+
+      
+      function syncPermissionsFromResponse(res) {
+        if (!res) return;
+        if (res.izinler) applyIzinlerFromCMS(res.izinler || {});
+        if (res.myPermissions) applyMyPermissionsFromCMS(res.myPermissions || {});
+      }
+
+async function cikisYap() {
         oturumKapat();
         // Oturum token'ını backend'e iptal isteği gönder
         try {
@@ -2538,6 +2553,12 @@ input[type="date"]:required:invalid {
       function izin(key) {
         const rol = SESSION.rol || "Gözlemci";
         if (rol === "Lider") return true;
+
+        // v2.7.6: Alt roller tam matrisi değil, sadece kendi efektif izinlerini kullanır.
+        if (myPermissions && Object.prototype.hasOwnProperty.call(myPermissions, key)) {
+          return !!myPermissions[key];
+        }
+
         const rolN = normalizeRolAd(rol);
         if (aktifIzinler) {
           for (const k in aktifIzinler) {
@@ -2547,7 +2568,29 @@ input[type="date"]:required:invalid {
           }
         }
         return false;
-      }// ═══════════════════════════════════════════════════
+      }
+
+      // v2.7.6 Permission Sync Hotfix
+      window.qgPermissionDebug = function () {
+        try {
+          return {
+            rol: SESSION && SESSION.rol,
+            fullMatrixVisible: !!(aktifIzinler && Object.keys(aktifIzinler || {}).length),
+            myPermissions: myPermissions,
+            butceGor: izin("butceGor"),
+            butceDuzenle: izin("butceDuzenle"),
+            logGor: izin("logGor"),
+            basvuruGor: izin("basvuruGor")
+          };
+        } catch (e) {
+          return { error: e && e.message };
+        }
+      };
+        } catch (e) {
+          return { error: e && e.message };
+        }
+      };
+// ═══════════════════════════════════════════════════
       // MODULE 03 — API BRIDGE
       // ═══════════════════════════════════════════════════
 
@@ -2985,7 +3028,8 @@ input[type="date"]:required:invalid {
             if (veri.tuzuk) tuzuk = veri.tuzuk;
             // İzinleri yükle - aktifIzinler CMS değerlerine göre güncellenir
             if (veri.izinler && Object.keys(veri.izinler).length) {
-              applyIzinlerFromCMS(veri.izinler);
+              applyIzinlerFromCMS(veri.izinler || {});
+              applyMyPermissionsFromCMS(veri.myPermissions || {});
             }
             cmsStatusGoster("ok", '<i class="ti ti-check"></i> Hazır');
           }
@@ -9415,10 +9459,16 @@ input[type="date"]:required:invalid {
 
       function uiAyarla() {
         var lider = SESSION.rol === "Lider";
-        function showIfIzin(id, key) {
+
+        function setVisible(id, visible) {
           var el = document.getElementById(id);
-          if (el && (izin(key) || lider)) el.style.display = "";
+          if (el) el.style.display = visible ? "" : "none";
         }
+
+        function showIfIzin(id, key) {
+          setVisible(id, !!(izin(key) || lider));
+        }
+
         showIfIzin("btnUyeEkle", "uyeEkle");
         showIfIzin("btnButceEkle", "butceDuzenle");
         showIfIzin("btnEtkinlikEkle", "etkinlikEkle");
@@ -9428,25 +9478,18 @@ input[type="date"]:required:invalid {
         showIfIzin("btnDisiplinEkle", "disiplinUygula");
         showIfIzin("btnDavetEkle", "kodUret");
 
-        if (!izin("butceGor") && !lider) {
-          var nb = document.getElementById("navButceDD");
-          if (nb) nb.style.display = "none";
-        }
-        if (!izin("logGor") && !lider) {
-          var nl = document.getElementById("navLog");
-          if (nl) nl.style.display = "none";
+        // v2.7.6: Erişim Yönetimi tikleri UI ile senkron.
+        // Bir tik sonradan açıldıysa önceden gizlenen menü tekrar görünür.
+        setVisible("navButceDD", !!(izin("butceGor") || lider));
+        setVisible("navLog", !!(izin("logGor") || lider));
+
+        var navBasvuru = document.getElementById("navBasvuruDD");
+        if (navBasvuru) {
+          setVisible("navBasvuruDD", !!(izin("basvuruGor") || lider));
+          if (izin("basvuruGor") || lider) basvuruSayisiniGuncelle();
         }
 
-        var rolN2 = SESSION.rol || "";
-        if (lider || rolN2.includes("Vekil")) {
-          var navBasvuru = document.getElementById("navBasvuruDD");
-          if (navBasvuru) navBasvuru.style.display = "";
-          basvuruSayisiniGuncelle();
-        }
-        if (lider) {
-          var navEr = document.getElementById("navErisimDD");
-          if (navEr) navEr.style.display = "";
-        }
+        setVisible("navErisimDD", !!lider);
       }
 
       function renderTuzuk() {
@@ -9919,6 +9962,7 @@ input[type="date"]:required:invalid {
               body: JSON.stringify({ action: "IZIN_OKU", token: getToken() }),
             });
             var data = await res.json();
+            syncPermissionsFromResponse(data);
             if (data.result) {
               applyIzinlerFromCMS(data.result);
               ROLLER_LISTE.forEach(function (r) {
