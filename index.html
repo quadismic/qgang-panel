@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.7.7 — Karargâh Akışı</title>
+    <title>Q-Panel v2.7.8 — Karargâh Akışı</title>
     <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
@@ -1599,7 +1599,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
 
       /* ═══════════════════════════════════════════════════
-         Q-HALL v2.7.7 — Şampiyonlar Salonu
+         Q-HALL v2.7.8 — Şampiyonlar Salonu
          ═══════════════════════════════════════════════════ */
       .qhall-podyum-kart { background:#0a0a0a; border:0.5px solid #2a1f00; border-radius:10px; padding:14px; margin-top:14px; cursor:pointer; transition:border-color .2s; }
       .qhall-podyum-kart:hover { border-color:#fac775; }
@@ -2108,7 +2108,7 @@ input[type="date"]:required:invalid {
 
     
 /* ═══════════════════════════════════════════════════
-   Q-HALL v2.7.7 — UI Polish
+   Q-HALL v2.7.8 — UI Polish
    ═══════════════════════════════════════════════════ */
 .qhall-header {
   padding: 22px 20px 14px !important;
@@ -2507,7 +2507,7 @@ input[type="date"]:required:invalid {
       function syncPermissionsFromResponse(res) {
         if (!res) return;
         if (res.izinler) applyIzinlerFromCMS(res.izinler || {});
-        if (res.myPermissions) applyMyPermissionsFromCMS(res.myPermissions || {});
+        if (res.myPermissions) window.applyMyPermissionsFromCMS(res.myPermissions || {});
       }
 
       function izin(key) {
@@ -2944,7 +2944,22 @@ input[type="date"]:required:invalid {
           .join("");
       }
 
-      async function panelAc(rumuz, rol) {
+      
+      // v2.7.8 Permission helper fallback
+      if (typeof window.myPermissions === "undefined") window.myPermissions = {};
+      var myPermissions = window.myPermissions || {};
+
+      function applyMyPermissionsFromCMS(perms) {
+        myPermissions = perms || {};
+        window.myPermissions = myPermissions;
+        return myPermissions;
+      }
+
+      if (typeof window.applyMyPermissionsFromCMS === "undefined") {
+        window.applyMyPermissionsFromCMS = applyMyPermissionsFromCMS;
+      }
+
+async function panelAc(rumuz, rol) {
         document.getElementById("authScreen").style.display = "none";
         document.getElementById("mainPanel").style.display = "block";
         const rolClass = {
@@ -3015,7 +3030,7 @@ input[type="date"]:required:invalid {
             // İzinleri yükle - aktifIzinler CMS değerlerine göre güncellenir
             if (veri.izinler && Object.keys(veri.izinler).length) {
               applyIzinlerFromCMS(veri.izinler || {});
-              applyMyPermissionsFromCMS(veri.myPermissions || {});
+              window.applyMyPermissionsFromCMS(veri.myPermissions || {});
             }
             cmsStatusGoster("ok", '<i class="ti ti-check"></i> Hazır');
           }
@@ -9464,7 +9479,7 @@ input[type="date"]:required:invalid {
         showIfIzin("btnDisiplinEkle", "disiplinUygula");
         showIfIzin("btnDavetEkle", "kodUret");
 
-        // v2.7.7: Erişim Yönetimi tikleri UI ile senkron.
+        // v2.7.8: Erişim Yönetimi tikleri UI ile senkron.
         // Bir tik sonradan açıldıysa önceden gizlenen menü tekrar görünür.
         setVisible("navButceDD", !!(izin("butceGor") || lider));
         setVisible("navLog", !!(izin("logGor") || lider));
