@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.7.3 — Fetch Control</title>
-    <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
+    <title>Q-Panel v2.7.4 — Fetch Control</title>
+
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -12763,8 +12763,6 @@ async function renderAktifSezonPuanlari() {
 async function renderQHall() {
   var el = document.getElementById('qhallIcerik');
   if (!el) return;
-
-  try { renderAktifSezonPuanlari(); } catch(e) {}
 
   el.innerHTML = '<div class="qhall-yukluyor">Yükleniyor...</div>';
 
