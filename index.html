@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.5.1 — Görevler Tek Ekran UI</title>
+    <title>Q-Panel v2.6.0 — Karargâh Akışı</title>
     <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
@@ -1500,6 +1500,102 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
 }
 input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+
+
+      /* ═══════════════════════════════════════════════════
+         Q-FEED v2.6.0 — Karargâh Akışı
+         ═══════════════════════════════════════════════════ */
+      .qfeed-kart {
+        background: #0a0a0a;
+        border: 0.5px solid #1e1e1e;
+        border-radius: 10px;
+        padding: 14px 14px 8px;
+        margin-top: 14px;
+      }
+      .qfeed-kart-baslik {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .8px;
+        color: #888780;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .qfeed-yenile-btn {
+        margin-left: auto;
+        cursor: pointer;
+        color: #444;
+        font-size: 14px;
+        font-weight: 400;
+        background: none;
+        border: none;
+        padding: 0;
+        line-height: 1;
+        transition: color .2s;
+      }
+      .qfeed-yenile-btn:hover { color: #888780; }
+      .qfeed-liste { list-style: none; margin: 0; padding: 0; }
+      .qfeed-satir {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 0.5px solid #111;
+      }
+      .qfeed-satir:last-child { border-bottom: none; }
+      .qfeed-icon {
+        width: 24px;
+        text-align: center;
+        flex-shrink: 0;
+        font-size: 16px;
+        line-height: 1.4;
+      }
+      .qfeed-icerik { flex: 1; min-width: 0; }
+      .qfeed-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #d3d1c7;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 1px;
+      }
+      .qfeed-desc {
+        font-size: 11px;
+        color: #555;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .qfeed-zaman {
+        font-size: 10px;
+        color: #333;
+        flex-shrink: 0;
+        white-space: nowrap;
+        align-self: flex-start;
+        padding-top: 2px;
+      }
+      .qfeed-bos {
+        font-size: 12px;
+        color: #333;
+        text-align: center;
+        padding: 16px 0 10px;
+      }
+      .qfeed-mgmt-tag {
+        display: inline-block;
+        font-size: 9px;
+        background: #1a1200;
+        color: #fac775;
+        border: 0.5px solid #3a2800;
+        border-radius: 3px;
+        padding: 1px 4px;
+        margin-left: 5px;
+        vertical-align: middle;
+        line-height: 1.4;
+      }
 
       @media (max-width: 600px) {
         body {
@@ -6107,6 +6203,16 @@ input[type="date"]:required:invalid {
             </div>
             <div id="birthdaysBox"></div>
           </div>
+        </div>
+
+        <div class="qfeed-kart" id="qfeedKart">
+          <div class="qfeed-kart-baslik">
+            ⚔️ Karargâh Akışı
+            <button class="qfeed-yenile-btn" onclick="renderQFeed()" title="Yenile" aria-label="Feed'i yenile">↻</button>
+          </div>
+          <ul class="qfeed-liste" id="qfeedListe">
+            <li class="qfeed-bos">Yükleniyor...</li>
+          </ul>
         </div>
         <div id="dashButce" style="display: none"></div>
         <div id="rutbeChart" style="display: none"></div>
@@ -12253,6 +12359,117 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     setTimeout(function(){ try { qgNormalizeDateInputs(document); } catch(e){} }, 500);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot245); else boot245();
+})();
+</script>
+
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// Q-FEED v2.6.0 — Karargâh Akışı Frontend
+// ═══════════════════════════════════════════════════════════════════
+(function(){
+  function qfeedZamanFark(isoStr) {
+    if (!isoStr) return '';
+    var then = new Date(isoStr).getTime();
+    if (isNaN(then)) return '';
+    var diff = Math.floor((Date.now() - then) / 1000);
+    if (diff < 60) return 'az önce';
+    if (diff < 3600) return Math.floor(diff / 60) + ' dk önce';
+    if (diff < 86400) return Math.floor(diff / 3600) + ' saat önce';
+    if (diff < 172800) return 'dün';
+    if (diff < 604800) return Math.floor(diff / 86400) + ' gün önce';
+    if (diff < 2592000) return Math.floor(diff / 604800) + ' hafta önce';
+    return Math.floor(diff / 2592000) + ' ay önce';
+  }
+
+  function qfEsc(s) {
+    if (s === null || s === undefined) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  async function fetchQFeed(limit) {
+    try {
+      var res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'FEED_LIST',
+          token: getToken(),
+          item: { limit: limit || 10 },
+        }),
+      });
+      var data = await res.json();
+      if (data && data.success && Array.isArray(data.result)) return data.result;
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  window.renderQFeed = async function renderQFeed(limit) {
+    var liste = document.getElementById('qfeedListe');
+    if (!liste) return;
+
+    var userRol = (window.SESSION && SESSION.rol) || 'Gözlemci';
+    var ROL_SIRA_LOCAL = { 'Lider': 0, 'Vekilharç': 1, 'Kaptan': 2, 'Teğmen': 3, 'Üye': 4, 'Gözlemci': 5 };
+    var isMgr = ((ROL_SIRA_LOCAL[userRol] ?? 99) <= 2);
+
+    var items = await fetchQFeed(limit || 10);
+    if (!items.length) {
+      liste.innerHTML = '<li class="qfeed-bos">Henüz karargâh akışı oluşmadı.</li>';
+      return;
+    }
+
+    liste.innerHTML = items.map(function(f) {
+      var iconStr = qfEsc(f.icon || '⚔️');
+      var titleStr = qfEsc(f.title || '');
+      var descStr = f.description ? qfEsc(f.description) : '';
+      var zamanStr = qfEsc(qfeedZamanFark(f.createdAt));
+      var mgmtTag = (f.visibility === 'MANAGEMENT' && isMgr) ? '<span class="qfeed-mgmt-tag">YÖNETİM</span>' : '';
+      var descHtml = descStr ? '<div class="qfeed-desc">' + descStr + '</div>' : '';
+      return '<li class="qfeed-satir">'
+        + '<div class="qfeed-icon">' + iconStr + '</div>'
+        + '<div class="qfeed-icerik">'
+        + '<div class="qfeed-title">' + titleStr + mgmtTag + '</div>'
+        + descHtml
+        + '</div>'
+        + '<div class="qfeed-zaman">' + zamanStr + '</div>'
+        + '</li>';
+    }).join('');
+  };
+
+  var _qfeedInterval = null;
+  window.qfeedBaslat = function qfeedBaslat() {
+    try { window.renderQFeed(); } catch(e) {}
+    if (_qfeedInterval) {
+      clearInterval(_qfeedInterval);
+      _qfeedInterval = null;
+    }
+    _qfeedInterval = setInterval(function() {
+      var dashTab = document.getElementById('tab-dashboard');
+      if (dashTab && dashTab.classList.contains('active')) {
+        try { window.renderQFeed(); } catch(e) {}
+      }
+    }, 60000);
+  };
+
+  var _renderDashboardQFeed260 = window.renderDashboard;
+  window.renderDashboard = function renderDashboardV260(){
+    var r = _renderDashboardQFeed260 ? _renderDashboardQFeed260.apply(this, arguments) : undefined;
+    try { window.qfeedBaslat(); } catch(e) {}
+    return r;
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){ try { window.qfeedBaslat(); } catch(e) {} });
+  } else {
+    try { window.qfeedBaslat(); } catch(e) {}
+  }
 })();
 </script>
 
