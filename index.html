@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.7.8 — Karargâh Akışı</title>
+    <title>Q-Panel v2.7.9 — Karargâh Akışı</title>
     <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
@@ -1599,7 +1599,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
 
       /* ═══════════════════════════════════════════════════
-         Q-HALL v2.7.8 — Şampiyonlar Salonu
+         Q-HALL v2.7.9 — Şampiyonlar Salonu
          ═══════════════════════════════════════════════════ */
       .qhall-podyum-kart { background:#0a0a0a; border:0.5px solid #2a1f00; border-radius:10px; padding:14px; margin-top:14px; cursor:pointer; transition:border-color .2s; }
       .qhall-podyum-kart:hover { border-color:#fac775; }
@@ -2108,7 +2108,7 @@ input[type="date"]:required:invalid {
 
     
 /* ═══════════════════════════════════════════════════
-   Q-HALL v2.7.8 — UI Polish
+   Q-HALL v2.7.9 — UI Polish
    ═══════════════════════════════════════════════════ */
 .qhall-header {
   padding: 22px 20px 14px !important;
@@ -2506,15 +2506,19 @@ input[type="date"]:required:invalid {
       }
       function syncPermissionsFromResponse(res) {
         if (!res) return;
-        if (res.izinler) applyIzinlerFromCMS(res.izinler || {});
-        if (res.myPermissions) window.applyMyPermissionsFromCMS(res.myPermissions || {});
+        if (res.izinler && Object.keys(res.izinler || {}).length) {
+          applyIzinlerFromCMS(res.izinler || {});
+        }
+        if (res.myPermissions) {
+          window.applyMyPermissionsFromCMS(res.myPermissions || {});
+        }
       }
 
       function izin(key) {
         const rol = SESSION.rol || "Gözlemci";
         if (rol === "Lider") return true;
 
-        // Alt roller tam izin matrisini değil, sadece kendi efektif izinlerini kullanır.
+        // Öncelik: backend'in kullanıcıya özel güvenli effective izin objesi.
         if (myPermissions && Object.prototype.hasOwnProperty.call(myPermissions, key)) {
           return !!myPermissions[key];
         }
@@ -2945,7 +2949,7 @@ input[type="date"]:required:invalid {
       }
 
       
-      // v2.7.8 Permission helper fallback
+      // v2.7.9 Permission helper fallback
       if (typeof window.myPermissions === "undefined") window.myPermissions = {};
       var myPermissions = window.myPermissions || {};
 
@@ -3027,11 +3031,10 @@ async function panelAc(rumuz, rol) {
               });
 
             if (veri.tuzuk) tuzuk = veri.tuzuk;
-            // İzinleri yükle - aktifIzinler CMS değerlerine göre güncellenir
-            if (veri.izinler && Object.keys(veri.izinler).length) {
-              applyIzinlerFromCMS(veri.izinler || {});
-              window.applyMyPermissionsFromCMS(veri.myPermissions || {});
-            }
+            // İzinleri yükle.
+            // v2.7.9: Alt roller tam izin matrisi almaz; sadece myPermissions alır.
+            // Bu yüzden myPermissions her durumda senkronlanmalı.
+            syncPermissionsFromResponse(veri);
             cmsStatusGoster("ok", '<i class="ti ti-check"></i> Hazır');
           }
         }
@@ -3053,7 +3056,12 @@ async function panelAc(rumuz, rol) {
         sezonDegisimKontrol(); // Yeni mevsim kontrolü
         if (izin("basvuruGor")) {
           basvuruSayisiniGuncelle();
-          setInterval(basvuruSayisiniGuncelle, 30000);
+          if (window._basvuruSayacInterval) clearInterval(window._basvuruSayacInterval);
+          window._basvuruSayacInterval = setInterval(function () {
+            if (getToken() && (izin("basvuruGor") || SESSION.rol === "Lider")) {
+              basvuruSayisiniGuncelle();
+            }
+          }, 30000);
         }
         // Gorev taleplerini yükle
         if (izin("gorevAta")) {
@@ -6950,43 +6958,51 @@ async function panelAc(rumuz, rol) {
     <script>
       // EKSIK FONKSİYONLAR - GERİ EKLENDİ
 
+      async function _basvuruSayisiniGuncelleCore() {
+        const res = await secureApiFetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "BASVURU_LIST", token: getToken() }),
+        });
+        const data = await res.json();
+        const bekleyenler = (data.result || []).filter(function (b) {
+          return b.durum === "beklemede";
+        });
+        const badge = document.getElementById("basvuruBadge");
+        const uyari = document.getElementById("basvuruUyari");
+        if (badge) {
+          badge.textContent = bekleyenler.length || "";
+          badge.style.display = bekleyenler.length ? "" : "none";
+        }
+        if (uyari && bekleyenler.length) {
+          if (!uyari.innerHTML.includes("basvuru-uyari-row")) {
+            var d = document.createElement("div");
+            d.id = "basvuru-uyari-row";
+            d.className = "alert-row alert-warn";
+            d.style.cursor = "pointer";
+            d.onclick = function () {
+              showTabDD("davet", "ddYonetim", "navYonetimBtn");
+            };
+            d.innerHTML =
+              '<i class="ti ti-user-plus"></i> <strong>' +
+              bekleyenler.length +
+              " bekleyen başvuru</strong>";
+            uyari.appendChild(d);
+          }
+        } else if (uyari) {
+          var old = document.getElementById("basvuru-uyari-row");
+          if (old) old.remove();
+        }
+      }
+
       async function basvuruSayisiniGuncelle() {
         try {
-          const res = await secureApiFetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "BASVURU_LIST", token: getToken() }),
-          });
-          const data = await res.json();
-          const bekleyenler = (data.result || []).filter(function (b) {
-            return b.durum === "beklemede";
-          });
-          const badge = document.getElementById("basvuruBadge");
-          const uyari = document.getElementById("basvuruUyari");
-          if (badge) {
-            badge.textContent = bekleyenler.length || "";
-            badge.style.display = bekleyenler.length ? "" : "none";
-          }
-          if (uyari && bekleyenler.length) {
-            if (!uyari.innerHTML.includes("basvuru-uyari-row")) {
-              var d = document.createElement("div");
-              d.id = "basvuru-uyari-row";
-              d.className = "alert-row alert-warn";
-              d.style.cursor = "pointer";
-              d.onclick = function () {
-                showTabDD("davet", "ddYonetim", "navYonetimBtn");
-              };
-              d.innerHTML =
-                '<i class="ti ti-user-plus"></i> <strong>' +
-                bekleyenler.length +
-                " bekleyen başvuru</strong>";
-              uyari.appendChild(d);
-            }
-          } else if (uyari) {
-            var old = document.getElementById("basvuru-uyari-row");
-            if (old) old.remove();
-          }
-        } catch (e) {}
+          if (!getToken()) return;
+          if (!izin("basvuruGor") && SESSION.rol !== "Lider") return;
+          return await _basvuruSayisiniGuncelleCore();
+        } catch (e) {
+          return;
+        }
       }
 
       function renderDuyurular() {
@@ -9479,7 +9495,7 @@ async function panelAc(rumuz, rol) {
         showIfIzin("btnDisiplinEkle", "disiplinUygula");
         showIfIzin("btnDavetEkle", "kodUret");
 
-        // v2.7.8: Erişim Yönetimi tikleri UI ile senkron.
+        // v2.7.9: Erişim Yönetimi tikleri UI ile senkron.
         // Bir tik sonradan açıldıysa önceden gizlenen menü tekrar görünür.
         setVisible("navButceDD", !!(izin("butceGor") || lider));
         setVisible("navLog", !!(izin("logGor") || lider));
