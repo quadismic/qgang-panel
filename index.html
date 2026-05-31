@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.6.3 — Feed Hotfix</title>
+    <title>Q-Panel v2.6.3 — Karargâh Akışı</title>
     <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
@@ -4789,9 +4789,6 @@ input[type="date"]:required:invalid {
                 }),
               });
 
-              if (res.status === 403) {
-              return [];
-          }
               var data = await res.json();
 
               if (data.success || data.result) {
