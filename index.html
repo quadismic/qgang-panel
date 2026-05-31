@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.7.6 — Karargâh Akışı</title>
+    <title>Q-Panel v2.7.7 — Karargâh Akışı</title>
     <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
@@ -1599,7 +1599,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
 
       /* ═══════════════════════════════════════════════════
-         Q-HALL v2.7.6 — Şampiyonlar Salonu
+         Q-HALL v2.7.7 — Şampiyonlar Salonu
          ═══════════════════════════════════════════════════ */
       .qhall-podyum-kart { background:#0a0a0a; border:0.5px solid #2a1f00; border-radius:10px; padding:14px; margin-top:14px; cursor:pointer; transition:border-color .2s; }
       .qhall-podyum-kart:hover { border-color:#fac775; }
@@ -2108,7 +2108,7 @@ input[type="date"]:required:invalid {
 
     
 /* ═══════════════════════════════════════════════════
-   Q-HALL v2.7.6 — UI Polish
+   Q-HALL v2.7.7 — UI Polish
    ═══════════════════════════════════════════════════ */
 .qhall-header {
   padding: 22px 20px 14px !important;
@@ -2504,24 +2504,49 @@ input[type="date"]:required:invalid {
         window.aktifIzinler = aktifIzinler;
         return aktifIzinler;
       }
-
-      function applyMyPermissionsFromCMS(perms) {
-        myPermissions = perms || {};
-        window.myPermissions = myPermissions;
-        return myPermissions;
-      }
-
-
-      
       function syncPermissionsFromResponse(res) {
         if (!res) return;
         if (res.izinler) applyIzinlerFromCMS(res.izinler || {});
         if (res.myPermissions) applyMyPermissionsFromCMS(res.myPermissions || {});
       }
 
-async function cikisYap() {
+      function izin(key) {
+        const rol = SESSION.rol || "Gözlemci";
+        if (rol === "Lider") return true;
+
+        // Alt roller tam izin matrisini değil, sadece kendi efektif izinlerini kullanır.
+        if (myPermissions && Object.prototype.hasOwnProperty.call(myPermissions, key)) {
+          return !!myPermissions[key];
+        }
+
+        const rolN = normalizeRolAd(rol);
+        if (aktifIzinler) {
+          for (const k in aktifIzinler) {
+            if (k === rol || normalizeRolAd(k) === rolN) {
+              return !!(aktifIzinler[k] && aktifIzinler[k][key]);
+            }
+          }
+        }
+        return false;
+      }
+
+      window.qgPermissionDebug = function () {
+        try {
+          return {
+            rol: SESSION && SESSION.rol,
+            myPermissions: myPermissions,
+            butceGor: izin("butceGor"),
+            butceDuzenle: izin("butceDuzenle"),
+            logGor: izin("logGor"),
+            basvuruGor: izin("basvuruGor")
+          };
+        } catch (e) {
+          return { error: e && e.message };
+        }
+      };
+
+      async function cikisYap() {
         oturumKapat();
-        // Oturum token'ını backend'e iptal isteği gönder
         try {
           var _cqs =
             localStorage.getItem("qg_session") ||
@@ -2550,46 +2575,7 @@ async function cikisYap() {
         rol: "Gözlemci",
         girisZamani: new Date().toISOString(),
       };
-      function izin(key) {
-        const rol = SESSION.rol || "Gözlemci";
-        if (rol === "Lider") return true;
 
-        // v2.7.6: Alt roller tam matrisi değil, sadece kendi efektif izinlerini kullanır.
-        if (myPermissions && Object.prototype.hasOwnProperty.call(myPermissions, key)) {
-          return !!myPermissions[key];
-        }
-
-        const rolN = normalizeRolAd(rol);
-        if (aktifIzinler) {
-          for (const k in aktifIzinler) {
-            if (k === rol || normalizeRolAd(k) === rolN) {
-              return !!(aktifIzinler[k] && aktifIzinler[k][key]);
-            }
-          }
-        }
-        return false;
-      }
-
-      // v2.7.6 Permission Sync Hotfix
-      window.qgPermissionDebug = function () {
-        try {
-          return {
-            rol: SESSION && SESSION.rol,
-            fullMatrixVisible: !!(aktifIzinler && Object.keys(aktifIzinler || {}).length),
-            myPermissions: myPermissions,
-            butceGor: izin("butceGor"),
-            butceDuzenle: izin("butceDuzenle"),
-            logGor: izin("logGor"),
-            basvuruGor: izin("basvuruGor")
-          };
-        } catch (e) {
-          return { error: e && e.message };
-        }
-      };
-        } catch (e) {
-          return { error: e && e.message };
-        }
-      };
 // ═══════════════════════════════════════════════════
       // MODULE 03 — API BRIDGE
       // ═══════════════════════════════════════════════════
@@ -9478,7 +9464,7 @@ async function cikisYap() {
         showIfIzin("btnDisiplinEkle", "disiplinUygula");
         showIfIzin("btnDavetEkle", "kodUret");
 
-        // v2.7.6: Erişim Yönetimi tikleri UI ile senkron.
+        // v2.7.7: Erişim Yönetimi tikleri UI ile senkron.
         // Bir tik sonradan açıldıysa önceden gizlenen menü tekrar görünür.
         setVisible("navButceDD", !!(izin("butceGor") || lider));
         setVisible("navLog", !!(izin("logGor") || lider));
