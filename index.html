@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.7.4 — Fetch Control</title>
-
+    <title>Q-Panel v2.7.5 — Fetch Control</title>
+    <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -1599,7 +1599,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
 
       /* ═══════════════════════════════════════════════════
-         Q-HALL v2.7.3 — Şampiyonlar Salonu
+         Q-HALL v2.7.4 — Şampiyonlar Salonu
          ═══════════════════════════════════════════════════ */
       .qhall-podyum-kart { background:#0a0a0a; border:0.5px solid #2a1f00; border-radius:10px; padding:14px; margin-top:14px; cursor:pointer; transition:border-color .2s; }
       .qhall-podyum-kart:hover { border-color:#fac775; }
@@ -2108,7 +2108,7 @@ input[type="date"]:required:invalid {
 
     
 /* ═══════════════════════════════════════════════════
-   Q-HALL v2.7.3 — UI Polish
+   Q-HALL v2.7.4 — UI Polish
    ═══════════════════════════════════════════════════ */
 .qhall-header {
   padding: 22px 20px 14px !important;
@@ -6855,7 +6855,7 @@ input[type="date"]:required:invalid {
           <h2>🏆 Şampiyonlar Salonu</h2>
           <p>Q-GANG sezonlarının resmî başarı arşivi.</p>
         </div>
-        <div id="qhallAktifSezon"></div>
+        
   <div id="qhallIcerik">
           <div class="qhall-yukluyor">Yükleniyor...</div>
         </div>
@@ -12687,10 +12687,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     try { data = raw ? JSON.parse(raw) : {}; }
     catch(e) { data = { success: false, error: raw || 'Geçersiz sunucu cevabı.' }; }
 
-    if (res.status === 403) {
-      return { success: false, error: (data && data.error) || 'Oturum geçersiz veya yetki yok.' };
-    }
-
     if (!res.ok) {
       return { success: false, error: (data && data.error) || ('HTTP ' + res.status) };
     }
@@ -12724,41 +12720,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         + '</div>';
     }).join('');
   };
-
-  window.renderQHall = 
-async function renderAktifSezonPuanlari() {
-  var holder = document.getElementById('qhallAktifSezon');
-  if (!holder) return;
-
-  var data = await qhallAPI('AKTIF_SEZON_GET', {});
-  if (!data || !data.success || !data.result) {
-    holder.innerHTML = '';
-    return;
-  }
-
-  var s = data.result;
-  var rows = Array.isArray(s.siralama) ? s.siralama : [];
-
-  var html = '<div class="qhall-aktif-sezon-card">'
-    + '<div class="qhall-aktif-title">⚔️ Güncel Sezon: ' + qhEsc(s.sezonAdi || '') + '</div>'
-    + '<div class="qhall-aktif-sub">Başlangıç: ' + qhEsc((s.baslangicTarihi || '').split('T')[0]) + ' • Bu ekran her zaman aktif sezonu gösterir.</div>';
-
-  if (!rows.length) {
-    html += '<div class="qhall-bos" style="padding:14px 0">Bu sezonda henüz puan yok.</div>';
-  } else {
-    html += rows.map(function(r) {
-      var medal = r.sira === 1 ? '🥇' : r.sira === 2 ? '🥈' : r.sira === 3 ? '🥉' : r.sira;
-      return '<div class="qhall-aktif-row">'
-        + '<div class="qhall-aktif-rank">' + medal + '</div>'
-        + '<div class="qhall-aktif-name">' + qhEsc(r.rumuz) + '</div>'
-        + '<div class="qhall-aktif-puan">' + (Number(r.puan) || 0) + ' P</div>'
-        + '</div>';
-    }).join('');
-  }
-
-  html += '</div>';
-  holder.innerHTML = html;
-}
 
 async function renderQHall() {
   var el = document.getElementById('qhallIcerik');
@@ -12800,6 +12761,9 @@ async function renderQHall() {
 
   el.innerHTML = gridHtml;
 }
+
+
+  window.renderQHall = renderQHall;
 
   window.qhallDetayAc = async function qhallDetayAc(sezonId) {
     var el = document.getElementById('qhallIcerik');
