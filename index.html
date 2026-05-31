@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.7.0 —  Sezon Sistemi</title>
-
+    <title>Q-Panel v2.7.2 — Karargâh Akışı</title>
+    <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -1599,7 +1599,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
 
       /* ═══════════════════════════════════════════════════
-         Q-HALL v2.7.0 — Şampiyonlar Salonu
+         Q-HALL v2.7.2 — Şampiyonlar Salonu
          ═══════════════════════════════════════════════════ */
       .qhall-podyum-kart { background:#0a0a0a; border:0.5px solid #2a1f00; border-radius:10px; padding:14px; margin-top:14px; cursor:pointer; transition:border-color .2s; }
       .qhall-podyum-kart:hover { border-color:#fac775; }
@@ -2106,7 +2106,117 @@ input[type="date"]:required:invalid {
         .qg-gorev-single-ui .gsekme-btn { white-space: nowrap; }
       }
 
-    </style>
+    
+/* ═══════════════════════════════════════════════════
+   Q-HALL v2.7.2 — UI Polish
+   ═══════════════════════════════════════════════════ */
+.qhall-header {
+  padding: 22px 20px 14px !important;
+  border-bottom: 0.5px solid #232018 !important;
+  background: radial-gradient(circle at top left, rgba(250,199,117,.08), transparent 36%);
+}
+.qhall-header h2 {
+  font-size: 22px !important;
+  letter-spacing: .2px;
+}
+.qhall-header p {
+  color: #777166 !important;
+}
+.qhall-sezon-grid {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+  gap: 16px !important;
+  padding: 18px 20px !important;
+}
+.qhall-sezon-kart {
+  background: linear-gradient(145deg, #0d0d0c, #070707) !important;
+  border: 1px solid #2f2a1d !important;
+  box-shadow: 0 14px 30px rgba(0,0,0,.28);
+  position: relative;
+  overflow: hidden;
+}
+.qhall-sezon-kart::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, #fac775, #8b5a13, transparent);
+  opacity: .8;
+}
+.qhall-sezon-kart:hover {
+  transform: translateY(-1px);
+  border-color: #fac775 !important;
+}
+.qhall-sezon-kart-baslik {
+  font-size: 16px !important;
+  margin-top: 4px;
+}
+.qhall-sezon-kart-satir {
+  padding: 3px 0;
+  color: #bcb6a8 !important;
+}
+.qhall-sezon-meta {
+  color: #6d665b !important;
+}
+.qhall-detay {
+  padding: 20px !important;
+}
+.qhall-detay-baslik {
+  font-size: 20px !important;
+}
+.qhall-detay-meta {
+  background: #0a0a0a;
+  border: .5px solid #1e1e1e;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.qhall-liderlik-satir {
+  padding: 11px 0 !important;
+}
+.qhall-liderlik-rumuz {
+  font-size: 14px !important;
+}
+.qhall-bar-wrap {
+  width: 130px !important;
+  background: #171717 !important;
+}
+.qhall-bar {
+  background: linear-gradient(90deg, #fac775, #ff8a1f) !important;
+}
+.qhall-podyum-kart {
+  background: linear-gradient(145deg, #0d0d0c, #080808) !important;
+  border: 1px solid #2f2a1d !important;
+}
+.qhall-aktif-sezon-card {
+  background: #0a0a0a;
+  border: 0.5px solid #242424;
+  border-radius: 10px;
+  padding: 14px;
+  margin: 12px 0 18px;
+}
+.qhall-aktif-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #d3d1c7;
+  margin-bottom: 4px;
+}
+.qhall-aktif-sub {
+  font-size: 11px;
+  color: #777166;
+  margin-bottom: 12px;
+}
+.qhall-aktif-row {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 0;
+  border-bottom:.5px solid #141414;
+}
+.qhall-aktif-row:last-child { border-bottom:none; }
+.qhall-aktif-rank { width:24px; color:#fac775; font-size:12px; text-align:center; }
+.qhall-aktif-name { flex:1; color:#d3d1c7; font-weight:600; font-size:13px; }
+.qhall-aktif-puan { color:#fac775; font-weight:700; font-size:12px; }
+
+</style>
 
     <script>
       // ═══════════════════════════════════════════════════
@@ -6745,7 +6855,8 @@ input[type="date"]:required:invalid {
           <h2>🏆 Şampiyonlar Salonu</h2>
           <p>Q-GANG sezonlarının resmî başarı arşivi.</p>
         </div>
-        <div id="qhallIcerik">
+        <div id="qhallAktifSezon"></div>
+  <div id="qhallIcerik">
           <div class="qhall-yukluyor">Yükleniyor...</div>
         </div>
       </div>
@@ -12556,19 +12667,23 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   };
 
   window.qhallAPI = async function qhallAPI(action, payload) {
-    try {
-      var token = (typeof getToken === 'function') ? getToken() : '';
-      if (!token) return { success:false, error:'Oturum bulunamadı.' };
-      var requester = (typeof secureApiFetch === 'function') ? secureApiFetch : fetch;
-      var res = await requester(API_URL, {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json' },
-        body: JSON.stringify(Object.assign({ action: action, token: token }, payload || {})),
-      });
-      if (!res || res.status === 403) return { success:false, error:'Yetki veya oturum hatası.' };
-      return await res.json();
-    } catch(e) { return { success:false, error:e.message || 'Bilinmeyen hata' }; }
-  };
+  try {
+    var token = (typeof getToken === 'function') ? getToken() : '';
+    if (!token) return { success: false, error: 'Oturum bulunamadı.' };
+
+    var requester = (typeof secureApiFetch === 'function') ? secureApiFetch : fetch;
+    var res = await requester(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.assign({ action: action, token: token }, payload || {})),
+    });
+
+    if (!res || res.status === 403) return { success: false, error: 'Oturum geçersiz veya yetki yok.' };
+    return await res.json();
+  } catch(e) {
+    return { success: false, error: e.message };
+  }
+}
 
   window.renderQHallPodyum = function renderQHallPodyum(sonSezon) {
     var kart = document.getElementById('qhallPodyumKart');
@@ -12594,7 +12709,42 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     }).join('');
   };
 
-  window.renderQHall = async function renderQHall() {
+  window.renderQHall = 
+async function renderAktifSezonPuanlari() {
+  var holder = document.getElementById('qhallAktifSezon');
+  if (!holder) return;
+
+  var data = await qhallAPI('AKTIF_SEZON_GET', {});
+  if (!data.success || !data.result) {
+    holder.innerHTML = '';
+    return;
+  }
+
+  var s = data.result;
+  var rows = Array.isArray(s.siralama) ? s.siralama : [];
+
+  var html = '<div class="qhall-aktif-sezon-card">'
+    + '<div class="qhall-aktif-title">⚔️ Güncel Sezon: ' + qhEsc(s.sezonAdi || '') + '</div>'
+    + '<div class="qhall-aktif-sub">Başlangıç: ' + qhEsc((s.baslangicTarihi || '').split('T')[0]) + ' • Bu ekran her zaman aktif sezonu gösterir.</div>';
+
+  if (!rows.length) {
+    html += '<div class="qhall-bos" style="padding:14px 0">Bu sezonda henüz puan yok.</div>';
+  } else {
+    html += rows.map(function(r) {
+      var medal = r.sira === 1 ? '🥇' : r.sira === 2 ? '🥈' : r.sira === 3 ? '🥉' : r.sira;
+      return '<div class="qhall-aktif-row">'
+        + '<div class="qhall-aktif-rank">' + medal + '</div>'
+        + '<div class="qhall-aktif-name">' + qhEsc(r.rumuz) + '</div>'
+        + '<div class="qhall-aktif-puan">' + (Number(r.puan) || 0) + ' P</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  html += '</div>';
+  holder.innerHTML = html;
+}
+
+async function renderQHall() {
     var el = document.getElementById('qhallIcerik');
     if (!el) return;
     el.innerHTML = '<div class="qhall-yukluyor">Yükleniyor...</div>';
