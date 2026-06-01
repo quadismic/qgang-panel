@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.7.10 — Season Hotfix</title>
+    <title>Q-Panel v2.7.11 — Karargâh Akışı</title>
     <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
@@ -4560,10 +4560,8 @@ async function panelAc(rumuz, rol) {
             }
 
             var r = data.result || {};
-            var mesaj = r.alreadyClosed
-              ? ((r.sezonAdi || 'Sezon') + ' zaten kapalıydı.\n')
-              : ((r.sezonAdi || 'Sezon') + ' kapatıldı!\n');
-            mesaj += '🥇 Şampiyon: ' + (r.sampiyonRumuz || '—') + ' — ' + (r.sampiyonPuan || 0) + ' puan';
+            var mesaj = (r.sezonAdi || 'Sezon') + ' kapatıldı!\n'
+              + '🥇 Şampiyon: ' + (r.sampiyonRumuz || '—') + ' — ' + (r.sampiyonPuan || 0) + ' puan';
             if (r.ikinciRumuz) mesaj += '\n🥈 ' + r.ikinciRumuz + ' — ' + (r.ikinciPuan || 0) + ' puan';
             if (r.ucuncuRumuz) mesaj += '\n🥉 ' + r.ucuncuRumuz + ' — ' + (r.ucuncuPuan || 0) + ' puan';
             mesaj += '\n\n👥 Toplam katılımcı: ' + (r.toplamKatilimci || 0);
@@ -4579,59 +4577,31 @@ async function panelAc(rumuz, rol) {
         );
       }
 
-      async function sezonDegisimKontrol() {
-        // v2.8.0 Season Lifecycle Guard:
-        // Modal kararını artık localStorage/takvim karşılaştırması değil backend verir.
-        try { migrateOldSeasonModalKeys(); } catch (e) {}
-
-        if (!window.SESSION || (!izin("sezonKapat") && SESSION.rol !== "Lider")) return;
-
-        var data = await qhallAPI("SEZON_STATUS_GET", {});
-        if (!data || !data.success) return;
-
-        var status = data.result || {};
-        var aktif = status.currentSeason || {};
-        if (!status.shouldShowNewSeasonModal || !aktif.sezonKodu) return;
-
-        var dismissedKey = "qg_season_modal_dismissed_" + aktif.sezonKodu;
-        if (localStorage.getItem(dismissedKey)) return;
-
-        var mc = document.getElementById("modalContainer");
-        if (!mc) return;
-
-        var sezonAdi = aktif.sezonAdi || getMevcutSezonAdi().ad || "Aktif sezon";
-        mc.innerHTML =
-          '<div class="modal-overlay" style="background:rgba(0,0,0,.85)">' +
-          '<div class="modal-box" style="text-align:center;max-width:360px;padding:2rem">' +
-          '<div style="font-size:36px;margin-bottom:12px">🏆</div>' +
-          '<div style="font-family:Vanilla Whale,monospace;font-size:16px;color:#fac775;margin-bottom:8px">Sezon Kapanışı</div>' +
-          '<div style="font-size:13px;color:#888;margin-bottom:16px"><strong style="color:#d3d1c7">' +
-          qhEsc(sezonAdi) +
-          "</strong> tamamlanmış görünüyor.<br>Sezonu Şampiyonlar Salonu’na işlemek ister misin?</div>" +
-          '<div style="display:flex;gap:8px">' +
-          '<button class="btn" onclick="sezonModalSonra(\'' + qhEsc(aktif.sezonKodu) + '\')" style="flex:1">Sonra</button>' +
-          '<button class="btn btn-warn" onclick="closeModal();sezonuKapat()" style="flex:1">Sezonu Kapat</button>' +
-          "</div></div></div>";
-      }
-
-      function sezonModalSonra(sezonKodu) {
-        if (sezonKodu) {
-          localStorage.setItem("qg_season_modal_dismissed_" + sezonKodu, new Date().toISOString());
+      function sezonDegisimKontrol() {
+        var sezon = getMevcutSezonAdi();
+        var kayitli = localStorage.getItem("qg_aktif_sezon");
+        if (kayitli && kayitli !== sezon.ad) {
+          localStorage.setItem("qg_aktif_sezon", sezon.ad);
+          if (izin("sezonKapat") || SESSION.rol === "Lider") {
+            var mc = document.getElementById("modalContainer");
+            mc.innerHTML =
+              '<div class="modal-overlay" style="background:rgba(0,0,0,.85)">' +
+              '<div class="modal-box" style="text-align:center;max-width:360px;padding:2rem">' +
+              '<div style="font-size:36px;margin-bottom:12px">' +
+              sezon.ikon +
+              "</div>" +
+              '<div style="font-family:Vanilla Whale,monospace;font-size:16px;color:#fac775;margin-bottom:8px">Yeni Sezon!</div>' +
+              '<div style="font-size:13px;color:#888;margin-bottom:16px"><strong style="color:#d3d1c7">' +
+              sezon.ad +
+              "</strong> başladı.<br>Önceki sezonu kapatmak ister misin?</div>" +
+              '<div style="display:flex;gap:8px">' +
+              '<button class="btn" onclick="closeModal()" style="flex:1">Sonra</button>' +
+              '<button class="btn btn-warn" onclick="closeModal();sezonuKapat()" style="flex:1">Sezonu Kapat</button>' +
+              "</div></div></div>";
+          }
+        } else if (!kayitli) {
+          localStorage.setItem("qg_aktif_sezon", sezon.ad);
         }
-        closeModal();
-      }
-
-      function migrateOldSeasonModalKeys() {
-        try {
-          Object.keys(localStorage)
-            .filter(function(k) {
-              return k === "qg_aktif_sezon" ||
-                k.indexOf("season-close") >= 0 ||
-                k.indexOf("seasonModal") >= 0 ||
-                k.indexOf("sezonModal") >= 0;
-            })
-            .forEach(function(k) { localStorage.removeItem(k); });
-        } catch (e) {}
       }
 
       function getSeason() {
@@ -10666,8 +10636,11 @@ function gorevAsamaPuanToplamKontrol(showAlert) {
 
   var btn = document.getElementById('gorevTeklifGonderBtn');
   if (btn) {
-    btn.disabled = !ok;
-    btn.classList.toggle('qg-gonder-disabled', !ok);
+    // v2.8.1 HOTFIX: Basit teklif formunda aşama satırı yoksa gönder butonu kilitlenmemeli.
+    var simpleTeklif = rows.length === 0 && document.getElementById('gTeklif') && !document.getElementById('gf_asamalar');
+    var disable = simpleTeklif ? false : !ok;
+    btn.disabled = disable;
+    btn.classList.toggle('qg-gonder-disabled', disable);
   }
 
   if (showAlert && !ok) {
@@ -10691,6 +10664,19 @@ function gorevTeklifFormInit() {
   }
 }
 
+function qgEnsureSimpleGorevTeklifReadyV2801() {
+  var btn = document.getElementById('gorevTeklifGonderBtn');
+  if (!btn) return;
+  var rows = (typeof gorevGetAsamaRows === 'function') ? gorevGetAsamaRows() : [];
+  if (!rows.length) {
+    btn.disabled = false;
+    btn.classList.remove('qg-gonder-disabled');
+    if (!/Gönderiliyor/.test(btn.textContent || '')) btn.innerHTML = '<i class="ti ti-send"></i> Gönder';
+  }
+}
+try { window.qgEnsureSimpleGorevTeklifReadyV2801 = qgEnsureSimpleGorevTeklifReadyV2801; } catch(e) {}
+
+
 // ─────────────────────────────────────
 // Teklif gönder — v2.5.0 Basit Üye Akışı
 // ─────────────────────────────────────
@@ -10710,13 +10696,18 @@ async function gorevTeklifGonder() {
   var btn = document.getElementById('gorevTeklifGonderBtn');
   if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2"></i> Gönderiliyor...'; }
 
-  var data = await gorevAPI('GOREV_CREATE', {
-    item: { kategori: kategori, baslik: baslik, aciklama: aciklama, zorluk: zorluk, istenenPuan: puan }
-  });
+  var data = { success: false, error: 'İstek başlatılamadı.' };
+  try {
+    data = await gorevAPI('GOREV_CREATE', {
+      item: { kategori: kategori, baslik: baslik, aciklama: aciklama, zorluk: zorluk, istenenPuan: puan }
+    });
+  } catch (e) {
+    data = { success: false, error: (e && e.message) ? e.message : 'Bağlantı hatası' };
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> Gönder'; }
+  }
 
-  if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> Gönder'; }
-
-  if (data.success) {
+  if (data && data.success) {
     cmsStatusGoster('ok', '<i class="ti ti-check"></i> Görev teklifin gönderildi! Yönetim inceleyecek.');
     document.getElementById('gf_kategori').value = '';
     document.getElementById('gf_baslik').value = '';
@@ -11397,10 +11388,15 @@ function deadlineStyle(dl) {
   }
 
   var _oldTeklifGonder = window.gorevTeklifGonder;
-  window.gorevTeklifGonder = async function gorevTeklifGonderV240() {
-    var err = qgValidateStageDeadlines();
-    if (err) { alert(err); return; }
-    if (typeof gorevAsamaPuanToplamKontrol === 'function' && !gorevAsamaPuanToplamKontrol(true)) return;
+  window.gorevTeklifGonder = async function gorevTeklifGonderV2801() {
+    // v2.8.1 HOTFIX: Basit üye teklifinde aşama/deadline alanı yok.
+    // Bu nedenle eski v2.4.0 wrapper'ının aşama puanı kontrolü, formu 0/20 hatasıyla kilitliyordu.
+    var rows = (typeof gorevGetAsamaRows === 'function') ? gorevGetAsamaRows() : [];
+    if (rows && rows.length) {
+      var err = qgValidateStageDeadlines();
+      if (err) { alert(err); return; }
+      if (typeof gorevAsamaPuanToplamKontrol === 'function' && !gorevAsamaPuanToplamKontrol(true)) return;
+    }
     return _oldTeklifGonder ? await _oldTeklifGonder.apply(this, arguments) : undefined;
   };
 
