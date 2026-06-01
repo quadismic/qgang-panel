@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.7.9 — Karargâh Akışı</title>
+    <title>Q-Panel v2.7.10 — Season Hotfix</title>
     <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
@@ -4560,8 +4560,10 @@ async function panelAc(rumuz, rol) {
             }
 
             var r = data.result || {};
-            var mesaj = (r.sezonAdi || 'Sezon') + ' kapatıldı!\n'
-              + '🥇 Şampiyon: ' + (r.sampiyonRumuz || '—') + ' — ' + (r.sampiyonPuan || 0) + ' puan';
+            var mesaj = r.alreadyClosed
+              ? ((r.sezonAdi || 'Sezon') + ' zaten kapalıydı.\n')
+              : ((r.sezonAdi || 'Sezon') + ' kapatıldı!\n');
+            mesaj += '🥇 Şampiyon: ' + (r.sampiyonRumuz || '—') + ' — ' + (r.sampiyonPuan || 0) + ' puan';
             if (r.ikinciRumuz) mesaj += '\n🥈 ' + r.ikinciRumuz + ' — ' + (r.ikinciPuan || 0) + ' puan';
             if (r.ucuncuRumuz) mesaj += '\n🥉 ' + r.ucuncuRumuz + ' — ' + (r.ucuncuPuan || 0) + ' puan';
             mesaj += '\n\n👥 Toplam katılımcı: ' + (r.toplamKatilimci || 0);
@@ -4577,31 +4579,59 @@ async function panelAc(rumuz, rol) {
         );
       }
 
-      function sezonDegisimKontrol() {
-        var sezon = getMevcutSezonAdi();
-        var kayitli = localStorage.getItem("qg_aktif_sezon");
-        if (kayitli && kayitli !== sezon.ad) {
-          localStorage.setItem("qg_aktif_sezon", sezon.ad);
-          if (izin("sezonKapat") || SESSION.rol === "Lider") {
-            var mc = document.getElementById("modalContainer");
-            mc.innerHTML =
-              '<div class="modal-overlay" style="background:rgba(0,0,0,.85)">' +
-              '<div class="modal-box" style="text-align:center;max-width:360px;padding:2rem">' +
-              '<div style="font-size:36px;margin-bottom:12px">' +
-              sezon.ikon +
-              "</div>" +
-              '<div style="font-family:Vanilla Whale,monospace;font-size:16px;color:#fac775;margin-bottom:8px">Yeni Sezon!</div>' +
-              '<div style="font-size:13px;color:#888;margin-bottom:16px"><strong style="color:#d3d1c7">' +
-              sezon.ad +
-              "</strong> başladı.<br>Önceki sezonu kapatmak ister misin?</div>" +
-              '<div style="display:flex;gap:8px">' +
-              '<button class="btn" onclick="closeModal()" style="flex:1">Sonra</button>' +
-              '<button class="btn btn-warn" onclick="closeModal();sezonuKapat()" style="flex:1">Sezonu Kapat</button>' +
-              "</div></div></div>";
-          }
-        } else if (!kayitli) {
-          localStorage.setItem("qg_aktif_sezon", sezon.ad);
+      async function sezonDegisimKontrol() {
+        // v2.8.0 Season Lifecycle Guard:
+        // Modal kararını artık localStorage/takvim karşılaştırması değil backend verir.
+        try { migrateOldSeasonModalKeys(); } catch (e) {}
+
+        if (!window.SESSION || (!izin("sezonKapat") && SESSION.rol !== "Lider")) return;
+
+        var data = await qhallAPI("SEZON_STATUS_GET", {});
+        if (!data || !data.success) return;
+
+        var status = data.result || {};
+        var aktif = status.currentSeason || {};
+        if (!status.shouldShowNewSeasonModal || !aktif.sezonKodu) return;
+
+        var dismissedKey = "qg_season_modal_dismissed_" + aktif.sezonKodu;
+        if (localStorage.getItem(dismissedKey)) return;
+
+        var mc = document.getElementById("modalContainer");
+        if (!mc) return;
+
+        var sezonAdi = aktif.sezonAdi || getMevcutSezonAdi().ad || "Aktif sezon";
+        mc.innerHTML =
+          '<div class="modal-overlay" style="background:rgba(0,0,0,.85)">' +
+          '<div class="modal-box" style="text-align:center;max-width:360px;padding:2rem">' +
+          '<div style="font-size:36px;margin-bottom:12px">🏆</div>' +
+          '<div style="font-family:Vanilla Whale,monospace;font-size:16px;color:#fac775;margin-bottom:8px">Sezon Kapanışı</div>' +
+          '<div style="font-size:13px;color:#888;margin-bottom:16px"><strong style="color:#d3d1c7">' +
+          qhEsc(sezonAdi) +
+          "</strong> tamamlanmış görünüyor.<br>Sezonu Şampiyonlar Salonu’na işlemek ister misin?</div>" +
+          '<div style="display:flex;gap:8px">' +
+          '<button class="btn" onclick="sezonModalSonra(\'' + qhEsc(aktif.sezonKodu) + '\')" style="flex:1">Sonra</button>' +
+          '<button class="btn btn-warn" onclick="closeModal();sezonuKapat()" style="flex:1">Sezonu Kapat</button>' +
+          "</div></div></div>";
+      }
+
+      function sezonModalSonra(sezonKodu) {
+        if (sezonKodu) {
+          localStorage.setItem("qg_season_modal_dismissed_" + sezonKodu, new Date().toISOString());
         }
+        closeModal();
+      }
+
+      function migrateOldSeasonModalKeys() {
+        try {
+          Object.keys(localStorage)
+            .filter(function(k) {
+              return k === "qg_aktif_sezon" ||
+                k.indexOf("season-close") >= 0 ||
+                k.indexOf("seasonModal") >= 0 ||
+                k.indexOf("sezonModal") >= 0;
+            })
+            .forEach(function(k) { localStorage.removeItem(k); });
+        } catch (e) {}
       }
 
       function getSeason() {
