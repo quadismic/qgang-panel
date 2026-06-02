@@ -1486,6 +1486,134 @@
 .deadline-yakin  { color: #fb923c; }
 .deadline-ok     { color: #888780; }
 
+
+
+/* Q-PANEL v2.8.4.2 — Birimler Command Cabinet */
+.qg-unit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.qg-unit-card {
+  position: relative;
+  background: radial-gradient(circle at top left, rgba(250,199,117,.08), transparent 38%), #111;
+  border: .5px solid #333;
+  border-radius: 14px;
+  padding: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 26px rgba(0,0,0,.26);
+}
+.qg-unit-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #854f0b, rgba(250,199,117,.55), transparent);
+}
+.qg-unit-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.qg-unit-title {
+  color: #fac775;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .7px;
+  text-transform: uppercase;
+}
+.qg-unit-desc {
+  color: #888780;
+  font-size: 12px;
+  line-height: 1.45;
+  min-height: 34px;
+}
+.qg-unit-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 11px 0;
+}
+.qg-unit-stat {
+  background: #0b0b0b;
+  border: .5px solid #242424;
+  border-radius: 9px;
+  padding: 8px 6px;
+  text-align: center;
+}
+.qg-unit-stat b {
+  display: block;
+  color: #d3d1c7;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+.qg-unit-stat span {
+  color: #555;
+  font-size: 10px;
+}
+.qg-unit-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 10px 0 12px;
+}
+.qg-unit-section {
+  background: #0c0c0c;
+  border: .5px solid #222;
+  border-radius: 10px;
+  padding: 9px;
+  margin-top: 8px;
+}
+.qg-unit-section h4 {
+  color: #888780;
+  font-size: 11px;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.qg-unit-empty {
+  color: #555;
+  font-size: 11px;
+  font-style: italic;
+}
+.qg-unit-person {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 6px 8px;
+  background: #111;
+  border: .5px solid #222;
+  border-radius: 8px;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+.qg-unit-person:last-child { margin-bottom: 0; }
+.qg-unit-warning {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #412402;
+  color: #fac775;
+  border: .5px solid #854f0b;
+  border-radius: 9px;
+  padding: 7px 9px;
+  font-size: 11px;
+  margin: 8px 0 10px;
+}
+.qg-unit-system-badge {
+  background:#2a1800;
+  color:#fac775;
+  border:.5px solid #854f0b;
+  border-radius:20px;
+  padding:3px 8px;
+  font-size:10px;
+  white-space:nowrap;
+}
+
 /* Q-PANEL v2.2.10 — date input calendar icon visibility */
 input[type="date"] { color-scheme: dark; }
 input[type="date"]::-webkit-calendar-picker-indicator {
@@ -6378,7 +6506,7 @@ async function panelAc(rumuz, rol) {
               onclick="showTabDD('erisim', 'ddYonetim', 'navYonetimBtn')"
               style="display: none"
             >
-              <i class="ti ti-shield-lock"></i> Erişim Yönetimi
+              <i class="ti ti-shield-lock"></i> Erişimler
             </div>
           </div>
         </div>
@@ -6718,7 +6846,7 @@ async function panelAc(rumuz, rol) {
           "
         >
           <div class="section-title" style="margin: 0">
-            <i class="ti ti-shield-lock"></i> Erişim Yönetimi
+            <i class="ti ti-shield-lock"></i> Erişimler
           </div>
           <div style="display: flex; gap: 6px">
             <button class="btn btn-success btn-sm" onclick="izinKaydet()">
@@ -9278,17 +9406,37 @@ async function panelAc(rumuz, rol) {
           QG_BIRIMLER = arr.map(function(b){ return b.ad; }); GOREVLER.splice(0, GOREVLER.length, ...QG_BIRIMLER); BIRIMLER.splice(0, BIRIMLER.length, 'Yok', ...QG_BIRIMLER); return arr;
         } catch(e) { return qgBirimObjeleriDefault(); }
       }
+      function qgVarsayilanBirimMi(ad) { return DEFAULT_BIRIMLER.includes(ad); }
       async function renderBirimler() {
         var el = document.getElementById('birimlerPanel'); if (!el) return;
         if (!['Lider','Vekilharç'].includes(SESSION.rol)) { el.innerHTML = '<div class="erisim-engel"><i class="ti ti-lock"></i>Birimler alanı Vekilharç+ erişimine açıktır.</div>'; return; }
         el.innerHTML = '<div style="color:#555;font-size:12px;padding:12px">Birimler yükleniyor...</div>';
-        var birimler = await qgBirimObjeleriYukle(true); var html = '<div class="qg-unit-grid">';
+        var birimler = await qgBirimObjeleriYukle(true);
+        var html = '<div class="qg-unit-grid">';
         birimler.forEach(function(b){
-          var ad = b.ad; var kisiler = (members || []).filter(function(m){ return (m.birim || 'Yok') === ad; });
-          var kaps = kisiler.filter(function(m){ return (m.rutbe || '') === 'Kaptan'; }); var tegs = kisiler.filter(function(m){ return (m.rutbe || '') === 'Teğmen'; });
-          function people(list){ if (!list.length) return '<div class="qg-unit-empty">Atama yok.</div>'; return list.map(function(m){ return '<div class="qg-unit-person"><span>' + htmlEsc(m.rumuz) + '</span><button class="btn btn-sm btn-danger" onclick="birimdenCikar(\'' + htmlEsc(m._id) + '\')">Çıkar</button></div>'; }).join(''); }
-          var warn = !kaps.length ? '<div class="alert-row alert-warn" style="font-size:11px;margin:6px 0"><i class="ti ti-alert-triangle"></i> Bu birimde kaptan yok. Görev bildirimleri Lider/Vekilharç tarafına düşer.</div>' : '';
-          html += '<div class="qg-unit-card"><div class="qg-unit-title">' + htmlEsc(ad) + '</div><div class="qg-unit-desc">' + htmlEsc(b.aciklama || 'Açıklama eklenmemiş.') + '</div>' + warn + '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"><button class="btn btn-sm" onclick="birimModalAc(\'' + htmlEsc(ad) + '\')"><i class="ti ti-edit"></i> Düzenle</button><button class="btn btn-sm btn-primary" onclick="birimeKisiEkle(\'' + htmlEsc(ad) + '\',\'Kaptan\')">+ Kaptan</button><button class="btn btn-sm btn-success" onclick="birimeKisiEkle(\'' + htmlEsc(ad) + '\',\'Teğmen\')">+ Teğmen</button></div><div class="qg-unit-section"><h4>Kaptanlar</h4>' + people(kaps) + '</div><div class="qg-unit-section"><h4>Teğmenler</h4>' + people(tegs) + '</div></div>';
+          var ad = b.ad;
+          var kisiler = (members || []).filter(function(m){ return (m.birim || 'Yok') === ad; });
+          var kaps = kisiler.filter(function(m){ return (m.rutbe || '') === 'Kaptan'; });
+          var tegs = kisiler.filter(function(m){ return (m.rutbe || '') === 'Teğmen'; });
+          var aktifUyeler = kisiler.filter(function(m){ return !['Kaptan','Teğmen','Lider','Vekilharç'].includes(m.rutbe || '') && (m.durum || 'Aktif') === 'Aktif'; });
+          function people(list){
+            if (!list.length) return '<div class="qg-unit-empty">Atama yok.</div>';
+            return list.map(function(m){
+              return '<div class="qg-unit-person"><span><i class="ti ti-user"></i> ' + htmlEsc(m.rumuz) + '</span><button class="btn btn-sm btn-danger" onclick="birimdenCikar('' + htmlEsc(m._id) + '')"><i class="ti ti-x"></i> Çıkar</button></div>';
+            }).join('');
+          }
+          var warn = !kaps.length ? '<div class="qg-unit-warning"><i class="ti ti-alert-triangle"></i><span>Bu birimde kaptan yok. Görev bildirimleri Lider/Vekilharç tarafına düşer.</span></div>' : '';
+          var silBtn = qgVarsayilanBirimMi(ad)
+            ? '<span class="qg-unit-system-badge">Varsayılan</span>'
+            : '<button class="btn btn-sm btn-danger" onclick="birimSil('' + htmlEsc(ad) + '')"><i class="ti ti-trash"></i> Sil</button>';
+          html += '<div class="qg-unit-card">'
+            + '<div class="qg-unit-head"><div><div class="qg-unit-title"><i class="ti ti-shield-cog"></i> ' + htmlEsc(ad) + '</div><div class="qg-unit-desc">' + htmlEsc(b.aciklama || 'Açıklama eklenmemiş.') + '</div></div>' + silBtn + '</div>'
+            + '<div class="qg-unit-stats"><div class="qg-unit-stat"><b>' + kaps.length + '</b><span>Kaptan</span></div><div class="qg-unit-stat"><b>' + tegs.length + '</b><span>Teğmen</span></div><div class="qg-unit-stat"><b>' + aktifUyeler.length + '</b><span>Aktif Üye</span></div></div>'
+            + warn
+            + '<div class="qg-unit-actions"><button class="btn btn-sm" onclick="birimModalAc('' + htmlEsc(ad) + '')"><i class="ti ti-edit"></i> Düzenle</button><button class="btn btn-sm btn-primary" onclick="birimeKisiEkle('' + htmlEsc(ad) + '','Kaptan')"><i class="ti ti-plus"></i> Kaptan</button><button class="btn btn-sm btn-success" onclick="birimeKisiEkle('' + htmlEsc(ad) + '','Teğmen')"><i class="ti ti-plus"></i> Teğmen</button></div>'
+            + '<div class="qg-unit-section"><h4><i class="ti ti-sword"></i> Kaptanlar</h4>' + people(kaps) + '</div>'
+            + '<div class="qg-unit-section"><h4><i class="ti ti-shield"></i> Teğmenler</h4>' + people(tegs) + '</div>'
+            + '</div>';
         });
         el.innerHTML = html + '</div>';
       }
@@ -9301,6 +9449,21 @@ async function panelAc(rumuz, rol) {
         else { if (birimler.some(function(b){ return b.ad === yeniAd; })) { alert('Bu isimde birim zaten var.'); return; } birimler.push({ ad:yeniAd, aciklama:aciklama || '' }); }
         var data = await gorevAPI('BIRIM_SAVE', { item:{ birimler:birimler } }); if (!data.success) { alert('Birim kaydedilemedi: ' + (data.error || 'Bilinmeyen')); return; }
         cmsStatusGoster('ok','<i class="ti ti-check"></i> Birimler güncellendi.'); await loadAll(); await renderBirimler(); try { await qgBirimSelectDoldur('gf_kategori', '', false); } catch(e) {}
+      }
+      async function birimSil(ad) {
+        if (qgVarsayilanBirimMi(ad)) { alert('Varsayılan birimler silinemez. İstersen adını/açıklamasını düzenleyebilirsin.'); return; }
+        var kullaniliyor = (members || []).filter(function(m){ return (m.birim || 'Yok') === ad; });
+        var msg = ad + ' birimini silmek istiyor musun?';
+        if (kullaniliyor.length) msg += '
+
+Bu birimde ' + kullaniliyor.length + ' kişi var. Silinirse bu kişilerin birimi Yok yapılacak.';
+        if (!confirm(msg)) return;
+        var birimler = await qgBirimObjeleriYukle(true);
+        birimler = birimler.filter(function(b){ return b.ad !== ad; });
+        for (const m of kullaniliyor) { await cmsYaz('MEMBER_UPDATE', { _id:m._id, birim:'Yok' }); }
+        var data = await gorevAPI('BIRIM_SAVE', { item:{ birimler:birimler } });
+        if (!data.success) { alert('Birim silinemedi: ' + (data.error || 'Bilinmeyen')); return; }
+        cmsStatusGoster('ok','<i class="ti ti-check"></i> Birim silindi.'); await loadAll(); await renderBirimler(); try { await qgBirimSelectDoldur('gf_kategori', '', false); } catch(e) {}
       }
       async function birimeKisiEkle(birim, rutbe) {
         var adaylar = (members || []).filter(function(m){ return (m.rutbe || '') === rutbe; }); if (!adaylar.length) { alert('Uygun ' + rutbe + ' bulunamadı.'); return; }
@@ -9437,7 +9600,7 @@ async function panelAc(rumuz, rol) {
         showIfIzin("btnDisiplinEkle", "disiplinUygula");
         showIfIzin("btnDavetEkle", "kodUret");
 
-        // v2.7.9: Erişim Yönetimi tikleri UI ile senkron.
+        // v2.7.9: Erişimler tikleri UI ile senkron.
         // Bir tik sonradan açıldıysa önceden gizlenen menü tekrar görünür.
         setVisible("navButceDD", !!(izin("butceGor") || lider));
         setVisible("navLog", !!(izin("logGor") || lider));
