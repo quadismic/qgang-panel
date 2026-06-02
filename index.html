@@ -1936,24 +1936,115 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
       .qg-org-chip.task { color:#9fe1cb; border-color:#0f4a38; background:#001a10; }
       .qg-org-chip.base { color:#777; border-color:#2c2c2c; background:#111; }
 
-      /* Q-PANEL v2.8.4.4 — OrgChart visual recovery */
+      /* Q-PANEL v2.8.4.7 — OrgChart connected hierarchy recovery */
       #orgChart {
-        background: radial-gradient(circle at top, rgba(250,199,117,.035), transparent 34%), #0b0b0b;
-        border: .5px solid #1f1f1f;
+        background: radial-gradient(circle at top, rgba(250,199,117,.045), transparent 36%), #0b0b0b;
+        border: .5px solid #242424;
         border-radius: 14px;
-        min-height: 360px;
+        min-height: 420px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
       }
-      .qg-org-level {
+      .qg-org-shell {
+        min-width: 720px;
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 18px 18px 24px;
+        text-align: center;
+      }
+      .qg-org-header {
+        padding: 12px 0 18px;
+        border-bottom: .5px solid #1a1a1a;
+        margin-bottom: 18px;
+      }
+      .qg-org-logo {
+        font-family: 'Vanilla Whale', monospace;
+        font-size: 34px;
+        color: #fac775;
+        letter-spacing: -0.5px;
+        font-weight: 400;
+        line-height: 1;
+      }
+      .qg-org-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #d3d1c7;
+        letter-spacing: 2.2px;
+        margin: 7px 0 2px;
+      }
+      .qg-org-subtitle {
+        font-size: 10px;
+        color: #333;
+        letter-spacing: 3px;
+      }
+      .qg-org-tree { padding-top: 2px; }
+      .qg-org-stage {
+        position: relative;
+        margin: 0 auto;
+        padding: 0;
+      }
+      .qg-org-nodes {
         display: flex;
         justify-content: center;
-        align-items: stretch;
+        align-items: flex-start;
         flex-wrap: wrap;
-        gap: 12px;
-        margin: 0 auto;
-        padding: 0 12px;
+        gap: 14px 16px;
+        position: relative;
+        padding: 0 10px;
+      }
+      .qg-org-stage.has-parent { padding-top: 34px; }
+      .qg-org-stage.has-parent::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 1px;
+        height: 18px;
+        background: linear-gradient(180deg, #854f0b, #3a2607);
+        transform: translateX(-50%);
+        opacity: .9;
+      }
+      .qg-org-stage.has-parent::after {
+        content: '';
+        position: absolute;
+        top: 18px;
+        left: 50%;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #111;
+        border: .5px solid #854f0b;
+        transform: translateX(-50%);
+        z-index: 2;
+      }
+      .qg-org-stage.has-parent .qg-org-nodes::before {
+        content: '';
+        position: absolute;
+        top: -12px;
+        left: 8%;
+        right: 8%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #4b320b, #4b320b, transparent);
+        opacity: .9;
+      }
+      .qg-org-node-wrap {
+        position: relative;
+        display: flex;
+        justify-content: center;
+      }
+      .qg-org-stage.has-parent .qg-org-node-wrap::before {
+        content: '';
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        width: 1px;
+        height: 12px;
+        background: #4b320b;
+        transform: translateX(-50%);
+        opacity: .85;
       }
       .qg-org-node {
-        width: 152px;
+        width: 156px;
         min-height: 62px;
         border: .5px solid #333;
         border-radius: 11px;
@@ -1964,22 +2055,24 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
         align-items: center;
         justify-content: center;
         gap: 2px;
-        box-shadow: 0 8px 20px rgba(0,0,0,.28);
+        box-shadow: 0 10px 24px rgba(0,0,0,.32);
         position: relative;
         overflow: hidden;
-        animation: qgOrgDrop .34s ease both;
+        animation: qgOrgDrop .36s ease both;
       }
       .qg-org-node::before {
         content: '';
         position: absolute;
-        left: 0; right: 0; top: 0;
+        left: 0;
+        right: 0;
+        top: 0;
         height: 2px;
         background: currentColor;
-        opacity: .18;
+        opacity: .20;
       }
       .qg-org-name {
         font-size: 12px;
-        font-weight: 700;
+        font-weight: 800;
         line-height: 1.15;
         max-width: 100%;
         overflow: hidden;
@@ -1992,43 +2085,41 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
         font-weight: 600;
         letter-spacing: .3px;
       }
-      .qg-org-connector {
-        width: 1px;
-        height: 22px;
-        margin: 8px auto;
-        background: linear-gradient(180deg, transparent, #514128, transparent);
-        position: relative;
-      }
-      .qg-org-connector::after {
-        content: '';
-        position: absolute;
-        left: 50%; top: 50%;
-        width: 7px; height: 7px;
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        background: #1a1a1a;
-        border: .5px solid #854f0b;
-      }
-      .qg-org-level:nth-of-type(1) .qg-org-node { width: 180px; min-height: 70px; }
-      .qg-org-level:nth-of-type(2) .qg-org-node { width: 170px; }
-      .qg-org-level:nth-of-type(n+5) .qg-org-node {
+      .qg-org-chip { justify-content:center; }
+      .qg-org-stage-lider .qg-org-node { width: 188px; min-height: 70px; border-radius: 12px; }
+      .qg-org-stage-vekil .qg-org-node { width: 176px; min-height: 66px; }
+      .qg-org-stage-uye .qg-org-node,
+      .qg-org-stage-gozlemci .qg-org-node {
         width: auto;
-        min-width: 112px;
+        min-width: 118px;
         min-height: 40px;
-        padding: 7px 10px;
+        padding: 7px 12px;
         border-radius: 999px;
         box-shadow: none;
       }
-      .qg-org-level:nth-of-type(n+5) .qg-org-rank { display: none; }
-      .qg-org-level:nth-of-type(n+5) .qg-org-chip { margin-top: 3px; }
-      .qg-org-chip { justify-content:center; }
+      .qg-org-stage-gozlemci .qg-org-node {
+        opacity: .78;
+      }
+      .qg-org-stage-uye .qg-org-rank,
+      .qg-org-stage-gozlemci .qg-org-rank { display: none; }
+      .qg-org-stage-uye .qg-org-chip { margin-top: 3px; }
+      .qg-org-footer {
+        text-align: center;
+        font-size: 10px;
+        color: #333;
+        margin-top: 24px;
+        padding-top: 14px;
+        border-top: .5px solid #111;
+        letter-spacing: 2px;
+      }
       @keyframes qgOrgDrop {
-        from { opacity: 0; transform: translateY(-12px) scale(.985); }
+        from { opacity: 0; transform: translateY(-14px) scale(.985); }
         to { opacity: 1; transform: translateY(0) scale(1); }
       }
-      @media (max-width: 640px) {
-        .qg-org-level { gap: 8px; padding: 0 6px; }
-        .qg-org-node { width: 132px; min-height: 56px; padding: 8px; }
+      @media (max-width: 760px) {
+        .qg-org-shell { min-width: 680px; padding-left: 12px; padding-right: 12px; }
+        .qg-org-nodes { gap: 10px 12px; }
+        .qg-org-node { width: 138px; min-height: 56px; padding: 8px; }
         .qg-org-name { font-size: 11px; }
       }
       @media (max-width: 600px) {
@@ -2439,179 +2530,6 @@ input[type="date"]:required:invalid {
 .qhall-aktif-name { flex:1; color:#d3d1c7; font-weight:600; font-size:13px; }
 .qhall-aktif-puan { color:#fac775; font-weight:700; font-size:12px; }
 
-
-
-      /* Q-PANEL v2.8.4.6 — OrgChart connected hierarchy restoration */
-      #orgChart.qg-org-restored {
-        background: radial-gradient(circle at top, rgba(250,199,117,.045), transparent 38%), #090909 !important;
-        border: .5px solid #242424 !important;
-        border-radius: 16px !important;
-        min-height: 420px !important;
-        overflow-x: auto !important;
-        padding: 18px 10px 28px !important;
-      }
-      .qg-org-board {
-        min-width: 760px;
-        max-width: 1120px;
-        margin: 0 auto;
-        text-align: center;
-      }
-      .qg-org-titlebar {
-        padding: 8px 0 20px;
-        border-bottom: .5px solid #1b1b1b;
-        margin-bottom: 16px;
-      }
-      .qg-org-emblem {
-        font-family: 'Vanilla Whale', monospace;
-        font-size: 33px;
-        color: #fac775;
-        line-height: 1;
-        text-shadow: 0 0 16px rgba(250,199,117,.14);
-      }
-      .qg-org-title {
-        font-size: 13px;
-        font-weight: 700;
-        color: #d3d1c7;
-        letter-spacing: 2.2px;
-        margin-top: 6px;
-      }
-      .qg-org-subtitle {
-        font-size: 10px;
-        color: #343434;
-        letter-spacing: 3.5px;
-        margin-top: 2px;
-      }
-      .qg-org-tier {
-        position: relative;
-        margin: 0 auto;
-        padding-top: 26px;
-      }
-      .qg-org-tier:first-of-type { padding-top: 0; }
-      .qg-org-tier::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 50%;
-        width: 1px;
-        height: 26px;
-        background: linear-gradient(180deg, #6b4a16, #2b2418);
-        opacity: .95;
-      }
-      .qg-org-tier:first-of-type::before { display: none; }
-      .qg-org-tier.multi .qg-org-level {
-        position: relative;
-        padding-top: 24px;
-      }
-      .qg-org-tier.multi .qg-org-level::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 7%;
-        right: 7%;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, #6b4a16 8%, #6b4a16 92%, transparent);
-        opacity: .95;
-      }
-      .qg-org-wrap {
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: stretch;
-      }
-      .qg-org-tier.multi .qg-org-wrap::before {
-        content: '';
-        position: absolute;
-        top: -24px;
-        left: 50%;
-        width: 1px;
-        height: 24px;
-        background: #6b4a16;
-        opacity: .95;
-      }
-      .qg-org-level {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: stretch !important;
-        flex-wrap: wrap !important;
-        gap: 14px !important;
-        margin: 0 auto !important;
-        padding: 0 14px !important;
-      }
-      .qg-org-node {
-        width: 158px !important;
-        min-height: 64px !important;
-        border: .5px solid #333 !important;
-        border-radius: 12px !important;
-        padding: 10px 11px !important;
-        text-align: center !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 3px !important;
-        box-shadow: 0 10px 24px rgba(0,0,0,.34), inset 0 0 0 1px rgba(255,255,255,.018) !important;
-        position: relative !important;
-        overflow: hidden !important;
-        animation: qgOrgCascade .34s ease both !important;
-      }
-      .qg-org-node::before {
-        content: '' !important;
-        position: absolute !important;
-        left: 0 !important; right: 0 !important; top: 0 !important;
-        height: 2px !important;
-        background: currentColor !important;
-        opacity: .20 !important;
-      }
-      .qg-org-name { font-size: 12px !important; font-weight: 800 !important; line-height: 1.12 !important; }
-      .qg-org-rank { font-size: 9.8px !important; font-weight: 700 !important; letter-spacing: .35px !important; text-transform: none !important; }
-      .qg-org-tier.lead .qg-org-node { width: 190px !important; min-height: 72px !important; border-radius: 13px !important; }
-      .qg-org-tier.command .qg-org-node { width: 178px !important; min-height: 68px !important; }
-      .qg-org-tier.members .qg-org-node,
-      .qg-org-tier.observers .qg-org-node {
-        width: auto !important;
-        min-width: 118px !important;
-        min-height: 42px !important;
-        padding: 8px 12px !important;
-        border-radius: 999px !important;
-        box-shadow: inset 0 0 0 1px rgba(255,255,255,.015) !important;
-      }
-      .qg-org-tier.observers .qg-org-node { opacity: .72; }
-      .qg-org-tier.observers .qg-org-rank,
-      .qg-org-tier.observers .qg-org-chip { display: none !important; }
-      .qg-org-chip { justify-content: center !important; max-width: 132px !important; }
-      .qg-org-tier-label {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        margin: 0 auto 10px;
-        padding: 4px 10px;
-        border: .5px solid #2b2b2b;
-        border-radius: 999px;
-        background: #0e0e0e;
-        color: #555;
-        font-size: 9px;
-        font-weight: 800;
-        letter-spacing: 1.6px;
-      }
-      .qg-org-empty-tier {
-        display: inline-flex;
-        color: #3f3f3f;
-        border: .5px dashed #222;
-        border-radius: 999px;
-        padding: 7px 13px;
-        font-size: 10.5px;
-      }
-      @keyframes qgOrgCascade {
-        from { opacity: 0; transform: translateY(-16px) scale(.982); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
-      }
-      @media (max-width: 760px) {
-        .qg-org-board { min-width: 680px; }
-        .qg-org-level { gap: 10px !important; padding: 0 8px !important; }
-        .qg-org-node { width: 140px !important; }
-        .qg-org-tier.members .qg-org-node,
-        .qg-org-tier.observers .qg-org-node { min-width: 104px !important; }
-      }
 </style>
 
     <script>
@@ -4361,7 +4279,7 @@ async function panelAc(rumuz, rol) {
         filtered.forEach(function (m, i) {
           const mid = m._id || m.id;
           const editBtnHtml = editBtn
-            ? "<button class="btn btn-sm" onclick="openModal('editMember','" +
+            ? "<button class=\"btn btn-sm\" onclick=\"openModal('editMember','" +
               mid +
               '\')"><i class="ti ti-edit"></i></button>'
             : "";
@@ -5602,10 +5520,10 @@ async function panelAc(rumuz, rol) {
                 ? '<div style="display:flex;gap:4px">' +
                   '<button class="btn btn-success btn-sm" onclick="gorevTalepYanitla(\'' +
                   tid +
-                  "','Onaylandi')"><i class="ti ti-check"></i></button>" +
+                  "','Onaylandi')\"><i class=\"ti ti-check\"></i></button>" +
                   '<button class="btn btn-danger btn-sm" onclick="gorevTalepYanitla(\'' +
                   tid +
-                  "','Reddedildi')"><i class="ti ti-x"></i></button>" +
+                  "','Reddedildi')\"><i class=\"ti ti-x\"></i></button>" +
                   "</div>"
                 : "") +
               "</div>" +
@@ -9622,22 +9540,23 @@ async function panelAc(rumuz, rol) {
           el.innerHTML = '<div style="color:#555;font-size:12px;padding:2rem;text-align:center">Üye verisi yüklenmedi.</div>';
           return;
         }
-
         var orgMeta = await getOrgGorevMeta(false);
         var RANK = { Lider:0, "Vekilharç":1, Kaptan:2, "Teğmen":3, "Üye":4, "Gözlemci":5 };
         var COLORS = {
-          Lider: { bg:'#050505', border:'#e8e8e8', txt:'#fff', sub:'#bdbdbd' },
-          "Vekilharç": { bg:'#170505', border:'#a32d2d', txt:'#e24b4a', sub:'#b35b5b' },
+          Lider: { bg:'#050505', border:'#e8e8e8', txt:'#fff', sub:'#aaa' },
+          "Vekilharç": { bg:'#170505', border:'#a32d2d', txt:'#e24b4a', sub:'#8d4747' },
           Kaptan: { bg:'#031323', border:'#185fa5', txt:'#b5d4f4', sub:'#378add' },
           "Teğmen": { bg:'#031f18', border:'#0f6e56', txt:'#9fe1cb', sub:'#1d9e75' },
           "Üye": { bg:'#181104', border:'#854f0b', txt:'#fac775', sub:'#ba7517' },
           "Gözlemci": { bg:'#0a0a0a', border:'#2a2a2a', txt:'#777', sub:'#444' }
         };
-
-        function rankOf(m) { return (m && (m.rutbe || m.rol)) || 'Üye'; }
         function sortMembers(list) {
           return (list || []).slice().sort(function(a,b){
-            return (RANK[rankOf(a)] ?? 9) - (RANK[rankOf(b)] ?? 9) || String(a.rumuz || '').localeCompare(String(b.rumuz || ''),'tr');
+            var ar = (a && (a.rutbe || a.rol)) || 'Üye';
+            var br = (b && (b.rutbe || b.rol)) || 'Üye';
+            var rs = (RANK[ar] !== undefined ? RANK[ar] : 9) - (RANK[br] !== undefined ? RANK[br] : 9);
+            if (rs) return rs;
+            return String((a && a.rumuz) || '').localeCompare(String((b && b.rumuz) || ''), 'tr');
           });
         }
         function birimLabel(m) {
@@ -9654,53 +9573,41 @@ async function panelAc(rumuz, rol) {
             return '<span class="qg-org-chip task">Görev: ' + htmlEsc(k) + (adet > 1 ? ' ×' + adet : '') + '</span>';
           }).join('');
         }
-        function node(m, idx) {
-          var r = rankOf(m);
+        function node(m, delay) {
+          var r = (m && (m.rutbe || m.rol)) || 'Üye';
           var c = COLORS[r] || COLORS['Üye'];
           var b = birimLabel(m);
           var detail = '';
-
-          // Kaptan+ üzerinde birim varsa gösterilir. Teğmenlerde de birim gösterilir.
-          if (r === 'Lider' || r === 'Vekilharç' || r === 'Kaptan' || r === 'Teğmen') {
+          if (r === 'Lider' || r === 'Vekilharç') {
+            detail = b ? '<span class="qg-org-chip global">' + htmlEsc(b) + '</span>' : '';
+          } else if (r === 'Kaptan' || r === 'Teğmen') {
             detail = b ? '<span class="qg-org-chip cat">' + htmlEsc(b) + '</span>' : '';
           } else if (r === 'Üye') {
-            // Üyede yalnızca aktif görev varsa ekstra bilgi görünür.
             detail = activeTaskLine(m);
           }
-
-          // Gözlemcide isim dışında hiçbir şey görünmez.
           var rankHtml = r === 'Gözlemci' ? '' : '<div class="qg-org-rank" style="color:' + c.sub + '">' + htmlEsc(r) + '</div>';
-          var delay = (idx || 0) * 0.025;
-          return '<div class="qg-org-wrap" style="animation-delay:' + delay + 's"><div class="qg-org-node" style="background:' + c.bg + ';border-color:' + c.border + ';color:' + c.txt + ';animation-delay:' + delay + 's"><div class="qg-org-name" style="color:' + c.txt + '">' + htmlEsc(m.rumuz || '') + '</div>' + rankHtml + detail + '</div></div>';
+          var style = 'background:' + c.bg + ';border-color:' + c.border + ';color:' + c.txt + ';animation-delay:' + ((delay || 0) * 35) + 'ms';
+          return '<div class="qg-org-node-wrap"><div class="qg-org-node" style="' + style + '"><div class="qg-org-name" style="color:' + c.txt + '">' + htmlEsc((m && m.rumuz) || '') + '</div>' + rankHtml + detail + '</div></div>';
         }
-        function tier(list, cssClass, label, emptyText) {
-          var arr = list || [];
-          var multi = arr.length > 1 ? ' multi' : '';
-          var labelHtml = label ? '<div class="qg-org-tier-label">' + label + '</div>' : '';
-          var body = arr.length
-            ? '<div class="qg-org-level">' + arr.map(function(m,i){ return node(m,i); }).join('') + '</div>'
-            : '<div class="qg-org-empty-tier">' + htmlEsc(emptyText || 'Atama yok') + '</div>';
-          return '<div class="qg-org-tier ' + (cssClass || '') + multi + '">' + labelHtml + body + '</div>';
+        function stage(list, key, hasParent) {
+          if (!list.length) return '';
+          return '<div class="qg-org-stage qg-org-stage-' + key + (hasParent ? ' has-parent' : '') + '"><div class="qg-org-nodes">' + list.map(function(m, i){ return node(m, i); }).join('') + '</div></div>';
         }
-
-        var lider = sortMembers(members.filter(function(m){ return rankOf(m) === 'Lider'; }));
-        var vekil = sortMembers(members.filter(function(m){ return rankOf(m) === 'Vekilharç'; }));
-        var kaptan = sortMembers(members.filter(function(m){ return rankOf(m) === 'Kaptan'; }));
-        var tegmen = sortMembers(members.filter(function(m){ return rankOf(m) === 'Teğmen'; }));
-        var uye = sortMembers(members.filter(function(m){ return rankOf(m) === 'Üye'; }));
-        var goz = sortMembers(members.filter(function(m){ return rankOf(m) === 'Gözlemci'; }));
-
-        el.classList.add('qg-org-restored');
-        el.innerHTML = '<div class="qg-org-board">'
-          + '<div class="qg-org-titlebar"><div class="qg-org-emblem">-QG-</div><div class="qg-org-title">Q-GANG ORGANİZASYON ŞEMASI</div><div class="qg-org-subtitle">HİYERARŞİK KADRO AKIŞI</div></div>'
-          + tier(lider, 'lead', '', 'Lider ataması yok')
-          + tier(vekil, 'command', '', 'Vekilharç ataması yok')
-          + tier(kaptan, 'command', 'KAPTANLAR', 'Kaptan ataması yok')
-          + tier(tegmen, 'command', 'TEĞMENLER', 'Teğmen ataması yok')
-          + tier(uye, 'members', 'ÜYELER', 'Üye yok')
-          + tier(goz, 'observers', 'GÖZLEMCİLER', 'Gözlemci yok')
-          + '<div style="text-align:center;font-size:10px;color:#333;margin-top:22px;padding-top:14px;border-top:0.5px solid #111;letter-spacing:2px">TOPLAM ' + members.length + ' KİŞİ</div>'
-          + '</div>';
+        var lider = sortMembers(members.filter(function(m){ return ((m.rutbe || m.rol) || '') === 'Lider'; }));
+        var vekil = sortMembers(members.filter(function(m){ return ((m.rutbe || m.rol) || '') === 'Vekilharç'; }));
+        var kaptan = sortMembers(members.filter(function(m){ return ((m.rutbe || m.rol) || '') === 'Kaptan'; }));
+        var tegmen = sortMembers(members.filter(function(m){ return ((m.rutbe || m.rol) || '') === 'Teğmen'; }));
+        var uye = sortMembers(members.filter(function(m){ return (((m.rutbe || m.rol) || 'Üye') === 'Üye'); }));
+        var goz = sortMembers(members.filter(function(m){ return ((m.rutbe || m.rol) || '') === 'Gözlemci'; }));
+        el.style.cssText = '';
+        el.innerHTML = '<div class="qg-org-shell"><div class="qg-org-header"><div class="qg-org-logo">-QG-</div><div class="qg-org-title">Q-GANG ORGANİZASYON ŞEMASI</div><div class="qg-org-subtitle">HİYERARŞİK KADRO AKIŞI</div></div><div class="qg-org-tree">'
+          + stage(lider, 'lider', false)
+          + stage(vekil, 'vekil', true)
+          + stage(kaptan, 'kaptan', true)
+          + stage(tegmen, 'tegmen', true)
+          + stage(uye, 'uye', true)
+          + stage(goz, 'gozlemci', true)
+          + '</div><div class="qg-org-footer">TOPLAM ' + members.length + ' KİŞİ</div></div>';
       }
 
       function qgBirimObjeleriDefault() { return DEFAULT_BIRIMLER.map(function(ad){ return { ad: ad, aciklama: '' }; }); }
