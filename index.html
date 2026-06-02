@@ -1433,12 +1433,6 @@
 .gd-basarisiz   { background: #1a0000; color: #f87171; border: 0.5px solid #3a0000; }
 .gd-arsiv       { background: #111; color: #888; border: 0.5px solid #333; }
 
-/* Zorluk renkleri */
-.gz-kolay  { background: #001a05; color: #4ade80; }
-.gz-orta   { background: #1a1200; color: #fbbf24; }
-.gz-zor    { background: #1a0800; color: #fb923c; }
-.gz-kritik { background: #1a0000; color: #f87171; }
-
 /* Progress bar */
 .gorev-progress-wrap {
   background: #1a1a1a;
@@ -1633,6 +1627,11 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
       .qhall-bar { height:100%; border-radius:2px; background:linear-gradient(90deg,#fac775,#f97316); transition:width .5s ease; }
       .qhall-detay-meta { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:16px; font-size:11px; color:#555; }
       .qhall-bos, .qhall-yukluyor { font-size:12px; color:#333; text-align:center; padding:30px 0; }
+
+      .qhall-yil-grup { padding: 12px; border-bottom: 0.5px solid #111; }
+      .qhall-yil-baslik { display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; color:#fac775; margin:2px 0 10px; letter-spacing:1px; }
+      .qhall-yil-baslik::after { content:""; flex:1; height:1px; background:#1e1e1e; }
+      .qhall-yil-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
 
       @media (max-width: 600px) {
         body {
@@ -2277,7 +2276,6 @@ input[type="date"]:required:invalid {
                 "uyeDuzenle": 1,
                 "rutbeDegistir": 1,
                 "puanDuzenle": 1,
-                "gorevAta": 1,
                 "etkinlikEkle": 1,
                 "etkinlikSil": 1,
                 "butceGor": 1,
@@ -2299,8 +2297,6 @@ input[type="date"]:required:invalid {
                 "gorevOlustur": 1,
                 "gorevGor": 1,
                 "gorevYonet": 1,
-                "gorevOnayla": 1,
-                "gorevPuanOnayla": 1,
                 "gorevKategoriYonet": 1,
                 "gorevArsivGor": 1
         },
@@ -2310,7 +2306,6 @@ input[type="date"]:required:invalid {
                 "uyeDuzenle": 1,
                 "rutbeDegistir": 1,
                 "puanDuzenle": 1,
-                "gorevAta": 1,
                 "etkinlikEkle": 1,
                 "etkinlikSil": 1,
                 "butceGor": 1,
@@ -2332,8 +2327,6 @@ input[type="date"]:required:invalid {
                 "gorevOlustur": 1,
                 "gorevGor": 1,
                 "gorevYonet": 1,
-                "gorevOnayla": 1,
-                "gorevPuanOnayla": 1,
                 "gorevKategoriYonet": 0,
                 "gorevArsivGor": 1
         },
@@ -2343,7 +2336,6 @@ input[type="date"]:required:invalid {
                 "uyeDuzenle": 1,
                 "rutbeDegistir": 0,
                 "puanDuzenle": 1,
-                "gorevAta": 1,
                 "etkinlikEkle": 1,
                 "etkinlikSil": 1,
                 "butceGor": 1,
@@ -2365,8 +2357,6 @@ input[type="date"]:required:invalid {
                 "gorevOlustur": 1,
                 "gorevGor": 1,
                 "gorevYonet": 1,
-                "gorevOnayla": 1,
-                "gorevPuanOnayla": 1,
                 "gorevKategoriYonet": 0,
                 "gorevArsivGor": 1
         },
@@ -2376,7 +2366,6 @@ input[type="date"]:required:invalid {
                 "uyeDuzenle": 0,
                 "rutbeDegistir": 0,
                 "puanDuzenle": 0,
-                "gorevAta": 0,
                 "etkinlikEkle": 0,
                 "etkinlikSil": 0,
                 "butceGor": 0,
@@ -2398,8 +2387,6 @@ input[type="date"]:required:invalid {
                 "gorevOlustur": 1,
                 "gorevGor": 1,
                 "gorevYonet": 0,
-                "gorevOnayla": 0,
-                "gorevPuanOnayla": 0,
                 "gorevKategoriYonet": 0,
                 "gorevArsivGor": 0
         },
@@ -2409,7 +2396,6 @@ input[type="date"]:required:invalid {
                 "uyeDuzenle": 0,
                 "rutbeDegistir": 0,
                 "puanDuzenle": 0,
-                "gorevAta": 0,
                 "etkinlikEkle": 0,
                 "etkinlikSil": 0,
                 "butceGor": 0,
@@ -2431,8 +2417,6 @@ input[type="date"]:required:invalid {
                 "gorevOlustur": 1,
                 "gorevGor": 1,
                 "gorevYonet": 0,
-                "gorevOnayla": 0,
-                "gorevPuanOnayla": 0,
                 "gorevKategoriYonet": 0,
                 "gorevArsivGor": 0
         },
@@ -2442,7 +2426,6 @@ input[type="date"]:required:invalid {
                 "uyeDuzenle": 0,
                 "rutbeDegistir": 0,
                 "puanDuzenle": 0,
-                "gorevAta": 0,
                 "etkinlikEkle": 0,
                 "etkinlikSil": 0,
                 "butceGor": 0,
@@ -2464,8 +2447,6 @@ input[type="date"]:required:invalid {
                 "gorevOlustur": 0,
                 "gorevGor": 0,
                 "gorevYonet": 0,
-                "gorevOnayla": 0,
-                "gorevPuanOnayla": 0,
                 "gorevKategoriYonet": 0,
                 "gorevArsivGor": 0
         }
@@ -2500,6 +2481,18 @@ input[type="date"]:required:invalid {
           if (!merged[rol]) merged[rol] = {};
           Object.assign(merged[rol], cmsIzinler[rol] || {});
         });
+
+        // v2.8.3.1: Eski görev yetkilerini tek "gorevYonet" yetkisine taşı.
+        // Panelde artık gorevAta / gorevOnayla / gorevPuanOnayla gösterilmez.
+        Object.keys(merged).forEach(function(rol) {
+          var p = merged[rol] || {};
+          if (p.gorevAta || p.gorevOnayla || p.gorevPuanOnayla) p.gorevYonet = 1;
+          delete p.gorevAta;
+          delete p.gorevOnayla;
+          delete p.gorevPuanOnayla;
+          merged[rol] = p;
+        });
+
         aktifIzinler = merged;
         window.aktifIzinler = aktifIzinler;
         return aktifIzinler;
@@ -2515,6 +2508,8 @@ input[type="date"]:required:invalid {
       }
 
       function izin(key) {
+        // v2.8.3.1: eski görev yetki anahtarları tek merkezden okunur.
+        if (key === "gorevAta" || key === "gorevOnayla" || key === "gorevPuanOnayla") key = "gorevYonet";
         const rol = SESSION.rol || "Gözlemci";
         if (rol === "Lider") return true;
 
@@ -3064,7 +3059,7 @@ async function panelAc(rumuz, rol) {
           }, 30000);
         }
         // Gorev taleplerini yükle
-        if (izin("gorevAta")) {
+        if (izin("gorevYonet")) {
           renderGorevTalepleri();
           setInterval(renderGorevTalepleri, 60000);
         }
@@ -3327,6 +3322,7 @@ async function panelAc(rumuz, rol) {
         "Arşiv",
       ];
       const GOREVLER = ["Klan", "Sosyal Medya", "Yönetim", "Özel", "Yok"];
+      const BIRIMLER = ["Yok", "Yönetim", "Etkinlik", "Sosyal Medya", "Teknik", "Özel Görevler"];
       const ETK_TURLERI = [
         "GANG-UP",
         "OP-NIGHT",
@@ -3754,7 +3750,7 @@ async function panelAc(rumuz, rol) {
         });
         if (
           bekleyenTalepler.length &&
-          (izin("gorevAta") || SESSION.rol === "Lider")
+          (izin("gorevYonet") || SESSION.rol === "Lider")
         ) {
           alerts +=
             '<div class="alert-row alert-info" style="cursor:pointer" onclick="showTabDD(\'gorev\',\'ddTopluluk\',\'navToplulukBtn\')"><i class="ti ti-clipboard-list"></i> <strong>' +
@@ -5156,7 +5152,7 @@ async function panelAc(rumuz, rol) {
             el.innerHTML = "";
             return;
           }
-          const canYanitla = izin("gorevAta") || SESSION.rol === "Lider";
+          const canYanitla = izin("gorevYonet") || SESSION.rol === "Lider";
           let html =
             '<div class="section-title" style="margin-bottom:.6rem"><i class="ti ti-checkbox"></i> Bekleyen Gorev Talepleri</div>';
           bekleyenler.forEach(function (t) {
@@ -5243,7 +5239,7 @@ async function panelAc(rumuz, rol) {
           );
         });
         const geEl = document.getElementById("gorevEditor");
-        if (izin("gorevAta") || SESSION.rol === "Lider") {
+        if (izin("gorevYonet") || SESSION.rol === "Lider") {
           const uOpts = siraliUyeler
             .map(function (m) {
               return (
@@ -5267,7 +5263,7 @@ async function panelAc(rumuz, rol) {
             );
           }).join("");
           geEl.innerHTML =
-            '<div class="section-title">Görev Ata</div>' +
+            '<div class="section-title">Görev Yönet</div>' +
             '<div class="card"><div class="form-row">' +
             '<div class="form-group"><label>Üye</label><select id="gorevUye">' +
             uOpts +
@@ -7466,6 +7462,9 @@ async function panelAc(rumuz, rol) {
               "</option>"
             );
           }).join("");
+          var bOpts = BIRIMLER.map(function (b) {
+            return "<option" + (b === "Yok" ? " selected" : "") + ">" + b + "</option>";
+          }).join("");
           var gOpts = GOREVLER.map(function (g) {
             return (
               "<option" +
@@ -7484,6 +7483,9 @@ async function panelAc(rumuz, rol) {
             "</select></div></div>" +
             '<div class="form-row"><div class="form-group"><label>Durum</label><select id="m_durum">' +
             dOpts +
+            "</select></div>" +
+            '<div class="form-group"><label>Birim</label><select id="m_birim">' +
+            bOpts +
             "</select></div></div>" +
             '<div class="form-row"><div class="form-group"><label>Katılım</label><input type="date" id="m_katilim" value="' +
             today +
@@ -7524,6 +7526,9 @@ async function panelAc(rumuz, rol) {
               "</option>"
             );
           }).join("");
+          var bO = BIRIMLER.map(function (b) {
+            return "<option" + (b === (m.birim || "Yok") ? " selected" : "") + ">" + b + "</option>";
+          }).join("");
           var gO = GOREVLER.map(function (g) {
             return (
               "<option" +
@@ -7546,6 +7551,9 @@ async function panelAc(rumuz, rol) {
             "</select></div></div>" +
             '<div class="form-row"><div class="form-group"><label>Durum</label><select id="e_durum">' +
             dO +
+            "</select></div>" +
+            '<div class="form-group"><label>Birim</label><select id="e_birim">' +
+            bO +
             "</select></div></div>" +
             '<div class="form-row"><div class="form-group"><label>Puan</label><input type="number" id="e_puan" value="' +
             (m.puan || 0) +
@@ -7934,6 +7942,7 @@ async function panelAc(rumuz, rol) {
           .value;
         var gorev = (document.getElementById("m_gorev") || { value: "Yok" })
           .value;
+        var birim = (document.getElementById("m_birim") || { value: "Yok" }).value;
         var katilim = (document.getElementById("m_katilim") || { value: "" })
           .value;
         var dogum = (document.getElementById("m_dogum") || { value: "" }).value;
@@ -7952,6 +7961,7 @@ async function panelAc(rumuz, rol) {
           rutbe: rutbe,
           durum: durum,
           gorev: gorev,
+          birim: birim,
           puan: 0,
           katilim: katilim,
           dogum: dogum,
@@ -8028,6 +8038,7 @@ async function panelAc(rumuz, rol) {
         var newGorev = (
           document.getElementById("e_gorev") || { value: m.gorev }
         ).value;
+        var newBirim = (document.getElementById("e_birim") || { value: m.birim || "Yok" }).value;
         var newPuan =
           Number(
             (document.getElementById("e_puan") || { value: m.puan }).value,
@@ -8049,6 +8060,7 @@ async function panelAc(rumuz, rol) {
           rutbe: newRutbe,
           durum: newDurum,
           gorev: newGorev,
+          birim: newBirim,
           puan: newPuan,
           katilim: newKatilim,
           dogum: newDogum,
@@ -9152,14 +9164,10 @@ async function panelAc(rumuz, rol) {
       }
 
       // ============================================================
-      // ORG CHART - SVG TABANLI HİYERARŞİK KURUMSAL YAPI
+      // ORG CHART — v2.8.3 Çekirdek Kadro / Üyeler / Gözlemciler
       // ============================================================
       async function renderOrg() {
         var el = document.getElementById("orgChart");
-        if (el) {
-          el.style.cssText =
-            "overflow-x:auto;width:100%;-webkit-overflow-scrolling:touch;";
-        }
         if (!el) {
           var tab = document.getElementById("tab-org");
           if (tab) {
@@ -9169,202 +9177,88 @@ async function panelAc(rumuz, rol) {
           } else return;
         }
         if (!members || !members.length) {
-          el.innerHTML =
-            '<div style="color:#555;font-size:12px;padding:2rem;text-align:center">Üye verisi yüklenmedi.</div>';
+          el.innerHTML = '<div style="color:#555;font-size:12px;padding:2rem;text-align:center">Üye verisi yüklenmedi.</div>';
           return;
         }
 
-        var RENKLER = {
-          Lider: {
-            bg: "#000000",
-            border: "#e8e8e8",
-            txt: "#ffffff",
-            badge: "#1a1a1a",
-          },
-          Vekilharç: {
-            bg: "#1a0000",
-            border: "#d45555",
-            txt: "#e07070",
-            badge: "#3a0a0a",
-          },
-          Kaptan: {
-            bg: "#001020",
-            border: "#4a9fd4",
-            txt: "#7abde8",
-            badge: "#001a30",
-          },
-          Teğmen: {
-            bg: "#001200",
-            border: "#4a9a55",
-            txt: "#7aba80",
-            badge: "#001a05",
-          },
-          Üye: {
-            bg: "#0f0f00",
-            border: "#a08030",
-            txt: "#c9a040",
-            badge: "#1a1500",
-          },
-          Gözlemci: {
-            bg: "#0a0a0a",
-            border: "#333",
-            txt: "#555",
-            badge: "#111",
-          },
-        };
-        var SIRALA = [
-          "Lider",
-          "Vekilharç",
-          "Kaptan",
-          "Teğmen",
-          "Üye",
-          "Gözlemci",
-        ];
-
         var orgMeta = await getOrgGorevMeta(false);
-
-        var gruplar = {};
-        SIRALA.forEach(function (r) {
-          gruplar[r] = [];
-        });
-        members.forEach(function (m) {
-          var r = m.rutbe || "Üye";
-          if (gruplar[r]) gruplar[r].push(m);
-          else gruplar["Üye"].push(m);
-        });
-
-        // Container
-        el.innerHTML = "";
-        el.style.cssText = "overflow-x:auto;padding:16px 8px 24px";
-
-        var wrap = document.createElement("div");
-        wrap.style.cssText = "min-width:600px;position:relative;";
-
-        // BAŞLIK
-        var header = document.createElement("div");
-        header.style.cssText =
-          "text-align:center;padding:20px 0 24px;border-bottom:1px solid #1a1a1a;margin-bottom:24px";
-        header.innerHTML =
-          "<div style=\"font-family:'Vanilla Whale',monospace;font-size:32px;color:#fac775;letter-spacing:-0.5px;font-weight:400;line-height:1\">-QG-</div>" +
-          '<div style="font-size:13px;font-weight:600;color:#d3d1c7;letter-spacing:2px;margin:6px 0 2px">Q-GANG TOPLULUK ORGANİZASYONU</div>' +
-          '<div style="font-size:10px;color:#333;letter-spacing:4px">HİYERARŞİ · YAPI</div>';
-        wrap.appendChild(header);
-
-        // Her katman arası bağlantı çizgisi ve kutucuklar
-        var katmanlar = SIRALA.filter(function (r) {
-          return gruplar[r] && gruplar[r].length > 0;
-        });
-
-        katmanlar.forEach(function (rutbe, ki) {
-          var listesi = gruplar[rutbe];
-          var renk = RENKLER[rutbe] || RENKLER["Gözlemci"];
-
-          // Üstten bağlantı çizgisi (ilk katman hariç)
-          if (ki > 0) {
-            var conn = document.createElement("div");
-            conn.style.cssText =
-              "display:flex;flex-direction:column;align-items:center;margin-bottom:0";
-            conn.innerHTML =
-              '<div style="width:2px;height:20px;background:#2a2a2a"></div>' +
-              '<div style="width:60%;height:1px;background:#2a2a2a;margin-bottom:0"></div>' +
-              '<div style="display:flex;justify-content:space-around;width:60%;margin-bottom:0">' +
-              listesi
-                .map(function () {
-                  return '<div style="width:2px;height:16px;background:#2a2a2a"></div>';
-                })
-                .join("") +
-              "</div>";
-            wrap.appendChild(conn);
-          }
-
-          // Rütbe etiketi
-          var label = document.createElement("div");
-          label.style.cssText = "text-align:center;margin-bottom:12px";
-          label.innerHTML =
-            '<span style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;' +
-            "color:" +
-            renk.txt +
-            ";background:" +
-            renk.badge +
-            ";border:1px solid " +
-            renk.border +
-            ';padding:3px 14px;border-radius:20px">' +
-            rutbe.toUpperCase() +
-            " (" +
-            listesi.length +
-            ")</span>";
-          wrap.appendChild(label);
-
-          // Kutucuk grid
-          var grid = document.createElement("div");
-          grid.setAttribute("data-rutbe-grid", rutbe);
-          grid.style.cssText =
-            "display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;padding:0 16px";
-
-          listesi.forEach(function (m) {
-            var box = document.createElement("div");
-            box.style.cssText =
-              "background:" +
-              renk.bg +
-              ";border:1px solid " +
-              renk.border +
-              ";border-radius:8px;padding:10px 16px;min-width:100px;max-width:140px;text-align:center;" +
-              "position:relative;transition:transform .15s";
-            box.onmouseenter = function () {
-              this.style.transform = "translateY(-3px)";
-            };
-            box.onmouseleave = function () {
-              this.style.transform = "";
-            };
-
-            // Durum indikatörü
-            var durumRenk =
-              m.durum === "Aktif"
-                ? "#4a9a55"
-                : m.durum === "Riskli"
-                  ? "#d4a042"
-                  : "#555";
-            box.innerHTML =
-              '<div style="width:6px;height:6px;background:' +
-              durumRenk +
-              ';border-radius:50%;position:absolute;top:8px;right:8px"></div>' +
-              '<div style="font-size:12px;font-weight:700;color:' +
-              renk.txt +
-              ';margin-bottom:3px">' +
-              htmlEsc(m.rumuz) +
-              "</div>" +
-              buildOrgMemberMetaLine(m, rutbe, orgMeta);
-
-            grid.appendChild(box);
+        var RANK = { Lider:0, "Vekilharç":1, Kaptan:2, "Teğmen":3, "Üye":4, "Gözlemci":5 };
+        var COLORS = {
+          Lider: { bg:'#050505', border:'#e8e8e8', txt:'#fff', sub:'#888' },
+          "Vekilharç": { bg:'#170505', border:'#a32d2d', txt:'#e24b4a', sub:'#8d4747' },
+          Kaptan: { bg:'#031323', border:'#185fa5', txt:'#b5d4f4', sub:'#378add' },
+          "Teğmen": { bg:'#031f18', border:'#0f6e56', txt:'#9fe1cb', sub:'#1d9e75' },
+          "Üye": { bg:'#181104', border:'#854f0b', txt:'#fac775', sub:'#ba7517' },
+          "Gözlemci": { bg:'#0a0a0a', border:'#242424', txt:'#666', sub:'#3a3a3a' }
+        };
+        function sortMembers(list) {
+          return (list || []).slice().sort(function(a,b){
+            return (RANK[a.rutbe || 'Üye'] ?? 9) - (RANK[b.rutbe || 'Üye'] ?? 9) || String(a.rumuz || '').localeCompare(String(b.rumuz || ''),'tr');
           });
+        }
+        function birimLabel(m) {
+          var b = (m && m.birim) || 'Yok';
+          return (!b || b === 'Yok') ? '' : b;
+        }
+        function activeTaskLine(m) {
+          var rumuz = (m && m.rumuz) || '';
+          var kats = (orgMeta && orgMeta.gorevKategorileri && orgMeta.gorevKategorileri[rumuz]) || [];
+          var sayilar = (orgMeta && orgMeta.gorevSayilari && orgMeta.gorevSayilari[rumuz]) || {};
+          if (!kats.length) return '';
+          return '<div style="margin-top:6px;display:flex;justify-content:center;gap:4px;flex-wrap:wrap">' + kats.map(function(k){
+            var adet = sayilar[k] || 1;
+            return '<span style="font-size:9px;color:#9fe1cb;background:#031f18;border:0.5px solid #0f6e56;border-radius:999px;padding:2px 6px">Görev: ' + htmlEsc(k) + (adet > 1 ? ' ×' + adet : '') + '</span>';
+          }).join('') + '</div>';
+        }
+        function card(m, mode) {
+          var r = m.rutbe || 'Üye';
+          var c = COLORS[r] || COLORS['Üye'];
+          var b = birimLabel(m);
+          var sub = '';
+          if (mode === 'core') {
+            if (r === 'Lider' || r === 'Vekilharç') sub = 'Global Yönetim';
+            else if (r === 'Kaptan') sub = b ? ('Kaptan · ' + b) : 'Kaptan';
+            else if (r === 'Teğmen') sub = b ? ('Teğmen · ' + b) : 'Teğmen · Birim Yok';
+          } else if (mode === 'member') {
+            sub = activeTaskLine(m);
+          }
+          if (mode === 'observer') sub = '';
+          var subHtml = mode === 'member'
+            ? sub
+            : (sub ? '<div style="font-size:10px;color:' + c.sub + ';margin-top:5px;line-height:1.35">' + htmlEsc(sub) + '</div>' : '');
+          return '<div style="background:' + c.bg + ';border:0.5px solid ' + c.border + ';border-radius:10px;padding:10px 14px;min-width:118px;max-width:170px;text-align:center">'
+            + '<div style="font-size:12px;font-weight:700;color:' + c.txt + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + htmlEsc(m.rumuz || '') + '</div>'
+            + subHtml
+            + '</div>';
+        }
+        function section(title, subtitle, list, mode) {
+          if (!list.length) return '';
+          var gridMin = mode === 'observer' ? '110px' : '130px';
+          return '<div style="margin:16px 0 18px">'
+            + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
+            + '<div style="font-size:11px;font-weight:800;color:#fac775;letter-spacing:2px;text-transform:uppercase;white-space:nowrap">' + htmlEsc(title) + ' (' + list.length + ')</div>'
+            + '<div style="height:1px;background:#1e1e1e;flex:1"></div></div>'
+            + (subtitle ? '<div style="font-size:11px;color:#555;margin:-4px 0 10px;line-height:1.45">' + htmlEsc(subtitle) + '</div>' : '')
+            + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(' + gridMin + ',1fr));gap:10px">'
+            + list.map(function(m){ return card(m, mode); }).join('')
+            + '</div></div>';
+        }
 
-          wrap.appendChild(grid);
-        });
+        var core = sortMembers(members.filter(function(m){ return ['Lider','Vekilharç','Kaptan','Teğmen'].includes(m.rutbe || 'Üye'); }));
+        var uyeler = sortMembers(members.filter(function(m){ return (m.rutbe || 'Üye') === 'Üye'; }));
+        var gozlemciler = sortMembers(members.filter(function(m){ return (m.rutbe || 'Üye') === 'Gözlemci'; }));
 
-        // Toplam üye sayısı
-        var footer = document.createElement("div");
-        footer.style.cssText =
-          "text-align:center;font-size:10px;color:#333;margin-top:20px;padding-top:16px;border-top:1px solid #111;letter-spacing:2px";
-        footer.textContent = "TOPLAM " + members.length + " ÜYE";
-        wrap.appendChild(footer);
-
-        // Wrap'i ekle ve animasyonla aç
-        el.innerHTML = "";
-        el.appendChild(wrap);
-        // Her rutbe grubunu (grid) sırayla aşağıdan aç
-        var grids = wrap.querySelectorAll("[data-rutbe-grid]");
-        grids.forEach(function (g, i) {
-          g.style.cssText +=
-            "opacity:0;transform:translateY(-8px);transition:opacity .3s ease " +
-            i * 0.08 +
-            "s, transform .3s ease " +
-            i * 0.08 +
-            "s";
-          setTimeout(function () {
-            g.style.opacity = "1";
-            g.style.transform = "translateY(0)";
-          }, 30);
-        });
+        el.style.cssText = 'overflow-x:auto;padding:16px 8px 24px;-webkit-overflow-scrolling:touch;';
+        el.innerHTML = '<div style="min-width:320px;max-width:980px;margin:0 auto">'
+          + '<div style="text-align:center;padding:18px 0 20px;border-bottom:0.5px solid #1a1a1a;margin-bottom:18px">'
+          + '<div style="font-family:\'Vanilla Whale\',monospace;font-size:32px;color:#fac775;letter-spacing:-0.5px;font-weight:400;line-height:1">-QG-</div>'
+          + '<div style="font-size:13px;font-weight:600;color:#d3d1c7;letter-spacing:2px;margin:6px 0 2px">Q-GANG ORGANİZASYON ŞEMASI</div>'
+          + '<div style="font-size:10px;color:#333;letter-spacing:3px">ÇEKİRDEK KADRO · ÜYELER · GÖZLEMCİLER</div></div>'
+          + section('Çekirdek Kadro', 'Lider, Vekilharç, Kaptanlar ve birim sorumluluğu taşıyan Teğmenler.', core, 'core')
+          + section('Q-GANG Üyeleri', 'Üyelerde yalnızca aktif görev varsa görev alanı gösterilir; görev almıyorsa isim dışında görev bilgisi yazmaz.', uyeler, 'member')
+          + section('Gözlemciler', '', gozlemciler, 'observer')
+          + '<div style="text-align:center;font-size:10px;color:#333;margin-top:20px;padding-top:14px;border-top:0.5px solid #111;letter-spacing:2px">TOPLAM ' + members.length + ' KİŞİ</div>'
+          + '</div>';
       }
     </script>
     <script>
@@ -9938,12 +9832,9 @@ async function panelAc(rumuz, rol) {
         basvuruOnayla: "Başvuru Onayla/Reddet",
         uyeEkle: "Üye Ekle",
         "⚔️ OPERASYONEL YÖNETİM": "__baslik__",
-        gorevAta: "Görev Ata",
         gorevOlustur: "Görev Oluştur",
         gorevGor: "Görevleri Gör",
         gorevYonet: "Görev Yönet",
-        gorevOnayla: "Görev/Aşama Onayla",
-        gorevPuanOnayla: "Görev Puan Onayla",
         gorevKategoriYonet: "Görev Kategori Yönet",
         gorevArsivGor: "Görev Arşivi Gör",
         davetYonet: "Davet Yönet",
@@ -10938,10 +10829,6 @@ function gorevDurumEtiket(d) {
   return m[d] || d;
 }
 
-function zorlukClass(z) {
-  var m = { kolay:'gz-kolay', orta:'gz-orta', zor:'gz-zor', kritik:'gz-kritik' };
-  return m[z] || 'gz-orta';
-}
 
 function asamaDurumStyle(d) {
   var m = {
@@ -12838,7 +12725,7 @@ async function renderQHall() {
 
   el.innerHTML = '<div class="qhall-yukluyor">Yükleniyor...</div>';
 
-  var data = await qhallAPI('SEZON_LIST', { item: { limit: 20 } });
+  var data = await qhallAPI('SEZON_LIST', { item: { limit: 50 } });
 
   if (!data || !data.success || !Array.isArray(data.result)) {
     var msg = (data && data.error) ? data.error : 'Sezon verisi alınamadı.';
@@ -12856,21 +12743,33 @@ async function renderQHall() {
     return;
   }
 
-  var gridHtml = '<div class="qhall-sezon-grid">'
-    + _qhallSezonlar.map(function(s) {
-        return '<div class="qhall-sezon-kart" onclick="qhallDetayAc(\'' + qhEsc(s.id) + '\')">'
-          + '<div class="qhall-sezon-kart-baslik">🏆 ' + qhEsc(s.sezonAdi || '') + '</div>'
-          + '<div class="qhall-sezon-kart-satir">🥇 <strong>' + qhEsc(s.sampiyonRumuz || '') + '</strong> — ' + (s.sampiyonPuan || 0) + ' P</div>'
-          + (s.ikinciRumuz ? '<div class="qhall-sezon-kart-satir">🥈 ' + qhEsc(s.ikinciRumuz) + ' — ' + (s.ikinciPuan || 0) + ' P</div>' : '')
-          + (s.ucuncuRumuz ? '<div class="qhall-sezon-kart-satir">🥉 ' + qhEsc(s.ucuncuRumuz) + ' — ' + (s.ucuncuPuan || 0) + ' P</div>' : '')
-          + '<div class="qhall-sezon-meta">'
-          + '<span>👥 ' + (s.toplamKatilimci || 0) + ' katılımcı</span>'
-          + '<span>📅 ' + qhEsc(s.kapanisTarihi ? String(s.kapanisTarihi).split('T')[0] : '—') + '</span>'
-          + '</div></div>';
-      }).join('')
-    + '</div>';
+  var yilGruplari = {};
+  _qhallSezonlar.forEach(function(s) {
+    var yil = s.yil || (s.kapanisTarihi ? new Date(s.kapanisTarihi).getFullYear() : 'Diğer');
+    yil = String(yil || 'Diğer');
+    if (!yilGruplari[yil]) yilGruplari[yil] = [];
+    yilGruplari[yil].push(s);
+  });
 
-  el.innerHTML = gridHtml;
+  var yillar = Object.keys(yilGruplari).sort(function(a,b){ return Number(b || 0) - Number(a || 0); });
+
+  var html = yillar.map(function(yil) {
+    var sezonlar = yilGruplari[yil] || [];
+    var kartlar = sezonlar.map(function(s) {
+      return '<div class="qhall-sezon-kart" onclick="qhallDetayAc(\'' + qhEsc(s.id) + '\')">'
+        + '<div class="qhall-sezon-kart-baslik">🏆 ' + qhEsc(s.sezonAdi || '') + '</div>'
+        + '<div class="qhall-sezon-kart-satir">🥇 <strong>' + qhEsc(s.sampiyonRumuz || '') + '</strong> — ' + (s.sampiyonPuan || 0) + ' P</div>'
+        + (s.ikinciRumuz ? '<div class="qhall-sezon-kart-satir">🥈 ' + qhEsc(s.ikinciRumuz) + ' — ' + (s.ikinciPuan || 0) + ' P</div>' : '')
+        + (s.ucuncuRumuz ? '<div class="qhall-sezon-kart-satir">🥉 ' + qhEsc(s.ucuncuRumuz) + ' — ' + (s.ucuncuPuan || 0) + ' P</div>' : '')
+        + '<div class="qhall-sezon-meta">'
+        + '<span>👥 ' + (s.toplamKatilimci || 0) + ' katılımcı</span>'
+        + '<span>📅 ' + qhEsc(s.kapanisTarihi ? String(s.kapanisTarihi).split('T')[0] : '—') + '</span>'
+        + '</div></div>';
+    }).join('');
+    return '<section class="qhall-yil-grup"><div class="qhall-yil-baslik">' + qhEsc(yil) + '</div><div class="qhall-yil-grid">' + kartlar + '</div></section>';
+  }).join('');
+
+  el.innerHTML = html;
 }
 
 
@@ -12930,19 +12829,6 @@ async function renderQHall() {
 })();
 </script>
 
-<script>
-// Q-PANEL v2.8.2 — Görev Yönetimi Hotfix: zorluk görünürlüğünü tamamen bastırır.
-(function(){
-  function qgRemoveDifficultyBadges(root) {
-    try {
-      (root || document).querySelectorAll('.gz-kolay,.gz-orta,.gz-zor,.gz-kritik').forEach(function(el){ el.remove(); });
-    } catch(e) {}
-  }
-  document.addEventListener('DOMContentLoaded', function(){ qgRemoveDifficultyBadges(document); });
-  var mo = new MutationObserver(function(){ qgRemoveDifficultyBadges(document); });
-  try { mo.observe(document.body, { childList:true, subtree:true }); } catch(e) {}
-})();
-</script>
 
 </body>
 </html>
