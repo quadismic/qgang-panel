@@ -9422,18 +9422,18 @@ async function panelAc(rumuz, rol) {
           function people(list){
             if (!list.length) return '<div class="qg-unit-empty">Atama yok.</div>';
             return list.map(function(m){
-              return '<div class="qg-unit-person"><span><i class="ti ti-user"></i> ' + htmlEsc(m.rumuz) + '</span><button class="btn btn-sm btn-danger" onclick="birimdenCikar('' + htmlEsc(m._id) + '')"><i class="ti ti-x"></i> Çıkar</button></div>';
+              return '<div class="qg-unit-person"><span><i class="ti ti-user"></i> ' + htmlEsc(m.rumuz) + '</span><button class="btn btn-sm btn-danger" onclick="birimdenCikar(' + JSON.stringify(m._id) + ')"><i class="ti ti-x"></i> Çıkar</button></div>';
             }).join('');
           }
           var warn = !kaps.length ? '<div class="qg-unit-warning"><i class="ti ti-alert-triangle"></i><span>Bu birimde kaptan yok. Görev bildirimleri Lider/Vekilharç tarafına düşer.</span></div>' : '';
           var silBtn = qgVarsayilanBirimMi(ad)
             ? '<span class="qg-unit-system-badge">Varsayılan</span>'
-            : '<button class="btn btn-sm btn-danger" onclick="birimSil('' + htmlEsc(ad) + '')"><i class="ti ti-trash"></i> Sil</button>';
+            : '<button class="btn btn-sm btn-danger" onclick="birimSil(' + JSON.stringify(ad) + ')"><i class="ti ti-trash"></i> Sil</button>';
           html += '<div class="qg-unit-card">'
             + '<div class="qg-unit-head"><div><div class="qg-unit-title"><i class="ti ti-shield-cog"></i> ' + htmlEsc(ad) + '</div><div class="qg-unit-desc">' + htmlEsc(b.aciklama || 'Açıklama eklenmemiş.') + '</div></div>' + silBtn + '</div>'
             + '<div class="qg-unit-stats"><div class="qg-unit-stat"><b>' + kaps.length + '</b><span>Kaptan</span></div><div class="qg-unit-stat"><b>' + tegs.length + '</b><span>Teğmen</span></div><div class="qg-unit-stat"><b>' + aktifUyeler.length + '</b><span>Aktif Üye</span></div></div>'
             + warn
-            + '<div class="qg-unit-actions"><button class="btn btn-sm" onclick="birimModalAc('' + htmlEsc(ad) + '')"><i class="ti ti-edit"></i> Düzenle</button><button class="btn btn-sm btn-primary" onclick="birimeKisiEkle('' + htmlEsc(ad) + '','Kaptan')"><i class="ti ti-plus"></i> Kaptan</button><button class="btn btn-sm btn-success" onclick="birimeKisiEkle('' + htmlEsc(ad) + '','Teğmen')"><i class="ti ti-plus"></i> Teğmen</button></div>'
+            + '<div class="qg-unit-actions"><button class="btn btn-sm" onclick="birimModalAc(' + JSON.stringify(ad) + ')"><i class="ti ti-edit"></i> Düzenle</button><button class="btn btn-sm btn-primary" onclick="birimeKisiEkle(' + JSON.stringify(ad) + ', \"Kaptan\")"><i class="ti ti-plus"></i> Kaptan</button><button class="btn btn-sm btn-success" onclick="birimeKisiEkle(' + JSON.stringify(ad) + ', \"Teğmen\")"><i class="ti ti-plus"></i> Teğmen</button></div>'
             + '<div class="qg-unit-section"><h4><i class="ti ti-sword"></i> Kaptanlar</h4>' + people(kaps) + '</div>'
             + '<div class="qg-unit-section"><h4><i class="ti ti-shield"></i> Teğmenler</h4>' + people(tegs) + '</div>'
             + '</div>';
@@ -9454,9 +9454,7 @@ async function panelAc(rumuz, rol) {
         if (qgVarsayilanBirimMi(ad)) { alert('Varsayılan birimler silinemez. İstersen adını/açıklamasını düzenleyebilirsin.'); return; }
         var kullaniliyor = (members || []).filter(function(m){ return (m.birim || 'Yok') === ad; });
         var msg = ad + ' birimini silmek istiyor musun?';
-        if (kullaniliyor.length) msg += '
-
-Bu birimde ' + kullaniliyor.length + ' kişi var. Silinirse bu kişilerin birimi Yok yapılacak.';
+        if (kullaniliyor.length) msg += '\n\nBu birimde ' + kullaniliyor.length + ' kişi var. Silinirse bu kişilerin birimi Yok yapılacak.';
         if (!confirm(msg)) return;
         var birimler = await qgBirimObjeleriYukle(true);
         birimler = birimler.filter(function(b){ return b.ad !== ad; });
