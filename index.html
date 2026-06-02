@@ -9503,6 +9503,12 @@ async function panelAc(rumuz, rol) {
         } catch(e) { return qgBirimObjeleriDefault(); }
       }
       function qgVarsayilanBirimMi(ad) { return DEFAULT_BIRIMLER.includes(ad); }
+      function qgSafeArg(value) {
+        return encodeURIComponent(String(value || ''));
+      }
+      function qgCallArg(value) {
+        return "decodeURIComponent('" + qgSafeArg(value) + "')";
+      }
       async function renderBirimler() {
         var el = document.getElementById('birimlerPanel'); if (!el) return;
         if (!['Lider','Vekilharç'].includes(SESSION.rol)) { el.innerHTML = '<div class="erisim-engel"><i class="ti ti-lock"></i>Birimler alanı Vekilharç+ erişimine açıktır.</div>'; return; }
@@ -9511,6 +9517,7 @@ async function panelAc(rumuz, rol) {
         var html = '<div class="qg-unit-grid">';
         birimler.forEach(function(b){
           var ad = b.ad;
+          var adArg = qgCallArg(ad);
           var kisiler = (members || []).filter(function(m){ return (m.birim || 'Yok') === ad; });
           var kaps = kisiler.filter(function(m){ return (m.rutbe || '') === 'Kaptan'; });
           var tegs = kisiler.filter(function(m){ return (m.rutbe || '') === 'Teğmen'; });
@@ -9518,18 +9525,19 @@ async function panelAc(rumuz, rol) {
           function people(list){
             if (!list.length) return '<div class="qg-unit-empty">Atama yok.</div>';
             return list.map(function(m){
-              return '<div class="qg-unit-person"><span><i class="ti ti-user"></i> ' + htmlEsc(m.rumuz) + '</span><button class="btn btn-sm btn-danger" onclick="birimdenCikar(' + JSON.stringify(m._id) + ')"><i class="ti ti-x"></i> Çıkar</button></div>';
+              var idArg = qgCallArg(m._id);
+              return '<div class="qg-unit-person"><span><i class="ti ti-user"></i> ' + htmlEsc(m.rumuz) + '</span><button class="btn btn-sm btn-danger" onclick="birimdenCikar(' + idArg + ')"><i class="ti ti-x"></i> Çıkar</button></div>';
             }).join('');
           }
           var warn = !kaps.length ? '<div class="qg-unit-warning"><i class="ti ti-alert-triangle"></i><span>Bu birimde kaptan yok. Görev bildirimleri Lider/Vekilharç tarafına düşer.</span></div>' : '';
           var silBtn = qgVarsayilanBirimMi(ad)
             ? '<span class="qg-unit-system-badge">Varsayılan</span>'
-            : '<button class="btn btn-sm btn-danger" onclick="birimSil(' + JSON.stringify(ad) + ')"><i class="ti ti-trash"></i> Sil</button>';
+            : '<button class="btn btn-sm btn-danger" onclick="birimSil(' + adArg + ')"><i class="ti ti-trash"></i> Sil</button>';
           html += '<div class="qg-unit-card">'
             + '<div class="qg-unit-head"><div><div class="qg-unit-title"><i class="ti ti-shield-cog"></i> ' + htmlEsc(ad) + '</div><div class="qg-unit-desc">' + htmlEsc(b.aciklama || 'Açıklama eklenmemiş.') + '</div></div>' + silBtn + '</div>'
             + '<div class="qg-unit-stats"><div class="qg-unit-stat"><b>' + kaps.length + '</b><span>Kaptan</span></div><div class="qg-unit-stat"><b>' + tegs.length + '</b><span>Teğmen</span></div><div class="qg-unit-stat"><b>' + aktifUyeler.length + '</b><span>Aktif Üye</span></div></div>'
             + warn
-            + '<div class="qg-unit-actions"><button class="btn btn-sm" onclick="birimModalAc(' + JSON.stringify(ad) + ')"><i class="ti ti-edit"></i> Düzenle</button><button class="btn btn-sm btn-primary" onclick="birimeKisiEkle(' + JSON.stringify(ad) + ', \"Kaptan\")"><i class="ti ti-plus"></i> Kaptan</button><button class="btn btn-sm btn-success" onclick="birimeKisiEkle(' + JSON.stringify(ad) + ', \"Teğmen\")"><i class="ti ti-plus"></i> Teğmen</button></div>'
+            + '<div class="qg-unit-actions"><button class="btn btn-sm" onclick="birimModalAc(' + adArg + ')"><i class="ti ti-edit"></i> Düzenle</button><button class="btn btn-sm btn-primary" onclick="birimeKisiEkle(' + adArg + ', \'Kaptan\')"><i class="ti ti-plus"></i> Kaptan</button><button class="btn btn-sm btn-success" onclick="birimeKisiEkle(' + adArg + ', \'Teğmen\')"><i class="ti ti-plus"></i> Teğmen</button></div>'
             + '<div class="qg-unit-section"><h4><i class="ti ti-sword"></i> Kaptanlar</h4>' + people(kaps) + '</div>'
             + '<div class="qg-unit-section"><h4><i class="ti ti-shield"></i> Teğmenler</h4>' + people(tegs) + '</div>'
             + '</div>';
