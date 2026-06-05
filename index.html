@@ -1,143 +1,102 @@
 <!-- ═══════════════════════════════════════════════════
-     Q-PANEL v2.9.3 — UI Hotfix Patch
-     1) Kariyer sekmesi Topluluk'tan Yönetim'e taşındı
-     2) Kariyer sekmesi açılınca otomatik yükleme garanti edildi
-     3) Dashboard Son Sezon Podyumu kaldırıldı
+     Q-PANEL v2.9.4 — Etkinlik Puan Onay Sistemi Patch
+     Amaç:
+     - Etkinlik önce oluşturulur.
+     - Katılımcılar sonra kaydedilir.
+     - Puan yalnızca "Puanları Onayla" ile işlenir.
+     - Silmede -puan kaydı oluşturulmaz; ilgili +puan arşiv kayıtları kaldırılır.
      ═══════════════════════════════════════════════════ -->
 
-<!-- [A] NAV DEĞİŞİKLİĞİ
-     1. ddTopluluk içindeki Kariyer nav item'ını kaldır.
-     2. ddYonetim içine aşağıdaki item'ı ekle.
--->
-<!--
-<div class="nav-dd-item" onclick="showTabDD('kariyer','ddYonetim','navYonetimBtn')">
-  <i class="ti ti-chart-radar"></i> Kariyer
-</div>
--->
+<style>
+.event-status-pill{display:inline-flex;align-items:center;gap:4px;border:.5px solid #333;border-radius:999px;padding:2px 7px;font-size:10px;color:#777;margin-left:6px}
+.event-status-pill.ok{border-color:#14532d;color:#4ade80;background:#001a0f}
+.event-status-pill.wait{border-color:#3a2800;color:#fbbf24;background:#1a1200}
+.event-status-pill.draft{border-color:#333;color:#777;background:#111}
+.event-actions-v294{display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.event-actions-v294 .btn-xs{font-size:10px;padding:4px 7px;border-radius:8px}
+</style>
 
 <script>
 // ═══════════════════════════════════════════════════
-// Q-PANEL v2.9.3 — Kariyer Auto Load Hotfix
-// Sorun: Kariyer ekranı açılınca tablo "Yükleniyor..."da kalıyor,
-// Yenile'ye basılınca veri geliyor.
-// Çözüm: showTab/showTabDD sonrası aktif tab kariyer ise renderKariyer garanti çağrılır.
+// Q-PANEL v2.9.4 — Event Workflow Frontend Helpers
+// Bu patch mevcut etkinlik render fonksiyonuna entegre edilecek.
+// Eğer renderEvents kartlarında aksiyon alanı varsa aşağıdaki helper'lar kullanılmalı.
 // ═══════════════════════════════════════════════════
 
-(function qpanelKariyerAutoLoadHotfix(){
-  if (window.__qpanelKariyerAutoLoadHotfixApplied) return;
-  window.__qpanelKariyerAutoLoadHotfixApplied = true;
-
-  function qkIsKariyerVisible() {
-    var tab = document.getElementById('tab-kariyer');
-    if (!tab) return false;
-    var style = window.getComputedStyle ? window.getComputedStyle(tab) : null;
-    var visibleByClass = tab.classList && tab.classList.contains('active');
-    var visibleByStyle = !style || (style.display !== 'none' && style.visibility !== 'hidden');
-    return visibleByClass || visibleByStyle;
-  }
-
-  function qkEnsureKariyerLoaded() {
-    try {
-      if (!qkIsKariyerVisible()) return;
-      if (typeof renderKariyer === 'function') {
-        // DOM/tab class güncellemesi bittikten sonra çalışsın
-        setTimeout(function(){ renderKariyer(); }, 30);
-      }
-    } catch (e) {}
-  }
-
-  // showTab wrapper
-  if (typeof window.showTab === 'function' && !window.showTab.__kariyerWrapped) {
-    var _oldShowTab = window.showTab;
-    window.showTab = function(tabName) {
-      var ret = _oldShowTab.apply(this, arguments);
-      if (tabName === 'kariyer') qkEnsureKariyerLoaded();
-      return ret;
-    };
-    window.showTab.__kariyerWrapped = true;
-  }
-
-  // showTabDD wrapper
-  if (typeof window.showTabDD === 'function' && !window.showTabDD.__kariyerWrapped) {
-    var _oldShowTabDD = window.showTabDD;
-    window.showTabDD = function(tabName) {
-      var ret = _oldShowTabDD.apply(this, arguments);
-      if (tabName === 'kariyer') qkEnsureKariyerLoaded();
-      return ret;
-    };
-    window.showTabDD.__kariyerWrapped = true;
-  }
-
-  // _showTabContent içindeki fns objesine hâlâ kariyer eklenmediyse,
-  // bu observer aktif tab değişimini yakalayıp yine render eder.
+async function eventApi(action, payload) {
   try {
-    var target = document.getElementById('tab-kariyer');
-    if (target && typeof MutationObserver !== 'undefined') {
-      var obs = new MutationObserver(function(){ qkEnsureKariyerLoaded(); });
-      obs.observe(target, { attributes: true, attributeFilter: ['class', 'style'] });
-    }
-  } catch(e) {}
-
-  // Eğer kullanıcı doğrudan kariyer sekmesinde reload ederse de dene
-  setTimeout(qkEnsureKariyerLoaded, 250);
-})();
-</script>
-
-<!-- [B] DAHA TEMİZ KALICI ÇÖZÜM
-     index.html içinde _showTabContent fonksiyonundaki fns objesine şu satır mutlaka ekli olsun:
-
-     kariyer: renderKariyer,
-
-     Örnek:
-     const fns = {
-       dashboard: renderDashboard,
-       members: renderMembers,
-       org: renderOrg,
-       ...
-       kariyer: renderKariyer,
-     };
--->
-
-<!-- [C] DASHBOARD — SON SEZON PODYUMU KALDIRMA
-     Dashboard HTML içinde "Son Sezon Podyumu" başlıklı kartı komple sil.
-     Bulunacak metin örnekleri:
-       - SON SEZON PODYUMU
-       - sonSezon
-       - Şampiyonlar Salonu →
-       - season podium / sezon podium
-     Aşağıdaki script, kalıntı kaldıysa runtime'da da gizler.
--->
-<script>
-(function qpanelRemoveSeasonPodiumHotfix(){
-  if (window.__qpanelRemoveSeasonPodiumHotfixApplied) return;
-  window.__qpanelRemoveSeasonPodiumHotfixApplied = true;
-
-  function removeSeasonPodium() {
-    try {
-      var all = Array.from(document.querySelectorAll('section, div, article, .card, .panel, .q-card'));
-      all.forEach(function(el){
-        var txt = (el.innerText || '').toLowerCase();
-        if (
-          txt.includes('son sezon podyumu') ||
-          txt.includes('şampiyonlar salonu') ||
-          txt.includes('sampiyonlar salonu')
-        ) {
-          // En yakın kart/panel boyutundaki elementi kaldır
-          var target = el;
-          for (var i = 0; i < 4; i++) {
-            if (!target.parentElement) break;
-            var cls = String(target.className || '').toLowerCase();
-            if (cls.includes('card') || cls.includes('panel') || cls.includes('section') || cls.includes('dashboard')) break;
-            target = target.parentElement;
-          }
-          target.style.display = 'none';
-          target.setAttribute('data-qpanel-removed', 'son-sezon-podyumu');
-        }
-      });
-    } catch(e) {}
+    var token = (typeof getToken === 'function') ? getToken() : '';
+    var body = Object.assign({ action: action, token: token }, payload || {});
+    var res = await secureApiFetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) return { success:false, error:'HTTP ' + res.status };
+    return await res.json();
+  } catch(e) {
+    return { success:false, error:e.message };
   }
+}
 
-  removeSeasonPodium();
-  setInterval(removeSeasonPodium, 1500);
-})();
+function eventStatusLabel(e) {
+  if (e && e.puanOnaylandi === true) return '<span class="event-status-pill ok">✅ Puan Onaylandı</span>';
+  if (e && (e.katilimcilar || e.katilimciSayisi)) return '<span class="event-status-pill wait">⏳ Puan Bekliyor</span>';
+  return '<span class="event-status-pill draft">Taslak</span>';
+}
+
+async function eventParticipantsSave(eventId, katilimcilar) {
+  var data = await eventApi('EVENT_PARTICIPANTS_SAVE', {
+    item: { eventId: eventId, katilimcilar: katilimcilar }
+  });
+  if (data && data.success) {
+    cmsStatusGoster('ok', '<i class="ti ti-check"></i> Katılımcılar kaydedildi. Puan onayı bekliyor.');
+    try { await loadAll(); } catch(e) {}
+    try { renderEvents(); } catch(e) {}
+  } else {
+    alert('Hata: ' + ((data && data.error) || 'Bilinmeyen'));
+  }
+}
+
+async function eventApprovePoints(eventId) {
+  if (!confirm('Bu etkinlikteki katılımcılara puan işlenecek. Onaylıyor musun?')) return;
+  var data = await eventApi('EVENT_APPROVE_POINTS', { id: eventId });
+  if (data && data.success) {
+    var r = data.result || {};
+    cmsStatusGoster('ok', '<i class="ti ti-check"></i> Etkinlik puanları onaylandı. İşlenen: ' + (r.awarded || 0));
+    try { await loadAll(); } catch(e) {}
+    try { renderEvents(); renderMembers(); } catch(e) {}
+  } else {
+    alert('Hata: ' + ((data && data.error) || 'Bilinmeyen'));
+  }
+}
+
+async function eventResetPoints(eventId) {
+  if (!confirm('Bu etkinliğe ait puan arşiv kayıtları kaldırılacak ve üye puanları dengelenecek. Devam edilsin mi?')) return;
+  var data = await eventApi('EVENT_POINTS_RESET', { id: eventId });
+  if (data && data.success) {
+    var r = data.result || {};
+    cmsStatusGoster('ok', '<i class="ti ti-check"></i> Etkinlik puanları sıfırlandı. Silinen arşiv: ' + (r.removed || 0));
+    try { await loadAll(); } catch(e) {}
+    try { renderEvents(); renderMembers(); } catch(e) {}
+  } else {
+    alert('Hata: ' + ((data && data.error) || 'Bilinmeyen'));
+  }
+}
+
+// Mevcut deleteEvent / EVENT_DELETE çağrısı kalabilir.
+// Backend artık negatif kayıt atmaz, eventId'ye bağlı +puan kayıtlarını kaldırır.
+// Bu yüzden frontend silme butonunun action'ı değişmek zorunda değil.
+
+// Render entegrasyon önerisi:
+// Etkinlik kartında başlık yanına:
+//   ${eventStatusLabel(e)}
+//
+// Aksiyon alanına:
+//   e.puanOnaylandi
+//     ? `<button onclick="eventResetPoints('${e._id}')">Puanı Sıfırla</button>`
+//     : `<button onclick="eventApprovePoints('${e._id}')">Puanları Onayla</button>`
+//
+// Katılımcı düzenleme kaydında EVENT_UPDATE yerine mümkünse:
+//   eventParticipantsSave(e._id, katilimcilar)
 </script>
