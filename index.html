@@ -9,8 +9,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.9.0</title>
-
+    <title>Q-Panel v2.8.2 — Görev Yönetimi Hotfix</title>
+    <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -2531,178 +2531,68 @@ input[type="date"]:required:invalid {
 .qhall-aktif-puan { color:#fac775; font-weight:700; font-size:12px; }
 
 
+/* Q-PANEL v2.9.0 Kariyer */
+ bloğuna ekle
+     2. NAV: ddTopluluk dropdown'una ekle (comment açılacak)
+     3. TAB: #tab-hall ardına #tab-kariyer ekle
+     4. JS: son script bloğuna ekle
+     5. _showTabContent fns → kariyer: renderKariyer
+     ═══════════════════════════════════════════════════════════════════ -->
 
-/* ═══════════════════════════════════════════════════
-   Q-PANEL v2.8.6 — Unified Tasks + Rebuilt Org Chart
-   Patron talebi: Görev sekmeleri kaldırıldı, tek modül akışı ve yeni hiyerarşik org chart.
-   ═══════════════════════════════════════════════════ */
-#tab-gorev #gorevModul.qg-v286-ops {
-  background: radial-gradient(circle at top left, rgba(250,199,117,.065), transparent 34%), #0c0c0c !important;
-  border: .5px solid #272727 !important;
-  border-radius: 16px !important;
-  overflow: hidden !important;
-  box-shadow: 0 18px 42px rgba(0,0,0,.26) !important;
-}
-.qg-v286-ops-head {
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:16px;
-  padding:18px 18px 14px;
-  border-bottom:.5px solid #222;
-  background:linear-gradient(180deg,#151515,#0f0f0f);
-}
-.qg-v286-kicker {
-  color:#fac775;
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:3px;
-  text-transform:uppercase;
-  margin-bottom:6px;
-}
-.qg-v286-title {
-  color:#f2ead9;
-  font-size:22px;
-  font-weight:800;
-  margin:0 0 5px;
-}
-.qg-v286-sub {
-  color:#8b887f;
-  font-size:12px;
-  line-height:1.55;
-  max-width:660px;
-}
-.qg-v286-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
-.qg-v286-grid {
-  display:grid;
-  grid-template-columns:minmax(300px, 420px) 1fr;
-  gap:14px;
-  padding:14px;
-}
-.qg-v286-form-card, .qg-v286-list-card {
-  background:linear-gradient(180deg,#151515,#0f0f0f);
-  border:.5px solid #2b2b2b;
-  border-radius:15px;
-  padding:16px;
-  box-shadow:0 12px 26px rgba(0,0,0,.20);
-}
-.qg-v286-form-head { display:flex; gap:10px; align-items:flex-start; margin-bottom:14px; }
-.qg-v286-icon {
-  width:36px; height:36px; border-radius:11px;
-  display:inline-flex; align-items:center; justify-content:center;
-  flex-shrink:0; background:#2a1800; color:#fac775; border:.5px solid #854f0b;
-}
-.qg-v286-form-head h3, .qg-v286-list-card h3 {
-  margin:0 0 4px; color:#e8e3d5; font-size:15px; font-weight:800;
-}
-.qg-v286-form-head p, .qg-v286-list-card p { margin:0; color:#777; font-size:11.5px; line-height:1.45; }
-.qg-v286-board-tools {
-  display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:13px;
-}
-.qg-v286-search {
-  max-width:260px; width:100%; padding:8px 10px; border-radius:10px;
-  border:.5px solid #333; background:#111; color:#d3d1c7; font-size:12px;
-}
-.qg-v286-stack { display:flex; flex-direction:column; gap:12px; }
-.qg-v286-section {
-  background:#0b0b0b; border:.5px solid #1f1f1f; border-radius:13px; overflow:hidden;
-}
-.qg-v286-section-head {
-  display:flex; align-items:center; justify-content:space-between; gap:8px;
-  padding:10px 12px; border-bottom:.5px solid #1d1d1d;
-  background:linear-gradient(90deg,rgba(250,199,117,.05),transparent);
-}
-.qg-v286-section-title { color:#d3d1c7; font-size:12px; font-weight:800; letter-spacing:.7px; text-transform:uppercase; }
-.qg-v286-count { color:#555; font-size:11px; }
-.qg-v286-section-body { padding:10px; }
-.qg-v286-empty { color:#4e4e4e; font-size:12px; padding:12px; text-align:center; }
-.qg-v286-card {
-  display:grid; grid-template-columns:38px 1fr auto; gap:10px; align-items:center;
-  padding:11px 12px; border:.5px solid #252525; border-radius:12px;
-  background:linear-gradient(180deg,#151515,#101010); margin-bottom:8px;
-  cursor:pointer; transition:border-color .16s ease, transform .16s ease, background .16s ease;
-}
-.qg-v286-card:last-child { margin-bottom:0; }
-.qg-v286-card:hover { border-color:#5b3a0a; transform:translateY(-1px); background:#171717; }
-.qg-v286-card-icon {
-  width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;
-  background:#151515;border:.5px solid #333;color:#fac775;font-size:17px;
-}
-.qg-v286-card-title { color:#e3dfd3; font-size:13px; font-weight:800; margin-bottom:4px; }
-.qg-v286-card-meta { display:flex; gap:6px; flex-wrap:wrap; color:#777; font-size:10.5px; }
-.qg-v286-pill { padding:3px 8px; border-radius:999px; background:#101010; border:.5px solid #2a2a2a; color:#888; }
-.qg-v286-side { text-align:right; min-width:82px; }
-.qg-v286-status { display:inline-block; padding:4px 9px; border-radius:999px; font-size:10px; font-weight:800; margin-bottom:5px; }
-.qg-st-muzakerede { background:#2a1800; color:#fac775; border:.5px solid #854f0b; }
-.qg-st-aktif { background:#08210f; color:#4ade80; border:.5px solid #14532d; }
-.qg-st-gecikmede { background:#291000; color:#fb923c; border:.5px solid #7c2d12; }
-.qg-st-tamamlandi { background:#071827; color:#93c5fd; border:.5px solid #1d4ed8; }
-.qg-st-basarisiz, .qg-st-iptal { background:#2b0b0b; color:#f87171; border:.5px solid #7f1d1d; }
-.qg-v286-puan { color:#fac775; font-size:11px; font-weight:800; }
-@media(max-width:820px){ .qg-v286-grid{ grid-template-columns:1fr; } .qg-v286-ops-head{ flex-direction:column; } .qg-v286-card{ grid-template-columns:34px 1fr; } .qg-v286-side{ grid-column:2; text-align:left; } }
+<!-- ══════════════ [1] CSS ══════════════ -->
+<style>
+/* Q-PANEL v2.9.0 Kariyer */
+.qk-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
+.qk-header h2 { font-size:18px; font-weight:700; color:#d3d1c7; margin:0 0 4px; }
+.qk-header p  { font-size:12px; color:#555; margin:0; }
 
-/* Rebuilt Org Chart */
-#orgChart.qg-v286-org {
-  background: radial-gradient(circle at top, rgba(250,199,117,.055), transparent 32%), #080808 !important;
-  border:.5px solid #242424 !important;
-  border-radius:18px !important;
-  padding:0 !important;
-  overflow-x:auto !important;
-  min-height:520px !important;
+/* Dashboard kartları */
+.qk-dash-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+.qk-dash-kart { background:linear-gradient(180deg,#151515,#0f0f0f); border:.5px solid #2a2a2a; border-radius:12px; padding:14px; }
+.qk-dash-kart .kd-label { font-size:10px; color:#555; letter-spacing:1.2px; text-transform:uppercase; margin-bottom:6px; }
+.qk-dash-kart .kd-rumuz { font-size:16px; font-weight:700; color:#d3d1c7; margin-bottom:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.qk-dash-kart .kd-deger { font-size:24px; font-weight:700; color:#fac775; }
+.qk-dash-kart .kd-sub   { font-size:11px; color:#555; margin-top:3px; }
+
+/* Skor bar inline */
+.qk-sbar { display:inline-block; width:38px; height:4px; background:#222; border-radius:2px; vertical-align:middle; margin-left:5px; overflow:hidden; }
+.qk-sbar-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,#fac775,#f97316); }
+
+/* Terfi etiketleri */
+.qk-t-uygun { color:#4ade80; font-size:11px; font-weight:700; }
+.qk-t-onay  { color:#fbbf24; font-size:11px; font-weight:700; }
+.qk-t-bekle { color:#555;    font-size:11px; }
+.qk-t-veri  { color:#3a3a3a; font-size:11px; font-style:italic; }
+
+/* Modal overlay */
+.qk-overlay { position:fixed; inset:0; background:rgba(0,0,0,.83); z-index:1000; display:flex; align-items:flex-start; justify-content:center; overflow-y:auto; padding:20px 12px 40px; }
+.qk-box { background:#1a1a1a; border:.5px solid #333; border-radius:14px; padding:20px; width:100%; max-width:560px; }
+.qk-box-baslik { font-size:17px; font-weight:700; color:#d3d1c7; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-start; }
+/* 4 skor kartı */
+.qk-skor-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.qk-sk { background:#111; border:.5px solid #2a2a2a; border-radius:10px; padding:12px; }
+.qk-sk .label { font-size:10px; color:#555; letter-spacing:1px; text-transform:uppercase; margin-bottom:5px; }
+.qk-sk .value { font-size:24px; font-weight:700; color:#fac775; }
+.qk-sk .sub   { font-size:10px; color:#444; margin-top:2px; }
+.qk-sk .bar   { height:4px; background:#1a1a1a; border-radius:2px; overflow:hidden; margin-top:8px; }
+.qk-sk .bar-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,#fac775,#f97316); }
+/* Terfi kutusu */
+.qk-terfi-kutu { border-radius:10px; padding:11px 13px; font-size:13px; margin-bottom:12px; line-height:1.5; }
+.qk-terfi-kutu.uygun { background:#001a0f; border:.5px solid #004020; color:#4ade80; }
+.qk-terfi-kutu.onay  { background:#1a1200; border:.5px solid #3a2800; color:#fbbf24; }
+.qk-terfi-kutu.bekle { background:#0d0d0d; border:.5px solid #222;    color:#777; }
+/* Eksik kriterler */
+.qk-eksik-liste { margin:8px 0 0; padding:0; list-style:none; }
+.qk-eksik-liste li { font-size:11px; color:#f87171; padding:2px 0; }
+.qk-eksik-liste li::before { content:"✗ "; }
+/* Kariyer geçmişi */
+.qk-gecmis-satir { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:.5px solid #1a1a1a; }
+.qk-gecmis-satir:last-child { border-bottom:none; }
+
+@media(max-width:600px) {
+  .qk-dash-grid { grid-template-columns:1fr; }
+  .qk-skor-grid { grid-template-columns:1fr; }
 }
-.qg-org286-shell { min-width:780px; max-width:1120px; margin:0 auto; padding:24px 24px 28px; }
-.qg-org286-head { text-align:center; border-bottom:.5px solid #1b1b1b; padding-bottom:20px; margin-bottom:20px; }
-.qg-org286-logo { font-family:'Vanilla Whale', monospace; color:#fac775; font-size:38px; line-height:1; }
-.qg-org286-title { color:#f1eadc; font-size:14px; font-weight:900; letter-spacing:3px; margin-top:7px; }
-.qg-org286-sub { color:#3b3b3b; font-size:10px; letter-spacing:4px; margin-top:3px; }
-.qg-org286-tree { position:relative; padding-top:4px; }
-.qg-org286-rank { position:relative; margin:0 auto 26px; }
-.qg-org286-rank:not(:first-child)::before {
-  content:''; position:absolute; top:-26px; left:50%; width:1px; height:18px; transform:translateX(-50%);
-  background:linear-gradient(180deg,#854f0b,#333); opacity:.9;
-}
-.qg-org286-rank:not(:first-child)::after {
-  content:''; position:absolute; top:-12px; left:8%; right:8%; height:1px;
-  background:linear-gradient(90deg,transparent,var(--rank-color,#854f0b),transparent); opacity:.65;
-}
-.qg-org286-row { display:flex; justify-content:center; align-items:flex-start; gap:14px 16px; flex-wrap:wrap; position:relative; }
-.qg-org286-node-wrap { position:relative; }
-.qg-org286-rank:not(:first-child) .qg-org286-node-wrap::before {
-  content:''; position:absolute; top:-12px; left:50%; width:1px; height:12px; transform:translateX(-50%);
-  background:var(--rank-color,#854f0b); opacity:.65;
-}
-.qg-org286-label {
-  position:absolute; left:0; top:50%; transform:translateY(-50%); width:105px; text-align:left;
-  color:var(--rank-color,#854f0b); font-size:11px; font-weight:900; letter-spacing:1.2px; text-transform:uppercase;
-  display:flex; align-items:center; gap:7px;
-}
-.qg-org286-symbol {
-  width:34px; height:34px; border-radius:12px; border:.5px solid var(--rank-color,#854f0b);
-  display:inline-flex; align-items:center; justify-content:center; background:#0f0f0f; font-size:18px;
-  box-shadow:0 0 18px rgba(0,0,0,.32);
-}
-.qg-org286-card {
-  min-width:132px; min-height:54px; border-radius:14px; padding:10px 14px;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  background:linear-gradient(180deg,#141414,#090909); border:1px solid var(--rank-color,#854f0b);
-  box-shadow:0 14px 30px rgba(0,0,0,.30), inset 0 0 0 1px rgba(255,255,255,.025);
-  color:#d3d1c7; position:relative; overflow:hidden;
-}
-.qg-org286-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--rank-color,#854f0b); opacity:.75; }
-.qg-org286-card.lider { min-width:190px; min-height:68px; border-width:1.5px; }
-.qg-org286-card.vekilharc { min-width:180px; min-height:64px; }
-.qg-org286-name { max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12.5px; color:#f4eee0; font-weight:900; }
-.qg-org286-rutbe { color:var(--rank-color,#854f0b); font-size:10.5px; font-weight:700; margin-top:3px; }
-.qg-org286-legend {
-  margin-top:22px; border:.5px solid #242424; border-radius:14px; padding:14px;
-  background:linear-gradient(180deg,#101010,#0b0b0b);
-}
-.qg-org286-legend-title { color:#fac775; font-size:12px; font-weight:900; letter-spacing:1.4px; margin-bottom:10px; }
-.qg-org286-legend-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(135px,1fr)); gap:9px; }
-.qg-org286-legend-item { display:flex; gap:8px; align-items:flex-start; color:#777; font-size:10.5px; line-height:1.35; }
-.qg-org286-dot { width:10px; height:10px; border-radius:50%; background:var(--rank-color); margin-top:2px; box-shadow:0 0 12px var(--rank-color); flex-shrink:0; }
-.qg-org286-footer { text-align:center; color:#fac775; font-size:11px; letter-spacing:.5px; margin-top:16px; padding-top:14px; border-top:.5px solid #171717; }
-@media(max-width:760px){ .qg-org286-shell{ min-width:720px; padding:18px; } .qg-org286-label{ position:relative; top:auto; transform:none; width:100%; justify-content:center; margin-bottom:12px; } }
 
 </style>
 
@@ -6811,6 +6701,12 @@ async function panelAc(rumuz, rol) {
             </div>
             <div
               class="nav-dd-item"
+              onclick="showTabDD('kariyer', 'ddTopluluk', 'navToplulukBtn')"
+            >
+              <i class="ti ti-chart-radar"></i> Kariyer
+            </div>
+            <div
+              class="nav-dd-item"
               onclick="showTabDD('org', 'ddTopluluk', 'navToplulukBtn')"
             >
               <i class="ti ti-hierarchy"></i> Organizasyon
@@ -6910,8 +6806,12 @@ async function panelAc(rumuz, rol) {
         </div>
 
 
-        <div id="qgDashTaskForm"></div>
-        <div id="qgDashNewspaper"></div>
+        <div class="qhall-podyum-kart" id="qhallPodyumKart" onclick="showTabDD('hall','ddTopluluk','navToplulukBtn')" style="display:none">
+          <div class="qhall-podyum-baslik">🏆 Son Sezon Podyumu</div>
+          <div class="qhall-sezon-adi" id="qhallPodyumSezonAdi">—</div>
+          <div id="qhallPodyumRows"></div>
+          <div class="qhall-goto">Şampiyonlar Salonu →</div>
+        </div>
 
         <div class="qfeed-kart" id="qfeedKart">
           <div class="qfeed-kart-baslik">
@@ -7445,6 +7345,77 @@ async function panelAc(rumuz, rol) {
           <div class="qhall-yukluyor">Yükleniyor...</div>
         </div>
       </div>
+
+<div id="tab-kariyer" class="tab">
+
+  <div class="qk-header">
+    <div>
+      <h2>📊 Kariyer Analizi</h2>
+      <p>Aktivite, katkı, disiplin ve liderlik skorları. Sistem yalnızca analiz sunar — terfi kararı Lider/Vekilharç'a aittir.</p>
+    </div>
+    <button class="btn btn-sm" onclick="kariyerYenile()"><i class="ti ti-refresh"></i> Yenile</button>
+  </div>
+
+  <!-- Dashboard: 3 kart -->
+  <div class="qk-dash-grid">
+    <div class="qk-dash-kart">
+      <div class="kd-label">🏆 En Yüksek Kariyer</div>
+      <div class="kd-rumuz" id="kdEnYuksekRumuz">—</div>
+      <div class="kd-deger" id="kdEnYuksekSkor" style="font-size:18px">—</div>
+      <div class="kd-sub">Kariyer Skoru (Lider/VH görür)</div>
+    </div>
+    <div class="qk-dash-kart">
+      <div class="kd-label">⬆️ Terfiye En Yakın</div>
+      <div class="kd-rumuz" id="kdTerfiRumuz">—</div>
+      <div class="kd-deger" id="kdTerfiHedef" style="font-size:14px;color:#9fe1cb">—</div>
+      <div class="kd-sub" id="kdTerfiEksik">—</div>
+    </div>
+    <div class="qk-dash-kart">
+      <div class="kd-label">⚖️ En Yüksek Disiplin</div>
+      <div class="kd-rumuz" id="kdDisiplinRumuz">—</div>
+      <div class="kd-deger" id="kdDisiplinSkor">—</div>
+      <div class="kd-sub">/ 100</div>
+    </div>
+  </div>
+
+  <!-- Filtreler -->
+  <div class="filters" style="margin-bottom:10px">
+    <select id="kariyerRutbeFilter" onchange="kariyerFiltrele()">
+      <option value="">Tüm rütbeler</option>
+      <option>Gözlemci</option><option>Üye</option><option>Teğmen</option>
+      <option>Kaptan</option><option>Vekilharç</option><option>Lider</option>
+    </select>
+    <select id="kariyerTerfiFilter" onchange="kariyerFiltrele()">
+      <option value="">Tüm durumlar</option>
+      <option value="Terfiye Uygun">Terfiye Uygun</option>
+      <option value="Lider Onayı Gerekli">Lider Onayı Gerekli</option>
+      <option value="Henüz Hazır Değil">Henüz Hazır Değil</option>
+    </select>
+    <input id="kariyerAra" placeholder="Rumuz ara..." oninput="kariyerFiltrele()"
+      style="padding:5px 9px;border-radius:8px;border:.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:12px;width:140px">
+  </div>
+
+  <!-- Tablo -->
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th style="width:28px">#</th>
+        <th>Rumuz</th>
+        <th>Rütbe</th>
+        <th style="width:60px;text-align:center">Aktiv.</th>
+        <th style="width:60px;text-align:center">Katkı</th>
+        <th style="width:60px;text-align:center">Disip.</th>
+        <th style="width:60px;text-align:center">Lider.</th>
+        <th id="kariyerSkorBaslik" style="width:70px;text-align:center;display:none">Kariyer</th>
+        <th>Terfi Durumu</th>
+        <th style="width:60px">Detay</th>
+      </tr></thead>
+      <tbody id="kariyerTableBody">
+        <tr><td colspan="10" style="text-align:center;color:#555;padding:18px">Yükleniyor...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
       <div id="tab-log" class="tab">
         <div
@@ -13430,1061 +13401,344 @@ async function renderQHall() {
     return r;
   };
 })();
-
-
-(function(){
-  // ═══════════════════════════════════════════════════
-  // Q-PANEL v2.8.6 — Unified Tasks + Rebuilt Org Chart
-  // ═══════════════════════════════════════════════════
-  function esc286(v){
-    if (typeof htmlEsc === 'function') return htmlEsc(v == null ? '' : String(v));
-    return String(v == null ? '' : v).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});
-  }
-  function rankNorm286(r){ return String(r || '').toLowerCase().replace(/ı/g,'i').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ö/g,'o').replace(/ç/g,'c'); }
-  function roleColor286(r){
-    var n = rankNorm286(r);
-    if(n==='lider') return '#fac775';
-    if(n==='vekilharc') return '#e24b4a';
-    if(n==='kaptan') return '#d69222';
-    if(n==='tegmen') return '#378add';
-    if(n==='uye') return '#62c13f';
-    return '#777';
-  }
-  function roleIcon286(r){
-    var n = rankNorm286(r);
-    if(n==='lider') return '♛';
-    if(n==='vekilharc') return '◆';
-    if(n==='kaptan') return '★';
-    if(n==='tegmen') return '⌃';
-    if(n==='uye') return '▴';
-    return '◉';
-  }
-  function durumClass286(d){
-    d = String(d || '').toLowerCase();
-    if(d==='aktif') return 'qg-st-aktif';
-    if(d==='gecikmede') return 'qg-st-gecikmede';
-    if(d==='tamamlandi') return 'qg-st-tamamlandi';
-    if(d==='basarisiz' || d==='iptal') return 'qg-st-basarisiz';
-    return 'qg-st-muzakerede';
-  }
-  function durumLabel286(d){
-    d = String(d || '').toLowerCase();
-    var map = { muzakerede:'Teklif', aktif:'Aktif', gecikmede:'Gecikmede', tamamlandi:'Tamamlandı', basarisiz:'Başarısız', iptal:'İptal', arsiv:'Arşiv' };
-    return map[d] || (d ? d : 'Teklif');
-  }
-  function taskCard286(g){
-    var id = g._id || g.id || '';
-    var title = g.baslik || 'Başlıksız görev';
-    var birim = g.birim || g.kategori || '—';
-    var puan = Number(g.onaylananPuan || g.istenenPuan || 0) || 0;
-    var durum = String(g.durum || 'muzakerede').toLowerCase();
-    var icon = durum === 'aktif' ? '⚔️' : durum === 'tamamlandi' ? '✅' : durum === 'gecikmede' ? '⚠️' : '✦';
-    var progress = 0;
-    if (g.toplamAsama > 0) progress = Math.max(0, Math.min(100, Math.round((((Number(g.aktifAsama)||1)-1) / Number(g.toplamAsama)) * 100)));
-    var bar = (durum === 'aktif' || durum === 'gecikmede') ? '<div class="gorev-progress-wrap" style="margin:7px 0 0"><div class="gorev-progress-bar" style="width:'+progress+'%"></div></div>' : '';
-    return '<div class="qg-v286-card" data-qg-task="1" data-title="'+esc286(title.toLowerCase())+'" onclick="gorevDetayAc(\''+esc286(id)+'\')">'
-      + '<div class="qg-v286-card-icon">'+icon+'</div>'
-      + '<div><div class="qg-v286-card-title">'+esc286(title)+'</div><div class="qg-v286-card-meta">'
-      + '<span class="qg-v286-pill">@'+esc286(g.rumuz || '—')+'</span><span class="qg-v286-pill">'+esc286(birim)+'</span>'
-      + (g.toplamAsama ? '<span class="qg-v286-pill">Aşama '+esc286(g.aktifAsama || 1)+'/'+esc286(g.toplamAsama)+'</span>' : '')
-      + '</div>'+bar+'</div>'
-      + '<div class="qg-v286-side"><span class="qg-v286-status '+durumClass286(durum)+'">'+durumLabel286(durum)+'</span><div class="qg-v286-puan">'+puan+' P</div></div>'
-      + '</div>';
-  }
-  function section286(title, icon, list, empty){
-    return '<section class="qg-v286-section"><div class="qg-v286-section-head"><div class="qg-v286-section-title">'+icon+' '+esc286(title)+'</div><div class="qg-v286-count">'+(list ? list.length : 0)+' kayıt</div></div>'
-      + '<div class="qg-v286-section-body">' + (list && list.length ? list.map(taskCard286).join('') : '<div class="qg-v286-empty">'+esc286(empty || 'Kayıt yok.')+'</div>') + '</div></section>';
-  }
-  function unifiedForm286(){
-    return '<div id="gTeklif" class="qg-v286-form-card">'
-      + '<div class="qg-v286-form-head"><div class="qg-v286-icon"><i class="ti ti-sparkles"></i></div><div><h3>Görev Teklifi Oluştur</h3><p>Kısa anlat, puanını öner, gönder. Yönetim gerekirse puan/aşama/deadline planını düzenler.</p></div></div>'
-      + '<div class="form-group"><label>Birim</label><select id="gf_kategori" class="form-input"><option value="">Seç...</option><option>Yönetim</option><option>Klan</option><option>Sosyal Medya</option><option>Özel</option></select></div>'
-      + '<div class="form-group"><label>Görev Başlığı</label><input id="gf_baslik" class="form-input" placeholder="Örn. Q-GANG reels serisi hazırlama" maxlength="200"></div>'
-      + '<div class="form-group"><label>Ben ne yapacağım?</label><textarea id="gf_aciklama" class="form-input" rows="5" placeholder="Görevi sade şekilde anlat. Ne yapacaksın, çıktısı ne olacak, Q-GANG\'a ne katkı sağlayacak?" style="resize:vertical;min-height:116px"></textarea></div>'
-      + '<div style="display:grid;grid-template-columns:1fr 150px;gap:12px;align-items:end"><div class="form-group"><label>İstediğim Puan</label><input id="gf_puan" class="form-input" type="number" min="1" max="500" value="20"></div><button id="gorevTeklifGonderBtn" class="btn btn-warn" style="height:38px;width:100%" onclick="gorevTeklifGonder()"><i class="ti ti-send"></i> Gönder</button></div>'
-      + '<div style="margin-top:12px;background:#111;border:0.5px solid #282828;border-radius:10px;padding:10px 12px;font-size:11.5px;color:#777;line-height:1.55"><strong style="color:#fac775">Not:</strong> Teklifin yönetim paneline düşer. Kaptan/Vekilharç/Lider bunu onaylayabilir, revize isteyebilir veya aşamalara bölebilir.</div>'
-      + '</div>';
-  }
-  window.qgLoadUnifiedOperations286 = async function qgLoadUnifiedOperations286(){
-    var el = document.getElementById('qgV286TaskBoard');
-    if(!el) return;
-    el.innerHTML = '<div class="qg-v286-empty">Görevler yükleniyor...</div>';
-    var data = await gorevAPI('GOREV_LIST', { item: {} });
-    if(!data || !data.success){ el.innerHTML = '<div class="qg-v286-empty" style="color:#f87171">Hata: '+esc286(data && data.error || 'Görevler alınamadı')+'</div>'; return; }
-    var all = data.result || [];
-    var own = all.filter(function(g){ return String(g.rumuz || '').toLowerCase() === String((SESSION && SESSION.rumuz) || '').toLowerCase(); });
-    var teklif = all.filter(function(g){ return String(g.durum || '').toLowerCase() === 'muzakerede'; });
-    var aktif = all.filter(function(g){ return ['aktif','gecikmede'].indexOf(String(g.durum || '').toLowerCase()) >= 0; });
-    var done = all.filter(function(g){ return String(g.durum || '').toLowerCase() === 'tamamlandi'; });
-    var closed = all.filter(function(g){ return ['basarisiz','iptal','arsiv'].indexOf(String(g.durum || '').toLowerCase()) >= 0; });
-    el.innerHTML = '<div class="qg-v286-stack">'
-      + section286('Teklif / Müzakere', '✍️', teklif, 'Müzakerede teklif yok.')
-      + section286('Aktif Operasyonlar', '⚔️', aktif, 'Aktif operasyon yok.')
-      + section286('Benim Görevlerim', '👤', own, 'Sana ait görev kaydı yok.')
-      + section286('Tamamlananlar', '✅', done, 'Tamamlanan görev yok.')
-      + (closed.length ? section286('Arşiv / Sonuçlanan Diğer', '🗄️', closed, 'Arşiv boş.') : '')
-      + '</div>';
-  };
-  window.qgFilterUnifiedTasks286 = function qgFilterUnifiedTasks286(){
-    var q = String((document.getElementById('qgV286Search') || {}).value || '').toLowerCase().trim();
-    Array.prototype.forEach.call(document.querySelectorAll('[data-qg-task="1"]'), function(card){
-      card.style.display = !q || String(card.getAttribute('data-title') || '').indexOf(q) >= 0 ? '' : 'none';
-    });
-  };
-  window.renderGorev = async function renderGorevUnified286(){
-    var root = document.getElementById('gorevModul');
-    if(!root) return;
-    root.className = 'qg-v286-ops';
-    root.innerHTML = '<div class="qg-v286-ops-head"><div><div class="qg-v286-kicker">Q-GANG OPERATIONS</div><h2 class="qg-v286-title">Görevler</h2><div class="qg-v286-sub">Görev teklifi, müzakere, aktif operasyonlar, benim görevlerim ve tamamlanan işler tek modülde. Sekme karmaşası yok; her şey aynı ekranda.</div></div><div class="qg-v286-actions"><button class="btn btn-warn btn-sm" onclick="document.getElementById(\'gTeklif\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">+ Yeni Teklif</button><button class="btn btn-sm" onclick="qgLoadUnifiedOperations286()"><i class="ti ti-refresh"></i> Yenile</button></div></div>'
-      + '<div class="qg-v286-grid"><div>'+unifiedForm286()+'</div><div class="qg-v286-list-card"><div class="qg-v286-board-tools"><div><h3>Tüm Görev Akışı</h3><p>Durumlar ayrı ayrı bloklanır; sekme değiştirmen gerekmez.</p></div><input id="qgV286Search" class="qg-v286-search" placeholder="Görev ara..." oninput="qgFilterUnifiedTasks286()"></div><div id="qgV286TaskBoard"></div></div></div>'
-      + '<div id="gorevDetayOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;overflow-y:auto"><div id="gorevDetayIcerik" style="max-width:660px;margin:20px auto;padding:0 12px 40px"></div></div>';
-    try { gorevTeklifFormInit(); } catch(e) {}
-    qgLoadUnifiedOperations286();
-  };
-  window.gorevSekmeAc = function gorevSekmeAcUnified286(){
-    try { showTabDD('gorev','ddTopluluk','navToplulukBtn'); } catch(e) { try { showTab('gorev'); } catch(x){} }
-    setTimeout(function(){ try { renderGorev(); } catch(e){} }, 30);
-  };
-  var _oldTeklifGonder286 = window.gorevTeklifGonder;
-  window.gorevTeklifGonder = async function gorevTeklifGonderUnified286(){
-    var kategori = (document.getElementById('gf_kategori') || {}).value;
-    var baslik = ((document.getElementById('gf_baslik') || {}).value || '').trim();
-    var aciklama = ((document.getElementById('gf_aciklama') || {}).value || '').trim();
-    var puan = Number((document.getElementById('gf_puan') || {}).value) || 20;
-    if (!kategori) { alert('Birim seçmek zorunlu.'); return; }
-    if (!baslik) { alert('Görev başlığı zorunlu.'); return; }
-    if (!aciklama || aciklama.length < 10) { alert('Görevi birkaç cümleyle açıkla.'); return; }
-    if (puan < 1 || puan > 500) { alert('Puan 1 ile 500 arasında olmalı.'); return; }
-    var btn = document.getElementById('gorevTeklifGonderBtn');
-    if(btn){ btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2"></i> Gönderiliyor...'; }
-    var data;
-    try { data = await gorevAPI('GOREV_CREATE', { item: { kategori:kategori, birim:kategori, baslik:baslik, aciklama:aciklama, istenenPuan:puan } }); }
-    catch(e){ data = { success:false, error:(e && e.message) || 'Bağlantı hatası' }; }
-    if(btn){ btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> Gönder'; }
-    if(data && data.success){
-      try { cmsStatusGoster('ok', '<i class="ti ti-check"></i> Görev teklifin gönderildi!'); } catch(e){}
-      ['gf_kategori','gf_baslik','gf_aciklama'].forEach(function(id){ var x=document.getElementById(id); if(x) x.value=''; });
-      var p=document.getElementById('gf_puan'); if(p) p.value='20';
-      qgLoadUnifiedOperations286();
-    } else alert('Hata: ' + ((data && data.error) || 'Bilinmeyen'));
-  };
-  function orgNode286(m, r){
-    var color = roleColor286(r);
-    var cls = rankNorm286(r);
-    return '<div class="qg-org286-node-wrap"><div class="qg-org286-card '+cls+'" style="--rank-color:'+color+'"><div class="qg-org286-name">'+esc286(m.rumuz || m.ad || '—')+'</div><div class="qg-org286-rutbe">'+esc286(r)+'</div></div></div>';
-  }
-  function orgRank286(rank, list){
-    if(!list || !list.length) return '';
-    var color = roleColor286(rank);
-    return '<div class="qg-org286-rank" style="--rank-color:'+color+'"><div class="qg-org286-label"><span class="qg-org286-symbol">'+roleIcon286(rank)+'</span><span>'+esc286(rank)+'</span></div><div class="qg-org286-row">'+list.map(function(m){return orgNode286(m, rank);}).join('')+'</div></div>';
-  }
-  window.renderOrg = function renderOrgRebuilt286(){
-    var el = document.getElementById('orgChart');
-    if(!el) return;
-    var ranks = ['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
-    var by = {};
-    ranks.forEach(function(r){ by[r] = []; });
-    (members || []).filter(function(m){ return !(m.deleted || m.deletedAt) && (m.durum || 'Aktif') !== 'Arşiv'; }).forEach(function(m){
-      var r = m.rutbe || m.rol || 'Gözlemci';
-      var found = ranks.find(function(x){ return rankNorm286(x) === rankNorm286(r); }) || 'Gözlemci';
-      by[found].push(m);
-    });
-    ranks.forEach(function(r){ by[r].sort(function(a,b){ return String(a.rumuz||'').localeCompare(String(b.rumuz||''),'tr'); }); });
-    el.className = 'qg-v286-org';
-    var legend = ranks.map(function(r){ return '<div class="qg-org286-legend-item" style="--rank-color:'+roleColor286(r)+'"><span class="qg-org286-dot"></span><div><strong style="color:#d3d1c7">'+esc286(r)+'</strong><br>'+esc286(orgLegendDesc286(r))+'</div></div>'; }).join('');
-    el.innerHTML = '<div class="qg-org286-shell"><div class="qg-org286-head"><div class="qg-org286-logo">QG</div><div class="qg-org286-title">Q-GANG ORGANİZASYON ŞEMASI</div><div class="qg-org286-sub">HİYERARŞİK KADRO AKIŞI</div></div><div class="qg-org286-tree">'+ranks.map(function(r){ return orgRank286(r, by[r]); }).join('')+'</div><div class="qg-org286-legend"><div class="qg-org286-legend-title">LEJAND</div><div class="qg-org286-legend-grid">'+legend+'</div></div><div class="qg-org286-footer">Q-GANG | Güç, Disiplin, Birlik.</div></div>';
-  };
-  function orgLegendDesc286(r){
-    if(r==='Lider') return 'En üst karar ve strateji makamı.';
-    if(r==='Vekilharç') return 'Liderin yardımcısı; genel koordinasyon.';
-    if(r==='Kaptan') return 'Birim ve operasyon yönetimi.';
-    if(r==='Teğmen') return 'Kaptanlara destek ve saha takibi.';
-    if(r==='Üye') return 'Aktif görev ve etkinlik katılımı.';
-    return 'Yeni veya pasif izleme statüsü.';
-  }
-})();
-
 </script>
 
 
-
-<style>
-/* ═══════════════════════════════════════════════════
-   Q-PANEL v2.8.7 — Newspaper Dashboard + Clean Org Colors
-   ═══════════════════════════════════════════════════ */
-
-/* Dashboard gazete/karargâh görünümü */
-#qgDashTaskForm,
-#qgDashNewspaper {
-  margin-top: 14px;
-}
-.qg-v287-dash-form {
-  background: radial-gradient(circle at top left, rgba(250,199,117,.085), transparent 32%), linear-gradient(180deg,#151515,#0d0d0d);
-  border: .5px solid #2a2a2a;
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 16px 36px rgba(0,0,0,.24);
-}
-.qg-v287-dash-form-head {
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:14px;
-  border-bottom:.5px solid #222;
-  padding-bottom:12px;
-}
-.qg-v287-kicker {
-  color:#fac775;
-  font-size:10.5px;
-  font-weight:900;
-  letter-spacing:2.6px;
-  text-transform:uppercase;
-  margin-bottom:5px;
-}
-.qg-v287-dash-form h3,
-.qg-v287-news-card h3 {
-  margin:0 0 4px;
-  color:#f1eadc;
-  font-size:16px;
-  font-weight:900;
-}
-.qg-v287-dash-form p,
-.qg-v287-news-card p {
-  margin:0;
-  color:#7d7a72;
-  font-size:11.5px;
-  line-height:1.5;
-}
-.qg-v287-dash-form-grid {
-  display:grid;
-  grid-template-columns: 1fr 1fr 110px;
-  gap:10px;
-  align-items:end;
-}
-.qg-v287-dash-form-grid .wide { grid-column: span 3; }
-.qg-v287-dash-form textarea.form-input {
-  min-height:82px !important;
-}
-.qg-v287-news-grid {
-  display:grid;
-  grid-template-columns: repeat(4, minmax(0,1fr));
-  gap:10px;
-}
-.qg-v287-news-card {
-  position:relative;
-  overflow:hidden;
-  min-height:118px;
-  background:linear-gradient(180deg,#141414,#0c0c0c);
-  border:.5px solid #292929;
-  border-radius:15px;
-  padding:14px;
-  box-shadow:0 12px 26px rgba(0,0,0,.20);
-}
-.qg-v287-news-card::before {
-  content:'';
-  position:absolute;
-  left:0; right:0; top:0;
-  height:2px;
-  background:linear-gradient(90deg,var(--accent,#fac775),transparent);
-  opacity:.85;
-}
-.qg-v287-news-card .qg-v287-news-btn {
-  margin-top:12px;
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  border:.5px solid #363636;
-  background:#101010;
-  color:#d3d1c7;
-  border-radius:999px;
-  padding:6px 10px;
-  cursor:pointer;
-  font-size:11px;
-}
-.qg-v287-news-card .qg-v287-news-btn:hover {
-  color:#fac775;
-  border-color:#854f0b;
-  background:#1a1100;
-}
-.qg-v287-news-big {
-  grid-column: span 2;
-}
-@media(max-width:820px){
-  .qg-v287-dash-form-grid { grid-template-columns:1fr; }
-  .qg-v287-dash-form-grid .wide { grid-column:auto; }
-  .qg-v287-news-grid { grid-template-columns:1fr 1fr; }
-  .qg-v287-news-big { grid-column:span 2; }
-}
-@media(max-width:560px){
-  .qg-v287-news-grid { grid-template-columns:1fr; }
-  .qg-v287-news-big { grid-column:auto; }
-}
-
-/* Görevler: iki kolona sıkışmış görünümü kaldır */
-#tab-gorev #gorevModul.qg-v287-ops {
-  background: radial-gradient(circle at top left, rgba(250,199,117,.055), transparent 35%), #0c0c0c !important;
-  border:.5px solid #272727 !important;
-  border-radius:17px !important;
-  overflow:hidden !important;
-  box-shadow:0 18px 42px rgba(0,0,0,.24) !important;
-}
-.qg-v287-ops-head {
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:14px;
-  padding:18px;
-  border-bottom:.5px solid #242424;
-  background:linear-gradient(180deg,#151515,#0f0f0f);
-}
-.qg-v287-title {
-  margin:0 0 5px;
-  color:#f2ead9;
-  font-size:22px;
-  font-weight:900;
-}
-.qg-v287-sub {
-  color:#8b887f;
-  font-size:12px;
-  line-height:1.55;
-  max-width:720px;
-}
-.qg-v287-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
-.qg-v287-ops-body {
-  padding:15px;
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
-.qg-v287-form-card,
-.qg-v287-list-card {
-  background:linear-gradient(180deg,#151515,#0f0f0f);
-  border:.5px solid #2b2b2b;
-  border-radius:15px;
-  padding:16px;
-  box-shadow:0 12px 26px rgba(0,0,0,.19);
-}
-.qg-v287-form-head,
-.qg-v287-list-head {
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:13px;
-}
-.qg-v287-form-main {
-  display:grid;
-  grid-template-columns: 1fr 1fr 120px;
-  gap:10px;
-  align-items:end;
-}
-.qg-v287-form-main .wide { grid-column: span 3; }
-.qg-v287-form-main textarea.form-input { min-height:90px !important; }
-.qg-v287-tools { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-.qg-v287-search {
-  width:260px;
-  max-width:100%;
-  padding:8px 10px;
-  border-radius:10px;
-  border:.5px solid #333;
-  background:#111;
-  color:#d3d1c7;
-  font-size:12px;
-}
-.qg-v287-stack {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-}
-.qg-v287-section {
-  background:#0b0b0b;
-  border:.5px solid #1f1f1f;
-  border-radius:13px;
-  overflow:hidden;
-  min-height:136px;
-}
-.qg-v287-section-head {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  padding:10px 12px;
-  border-bottom:.5px solid #1d1d1d;
-  background:linear-gradient(90deg,rgba(250,199,117,.045),transparent);
-}
-.qg-v287-section-title {
-  color:#d3d1c7;
-  font-size:12px;
-  font-weight:900;
-  letter-spacing:.7px;
-  text-transform:uppercase;
-}
-.qg-v287-count { color:#555; font-size:11px; }
-.qg-v287-section-body { padding:10px; }
-.qg-v287-empty { color:#4e4e4e; font-size:12px; padding:12px; text-align:center; }
-.qg-v287-card {
-  display:grid;
-  grid-template-columns:1fr auto;
-  gap:10px;
-  align-items:center;
-  padding:11px 12px;
-  border:.5px solid #252525;
-  border-radius:12px;
-  background:linear-gradient(180deg,#151515,#101010);
-  margin-bottom:8px;
-  cursor:pointer;
-}
-.qg-v287-card:hover {
-  border-color:#5b3a0a;
-  background:#171717;
-}
-.qg-v287-card:last-child { margin-bottom:0; }
-.qg-v287-card-title {
-  color:#e3dfd3;
-  font-size:13px;
-  font-weight:900;
-  margin-bottom:4px;
-}
-.qg-v287-card-meta {
-  display:flex;
-  gap:5px;
-  flex-wrap:wrap;
-  color:#777;
-  font-size:10.5px;
-}
-.qg-v287-pill {
-  padding:3px 8px;
-  border-radius:999px;
-  background:#101010;
-  border:.5px solid #2a2a2a;
-  color:#888;
-}
-.qg-v287-side { text-align:right; min-width:76px; }
-.qg-v287-status {
-  display:inline-block;
-  padding:4px 9px;
-  border-radius:999px;
-  font-size:10px;
-  font-weight:900;
-  margin-bottom:5px;
-}
-.qg-st-muzakerede { background:#2a1800; color:#fac775; border:.5px solid #854f0b; }
-.qg-st-aktif { background:#08210f; color:#4ade80; border:.5px solid #14532d; }
-.qg-st-gecikmede { background:#291000; color:#fb923c; border:.5px solid #7c2d12; }
-.qg-st-tamamlandi { background:#071827; color:#93c5fd; border:.5px solid #1d4ed8; }
-.qg-st-basarisiz, .qg-st-iptal { background:#2b0b0b; color:#f87171; border:.5px solid #7f1d1d; }
-.qg-v287-puan { color:#fac775; font-size:11px; font-weight:900; }
-@media(max-width:820px){
-  .qg-v287-stack { grid-template-columns:1fr; }
-  .qg-v287-form-main { grid-template-columns:1fr; }
-  .qg-v287-form-main .wide { grid-column:auto; }
-  .qg-v287-ops-head { flex-direction:column; }
-}
-
-/* Org Chart: sembolsüz ve rütbe renkleri sabit */
-#orgChart.qg-v287-org {
-  background: radial-gradient(circle at top, rgba(250,199,117,.035), transparent 31%), #080808 !important;
-  border:.5px solid #242424 !important;
-  border-radius:18px !important;
-  padding:0 !important;
-  overflow-x:auto !important;
-  min-height:520px !important;
-}
-.qg-org287-shell {
-  min-width:780px;
-  max-width:1120px;
-  margin:0 auto;
-  padding:24px 24px 28px;
-}
-.qg-org287-head {
-  text-align:center;
-  border-bottom:.5px solid #1b1b1b;
-  padding-bottom:20px;
-  margin-bottom:20px;
-}
-.qg-org287-logo {
-  font-family:'Vanilla Whale', monospace;
-  color:#fac775;
-  font-size:38px;
-  line-height:1;
-}
-.qg-org287-title {
-  color:#f1eadc;
-  font-size:14px;
-  font-weight:900;
-  letter-spacing:3px;
-  margin-top:7px;
-}
-.qg-org287-sub {
-  color:#3b3b3b;
-  font-size:10px;
-  letter-spacing:4px;
-  margin-top:3px;
-}
-.qg-org287-rank {
-  position:relative;
-  margin:0 auto 28px;
-}
-.qg-org287-rank:not(:first-child)::before {
-  content:'';
-  position:absolute;
-  top:-28px;
-  left:50%;
-  width:1px;
-  height:18px;
-  transform:translateX(-50%);
-  background:linear-gradient(180deg,var(--rank-color,#777),#333);
-  opacity:.9;
-}
-.qg-org287-rank:not(:first-child)::after {
-  content:'';
-  position:absolute;
-  top:-12px;
-  left:8%;
-  right:8%;
-  height:1px;
-  background:linear-gradient(90deg,transparent,var(--rank-color,#777),transparent);
-  opacity:.70;
-}
-.qg-org287-row {
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  gap:14px 16px;
-  flex-wrap:wrap;
-  position:relative;
-}
-.qg-org287-node-wrap {
-  position:relative;
-}
-.qg-org287-rank:not(:first-child) .qg-org287-node-wrap::before {
-  content:'';
-  position:absolute;
-  top:-12px;
-  left:50%;
-  width:1px;
-  height:12px;
-  transform:translateX(-50%);
-  background:var(--rank-color,#777);
-  opacity:.65;
-}
-.qg-org287-label {
-  position:absolute;
-  left:0;
-  top:50%;
-  transform:translateY(-50%);
-  width:112px;
-  text-align:left;
-  color:var(--rank-color,#777);
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:1.2px;
-  text-transform:uppercase;
-}
-.qg-org287-label::before {
-  content:'';
-  display:inline-block;
-  width:18px;
-  height:3px;
-  border-radius:999px;
-  background:var(--rank-color,#777);
-  box-shadow:0 0 12px var(--rank-color,#777);
-  margin-right:7px;
-  vertical-align:middle;
-}
-.qg-org287-card {
-  min-width:132px;
-  min-height:54px;
-  border-radius:14px;
-  padding:10px 14px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(180deg,#141414,#090909);
-  border:1px solid var(--rank-color,#777);
-  box-shadow:0 14px 30px rgba(0,0,0,.30), inset 0 0 0 1px rgba(255,255,255,.025);
-  color:#d3d1c7;
-  position:relative;
-  overflow:hidden;
-}
-.qg-org287-card::before {
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  height:2px;
-  background:var(--rank-color,#777);
-  opacity:.80;
-}
-.qg-org287-card.lider {
-  background:linear-gradient(180deg,#0d0d0d,#020202);
-  min-width:190px;
-  min-height:68px;
-  border-width:1.5px;
-}
-.qg-org287-card.vekilharc {
-  min-width:180px;
-  min-height:64px;
-}
-.qg-org287-name {
-  max-width:150px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  font-size:12.5px;
-  color:#f4eee0;
-  font-weight:900;
-}
-.qg-org287-rutbe {
-  color:var(--rank-color,#777);
-  font-size:10.5px;
-  font-weight:800;
-  margin-top:3px;
-}
-.qg-org287-legend {
-  margin-top:22px;
-  border:.5px solid #242424;
-  border-radius:14px;
-  padding:14px;
-  background:linear-gradient(180deg,#101010,#0b0b0b);
-}
-.qg-org287-legend-title {
-  color:#fac775;
-  font-size:12px;
-  font-weight:900;
-  letter-spacing:1.4px;
-  margin-bottom:10px;
-}
-.qg-org287-legend-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(135px,1fr));
-  gap:9px;
-}
-.qg-org287-legend-item {
-  display:flex;
-  gap:8px;
-  align-items:flex-start;
-  color:#777;
-  font-size:10.5px;
-  line-height:1.35;
-}
-.qg-org287-dot {
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:var(--rank-color);
-  margin-top:2px;
-  box-shadow:0 0 12px var(--rank-color);
-  flex-shrink:0;
-}
-.qg-org287-footer {
-  text-align:center;
-  color:#fac775;
-  font-size:11px;
-  letter-spacing:.5px;
-  margin-top:16px;
-  padding-top:14px;
-  border-top:.5px solid #171717;
-}
-@media(max-width:760px){
-  .qg-org287-shell { min-width:720px; padding:18px; }
-  .qg-org287-label {
-    position:relative;
-    top:auto;
-    transform:none;
-    width:100%;
-    display:block;
-    text-align:center;
-    margin-bottom:12px;
-  }
-}
-</style>
-
 <script>
-(function(){
-  'use strict';
 
-  function esc287(s){
-    if (typeof htmlEsc === 'function') return htmlEsc(s);
-    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-    });
-  }
-  function norm287(s){
-    return String(s || '').toLowerCase()
-      .replace(/ı/g,'i').replace(/ğ/g,'g').replace(/ü/g,'u')
-      .replace(/ş/g,'s').replace(/ö/g,'o').replace(/ç/g,'c')
-      .replace(/İ/g,'i').replace(/Ğ/g,'g').replace(/Ü/g,'u')
-      .replace(/Ş/g,'s').replace(/Ö/g,'o').replace(/Ç/g,'c');
-  }
-  function roleColor287(rank){
-    var n = norm287(rank);
-    if(n === 'lider') return '#d3d1c7';       // Siyah zeminde beyaz kontur
-    if(n === 'vekilharc') return '#e24b4a';   // Kırmızı
-    if(n === 'kaptan') return '#4f8de8';      // Mavi
-    if(n === 'tegmen') return '#3fa36b';      // Yeşil
-    if(n === 'uye') return '#fac775';         // Sarı
-    return '#f2f2f2';                         // Beyaz
-  }
-  function roleClass287(rank){
-    return norm287(rank).replace(/[^a-z0-9_-]/g,'');
-  }
-  function durumClass287(d){
-    d = norm287(d);
-    if(d === 'muzakerede') return 'qg-st-muzakerede';
-    if(d === 'aktif') return 'qg-st-aktif';
-    if(d === 'gecikmede') return 'qg-st-gecikmede';
-    if(d === 'tamamlandi') return 'qg-st-tamamlandi';
-    if(d === 'basarisiz') return 'qg-st-basarisiz';
-    if(d === 'iptal') return 'qg-st-iptal';
-    return 'qg-st-muzakerede';
-  }
-  function durumLabel287(d){
-    d = String(d || '').toLowerCase();
-    if(d === 'muzakerede') return 'Teklif';
-    if(d === 'aktif') return 'Aktif';
-    if(d === 'gecikmede') return 'Gecikmede';
-    if(d === 'tamamlandi') return 'Tamamlandı';
-    if(d === 'basarisiz') return 'Başarısız';
-    if(d === 'iptal') return 'İptal';
-    return d || 'Teklif';
-  }
-  function taskCard287(g){
-    var durum = String(g.durum || 'muzakerede').toLowerCase();
-    var puan = Number(g.onaylananPuan || g.istenenPuan || 0) || 0;
-    var title = esc287(g.baslik || 'Başlıksız görev');
-    var meta = [
-      g.rumuz ? '@' + esc287(g.rumuz) : '',
-      (g.birim || g.kategori) ? 'Birim: ' + esc287(g.birim || g.kategori) : '',
-      g.toplamAsama ? 'Aşama: ' + esc287(g.aktifAsama || 0) + '/' + esc287(g.toplamAsama) : ''
-    ].filter(Boolean).map(function(x){ return '<span class="qg-v287-pill">'+x+'</span>'; }).join('');
-    return '<div class="qg-v287-card" data-qg-task="1" data-title="'+esc287(String(g.baslik || '').toLowerCase())+'" onclick="gorevDetayAc(\''+esc287(g._id || g.id || '')+'\')">'
-      + '<div><div class="qg-v287-card-title">'+title+'</div><div class="qg-v287-card-meta">'+meta+'</div></div>'
-      + '<div class="qg-v287-side"><span class="qg-v287-status '+durumClass287(durum)+'">'+durumLabel287(durum)+'</span><div class="qg-v287-puan">'+puan+' P</div></div>'
-      + '</div>';
-  }
-  function section287(title, list, empty){
-    return '<section class="qg-v287-section"><div class="qg-v287-section-head"><div class="qg-v287-section-title">'+esc287(title)+'</div><div class="qg-v287-count">'+(list ? list.length : 0)+' kayıt</div></div>'
-      + '<div class="qg-v287-section-body">'+(list && list.length ? list.map(taskCard287).join('') : '<div class="qg-v287-empty">'+esc287(empty || 'Kayıt yok.')+'</div>')+'</div></section>';
-  }
-  function form287(prefix, handlerName){
-    prefix = prefix || 'gf';
-    handlerName = handlerName || 'gorevTeklifGonder';
-    return '<div class="qg-v287-form-card" id="gTeklif">'
-      + '<div class="qg-v287-form-head"><div><div class="qg-v287-kicker">Q-GANG TASK REQUEST</div><h3 style="margin:0 0 4px;color:#f1eadc;font-size:16px;font-weight:900">Görev Teklifi Oluştur</h3><p style="margin:0;color:#777;font-size:11.5px;line-height:1.5">Kısa anlat, puanını öner, gönder. Yönetim gerekirse planı düzenler.</p></div></div>'
-      + '<div class="qg-v287-form-main">'
-      + '<div class="form-group"><label>Birim</label><select id="'+prefix+'_kategori" class="form-input"><option value="">Seç...</option><option>Yönetim</option><option>Klan</option><option>Sosyal Medya</option><option>Özel</option></select></div>'
-      + '<div class="form-group"><label>Görev Başlığı</label><input id="'+prefix+'_baslik" class="form-input" placeholder="Örn. Q-GANG reels serisi hazırlama" maxlength="200"></div>'
-      + '<div class="form-group"><label>İstediğim Puan</label><input id="'+prefix+'_puan" class="form-input" type="number" min="1" max="500" value="20"></div>'
-      + '<div class="form-group wide"><label>Ben ne yapacağım?</label><textarea id="'+prefix+'_aciklama" class="form-input" rows="4" placeholder="Görevi sade şekilde anlat. Ne yapacaksın, çıktısı ne olacak, Q-GANG\'a ne katkı sağlayacak?"></textarea></div>'
-      + '<div class="wide" style="display:flex;justify-content:flex-end"><button id="'+prefix+'_gonderBtn" class="btn btn-warn" onclick="'+handlerName+'()"><i class="ti ti-send"></i> Gönder</button></div>'
-      + '</div></div>';
-  }
-  function readForm287(prefix){
-    return {
-      kategori: (document.getElementById(prefix + '_kategori') || {}).value || '',
-      baslik: ((document.getElementById(prefix + '_baslik') || {}).value || '').trim(),
-      aciklama: ((document.getElementById(prefix + '_aciklama') || {}).value || '').trim(),
-      puan: Number((document.getElementById(prefix + '_puan') || {}).value) || 20,
-      btn: document.getElementById(prefix + '_gonderBtn')
-    };
-  }
-  async function submitForm287(prefix, after){
-    var f = readForm287(prefix);
-    if (!f.kategori) { alert('Birim seçmek zorunlu.'); return; }
-    if (!f.baslik) { alert('Görev başlığı zorunlu.'); return; }
-    if (!f.aciklama || f.aciklama.length < 10) { alert('Görevi birkaç cümleyle açıkla.'); return; }
-    if (f.puan < 1 || f.puan > 500) { alert('Puan 1 ile 500 arasında olmalı.'); return; }
-    if(f.btn){ f.btn.disabled = true; f.btn.innerHTML = '<i class="ti ti-loader-2"></i> Gönderiliyor...'; }
-    var data;
-    try { data = await gorevAPI('GOREV_CREATE', { item: { kategori:f.kategori, birim:f.kategori, baslik:f.baslik, aciklama:f.aciklama, istenenPuan:f.puan } }); }
-    catch(e){ data = { success:false, error:(e && e.message) || 'Bağlantı hatası' }; }
-    if(f.btn){ f.btn.disabled = false; f.btn.innerHTML = '<i class="ti ti-send"></i> Gönder'; }
-    if(data && data.success){
-      try { cmsStatusGoster('ok', '<i class="ti ti-check"></i> Görev teklifin gönderildi!'); } catch(e){}
-      [prefix + '_kategori', prefix + '_baslik', prefix + '_aciklama'].forEach(function(id){ var x=document.getElementById(id); if(x) x.value=''; });
-      var p=document.getElementById(prefix + '_puan'); if(p) p.value='20';
-      if (typeof after === 'function') after();
-    } else {
-      alert('Hata: ' + ((data && data.error) || 'Bilinmeyen'));
-    }
-  }
+// ═══════════════════════════════════════════════════
+// Q-PANEL v2.9.0 — Kariyer Frontend JS (Revize)
+// ═══════════════════════════════════════════════════
+var _kariyerCache    = [];
+var _kariyerCacheTime = 0;
+var KARIYER_TTL      = 60000; // 1 dakika
 
-  window.qgDashTeklifGonder287 = function(){ return submitForm287('dash_gf', function(){ try { qgRenderDashboardNewspaperV287(); } catch(e){} }); };
-  window.gorevTeklifGonder = function(){ return submitForm287('gf', function(){ try { qgLoadUnifiedOperations287(); } catch(e){} }); };
+// Lider / Vekilharç mı?
+function kariyerIsYonetim() {
+  var rol = (window.SESSION && SESSION.rol) || '';
+  return rol === 'Lider' || rol === 'Vekilharç';
+}
+// Sadece Lider mi?
+function kariyerIsLider() {
+  return (window.SESSION && SESSION.rol) === 'Lider';
+}
 
-  window.qgLoadUnifiedOperations287 = async function qgLoadUnifiedOperations287(){
-    var el = document.getElementById('qgV287TaskBoard');
-    if(!el) return;
-    el.innerHTML = '<div class="qg-v287-empty">Görevler yükleniyor...</div>';
-    var data = await gorevAPI('GOREV_LIST', { item: {} });
-    if(!data || !data.success){ el.innerHTML = '<div class="qg-v287-empty" style="color:#f87171">Hata: '+esc287(data && data.error || 'Görevler alınamadı')+'</div>'; return; }
-    var all = data.result || [];
-    var own = all.filter(function(g){ return String(g.rumuz || '').toLowerCase() === String((SESSION && SESSION.rumuz) || '').toLowerCase(); });
-    var teklif = all.filter(function(g){ return norm287(g.durum) === 'muzakerede'; });
-    var aktif = all.filter(function(g){ return ['aktif','gecikmede'].indexOf(norm287(g.durum)) >= 0; });
-    var done = all.filter(function(g){ return norm287(g.durum) === 'tamamlandi'; });
-    var closed = all.filter(function(g){ return ['basarisiz','iptal','arsiv'].indexOf(norm287(g.durum)) >= 0; });
-    el.innerHTML = '<div class="qg-v287-stack">'
-      + section287('Teklif / Müzakere', teklif, 'Müzakerede teklif yok.')
-      + section287('Aktif Operasyonlar', aktif, 'Aktif operasyon yok.')
-      + section287('Benim Görevlerim', own, 'Sana ait görev kaydı yok.')
-      + section287('Tamamlananlar', done, 'Tamamlanan görev yok.')
-      + (closed.length ? section287('Arşiv / Sonuçlanan Diğer', closed, 'Arşiv boş.') : '')
-      + '</div>';
-  };
-  window.qgFilterUnifiedTasks287 = function qgFilterUnifiedTasks287(){
-    var q = String((document.getElementById('qgV287Search') || {}).value || '').toLowerCase().trim();
-    Array.prototype.forEach.call(document.querySelectorAll('[data-qg-task="1"]'), function(card){
-      card.style.display = !q || String(card.getAttribute('data-title') || '').indexOf(q) >= 0 ? '' : 'none';
-    });
-  };
-  window.renderGorev = async function renderGorevUnified287(){
-    var root = document.getElementById('gorevModul');
-    if(!root) return;
-    root.className = 'qg-v287-ops';
-    root.innerHTML = '<div class="qg-v287-ops-head"><div><div class="qg-v287-kicker">Q-GANG OPERATIONS</div><h2 class="qg-v287-title">Görevler</h2><div class="qg-v287-sub">Görev teklifi, müzakere, aktif operasyonlar, kişisel görevler ve tamamlanan işler tek ekranda. Sol/sağ sıkışıklığı yok; form yukarıda, akış aşağıda.</div></div><div class="qg-v287-actions"><button class="btn btn-warn btn-sm" onclick="document.getElementById(\'gTeklif\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">+ Yeni Teklif</button><button class="btn btn-sm" onclick="qgLoadUnifiedOperations287()"><i class="ti ti-refresh"></i> Yenile</button></div></div>'
-      + '<div class="qg-v287-ops-body">'
-      + form287('gf','gorevTeklifGonder')
-      + '<div class="qg-v287-list-card"><div class="qg-v287-list-head"><div><div class="qg-v287-kicker">TASK FLOW</div><h3 style="margin:0 0 4px;color:#f1eadc;font-size:16px;font-weight:900">Tüm Görev Akışı</h3><p style="margin:0;color:#777;font-size:11.5px;line-height:1.5">Durumlar tek sayfada ayrı bloklar halinde görünür.</p></div><div class="qg-v287-tools"><input id="qgV287Search" class="qg-v287-search" placeholder="Görev ara..." oninput="qgFilterUnifiedTasks287()"></div></div><div id="qgV287TaskBoard"></div></div>'
-      + '<div id="gorevDetayOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;overflow-y:auto"><div id="gorevDetayIcerik" style="max-width:660px;margin:20px auto;padding:0 12px 40px"></div></div>'
-      + '</div>';
-    try { gorevTeklifFormInit(); } catch(e) {}
-    try { qgBirimSelectDoldur('gf_kategori', '', false); } catch(e) {}
-    qgLoadUnifiedOperations287();
-  };
-
-  function nav287(tab){
-    try {
-      if (tab === 'dashboard') return showTab('dashboard', document.getElementById('navDashboard'));
-      if (tab === 'log') return showTab('log', document.getElementById('navLog'));
-      var topTabs = { members:1, puan:1, hall:1, gorev:1, org:1, etkinlik:1 };
-      if (topTabs[tab]) return showTabDD(tab, 'ddTopluluk', 'navToplulukBtn');
-      return showTabDD(tab, 'ddYonetim', 'navYonetimBtn');
-    } catch(e) {
-      try { _showTabContent(tab); } catch(x){}
-    }
-  }
-  window.qgNav287 = nav287;
-
-  window.qgRenderDashboardNewspaperV287 = function qgRenderDashboardNewspaperV287(){
-    var formBox = document.getElementById('qgDashTaskForm');
-    if (formBox) {
-      formBox.innerHTML = '<div class="qg-v287-dash-form"><div class="qg-v287-dash-form-head"><div><div class="qg-v287-kicker">QUICK TASK REQUEST</div><h3>Hızlı Görev Teklifi</h3><p>Dashboard üzerinden hızlı teklif oluştur. Detaylı takip Görevler ekranında devam eder.</p></div><button class="btn btn-sm" onclick="qgNav287(\'gorev\')">Görevler →</button></div>'
-        + '<div class="qg-v287-dash-form-grid">'
-        + '<div class="form-group"><label>Birim</label><select id="dash_gf_kategori" class="form-input"><option value="">Seç...</option><option>Yönetim</option><option>Klan</option><option>Sosyal Medya</option><option>Özel</option></select></div>'
-        + '<div class="form-group"><label>Görev Başlığı</label><input id="dash_gf_baslik" class="form-input" placeholder="Örn. Q-GANG reels serisi hazırlama" maxlength="200"></div>'
-        + '<div class="form-group"><label>Puan</label><input id="dash_gf_puan" class="form-input" type="number" min="1" max="500" value="20"></div>'
-        + '<div class="form-group wide"><label>Açıklama</label><textarea id="dash_gf_aciklama" class="form-input" rows="3" placeholder="Ne yapacaksın, çıktısı ne olacak, Q-GANG\'a katkısı ne?"></textarea></div>'
-        + '<div class="wide" style="display:flex;justify-content:flex-end"><button id="dash_gf_gonderBtn" class="btn btn-warn" onclick="qgDashTeklifGonder287()"><i class="ti ti-send"></i> Gönder</button></div>'
-        + '</div></div>';
-      try { qgBirimSelectDoldur('dash_gf_kategori', '', false); } catch(e) {}
-    }
-
-    var news = document.getElementById('qgDashNewspaper');
-    if (news) {
-      var total = (window.members || members || []).length || 0;
-      var active = (window.members || members || []).filter(function(m){ return m.durum === 'Aktif'; }).length;
-      var net = 0;
-      try {
-        var gelir = (butce || []).filter(function(b){ return b.tur === 'gelir'; }).reduce(function(s,b){ return s + Number(b.tutar || 0); },0);
-        var gider = (butce || []).filter(function(b){ return b.tur === 'gider'; }).reduce(function(s,b){ return s + Number(b.tutar || 0); },0);
-        net = gelir - gider;
-      } catch(e){}
-      news.innerHTML = '<div class="qg-v287-news-grid">'
-        + '<div class="qg-v287-news-card qg-v287-news-big" style="--accent:#fac775"><div class="qg-v287-kicker">KARARGÂH GAZETESİ</div><h3>Günün Komuta Özeti</h3><p>'+active+' aktif / '+total+' toplam personel. Net kasa: '+(typeof fmtTL === 'function' ? fmtTL(net) : net)+' . Tüm modüllere buradan hızlı geçiş.</p><button class="qg-v287-news-btn" onclick="qgNav287(\'gorev\')">Görevler</button> <button class="qg-v287-news-btn" onclick="qgNav287(\'org\')">Organizasyon</button></div>'
-        + '<div class="qg-v287-news-card" style="--accent:#4f8de8"><div class="qg-v287-kicker">PERSONEL</div><h3>Üye Dosyaları</h3><p>Rütbe, durum, puan ve görev alanlarını yönet.</p><button class="qg-v287-news-btn" onclick="qgNav287(\'members\')">Aç</button></div>'
-        + '<div class="qg-v287-news-card" style="--accent:#3fa36b"><div class="qg-v287-kicker">HAZİNE</div><h3>Bütçe</h3><p>Gelir, gider ve Q-FON durumunu takip et.</p><button class="qg-v287-news-btn" onclick="qgNav287(\'butce\')">Aç</button></div>'
-        + '<div class="qg-v287-news-card" style="--accent:#e24b4a"><div class="qg-v287-kicker">YÖNETİM</div><h3>Duyuru & Tüzük</h3><p>Bildiri, disiplin, başvuru ve erişim yönetimi.</p><button class="qg-v287-news-btn" onclick="qgNav287(\'duyurular\')">Duyurular</button></div>'
-        + '<div class="qg-v287-news-card" style="--accent:#f2f2f2"><div class="qg-v287-kicker">KÜLTÜR</div><h3>Q-Hall / Q-Feed</h3><p>Başarılar, sezonlar ve karargâh akışı.</p><button class="qg-v287-news-btn" onclick="qgNav287(\'hall\')">Q-Hall</button></div>'
-        + '</div>';
-    }
-  };
-
-  var oldDash287 = window.renderDashboard;
-  window.renderDashboard = function renderDashboardV287(){
-    var r = oldDash287 ? oldDash287.apply(this, arguments) : undefined;
-    setTimeout(function(){ try { qgRenderDashboardNewspaperV287(); } catch(e){} }, 80);
-    return r;
-  };
-
-  function orgNode287(m, r){
-    var color = roleColor287(r);
-    var cls = roleClass287(r);
-    return '<div class="qg-org287-node-wrap"><div class="qg-org287-card '+cls+'" style="--rank-color:'+color+'"><div class="qg-org287-name">'+esc287(m.rumuz || m.ad || '—')+'</div><div class="qg-org287-rutbe">'+esc287(r)+'</div></div></div>';
-  }
-  function orgRank287(rank, list){
-    if(!list || !list.length) return '';
-    var color = roleColor287(rank);
-    return '<div class="qg-org287-rank" style="--rank-color:'+color+'"><div class="qg-org287-label">'+esc287(rank)+'</div><div class="qg-org287-row">'+list.map(function(m){return orgNode287(m, rank);}).join('')+'</div></div>';
-  }
-  function orgLegendDesc287(r){
-    if(r==='Lider') return 'Siyah: nihai karar ve strateji.';
-    if(r==='Vekilharç') return 'Kırmızı: lider yardımcılığı ve genel koordinasyon.';
-    if(r==='Kaptan') return 'Mavi: birim ve operasyon yönetimi.';
-    if(r==='Teğmen') return 'Yeşil: kaptan desteği ve saha takibi.';
-    if(r==='Üye') return 'Sarı: aktif katılım ve görev üretimi.';
-    return 'Beyaz: gözlem ve adaylık statüsü.';
-  }
-  window.renderOrg = function renderOrgRebuilt287(){
-    var el = document.getElementById('orgChart');
-    if(!el) return;
-    var ranks = ['Lider','Vekilharç','Kaptan','Teğmen','Üye','Gözlemci'];
-    var by = {};
-    ranks.forEach(function(r){ by[r] = []; });
-    (members || []).filter(function(m){ return !(m.deleted || m.deletedAt) && (m.durum || 'Aktif') !== 'Arşiv'; }).forEach(function(m){
-      var r = m.rutbe || m.rol || 'Gözlemci';
-      var found = ranks.find(function(x){ return norm287(x) === norm287(r); }) || 'Gözlemci';
-      by[found].push(m);
-    });
-    ranks.forEach(function(r){ by[r].sort(function(a,b){ return String(a.rumuz||'').localeCompare(String(b.rumuz||''),'tr'); }); });
-    el.className = 'qg-v287-org';
-    var legend = ranks.map(function(r){ return '<div class="qg-org287-legend-item" style="--rank-color:'+roleColor287(r)+'"><span class="qg-org287-dot"></span><div><strong style="color:#d3d1c7">'+esc287(r)+'</strong><br>'+esc287(orgLegendDesc287(r))+'</div></div>'; }).join('');
-    el.innerHTML = '<div class="qg-org287-shell"><div class="qg-org287-head"><div class="qg-org287-logo">QG</div><div class="qg-org287-title">Q-GANG ORGANİZASYON ŞEMASI</div><div class="qg-org287-sub">LİDERDEN GÖZLEMCİYE HİYERARŞİK KADRO AKIŞI</div></div><div class="qg-org287-tree">'+ranks.map(function(r){ return orgRank287(r, by[r]); }).join('')+'</div><div class="qg-org287-legend"><div class="qg-org287-legend-title">LEJAND</div><div class="qg-org287-legend-grid">'+legend+'</div></div><div class="qg-org287-footer">Q-GANG | Güç, Disiplin, Birlik.</div></div>';
-  };
-
-  try {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function(){ setTimeout(function(){ try { qgRenderDashboardNewspaperV287(); } catch(e){} }, 120); });
-    } else {
-      setTimeout(function(){ try { qgRenderDashboardNewspaperV287(); } catch(e){} }, 120);
-    }
-  } catch(e){}
-})();
-</script>
-
-<!-- ═══════════════════════════════════════════════════
-     Q-PANEL v2.9.4 — Etkinlik Puan Onay Sistemi
-     Entegrasyon: Bu blok, mevcut index.html içine eklenmiştir.
-     ═══════════════════════════════════════════════════ -->
-
-<style>
-.event-status-pill{display:inline-flex;align-items:center;gap:4px;border:.5px solid #333;border-radius:999px;padding:2px 7px;font-size:10px;color:#777;margin-left:6px}
-.event-status-pill.ok{border-color:#14532d;color:#4ade80;background:#001a0f}
-.event-status-pill.wait{border-color:#3a2800;color:#fbbf24;background:#1a1200}
-.event-status-pill.draft{border-color:#333;color:#777;background:#111}
-.event-actions-v294{display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
-.event-actions-v294 .btn-xs{font-size:10px;padding:4px 7px;border-radius:8px}
-</style>
-
-<script>
-async function eventApi(action, payload) {
+async function kariyerAPI(action, payload) {
   try {
     var token = (typeof getToken === 'function') ? getToken() : '';
-    var body = Object.assign({ action: action, token: token }, payload || {});
-    var res = await secureApiFetch(API_URL, {
-      method: 'POST',
+    var body  = Object.assign({ action: action, token: token }, payload || {});
+    var res   = await secureApiFetch(API_URL, {
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body:    JSON.stringify(body),
     });
-    if (!res.ok) return { success:false, error:'HTTP ' + res.status };
+    if (!res.ok) return { success: false, error: 'HTTP ' + res.status };
     return await res.json();
-  } catch(e) {
-    return { success:false, error:e.message };
+  } catch(e) { return { success: false, error: e.message }; }
+}
+
+// Kariyer skoru sütununu yalnızca Lider/VH'ye göster
+function kariyerSkorSutunAyarla() {
+  var baslik = document.getElementById('kariyerSkorBaslik');
+  if (baslik) baslik.style.display = kariyerIsYonetim() ? '' : 'none';
+}
+
+async function renderKariyer() {
+  kariyerSkorSutunAyarla();
+  var tbody = document.getElementById('kariyerTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#555;padding:18px">Yükleniyor...</td></tr>';
+
+  var fresh = Date.now() - _kariyerCacheTime < KARIYER_TTL && _kariyerCache.length;
+  if (!fresh) {
+    var data = await kariyerAPI('KARIYER_ANALIZ_LIST', {});
+    if (!data || !data.success || !Array.isArray(data.result)) {
+      tbody.innerHTML = '<tr><td colspan="10" style="color:#e24b4a;padding:12px">Hata: '
+        + ((data && data.error) || 'Bilinmeyen') + '</td></tr>';
+      return;
+    }
+    _kariyerCache    = data.result;
+    _kariyerCacheTime = Date.now();
   }
+
+  kariyerDashboardGuncelle(_kariyerCache);
+  kariyerFiltrele();
 }
 
-function eventStatusLabel(e) {
-  if (e && e.puanOnaylandi === true) return '<span class="event-status-pill ok">✅ Puan Onaylandı</span>';
-  if (e && (e.katilimcilar || e.katilimciSayisi)) return '<span class="event-status-pill wait">⏳ Puan Bekliyor</span>';
-  return '<span class="event-status-pill draft">Taslak</span>';
+function kariyerDashboardGuncelle(liste) {
+  if (!liste || !liste.length) return;
+
+  // En yüksek kariyer (sadece yönetim görür)
+  var enYuksek = [...liste].sort(function(a, b) { return b.kariyerSkoru - a.kariyerSkoru; })[0];
+  document.getElementById('kdEnYuksekRumuz').textContent = enYuksek.rumuz || '—';
+  document.getElementById('kdEnYuksekSkor').textContent  = kariyerIsYonetim()
+    ? String(enYuksek.kariyerSkoru)
+    : '—';
+
+  // Terfiye en yakın — backend sıralamasını kullan (akıllı)
+  // Backend: Uygun > Onay Gerekli > eksik sayısı az > skor yüksek
+  var terfiAdayi = liste.find(function(a) {
+    return a.terfiDurumu !== 'Henüz Hazır Değil' && a.rutbe !== 'Lider';
+  }) || liste.find(function(a) { return a.rutbe !== 'Lider'; });
+
+  if (terfiAdayi) {
+    document.getElementById('kdTerfiRumuz').textContent  = terfiAdayi.rumuz || '—';
+    document.getElementById('kdTerfiHedef').textContent  = terfiAdayi.terfiHedef ? '→ ' + terfiAdayi.terfiHedef : '—';
+    var eksikText = terfiAdayi.terfiDurumu === 'Terfiye Uygun' ? '✅ Terfiye Uygun'
+      : terfiAdayi.terfiDurumu === 'Lider Onayı Gerekli' ? '⭐ Lider Onayı Gerekli'
+      : ((terfiAdayi.eksikSayisi || 0) + ' kriter eksik');
+    document.getElementById('kdTerfiEksik').textContent = eksikText;
+  }
+
+  // En yüksek disiplin
+  var enDisiplin = [...liste].sort(function(a, b) { return b.disiplin - a.disiplin; })[0];
+  document.getElementById('kdDisiplinRumuz').textContent = enDisiplin.rumuz || '—';
+  document.getElementById('kdDisiplinSkor').textContent  = enDisiplin.disiplin;
 }
 
-async function eventParticipantsSave(eventId, katilimcilar) {
-  var data = await eventApi('EVENT_PARTICIPANTS_SAVE', {
-    item: { eventId: eventId, katilimcilar: katilimcilar }
+function kariyerFiltrele() {
+  var tbody       = document.getElementById('kariyerTableBody');
+  if (!tbody) return;
+  var filtreRutbe = (document.getElementById('kariyerRutbeFilter') || {}).value || '';
+  var filtreTerfi = (document.getElementById('kariyerTerfiFilter') || {}).value || '';
+  var filtreAra   = ((document.getElementById('kariyerAra') || {}).value || '').toLowerCase().trim();
+  var yonetim     = kariyerIsYonetim();
+
+  var liste = (_kariyerCache || []).filter(function(a) {
+    if (filtreRutbe && a.rutbe !== filtreRutbe) return false;
+    if (filtreTerfi && a.terfiDurumu !== filtreTerfi) return false;
+    if (filtreAra   && !(a.rumuz || '').toLowerCase().includes(filtreAra)) return false;
+    return true;
   });
+
+  if (!liste.length) {
+    tbody.innerHTML = '<tr><td colspan="10" style="color:#555;text-align:center;padding:14px">Sonuç bulunamadı.</td></tr>';
+    return;
+  }
+
+  function sbar(val) {
+    if (val === null) return '<span class="qk-t-veri">—</span>';
+    return val + '<span class="qk-sbar"><span class="qk-sbar-fill" style="width:' + val + '%"></span></span>';
+  }
+  function tLabel(a) {
+    if (a.terfiDurumu === 'Terfiye Uygun')
+      return '<span class="qk-t-uygun">✅ → ' + (a.terfiHedef || '') + '</span>';
+    if (a.terfiDurumu === 'Lider Onayı Gerekli')
+      return '<span class="qk-t-onay">⭐ Lider Onayı → ' + (a.terfiHedef || '') + '</span>';
+    if ((a.eksikSayisi || 0) > 0)
+      return '<span class="qk-t-bekle">⏳ ' + a.eksikSayisi + ' kriter eksik</span>';
+    return '<span class="qk-t-bekle">⏳ Henüz Hazır Değil</span>';
+  }
+
+  tbody.innerHTML = liste.map(function(a, i) {
+    var skorTd = yonetim
+      ? '<td style="text-align:center;font-weight:700;color:#fac775">' + a.kariyerSkoru + '</td>'
+      : '';
+    return '<tr>'
+      + '<td>' + (i + 1) + '</td>'
+      + '<td style="font-weight:600;color:#d3d1c7">' + (a.rumuz || '') + '</td>'
+      + '<td>' + rutbeBadge(a.rutbe) + '</td>'
+      + '<td style="text-align:center">' + sbar(a.aktivite) + '</td>'
+      + '<td style="text-align:center">' + sbar(a.katki)    + '</td>'
+      + '<td style="text-align:center">' + sbar(a.disiplin) + '</td>'
+      + '<td style="text-align:center">' + sbar(a.liderlik) + '</td>'
+      + skorTd
+      + '<td>' + tLabel(a) + '</td>'
+      + '<td><button class="btn btn-sm" onclick="kariyerDetay(\'' + (a.rumuz || '') + '\')">'
+      +   '<i class="ti ti-eye"></i></button></td>'
+      + '</tr>';
+  }).join('');
+}
+
+async function kariyerDetay(rumuz) {
+  var a = (_kariyerCache || []).find(function(x) { return x.rumuz === rumuz; });
+  if (!a) {
+    var d = await kariyerAPI('KARIYER_ANALIZ_GET', { item: { rumuz: rumuz } });
+    if (!d.success) { alert('Hata: ' + (d.error || 'Bilinmeyen')); return; }
+    a = d.result;
+  }
+
+  // QRutbeGecmisi — kariyer geçmişi
+  var gd = await kariyerAPI('KARIYER_GECMISI_LIST', { item: { rumuz: rumuz } });
+  var gecmis = (gd.success && Array.isArray(gd.result)) ? gd.result : [];
+
+  var yonetim   = kariyerIsYonetim();
+  var sadeceLider = kariyerIsLider();
+
+  var terfiCls = a.terfiDurumu === 'Terfiye Uygun'       ? 'uygun'
+               : a.terfiDurumu === 'Lider Onayı Gerekli' ? 'onay' : 'bekle';
+  var terfiMsg = a.terfiDurumu === 'Terfiye Uygun'
+    ? '✅ <strong>' + a.rumuz + '</strong>' + (a.terfiHedef ? ' → <strong>' + a.terfiHedef + '</strong>' : '') + ' rütbesine terfiye uygun.'
+    : a.terfiDurumu === 'Lider Onayı Gerekli'
+    ? '⭐ Koşullar sağlandı. Lider onayıyla <strong>' + (a.terfiHedef || '') + '</strong> terfisi mümkün.'
+    : '⏳ Terfi için aşağıdaki koşullar sağlanmalı:';
+
+  // Eksik kriterler
+  var eksikHtml = '';
+  if (a.eksikler && a.eksikler.length) {
+    eksikHtml = '<ul class="qk-eksik-liste">'
+      + a.eksikler.map(function(e) { return '<li>' + e + '</li>'; }).join('')
+      + '</ul>';
+  }
+
+  function skorKart(label, val, icon, sub, gizle) {
+    // gizle: toplam kariyer skoru gibi yönetim dışı gizlenecek bilgiler
+    if (gizle && !yonetim) return '';
+    var valStr = val === null
+      ? '<span style="font-size:14px;color:#444">Veri Yetersiz</span>'
+      : String(val);
+    var barW = val === null ? 0 : val;
+    return '<div class="qk-sk">'
+      + '<div class="label">' + icon + ' ' + label + '</div>'
+      + '<div class="value">' + valStr + '</div>'
+      + (sub ? '<div class="sub">' + sub + '</div>' : '')
+      + '<div class="bar"><div class="bar-fill" style="width:' + barW + '%"></div></div>'
+      + '</div>';
+  }
+
+  var gecmisHtml = '';
+  if (gecmis.length) {
+    gecmisHtml = '<div style="margin-top:14px">'
+      + '<div style="font-size:10px;color:#555;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px">Kariyer Geçmişi</div>'
+      + gecmis.map(function(g) {
+          var islem = g.islem || 'DEĞİŞİM';
+          var renk  = islem === 'TERFI' ? '#4ade80'
+                    : islem === 'TENZIL' ? '#f87171'
+                    : islem === 'ATAMA' ? '#fac775' : '#888';
+          return '<div class="qk-gecmis-satir">'
+            + '<span style="color:' + renk + ';font-weight:700;font-size:11px;min-width:72px">' + islem + '</span>'
+            + '<div style="flex:1;font-size:12px;color:#d3d1c7">'
+            +   (g.eskiRutbe ? g.eskiRutbe + ' → ' : '') + '<strong>' + (g.yeniRutbe || '') + '</strong>'
+            +   (g.aciklama ? '<div style="font-size:11px;color:#555">' + g.aciklama + '</div>' : '')
+            + '</div>'
+            + '<span style="font-size:10px;color:#333">' + (String(g.tarih || '').split('T')[0]) + '</span>'
+            + '</div>';
+        }).join('')
+      + '</div>';
+  } else {
+    gecmisHtml = '<div style="color:#444;font-size:12px;margin-top:12px;padding:8px;background:#0d0d0d;border-radius:8px">Henüz kariyer geçmişi yok.</div>';
+  }
+
+  // Kariyer skoru — sadece Lider/VH
+  var kariyerSkorHtml = yonetim
+    ? '<div style="text-align:center;margin:6px 0 14px">'
+    +   '<span style="font-size:36px;font-weight:700;color:#fac775">' + a.kariyerSkoru + '</span>'
+    +   '<span style="font-size:12px;color:#555;margin-left:6px">Kariyer Skoru</span>'
+    + '</div>'
+    : '';
+
+  // Manuel giriş — sadece Lider
+  var manuelBtn = sadeceLider
+    ? '<button class="btn btn-warn btn-sm" style="margin-top:12px;width:100%" onclick="kariyerManuelGiris(\'' + rumuz + '\')">'
+    +   '<i class="ti ti-edit"></i> Manuel Kariyer Girişi</button>'
+    : '';
+
+  document.getElementById('modalContainer').innerHTML =
+    '<div class="qk-overlay" onclick="if(event.target===this)closeModal()">'
+    + '<div class="qk-box">'
+    + '<div class="qk-box-baslik">'
+    +   '<div>📊 ' + a.rumuz
+    +     '<br><span style="font-size:11px;color:#555;font-weight:400">'
+    +       a.rutbe
+    +       (a.rutbeTarihi ? ' · ' + String(a.rutbeTarihi).split('T')[0] + ' tarihinden beri' : '')
+    +       (a.rutbeSure   ? ' (' + a.rutbeSure + ')' : '')
+    +     '</span>'
+    +   '</div>'
+    +   '<button onclick="closeModal()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer">×</button>'
+    + '</div>'
+
+    + kariyerSkorHtml  // Sadece Lider/VH
+
+    // Terfi kutusu + eksik kriterler
+    + '<div class="qk-terfi-kutu ' + terfiCls + '">' + terfiMsg + eksikHtml + '</div>'
+
+    // 4 skor kartı
+    + '<div class="qk-skor-grid">'
+    +   skorKart('Aktivite', a.aktivite, '📅',
+          a.aktiviteVeri === 'yetersiz'
+            ? 'Min. 5 etkinlik gerekli'
+            : a.katildigiEtkinlik + '/' + a.toplamEtkinlik + ' etkinlik')
+    +   skorKart('Katkı', a.katki, '🏆', a.puan + ' puan')
+    +   skorKart('Disiplin', a.disiplin, '⚖️', a.cezaSayisi + ' aktif ceza kaydı')
+    +   skorKart('Liderlik', a.liderlik, '⭐', a.actigiGorev + ' aktif/tam. görev')
+    + '</div>'
+
+    // Meta
+    + '<div style="font-size:11px;color:#555;background:#111;border:.5px solid #222;border-radius:8px;padding:9px;line-height:1.65;margin-bottom:10px">'
+    +   '🎯 Sonraki hedef: <strong style="color:#d3d1c7">' + (a.terfiHedef || 'Lider') + '</strong>'
+    +   (a.terfiDurumu === 'Henüz Hazır Değil' && a.eksikSayisi
+          ? ' &nbsp;|&nbsp; ❌ ' + a.eksikSayisi + ' kriter eksik'
+          : '')
+    + '</div>'
+
+    + gecmisHtml
+    + manuelBtn
+    + '</div></div>';
+}
+
+function kariyerManuelGiris(rumuz) {
+  if (!kariyerIsLider()) {
+    alert('Bu işlem yalnızca Lider tarafından yapılabilir.');
+    return;
+  }
+  var rutbeler = ['Gözlemci','Üye','Teğmen','Kaptan','Vekilharç','Lider'];
+  document.getElementById('modalContainer').innerHTML =
+    '<div class="modal-overlay">'
+    + '<div class="modal-box"><h3>Manuel Kariyer Girişi — ' + rumuz + '</h3>'
+    + '<div style="font-size:11px;color:#555;margin-bottom:12px;background:#0d0d0d;padding:8px;border-radius:8px">Bu kayıt QRutbeGecmisi\'ne yazılır. QMembers rütbesi otomatik güncellenir.</div>'
+    + '<div class="form-group" style="margin-bottom:8px"><label>Eski Rütbe (opsiyonel)</label>'
+    +   '<select id="mk_eski"><option value="">Yok / İlk atama</option>'
+    +   rutbeler.map(function(r){ return '<option>' + r + '</option>'; }).join('')
+    + '</select></div>'
+    + '<div class="form-group" style="margin-bottom:8px"><label>Yeni Rütbe *</label>'
+    +   '<select id="mk_yeni">' + rutbeler.map(function(r){ return '<option>' + r + '</option>'; }).join('') + '</select></div>'
+    + '<div class="form-group" style="margin-bottom:8px"><label>Gerekçe / Açıklama</label>'
+    +   '<textarea id="mk_aciklama" placeholder="Terfi/tenzil gerekçesi..." style="min-height:60px"></textarea></div>'
+    + '<div class="modal-footer">'
+    +   '<button class="btn" onclick="closeModal()">İptal</button>'
+    +   '<button class="btn btn-warn" onclick="kariyerGirisKaydet(\'' + rumuz + '\')">'
+    +     '<i class="ti ti-check"></i> Kaydet</button>'
+    + '</div></div></div>';
+}
+
+async function kariyerGirisKaydet(rumuz) {
+  var eskiRutbe = (document.getElementById('mk_eski')     || {}).value || '';
+  var yeniRutbe = (document.getElementById('mk_yeni')     || {}).value;
+  var aciklama  = (document.getElementById('mk_aciklama') || {}).value || '';
+  if (!yeniRutbe) { alert('Yeni rütbe seçmek zorunlu.'); return; }
+
+  var data = await kariyerAPI('KARIYER_GECMISI_ADD', {
+    item: { rumuz: rumuz, eskiRutbe: eskiRutbe, yeniRutbe: yeniRutbe, aciklama: aciklama, kaynak: 'MANUEL' }
+  });
+
   if (data && data.success) {
-    cmsStatusGoster('ok', '<i class="ti ti-check"></i> Katılımcılar kaydedildi. Puan onayı bekliyor.');
-    try { await loadAll(); } catch(e) {}
-    try { renderEvents(); } catch(e) {}
+    cmsStatusGoster('ok', '<i class="ti ti-check"></i> Kariyer girişi kaydedildi — ' + ((data.result && data.result.islem) || ''));
+    closeModal();
+    _kariyerCache    = [];
+    _kariyerCacheTime = 0;
+    kariyerYenile();
+    // Local QMembers güncelle
+    var m = (members || []).find(function(x) { return x.rumuz === rumuz; });
+    if (m && yeniRutbe) {
+      m.rutbe = yeniRutbe;
+      try { renderMembers(); renderOrg(); } catch(e) {}
+    }
   } else {
     alert('Hata: ' + ((data && data.error) || 'Bilinmeyen'));
   }
 }
 
-async function eventApprovePoints(eventId) {
-  if (!confirm('Bu etkinlikteki katılımcılara puan işlenecek. Onaylıyor musun?')) return;
-  var data = await eventApi('EVENT_APPROVE_POINTS', { id: eventId });
-  if (data && data.success) {
-    var r = data.result || {};
-    cmsStatusGoster('ok', '<i class="ti ti-check"></i> Etkinlik puanları onaylandı. İşlenen: ' + (r.awarded || 0));
-    try { await loadAll(); } catch(e) {}
-    try { renderEvents(); renderMembers(); } catch(e) {}
-  } else {
-    alert('Hata: ' + ((data && data.error) || 'Bilinmeyen'));
-  }
+async function kariyerYenile() {
+  _kariyerCache    = [];
+  _kariyerCacheTime = 0;
+  await renderKariyer();
 }
 
-async function eventResetPoints(eventId) {
-  if (!confirm('Bu etkinliğe ait puan arşiv kayıtları kaldırılacak ve üye puanları dengelenecek. Devam edilsin mi?')) return;
-  var data = await eventApi('EVENT_POINTS_RESET', { id: eventId });
-  if (data && data.success) {
-    var r = data.result || {};
-    cmsStatusGoster('ok', '<i class="ti ti-check"></i> Etkinlik puanları sıfırlandı. Silinen arşiv: ' + (r.removed || 0));
-    try { await loadAll(); } catch(e) {}
-    try { renderEvents(); renderMembers(); } catch(e) {}
-  } else {
-    alert('Hata: ' + ((data && data.error) || 'Bilinmeyen'));
-  }
-}
+// ══════════════════════════════════════
+// _showTabContent entegrasyonu:
+// fns objesine ekle: kariyer: renderKariyer
+// ══════════════════════════════════════
 
-function eventRenderActionsV294(e) {
-  if (!e || !e._id) return '';
-  var approveOrReset = e.puanOnaylandi === true
-    ? '<button class="btn btn-sm btn-xs" onclick="eventResetPoints(\\'' + e._id + '\\')"><i class="ti ti-rotate"></i> Puanı Sıfırla</button>'
-    : '<button class="btn btn-warn btn-sm btn-xs" onclick="eventApprovePoints(\\'' + e._id + '\\')"><i class="ti ti-check"></i> Puanları Onayla</button>';
-  return '<div class="event-actions-v294">' + approveOrReset + '</div>';
-}
-
-// Runtime enhancement: renderEvents sonrasında kartlara statü/puan butonu ekler.
-// Kalıcı entegrasyon mümkünse renderEvents template içine eventStatusLabel(e) ve eventRenderActionsV294(e) doğrudan eklenmelidir.
-(function qpanelEventV294Enhancer(){
-  if (window.__eventV294EnhancerApplied) return;
-  window.__eventV294EnhancerApplied = true;
-
-  function enhanceEventCards(){
-    try {
-      if (!Array.isArray(window.events)) return;
-      var eventList = window.events;
-      var cards = Array.from(document.querySelectorAll('#tab-events .card, #tab-events .event-card, #tab-events [data-event-id], .event-card'));
-      eventList.forEach(function(e){
-        if (!e || !e._id) return;
-        var card = cards.find(function(c){
-          return (c.getAttribute('data-event-id') === e._id) || ((c.innerText || '').includes(e.baslik || e.tur || ''));
-        });
-        if (!card || card.getAttribute('data-v294-enhanced') === e._id) return;
-
-        var titleEl = card.querySelector('h3,h4,.title,.event-title') || card.firstElementChild;
-        if (titleEl && !titleEl.querySelector('.event-status-pill')) {
-          titleEl.insertAdjacentHTML('beforeend', ' ' + eventStatusLabel(e));
-        }
-
-        if (!card.querySelector('.event-actions-v294')) {
-          card.insertAdjacentHTML('beforeend', eventRenderActionsV294(e));
-        }
-
-        card.setAttribute('data-v294-enhanced', e._id);
-      });
-    } catch(e) {}
-  }
-
-  var oldRender = window.renderEvents;
-  if (typeof oldRender === 'function' && !oldRender.__v294Wrapped) {
-    window.renderEvents = function(){
-      var ret = oldRender.apply(this, arguments);
-      setTimeout(enhanceEventCards, 50);
-      return ret;
-    };
-    window.renderEvents.__v294Wrapped = true;
-  }
-
-  setInterval(enhanceEventCards, 1500);
-})();
 </script>
-
 </body>
 </html>
