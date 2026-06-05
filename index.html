@@ -6910,8 +6910,8 @@ async function panelAc(rumuz, rol) {
         </div>
 
 
-        <div id="qgDashTaskForm"></div>
-        <div id="qgDashNewspaper"></div>
+        <div id="qgDashTaskForm" style="display:none"></div>
+        <div id="qgDashNewspaper" style="display:none"></div>
 
         <div class="qfeed-kart" id="qfeedKart">
           <div class="qfeed-kart-baslik">
@@ -13610,7 +13610,7 @@ async function renderQHall() {
 
 <style>
 /* ═══════════════════════════════════════════════════
-   Q-PANEL v2.8.7 — Newspaper Dashboard + Clean Org Colors
+   Q-PANEL v2.8.8 — Dashboard Cleanup + Org Reveal
    ═══════════════════════════════════════════════════ */
 
 /* Dashboard gazete/karargâh görünümü */
@@ -14101,6 +14101,68 @@ async function renderQHall() {
     margin-bottom:12px;
   }
 }
+
+
+/* ═══════════════════════════════════════════════════
+   Q-PANEL v2.8.8 — Dashboard cleanup + Org reveal polish
+   ═══════════════════════════════════════════════════ */
+#qgDashTaskForm,
+#qgDashNewspaper {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.qg-org287-label {
+  display: none !important;
+}
+.qg-org287-label::before {
+  content: none !important;
+  display: none !important;
+}
+.qg-org287-tree {
+  position: relative;
+}
+.qg-org287-rank {
+  opacity: 0;
+  transform: translateY(-18px);
+  animation: qgOrg287CascadeDown .48s cubic-bezier(.16,.68,.28,1) forwards;
+}
+.qg-org287-rank:nth-child(1) { animation-delay: .05s; }
+.qg-org287-rank:nth-child(2) { animation-delay: .18s; }
+.qg-org287-rank:nth-child(3) { animation-delay: .31s; }
+.qg-org287-rank:nth-child(4) { animation-delay: .44s; }
+.qg-org287-rank:nth-child(5) { animation-delay: .57s; }
+.qg-org287-rank:nth-child(6) { animation-delay: .70s; }
+@keyframes qgOrg287CascadeDown {
+  0% { opacity: 0; transform: translateY(-22px); filter: blur(2px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.qg-org287-card {
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background .22s ease, filter .22s ease;
+  will-change: transform, box-shadow;
+}
+.qg-org287-card:hover {
+  transform: translateY(-4px) scale(1.035);
+  border-color: var(--rank-color,#fff) !important;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--rank-color,#fff) 70%, transparent), 0 18px 38px rgba(0,0,0,.38), inset 0 0 0 1px rgba(255,255,255,.06);
+  filter: brightness(1.15);
+  z-index: 3;
+}
+@supports not (box-shadow: 0 0 10px color-mix(in srgb, #fff 50%, transparent)) {
+  .qg-org287-card:hover {
+    box-shadow: 0 0 22px var(--rank-color,#fff), 0 18px 38px rgba(0,0,0,.38);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qg-org287-rank {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .qg-org287-card:hover {
+    transform: none !important;
+  }
+}
 </style>
 
 <script>
@@ -14270,37 +14332,18 @@ async function renderQHall() {
   }
   window.qgNav287 = nav287;
 
-  window.qgRenderDashboardNewspaperV287 = function qgRenderDashboardNewspaperV287(){
+  window.qgRenderDashboardNewspaperV287 = function qgRenderDashboardCleanupV288(){
+    // v2.8.8: Dashboard sadeleştirildi. Hızlı görev teklifi ve Karargâh Gazetesi kartları kaldırıldı.
+    // Karargâh Akışı dashboard altında bağımsız olarak kalır.
     var formBox = document.getElementById('qgDashTaskForm');
     if (formBox) {
-      formBox.innerHTML = '<div class="qg-v287-dash-form"><div class="qg-v287-dash-form-head"><div><div class="qg-v287-kicker">QUICK TASK REQUEST</div><h3>Hızlı Görev Teklifi</h3><p>Dashboard üzerinden hızlı teklif oluştur. Detaylı takip Görevler ekranında devam eder.</p></div><button class="btn btn-sm" onclick="qgNav287(\'gorev\')">Görevler →</button></div>'
-        + '<div class="qg-v287-dash-form-grid">'
-        + '<div class="form-group"><label>Birim</label><select id="dash_gf_kategori" class="form-input"><option value="">Seç...</option><option>Yönetim</option><option>Klan</option><option>Sosyal Medya</option><option>Özel</option></select></div>'
-        + '<div class="form-group"><label>Görev Başlığı</label><input id="dash_gf_baslik" class="form-input" placeholder="Örn. Q-GANG reels serisi hazırlama" maxlength="200"></div>'
-        + '<div class="form-group"><label>Puan</label><input id="dash_gf_puan" class="form-input" type="number" min="1" max="500" value="20"></div>'
-        + '<div class="form-group wide"><label>Açıklama</label><textarea id="dash_gf_aciklama" class="form-input" rows="3" placeholder="Ne yapacaksın, çıktısı ne olacak, Q-GANG\'a katkısı ne?"></textarea></div>'
-        + '<div class="wide" style="display:flex;justify-content:flex-end"><button id="dash_gf_gonderBtn" class="btn btn-warn" onclick="qgDashTeklifGonder287()"><i class="ti ti-send"></i> Gönder</button></div>'
-        + '</div></div>';
-      try { qgBirimSelectDoldur('dash_gf_kategori', '', false); } catch(e) {}
+      formBox.innerHTML = '';
+      formBox.style.display = 'none';
     }
-
     var news = document.getElementById('qgDashNewspaper');
     if (news) {
-      var total = (window.members || members || []).length || 0;
-      var active = (window.members || members || []).filter(function(m){ return m.durum === 'Aktif'; }).length;
-      var net = 0;
-      try {
-        var gelir = (butce || []).filter(function(b){ return b.tur === 'gelir'; }).reduce(function(s,b){ return s + Number(b.tutar || 0); },0);
-        var gider = (butce || []).filter(function(b){ return b.tur === 'gider'; }).reduce(function(s,b){ return s + Number(b.tutar || 0); },0);
-        net = gelir - gider;
-      } catch(e){}
-      news.innerHTML = '<div class="qg-v287-news-grid">'
-        + '<div class="qg-v287-news-card qg-v287-news-big" style="--accent:#fac775"><div class="qg-v287-kicker">KARARGÂH GAZETESİ</div><h3>Günün Komuta Özeti</h3><p>'+active+' aktif / '+total+' toplam personel. Net kasa: '+(typeof fmtTL === 'function' ? fmtTL(net) : net)+' . Tüm modüllere buradan hızlı geçiş.</p><button class="qg-v287-news-btn" onclick="qgNav287(\'gorev\')">Görevler</button> <button class="qg-v287-news-btn" onclick="qgNav287(\'org\')">Organizasyon</button></div>'
-        + '<div class="qg-v287-news-card" style="--accent:#4f8de8"><div class="qg-v287-kicker">PERSONEL</div><h3>Üye Dosyaları</h3><p>Rütbe, durum, puan ve görev alanlarını yönet.</p><button class="qg-v287-news-btn" onclick="qgNav287(\'members\')">Aç</button></div>'
-        + '<div class="qg-v287-news-card" style="--accent:#3fa36b"><div class="qg-v287-kicker">HAZİNE</div><h3>Bütçe</h3><p>Gelir, gider ve Q-FON durumunu takip et.</p><button class="qg-v287-news-btn" onclick="qgNav287(\'butce\')">Aç</button></div>'
-        + '<div class="qg-v287-news-card" style="--accent:#e24b4a"><div class="qg-v287-kicker">YÖNETİM</div><h3>Duyuru & Tüzük</h3><p>Bildiri, disiplin, başvuru ve erişim yönetimi.</p><button class="qg-v287-news-btn" onclick="qgNav287(\'duyurular\')">Duyurular</button></div>'
-        + '<div class="qg-v287-news-card" style="--accent:#f2f2f2"><div class="qg-v287-kicker">KÜLTÜR</div><h3>Q-Hall / Q-Feed</h3><p>Başarılar, sezonlar ve karargâh akışı.</p><button class="qg-v287-news-btn" onclick="qgNav287(\'hall\')">Q-Hall</button></div>'
-        + '</div>';
+      news.innerHTML = '';
+      news.style.display = 'none';
     }
   };
 
@@ -14319,7 +14362,7 @@ async function renderQHall() {
   function orgRank287(rank, list){
     if(!list || !list.length) return '';
     var color = roleColor287(rank);
-    return '<div class="qg-org287-rank" style="--rank-color:'+color+'"><div class="qg-org287-label">'+esc287(rank)+'</div><div class="qg-org287-row">'+list.map(function(m){return orgNode287(m, rank);}).join('')+'</div></div>';
+    return '<div class="qg-org287-rank" style="--rank-color:'+color+'"><div class="qg-org287-row">'+list.map(function(m){return orgNode287(m, rank);}).join('')+'</div></div>';
   }
   function orgLegendDesc287(r){
     if(r==='Lider') return 'Siyah: nihai karar ve strateji.';
