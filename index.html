@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.8.2 — Görev Yönetimi Hotfix</title>
+    <title>Q-Panel v2.9.0</title>
     <!-- v2.5.0: basit üye görev teklifi + yönetici aşama planlama workflow -->
     <link
       rel="stylesheet"
@@ -2593,6 +2593,62 @@ input[type="date"]:required:invalid {
   .qk-dash-grid { grid-template-columns:1fr; }
   .qk-skor-grid { grid-template-columns:1fr; }
 }
+
+
+/* ═══════════════════════════════════════════════════
+   Q-PANEL v2.9.0 — Kariyer + Tenzil + Event Workflow
+   ═══════════════════════════════════════════════════ */
+.qk-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.qk-header h2{font-size:18px;font-weight:800;color:#d3d1c7;margin:0 0 4px}
+.qk-header p{font-size:12px;color:#555;margin:0}
+.qk-dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.qk-dash-kart{background:linear-gradient(180deg,#151515,#0f0f0f);border:.5px solid #2a2a2a;border-radius:12px;padding:14px}
+.qk-dash-kart .kd-label{font-size:10px;color:#555;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px}
+.qk-dash-kart .kd-rumuz{font-size:16px;font-weight:800;color:#d3d1c7;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qk-dash-kart .kd-deger{font-size:22px;font-weight:800;color:#fac775}
+.qk-dash-kart .kd-sub{font-size:11px;color:#555;margin-top:3px}
+.qk-sbar{display:inline-block;width:38px;height:4px;background:#222;border-radius:2px;vertical-align:middle;margin-left:5px;overflow:hidden}
+.qk-sbar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#fac775,#f97316)}
+.qk-t-uygun{color:#4ade80;font-size:11px;font-weight:800}
+.qk-t-onay{color:#fbbf24;font-size:11px;font-weight:800}
+.qk-t-bekle{color:#555;font-size:11px}
+.qk-t-zirve{color:#a5b4fc;font-size:11px;font-weight:800}
+.qk-t-veri{color:#3a3a3a;font-size:11px;font-style:italic}
+.qk-risk-yok{color:#4ade80;font-size:11px;font-weight:700}
+.qk-risk-uyari{color:#fbbf24;font-size:11px;font-weight:800}
+.qk-risk-yuksek{color:#f87171;font-size:11px;font-weight:900}
+.qk-overlay{position:fixed;inset:0;background:rgba(0,0,0,.83);z-index:1000;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 12px 40px}
+.qk-box{background:#1a1a1a;border:.5px solid #333;border-radius:14px;padding:20px;width:100%;max-width:590px}
+.qk-box-baslik{font-size:17px;font-weight:800;color:#d3d1c7;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-start}
+.qk-skor-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.qk-sk{background:#111;border:.5px solid #2a2a2a;border-radius:10px;padding:12px}
+.qk-sk .label{font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+.qk-sk .value{font-size:24px;font-weight:800;color:#fac775}
+.qk-sk .sub{font-size:10px;color:#444;margin-top:2px}
+.qk-sk .bar{height:4px;background:#1a1a1a;border-radius:2px;overflow:hidden;margin-top:8px}
+.qk-sk .bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#fac775,#f97316)}
+.qk-terfi-kutu,.qk-tenzil-kutu{border-radius:10px;padding:11px 13px;font-size:13px;margin-bottom:12px;line-height:1.5}
+.qk-terfi-kutu.uygun{background:#001a0f;border:.5px solid #004020;color:#4ade80}
+.qk-terfi-kutu.onay{background:#1a1200;border:.5px solid #3a2800;color:#fbbf24}
+.qk-terfi-kutu.bekle{background:#0d0d0d;border:.5px solid #222;color:#777}
+.qk-tenzil-kutu.uyari{background:#1a1200;border:.5px solid #3a2800;color:#fbbf24}
+.qk-tenzil-kutu.yuksek{background:#1f0a0a;border:.5px solid #4a1515;color:#f87171}
+.qk-eksik-liste,.qk-risk-liste{margin:8px 0 0;padding:0;list-style:none}
+.qk-eksik-liste li,.qk-risk-liste li{font-size:11px;padding:2px 0}
+.qk-eksik-liste li{color:#f87171}
+.qk-risk-liste li{color:#fbbf24}
+.qk-eksik-liste li::before{content:"✗ "}
+.qk-risk-liste li::before{content:"⚠ "}
+.qk-gecmis-satir{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:.5px solid #1a1a1a}
+.qk-gecmis-satir:last-child{border-bottom:none}
+.event-status-pill{display:inline-flex;align-items:center;gap:4px;border:.5px solid #333;border-radius:999px;padding:2px 7px;font-size:10px;color:#777;margin-left:6px}
+.event-status-pill.ok{border-color:#14532d;color:#4ade80;background:#001a0f}
+.event-status-pill.wait{border-color:#3a2800;color:#fbbf24;background:#1a1200}
+.event-status-pill.draft{border-color:#333;color:#777;background:#111}
+.event-actions-v290{display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap;margin-top:8px}
+.event-actions-v290 .btn-xs{font-size:10px;padding:4px 7px;border-radius:8px}
+@media(max-width:900px){.qk-dash-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.qk-dash-grid,.qk-skor-grid{grid-template-columns:1fr}}
 
 </style>
 
@@ -5759,11 +5815,26 @@ async function panelAc(rumuz, rol) {
       // MODULE 10 — EVENT RENDERERS
       // ═══════════════════════════════════════════════════
 
+      function eventStatusLabel(e) {
+        if (e && e.puanOnaylandi === true) return '<span class="event-status-pill ok">✅ Puan Onaylandı</span>';
+        if (e && (e.katilimcilar || e.katilimciSayisi)) return '<span class="event-status-pill wait">⏳ Puan Bekliyor</span>';
+        return '<span class="event-status-pill draft">Taslak</span>';
+      }
+
+      function eventActionButtons(eid, e) {
+        if (!izin("puanDuzenle") && SESSION.rol !== "Lider") return "";
+        if (e && e.puanOnaylandi === true) {
+          return '<button class="btn btn-sm btn-xs" onclick="eventResetPoints(\'' + eid + '\')"><i class="ti ti-rotate"></i> Puanı Sıfırla</button>';
+        }
+        return '<button class="btn btn-warn btn-sm btn-xs" onclick="eventApprovePoints(\'' + eid + '\')"><i class="ti ti-check"></i> Puanları Onayla</button>';
+      }
+
       function renderEvents() {
         const sorted = [...events].sort(
           (a, b) => new Date(b.tarih) - new Date(a.tarih),
         );
         const el = document.getElementById("eventList");
+        if (!el) return;
         if (!sorted.length) {
           el.innerHTML =
             '<div style="font-size:12px;color:#555">Henüz etkinlik yok.</div>';
@@ -5779,39 +5850,40 @@ async function panelAc(rumuz, rol) {
           header.className = "ev-header";
           const title = document.createElement("div");
           title.className = "ev-title";
-          title.textContent = e.tur;
+          title.innerHTML = (e.tur || e.baslik || "Etkinlik") + " " + eventStatusLabel(e);
           header.appendChild(title);
+
+          const btnWrap = document.createElement("div");
+          btnWrap.style.cssText = "display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end";
           if (izin("etkinlikEkle") || SESSION.rol === "Lider") {
             const editBtn = document.createElement("button");
             editBtn.className = "btn btn-sm";
-            editBtn.style.marginRight = "4px";
             editBtn.innerHTML = '<i class="ti ti-edit"></i>';
-            editBtn.onclick = function () {
-              reqEditEvent(eid);
-            };
-            header.appendChild(editBtn);
+            editBtn.onclick = function () { reqEditEvent(eid); };
+            btnWrap.appendChild(editBtn);
           }
           if (izin("etkinlikSil")) {
             const btn = document.createElement("button");
             btn.className = "btn btn-danger btn-sm";
             btn.innerHTML = '<i class="ti ti-trash"></i>';
-            btn.onclick = function () {
-              reqDeleteEvent(eid);
-            };
-            header.appendChild(btn);
+            btn.onclick = function () { reqDeleteEvent(eid); };
+            btnWrap.appendChild(btn);
           }
+          header.appendChild(btnWrap);
           div.appendChild(header);
+
           const meta = document.createElement("div");
           meta.className = "ev-meta";
           meta.innerHTML =
             '<i class="ti ti-calendar"></i> ' +
             fmtDate(e.tarih) +
             " &nbsp;|&nbsp; +" +
-            e.puan +
+            (e.puanDegeri || e.puan || 10) +
             " puan &nbsp;|&nbsp; " +
             kats.length +
             " katılımcı";
           div.appendChild(meta);
+
           const chips = document.createElement("div");
           chips.className = "member-chips";
           kats.forEach(function (r) {
@@ -5821,12 +5893,19 @@ async function panelAc(rumuz, rol) {
             chips.appendChild(s);
           });
           div.appendChild(chips);
+
           if (e.not) {
             const n = document.createElement("div");
             n.style.cssText = "font-size:11px;color:#888;margin-top:5px";
             n.textContent = e.not;
             div.appendChild(n);
           }
+
+          const actions = document.createElement("div");
+          actions.className = "event-actions-v290";
+          actions.innerHTML = eventActionButtons(eid, e);
+          div.appendChild(actions);
+
           el.appendChild(div);
         });
       }
@@ -5846,52 +5925,27 @@ async function panelAc(rumuz, rol) {
           return String(e._id) === String(id) || String(e.id) === String(id);
         });
         if (!e) return;
-        const kat = parseKat(e.katilimcilar);
-        const epuan = Number(e.puan) || 10;
         confirm2(
           "Etkinliği sil",
-          "<strong>" +
-            e.tur +
-            "</strong> (" +
-            fmtDate(e.tarih) +
-            ') silinecek.<br><span style="font-size:12px;color:#888">' +
-            kat.length +
-            " katılımcıdan " +
-            epuan +
-            " puan geri alınacak.</span>",
+          "<strong>" + (e.tur || e.baslik || "Etkinlik") + "</strong> (" + fmtDate(e.tarih) + ') silinecek.<br><span style="font-size:12px;color:#888">Bu işlem -puan kaydı oluşturmaz; varsa ilgili +puan arşiv kayıtlarını kaldırır ve üye puanını dengeler.</span>',
           async function () {
-            // Katılımcıların puanlarını geri al
-            for (var i = 0; i < kat.length; i++) {
-              var rumuz = kat[i].trim();
-              var m = members.find(function (x) {
-                return x.rumuz === rumuz;
-              });
-              if (m) {
-                m.puan = Math.max(0, (Number(m.puan) || 0) - epuan);
-                await cmsYaz(
-                  "MEMBER_UPDATE",
-                  Object.assign({}, m, { _id: m._id || m.id }),
-                );
-                // Arşivden de sil - negatif kayıt ekle
-                await puanArsivEkle(
-                  rumuz,
-                  -epuan,
-                  "Etkinlik silindi: " + e.tur,
-                  "etkinlik",
-                );
+            events = events.filter(function (ev) {
+              return String(ev._id) !== String(id) && String(ev.id) !== String(id);
+            });
+            addLog("Etkinlik silindi", (e.tur || e.baslik || "Etkinlik") + " — " + fmtDate(e.tarih));
+            save();
+            var result = await cmsYaz("EVENT_DELETE", e._id || e.id);
+            if (result && result.success !== false) {
+              var veri = await cmsOku();
+              if (veri) {
+                if (veri.members) members = veri.members.map(function (m) { return Object.assign({}, m, { id: m._id || m.id, katilimcilar: parseKat(m.katilimcilar) }); });
+                if (veri.events) events = veri.events.map(function (ev) { return Object.assign({}, ev, { id: ev._id || ev.id, katilimcilar: parseKat(ev.katilimcilar) }); });
               }
             }
-            events = events.filter(function (ev) {
-              return (
-                String(ev._id) !== String(id) && String(ev.id) !== String(id)
-              );
-            });
-            addLog("Etkinlik silindi", e.tur + " — " + fmtDate(e.tarih));
-            save();
             renderEvents();
             renderPuan();
+            renderMembers();
             renderDashboard();
-            await cmsYaz("EVENT_DELETE", e._id || e.id);
           },
         );
       }
@@ -6701,12 +6755,6 @@ async function panelAc(rumuz, rol) {
             </div>
             <div
               class="nav-dd-item"
-              onclick="showTabDD('kariyer', 'ddTopluluk', 'navToplulukBtn')"
-            >
-              <i class="ti ti-chart-radar"></i> Kariyer
-            </div>
-            <div
-              class="nav-dd-item"
               onclick="showTabDD('org', 'ddTopluluk', 'navToplulukBtn')"
             >
               <i class="ti ti-hierarchy"></i> Organizasyon
@@ -6759,6 +6807,12 @@ async function panelAc(rumuz, rol) {
             </div>
             <div
               class="nav-dd-item"
+              onclick="showTabDD('kariyer', 'ddYonetim', 'navYonetimBtn')"
+            >
+              <i class="ti ti-chart-radar"></i> Kariyer
+            </div>
+            <div
+              class="nav-dd-item"
               id="navErisimDD"
               onclick="showTabDD('erisim', 'ddYonetim', 'navYonetimBtn')"
               style="display: none"
@@ -6804,16 +6858,7 @@ async function panelAc(rumuz, rol) {
             <div id="birthdaysBox"></div>
           </div>
         </div>
-
-
-        <div class="qhall-podyum-kart" id="qhallPodyumKart" onclick="showTabDD('hall','ddTopluluk','navToplulukBtn')" style="display:none">
-          <div class="qhall-podyum-baslik">🏆 Son Sezon Podyumu</div>
-          <div class="qhall-sezon-adi" id="qhallPodyumSezonAdi">—</div>
-          <div id="qhallPodyumRows"></div>
-          <div class="qhall-goto">Şampiyonlar Salonu →</div>
-        </div>
-
-        <div class="qfeed-kart" id="qfeedKart">
+<div class="qfeed-kart" id="qfeedKart">
           <div class="qfeed-kart-baslik">
             ⚔️ Karargâh Akışı
             <button class="qfeed-yenile-btn" onclick="renderQFeed()" title="Yenile" aria-label="Feed'i yenile">↻</button>
@@ -8655,9 +8700,7 @@ async function panelAc(rumuz, rol) {
         var katEl = document.getElementById("e_katilimcilar");
         var katilimcilar = katEl
           ? Array.from(katEl.selectedOptions)
-              .map(function (o) {
-                return o.value;
-              })
+              .map(function (o) { return o.value; })
               .join(",")
           : "";
         var not = (document.getElementById("e_not2") || { value: "" }).value;
@@ -8667,40 +8710,30 @@ async function panelAc(rumuz, rol) {
         }
         confirm2(
           "Etkinlik kaydet",
-          "<strong>" + tur + "</strong> — " + fmtDate(tarih),
+          "<strong>" + tur + "</strong> — " + fmtDate(tarih) + '<br><span style="font-size:12px;color:#888">Puanlar hemen işlenmez. Katılımcılar kaydedilir; sonrasında “Puanları Onayla” ile işlenir.</span>',
           async function () {
             closeModal();
             var yeni = {
               tur: tur,
               tarih: tarih,
               puan: puan,
+              puanDegeri: puan,
               katilimcilar: katilimcilar,
               not: not,
+              puanOnaylandi: false,
+              durum: katilimcilar ? "katilimci_bekliyor" : "taslak",
             };
             var result = await cmsYaz("EVENT_ADD", yeni);
             if (result && result.result) {
-              var eid = result.result._id || result.result.id;
-              var katArr = katilimcilar
-                ? katilimcilar.split(",").filter(function (x) {
-                    return x;
-                  })
-                : [];
-              for (var i = 0; i < katArr.length; i++) {
-                var rumuz = katArr[i].trim();
-                var m = members.find(function (x) {
-                  return x.rumuz === rumuz;
-                });
-                if (m) {
-                  m.puan = (Number(m.puan) || 0) + puan;
-                  await cmsYaz(
-                    "MEMBER_UPDATE",
-                    Object.assign({}, m, { _id: m._id || m.id }),
-                  );
-                  await puanArsivEkle(rumuz, puan, tur, "etkinlik", eid);
-                }
-              }
+              var item = Object.assign({}, result.result, {
+                id: result.result._id || result.result.id,
+                katilimcilar: parseKat(result.result.katilimcilar),
+              });
+              var ix = events.findIndex(function (x) { return String(x._id || x.id) === String(item._id || item.id); });
+              if (ix >= 0) events[ix] = item;
+              else events.push(item);
             }
-            addLog("Etkinlik eklendi", tur + " — " + fmtDate(tarih));
+            addLog("Etkinlik oluşturuldu", tur + " — " + fmtDate(tarih) + " — puan onayı bekliyor");
             save();
             renderEvents();
             renderPuan();
@@ -13274,6 +13307,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     var sezonAdiEl = document.getElementById('qhallPodyumSezonAdi');
     var rowsEl = document.getElementById('qhallPodyumRows');
     if (!kart || !sezonAdiEl || !rowsEl) return;
+    if (!kart || !sezonAdiEl || !rowsEl) return;
     if (!sonSezon || !sonSezon.sampiyonRumuz) { kart.style.display = 'none'; return; }
 
     kart.style.display = '';
@@ -13740,5 +13774,255 @@ async function kariyerYenile() {
 // ══════════════════════════════════════
 
 </script>
+
+<script>
+// ═══════════════════════════════════════════════════
+// Q-PANEL v2.9.0 — Kariyer + Event Workflow Frontend
+// ═══════════════════════════════════════════════════
+
+var _kariyerCache = [];
+var _kariyerCacheTime = 0;
+var KARIYER_TTL = 60000;
+
+function kariyerIsYonetim(){var r=(window.SESSION&&SESSION.rol)||"";return r==="Lider"||r==="Vekilharç";}
+function kariyerIsLider(){return (window.SESSION&&SESSION.rol)==="Lider";}
+function kariyerDegerlendirilen(liste){return (liste||[]).filter(function(a){return a.rutbe!=="Lider"&&!a.kariyerAlgoritmaDisi;});}
+
+async function kariyerAPI(action,payload){
+  try{
+    var token=(typeof getToken==="function")?getToken():"";
+    var body=Object.assign({action:action,token:token},payload||{});
+    var res=await secureApiFetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    if(!res.ok)return{success:false,error:"HTTP "+res.status};
+    return await res.json();
+  }catch(e){return{success:false,error:e.message};}
+}
+
+function kariyerSkorSutunAyarla(){
+  var baslik=document.getElementById("kariyerSkorBaslik");
+  if(baslik)baslik.style.display=kariyerIsYonetim()?"":"none";
+}
+
+async function renderKariyer(){
+  kariyerSkorSutunAyarla();
+  var tbody=document.getElementById("kariyerTableBody");
+  if(!tbody)return;
+  tbody.innerHTML='<tr><td colspan="11" style="text-align:center;color:#555;padding:18px">Yükleniyor...</td></tr>';
+  var fresh=Date.now()-_kariyerCacheTime<KARIYER_TTL&&_kariyerCache.length;
+  if(!fresh){
+    var data=await kariyerAPI("KARIYER_ANALIZ_LIST",{});
+    if(!data||!data.success||!Array.isArray(data.result)){
+      tbody.innerHTML='<tr><td colspan="11" style="color:#e24b4a;padding:12px">Hata: '+((data&&data.error)||"Bilinmeyen")+'</td></tr>';
+      return;
+    }
+    _kariyerCache=data.result;
+    _kariyerCacheTime=Date.now();
+  }
+  kariyerDashboardGuncelle(_kariyerCache);
+  kariyerFiltrele();
+}
+
+function kariyerDashboardGuncelle(liste){
+  var d=kariyerDegerlendirilen(liste);
+  if(!d.length)return;
+
+  var enYuksek=d.slice().sort(function(a,b){return (b.kariyerSkoru||0)-(a.kariyerSkoru||0);})[0];
+  document.getElementById("kdEnYuksekRumuz").textContent=enYuksek.rumuz||"—";
+  document.getElementById("kdEnYuksekSkor").textContent=kariyerIsYonetim()?String(enYuksek.kariyerSkoru):"—";
+
+  var terfi=d[0];
+  document.getElementById("kdTerfiRumuz").textContent=terfi.rumuz||"—";
+  document.getElementById("kdTerfiHedef").textContent=terfi.terfiHedef?"→ "+terfi.terfiHedef:"—";
+  document.getElementById("kdTerfiEksik").textContent=terfi.terfiDurumu+(terfi.eksikSayisi?(" · "+terfi.eksikSayisi+" eksik"):"");
+
+  var enDisiplin=d.slice().sort(function(a,b){return (b.disiplin||0)-(a.disiplin||0)||((b.kariyerSkoru||0)-(a.kariyerSkoru||0));})[0];
+  document.getElementById("kdDisiplinRumuz").textContent=enDisiplin.rumuz||"—";
+  document.getElementById("kdDisiplinSkor").textContent=enDisiplin.disiplin;
+
+  var riskliler=d.filter(function(a){return (a.tenzilSeviye||0)>0;}).sort(function(a,b){return (b.tenzilSeviye||0)-(a.tenzilSeviye||0)||((a.disiplin||100)-(b.disiplin||100));});
+  if(riskliler.length){
+    document.getElementById("kdTenzilRumuz").textContent=riskliler[0].rumuz||"—";
+    document.getElementById("kdTenzilRisk").textContent=riskliler[0].tenzilRiski||"—";
+    document.getElementById("kdTenzilCount").textContent=riskliler.length+" riskli üye";
+  }else{
+    document.getElementById("kdTenzilRumuz").textContent="Risk Yok";
+    document.getElementById("kdTenzilRisk").textContent="Temiz";
+    document.getElementById("kdTenzilCount").textContent="0 riskli üye";
+  }
+}
+
+function kariyerFiltrele(){
+  var tbody=document.getElementById("kariyerTableBody"); if(!tbody)return;
+  var fr=(document.getElementById("kariyerRutbeFilter")||{}).value||"";
+  var ft=(document.getElementById("kariyerTerfiFilter")||{}).value||"";
+  var fz=(document.getElementById("kariyerTenzilFilter")||{}).value||"";
+  var ara=((document.getElementById("kariyerAra")||{}).value||"").toLowerCase().trim();
+  var yon=kariyerIsYonetim();
+  var liste=(_kariyerCache||[]).filter(function(a){
+    if(fr&&a.rutbe!==fr)return false;
+    if(ft&&a.terfiDurumu!==ft)return false;
+    if(fz&&a.tenzilRiski!==fz)return false;
+    if(ara&&!(a.rumuz||"").toLowerCase().includes(ara))return false;
+    return true;
+  });
+  if(!liste.length){tbody.innerHTML='<tr><td colspan="11" style="color:#555;text-align:center;padding:14px">Sonuç bulunamadı.</td></tr>';return;}
+
+  function sbar(v){if(v===null||v===undefined)return'<span class="qk-t-veri">—</span>';return v+'<span class="qk-sbar"><span class="qk-sbar-fill" style="width:'+v+'%"></span></span>';}
+  function terfi(a){
+    if(a.terfiDurumu==="Zirve Rütbe")return'<span class="qk-t-zirve">♛ Zirve Rütbe</span>';
+    if(a.terfiDurumu==="Terfiye Uygun")return'<span class="qk-t-uygun">✅ → '+(a.terfiHedef||"")+'</span>';
+    if(a.terfiDurumu==="Lider Onayı Gerekli")return'<span class="qk-t-onay">⭐ Lider Onayı → '+(a.terfiHedef||"")+'</span>';
+    return'<span class="qk-t-bekle">⏳ '+((a.eksikSayisi||0)?a.eksikSayisi+" kriter eksik":"Henüz Hazır Değil")+'</span>';
+  }
+  function tenzil(a){
+    if(a.rutbe==="Lider")return'<span class="qk-t-zirve">—</span>';
+    if(a.tenzilRiski==="Yüksek Tenzil Riski")return'<span class="qk-risk-yuksek">🔴 Yüksek</span>';
+    if(a.tenzilRiski==="Tenzil Uyarısı")return'<span class="qk-risk-uyari">🟡 Uyarı</span>';
+    return'<span class="qk-risk-yok">🟢 Yok</span>';
+  }
+  tbody.innerHTML=liste.map(function(a,i){
+    return'<tr>'
+      +'<td>'+(i+1)+'</td>'
+      +'<td style="font-weight:700;color:#d3d1c7">'+(a.rumuz||"")+'</td>'
+      +'<td>'+rutbeBadge(a.rutbe)+'</td>'
+      +'<td style="text-align:center">'+sbar(a.aktivite)+'</td>'
+      +'<td style="text-align:center">'+sbar(a.katki)+'</td>'
+      +'<td style="text-align:center">'+sbar(a.disiplin)+'</td>'
+      +'<td style="text-align:center">'+sbar(a.liderlik)+'</td>'
+      +(yon?'<td style="text-align:center;font-weight:800;color:#fac775">'+a.kariyerSkoru+'</td>':"")
+      +'<td>'+terfi(a)+'</td>'
+      +'<td>'+tenzil(a)+'</td>'
+      +'<td><button class="btn btn-sm" onclick="kariyerDetay(\''+(a.rumuz||"")+'\')"><i class="ti ti-eye"></i></button></td>'
+      +'</tr>';
+  }).join("");
+}
+
+async function kariyerDetay(rumuz){
+  var a=(_kariyerCache||[]).find(function(x){return x.rumuz===rumuz;});
+  if(!a){var d=await kariyerAPI("KARIYER_ANALIZ_GET",{item:{rumuz:rumuz}}); if(!d.success){alert("Hata: "+(d.error||"Bilinmeyen"));return;} a=d.result;}
+  var gd=await kariyerAPI("KARIYER_GECMISI_LIST",{item:{rumuz:rumuz}});
+  var gecmis=(gd.success&&Array.isArray(gd.result))?gd.result:[];
+  var yon=kariyerIsYonetim(), lider=a.rutbe==="Lider"||a.kariyerAlgoritmaDisi;
+
+  function skorKart(label,val,icon,sub){var valStr=(val===null||val===undefined)?'<span style="font-size:14px;color:#444">Veri Yetersiz</span>':String(val);var w=(val===null||val===undefined)?0:val;return'<div class="qk-sk"><div class="label">'+icon+' '+label+'</div><div class="value">'+valStr+'</div>'+(sub?'<div class="sub">'+sub+'</div>':"")+'<div class="bar"><div class="bar-fill" style="width:'+w+'%"></div></div></div>';}
+
+  var terfiHtml="";
+  if(!lider){
+    var cls=a.terfiDurumu==="Terfiye Uygun"?"uygun":a.terfiDurumu==="Lider Onayı Gerekli"?"onay":"bekle";
+    var msg=a.terfiDurumu==="Terfiye Uygun"?'✅ <strong>'+a.rumuz+'</strong> → <strong>'+(a.terfiHedef||"")+'</strong> rütbesine terfiye uygun.':a.terfiDurumu==="Lider Onayı Gerekli"?'⭐ Koşullar sağlandı. Lider onayıyla <strong>'+(a.terfiHedef||"")+'</strong> terfisi mümkün.':'⏳ Terfi için aşağıdaki koşullar sağlanmalı:';
+    var eksik=(a.eksikler&&a.eksikler.length)?'<ul class="qk-eksik-liste">'+a.eksikler.map(function(e){return'<li>'+e+'</li>';}).join("")+'</ul>':"";
+    terfiHtml='<div class="qk-terfi-kutu '+cls+'">'+msg+eksik+'</div>';
+  }
+
+  var tenzilHtml="";
+  if(!lider&&(a.tenzilSeviye||0)>0){
+    var tcls=a.tenzilSeviye>=2?"yuksek":"uyari";
+    var neden=(a.tenzilNedenleri||[]).length?'<ul class="qk-risk-liste">'+a.tenzilNedenleri.map(function(n){return'<li>'+n+'</li>';}).join("")+'</ul>':"";
+    tenzilHtml='<div class="qk-tenzil-kutu '+tcls+'"><strong>⚠️ '+a.tenzilRiski+'</strong>'+neden+'</div>';
+  }
+
+  var gecmisHtml=gecmis.length?'<div style="margin-top:14px"><div style="font-size:10px;color:#555;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px">Kariyer Geçmişi</div>'+gecmis.map(function(g){
+    var islem=g.islem||"DEĞİŞİM"; var renk=islem==="TERFI"?"#4ade80":islem==="TENZIL"?"#f87171":islem==="ATAMA"?"#fac775":"#888";
+    return'<div class="qk-gecmis-satir"><span style="color:'+renk+';font-weight:800;font-size:11px;min-width:72px">'+islem+'</span><div style="flex:1;font-size:12px;color:#d3d1c7">'+(g.eskiRutbe?g.eskiRutbe+" → ":"")+'<strong>'+(g.yeniRutbe||"")+'</strong>'+(g.aciklama?'<div style="font-size:11px;color:#555">'+g.aciklama+'</div>':"")+'</div><span style="font-size:10px;color:#333">'+String(g.tarih||"").split("T")[0]+'</span></div>';
+  }).join("")+'</div>':'<div style="color:#444;font-size:12px;margin-top:12px;padding:8px;background:#0d0d0d;border-radius:8px">Henüz kariyer geçmişi yok.</div>';
+
+  var kariyerSkorHtml=yon?'<div style="text-align:center;margin:6px 0 14px"><span style="font-size:36px;font-weight:800;color:#fac775">'+a.kariyerSkoru+'</span><span style="font-size:12px;color:#555;margin-left:6px">Kariyer Skoru</span></div>':"";
+  var manuelBtn=kariyerIsLider()?'<button class="btn btn-warn btn-sm" style="margin-top:12px;width:100%" onclick="kariyerManuelGiris(\''+rumuz+'\')"><i class="ti ti-edit"></i> Manuel Kariyer Girişi</button>':"";
+  var meta=lider?'♛ Lider rütbesi terfi/tenzil algoritması dışındadır.':'🎯 Sonraki hedef: <strong style="color:#d3d1c7">'+(a.terfiHedef||"Yok")+'</strong>'+(a.tenzilSeviye?' &nbsp;|&nbsp; ⚠️ '+a.tenzilRiski:"");
+
+  document.getElementById("modalContainer").innerHTML='<div class="qk-overlay" onclick="if(event.target===this)closeModal()"><div class="qk-box">'
+    +'<div class="qk-box-baslik"><div>📊 '+a.rumuz+'<br><span style="font-size:11px;color:#555;font-weight:400">'+a.rutbe+(a.rutbeTarihi?' · '+String(a.rutbeTarihi).split("T")[0]+' tarihinden beri':"")+(a.rutbeSure?' ('+a.rutbeSure+')':"")+'</span></div><button onclick="closeModal()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer">×</button></div>'
+    +kariyerSkorHtml+terfiHtml+tenzilHtml
+    +'<div class="qk-skor-grid">'
+    +skorKart("Aktivite",a.aktivite,"📅",a.aktiviteVeri==="yetersiz"?"Min. 5 etkinlik gerekli":a.katildigiEtkinlik+"/"+a.toplamEtkinlik+" etkinlik")
+    +skorKart("Katkı",a.katki,"🏆",a.puan+" puan")
+    +skorKart("Disiplin",a.disiplin,"⚖️",a.cezaSayisi+" aktif ceza kaydı")
+    +skorKart("Liderlik",a.liderlik,"⭐",a.actigiGorev+" aktif/tam. görev")
+    +'</div><div style="font-size:11px;color:#555;background:#111;border:.5px solid #222;border-radius:8px;padding:9px;line-height:1.65;margin-bottom:10px">'+meta+'</div>'
+    +gecmisHtml+manuelBtn+'</div></div>';
+}
+
+function kariyerManuelGiris(rumuz){
+  if(!kariyerIsLider()){alert("Bu işlem yalnızca Lider tarafından yapılabilir.");return;}
+  var rutbeler=["Gözlemci","Üye","Teğmen","Kaptan","Vekilharç","Lider"];
+  document.getElementById("modalContainer").innerHTML='<div class="modal-overlay"><div class="modal-box"><h3>Manuel Kariyer Girişi — '+rumuz+'</h3><div style="font-size:11px;color:#555;margin-bottom:12px;background:#0d0d0d;padding:8px;border-radius:8px">Bu kayıt QRutbeGecmisi\\'ne yazılır. QMembers/QKullanicilar/QSessions rütbesi otomatik güncellenir.</div><div class="form-group" style="margin-bottom:8px"><label>Eski Rütbe</label><select id="mk_eski"><option value="">Yok / İlk atama</option>'+rutbeler.map(function(r){return"<option>"+r+"</option>";}).join("")+'</select></div><div class="form-group" style="margin-bottom:8px"><label>Yeni Rütbe *</label><select id="mk_yeni">'+rutbeler.map(function(r){return"<option>"+r+"</option>";}).join("")+'</select></div><div class="form-group" style="margin-bottom:8px"><label>Gerekçe / Açıklama</label><textarea id="mk_aciklama" placeholder="Terfi/tenzil gerekçesi..." style="min-height:60px"></textarea></div><div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button><button class="btn btn-warn" onclick="kariyerGirisKaydet(\\''+rumuz+'\\')"><i class="ti ti-check"></i> Kaydet</button></div></div></div>';
+}
+
+async function kariyerGirisKaydet(rumuz){
+  var eskiRutbe=(document.getElementById("mk_eski")||{}).value||"";
+  var yeniRutbe=(document.getElementById("mk_yeni")||{}).value;
+  var aciklama=(document.getElementById("mk_aciklama")||{}).value||"";
+  if(!yeniRutbe){alert("Yeni rütbe seçmek zorunlu.");return;}
+  var data=await kariyerAPI("KARIYER_GECMISI_ADD",{item:{rumuz:rumuz,eskiRutbe:eskiRutbe,yeniRutbe:yeniRutbe,aciklama:aciklama,kaynak:"MANUEL"}});
+  if(data&&data.success){
+    cmsStatusGoster("ok",'<i class="ti ti-check"></i> Kariyer girişi kaydedildi — '+((data.result&&data.result.islem)||""));
+    closeModal(); _kariyerCache=[]; _kariyerCacheTime=0; await renderKariyer();
+    var m=(members||[]).find(function(x){return x.rumuz===rumuz;});
+    if(m&&yeniRutbe){m.rutbe=yeniRutbe;try{renderMembers();renderOrg();}catch(e){}}
+  }else alert("Hata: "+((data&&data.error)||"Bilinmeyen"));
+}
+
+async function kariyerYenile(){_kariyerCache=[];_kariyerCacheTime=0;await renderKariyer();}
+
+async function eventApi(action, payload) {
+  try {
+    var token = (typeof getToken === "function") ? getToken() : "";
+    var body = Object.assign({ action: action, token: token }, payload || {});
+    var res = await secureApiFetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) return { success:false, error:"HTTP " + res.status };
+    return await res.json();
+  } catch(e) {
+    return { success:false, error:e.message };
+  }
+}
+
+async function eventParticipantsSave(eventId, katilimcilar) {
+  var data = await eventApi("EVENT_PARTICIPANTS_SAVE", { item: { eventId: eventId, katilimcilar: katilimcilar } });
+  if (data && data.success) {
+    cmsStatusGoster("ok", '<i class="ti ti-check"></i> Katılımcılar kaydedildi. Puan onayı bekliyor.');
+    try { var veri = await cmsOku(); if (veri && veri.events) events = veri.events.map(function (e) { return Object.assign({}, e, { id: e._id || e.id, katilimcilar: parseKat(e.katilimcilar) }); }); } catch(e) {}
+    renderEvents();
+  } else alert("Hata: " + ((data && data.error) || "Bilinmeyen"));
+}
+
+async function eventApprovePoints(eventId) {
+  if (!confirm("Bu etkinlikteki katılımcılara puan işlenecek. Onaylıyor musun?")) return;
+  var data = await eventApi("EVENT_APPROVE_POINTS", { id: eventId });
+  if (data && data.success) {
+    var r = data.result || {};
+    cmsStatusGoster("ok", '<i class="ti ti-check"></i> Etkinlik puanları onaylandı. İşlenen: ' + (r.awarded || 0));
+    try {
+      var veri = await cmsOku();
+      if (veri) {
+        if (veri.members) members = veri.members.map(function (m) { return Object.assign({}, m, { id: m._id || m.id, katilimcilar: parseKat(m.katilimcilar) }); });
+        if (veri.events) events = veri.events.map(function (e) { return Object.assign({}, e, { id: e._id || e.id, katilimcilar: parseKat(e.katilimcilar) }); });
+      }
+    } catch(e) {}
+    renderEvents(); renderMembers(); renderPuan(); renderDashboard();
+  } else alert("Hata: " + ((data && data.error) || "Bilinmeyen"));
+}
+
+async function eventResetPoints(eventId) {
+  if (!confirm("Bu etkinliğe ait puan arşiv kayıtları kaldırılacak ve üye puanları dengelenecek. Devam edilsin mi?")) return;
+  var data = await eventApi("EVENT_POINTS_RESET", { id: eventId });
+  if (data && data.success) {
+    var r = data.result || {};
+    cmsStatusGoster("ok", '<i class="ti ti-check"></i> Etkinlik puanları sıfırlandı. Silinen arşiv: ' + (r.removed || 0));
+    try {
+      var veri = await cmsOku();
+      if (veri) {
+        if (veri.members) members = veri.members.map(function (m) { return Object.assign({}, m, { id: m._id || m.id, katilimcilar: parseKat(m.katilimcilar) }); });
+        if (veri.events) events = veri.events.map(function (e) { return Object.assign({}, e, { id: e._id || e.id, katilimcilar: parseKat(e.katilimcilar) }); });
+      }
+    } catch(e) {}
+    renderEvents(); renderMembers(); renderPuan(); renderDashboard();
+  } else alert("Hata: " + ((data && data.error) || "Bilinmeyen"));
+}
+</script>
+
 </body>
 </html>
