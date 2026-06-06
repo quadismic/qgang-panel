@@ -14024,5 +14024,69 @@ async function eventResetPoints(eventId) {
 }
 </script>
 
+<script>
+
+/* ═══════════════════════════════════════════════════
+   Q-PANEL v2.9.0 — Event Approval Global Fix
+   Fix: eventApprovePoints is not defined
+   ═══════════════════════════════════════════════════ */
+
+async function qgEventApi(action, payload) {
+  try {
+    var token = (typeof getToken === "function") ? getToken() : "";
+    var body = Object.assign({ action: action, token: token }, payload || {});
+    var res = await secureApiFetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    var data = {};
+    try { data = await res.json(); } catch (e) {}
+    if (!res.ok || data.success === false) {
+      return { success: false, error: data.error || (data.result && data.result.error) || ("HTTP " + res.status) };
+    }
+    return data;
+  } catch (e) {
+    return { success: false, error: e && e.message ? e.message : "Bağlantı hatası" };
+  }
+}
+
+window.eventApprovePoints = async function(eventId) {
+  if (!eventId) return alert("Etkinlik ID bulunamadı.");
+  if (!confirm("Bu etkinlikteki katılımcılara puan işlenecek. Onaylıyor musun?")) return;
+  var data = await qgEventApi("EVENT_APPROVE_POINTS", { id: eventId });
+  if (data && data.success) {
+    var r = data.result || {};
+    if (typeof cmsStatusGoster === "function") cmsStatusGoster("ok", '<i class="ti ti-check"></i> Etkinlik puanları onaylandı. İşlenen: ' + (r.awarded || 0));
+    try { await loadAll(); } catch(e) {}
+    try { renderEvents(); } catch(e) {}
+    try { renderMembers(); } catch(e) {}
+  } else alert("Hata: " + ((data && data.error) || "Bilinmeyen"));
+};
+
+window.eventResetPoints = async function(eventId) {
+  if (!eventId) return alert("Etkinlik ID bulunamadı.");
+  if (!confirm("Bu etkinliğe ait puan arşiv kayıtları kaldırılacak ve üye puanları dengelenecek. Devam edilsin mi?")) return;
+  var data = await qgEventApi("EVENT_POINTS_RESET", { id: eventId });
+  if (data && data.success) {
+    var r = data.result || {};
+    if (typeof cmsStatusGoster === "function") cmsStatusGoster("ok", '<i class="ti ti-check"></i> Etkinlik puanları sıfırlandı. Silinen arşiv: ' + (r.removed || 0));
+    try { await loadAll(); } catch(e) {}
+    try { renderEvents(); } catch(e) {}
+    try { renderMembers(); } catch(e) {}
+  } else alert("Hata: " + ((data && data.error) || "Bilinmeyen"));
+};
+
+window.eventParticipantsSave = async function(eventId, katilimcilar) {
+  if (!eventId) return alert("Etkinlik ID bulunamadı.");
+  var data = await qgEventApi("EVENT_PARTICIPANTS_SAVE", { item: { eventId: eventId, katilimcilar: katilimcilar || [] } });
+  if (data && data.success) {
+    if (typeof cmsStatusGoster === "function") cmsStatusGoster("ok", '<i class="ti ti-check"></i> Katılımcılar kaydedildi. Puan onayı bekliyor.');
+    try { await loadAll(); } catch(e) {}
+    try { renderEvents(); } catch(e) {}
+  } else alert("Hata: " + ((data && data.error) || "Bilinmeyen"));
+};
+
+</script>
 </body>
 </html>
