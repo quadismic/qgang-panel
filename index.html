@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.9.3</title>
+    <title>Q-Panel v2.9.5</title>
 
     <link
       rel="stylesheet"
@@ -5966,6 +5966,103 @@ async function panelAc(rumuz, rol) {
       // MODULE 12 — BUDGET RENDERERS
       // ═══════════════════════════════════════════════════
 
+      let butceSayfa = 1;
+      const BUTCE_SAYFA_BOYUT = 10;
+
+      function qgButceSiraliListe() {
+        return [...(butce || [])].sort(function (a, b) {
+          return new Date(b.tarih || b._createdDate || 0) - new Date(a.tarih || a._createdDate || 0);
+        });
+      }
+
+      function qgButceCsvCell(v) {
+        var s = String(v == null ? "" : v);
+        return '"' + s.replace(/"/g, '""') + '"';
+      }
+
+      function qgButceCsvUret(list) {
+        var rows = [["Tarih", "Tür", "Kategori", "Açıklama", "Tutar"]];
+        (list || []).forEach(function (b) {
+          rows.push([
+            b.tarih || "",
+            b.tur === "gelir" ? "Gelir" : "Gider",
+            b.kategori || "Diğer",
+            b.aciklama || "",
+            Number(b.tutar || 0).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+          ]);
+        });
+        return rows.map(function (r) { return r.map(qgButceCsvCell).join(";"); }).join("\n");
+      }
+
+      async function qgButceArsivTamListe() {
+        try {
+          if (typeof apiPost === "function") {
+            var data = await apiPost({ action: "BUDGET_LIST", item: { mode: "all", limit: 1000 } });
+            var result = data && data.result ? data.result : data;
+            if (Array.isArray(result)) return result;
+            if (result && Array.isArray(result.items)) return result.items;
+          }
+        } catch (e) {
+          console.warn("[QG] BUDGET_LIST alınamadı, lokal bütçe kullanılacak:", e && e.message);
+        }
+        return qgButceSiraliListe();
+      }
+
+      async function qgButceArsivIndir() {
+        if (!izin("butceGor")) return;
+        var liste = await qgButceArsivTamListe();
+        var csv = "\ufeff" + qgButceCsvUret(liste);
+        var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "q-gang-butce-arsivi-" + todayStr() + ".csv";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+          URL.revokeObjectURL(url);
+          try { a.remove(); } catch (e) {}
+        }, 300);
+      }
+
+      async function qgButceArsivYazdir() {
+        if (!izin("butceGor")) return;
+        var liste = await qgButceArsivTamListe();
+        var gelir = liste.filter(function (b) { return b.tur === "gelir"; }).reduce(function (s, b) { return s + Number(b.tutar || 0); }, 0);
+        var gider = liste.filter(function (b) { return b.tur === "gider"; }).reduce(function (s, b) { return s + Number(b.tutar || 0); }, 0);
+        var rows = liste.map(function (b) {
+          return "<tr>" +
+            "<td>" + htmlEsc(fmtDate(b.tarih || "")) + "</td>" +
+            "<td>" + htmlEsc(b.tur === "gelir" ? "Gelir" : "Gider") + "</td>" +
+            "<td>" + htmlEsc(b.kategori || "Diğer") + "</td>" +
+            "<td>" + htmlEsc(b.aciklama || "-") + "</td>" +
+            "<td style=\"text-align:right\">" + htmlEsc((b.tur === "gider" ? "-" : "") + fmtTL(Number(b.tutar || 0))) + "</td>" +
+          "</tr>";
+        }).join("");
+        var w = window.open("", "_blank");
+        if (!w) {
+          alert("Çıktı penceresi açılamadı. Tarayıcı pop-up engelini kontrol et.");
+          return;
+        }
+        w.document.write(
+          "<!doctype html><html><head><meta charset=\"utf-8\"><title>Q-GANG Bütçe Arşivi</title>" +
+          "<style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:20px;margin:0 0 4px}p{font-size:12px;color:#555;margin:0 0 16px}.ozet{display:flex;gap:10px;margin:14px 0 18px}.ozet div{border:1px solid #ddd;border-radius:8px;padding:10px 12px;min-width:140px}.ozet span{display:block;font-size:11px;color:#666;margin-bottom:4px}.ozet b{font-size:15px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border-bottom:1px solid #ddd;padding:7px 8px;text-align:left}th{background:#f4f4f4}@media print{button{display:none}}</style>" +
+          "</head><body><button onclick=\"window.print()\" style=\"float:right;padding:8px 12px\">Yazdır</button>" +
+          "<h1>Q-GANG Bütçe Arşivi</h1><p>Oluşturma tarihi: " + new Date().toLocaleString("tr-TR") + " · Kayıt: " + liste.length + "</p>" +
+          "<div class=\"ozet\"><div><span>Toplam Gelir</span><b>" + fmtTL(gelir) + "</b></div><div><span>Toplam Gider</span><b>" + fmtTL(gider) + "</b></div><div><span>Net Kasa</span><b>" + fmtTL(gelir - gider) + "</b></div></div>" +
+          "<table><thead><tr><th>Tarih</th><th>Tür</th><th>Kategori</th><th>Açıklama</th><th style=\"text-align:right\">Tutar</th></tr></thead><tbody>" + rows + "</tbody></table>" +
+          "</body></html>"
+        );
+        w.document.close();
+      }
+
+      function setButceSayfa(n) {
+        var toplam = qgButceSiraliListe().length;
+        var maxSayfa = Math.max(1, Math.ceil(toplam / BUTCE_SAYFA_BOYUT));
+        butceSayfa = Math.max(1, Math.min(maxSayfa, Number(n) || 1));
+        renderButce();
+      }
+
       function renderButce() {
         if (!izin("butceGor")) {
           document.getElementById("butceContent").innerHTML = engelEkrani();
@@ -6004,12 +6101,15 @@ async function panelAc(rumuz, rol) {
             "</div>";
         }
 
+        const siraliButce = qgButceSiraliListe();
+        const toplamKayit = siraliButce.length;
+        const maxSayfa = Math.max(1, Math.ceil(toplamKayit / BUTCE_SAYFA_BOYUT));
+        if (butceSayfa > maxSayfa) butceSayfa = maxSayfa;
+        const bas = (butceSayfa - 1) * BUTCE_SAYFA_BOYUT;
+        const sayfaKayitlari = siraliButce.slice(bas, bas + BUTCE_SAYFA_BOYUT);
+
         let tbody = "";
-        [...butce]
-          .sort(function (a, b) {
-            return new Date(b.tarih) - new Date(a.tarih);
-          })
-          .forEach(function (b) {
+        sayfaKayitlari.forEach(function (b) {
             const turClass = b.tur === "gelir" ? "gelir" : "gider";
             const turYazi = b.tur === "gelir" ? "Gelir" : "Gider";
             const renk = b.tur === "gelir" ? "#9fe1cb" : "#e24b4a";
@@ -6047,6 +6147,39 @@ async function panelAc(rumuz, rol) {
               "</tr>";
           });
 
+        const sayfalamaHtml =
+          toplamKayit > BUTCE_SAYFA_BOYUT
+            ? '<div class="qg-pagination" style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px">' +
+              '<div style="font-size:11px;color:#555">' +
+              toplamKayit +
+              " kayıt · Sayfa " +
+              butceSayfa +
+              " / " +
+              maxSayfa +
+              "</div>" +
+              '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">' +
+              '<button class="btn btn-sm" onclick="setButceSayfa(' +
+              (butceSayfa - 1) +
+              ')" ' +
+              (butceSayfa <= 1 ? "disabled" : "") +
+              '><i class="ti ti-chevron-left"></i> Önceki</button>' +
+              '<button class="btn btn-sm" onclick="setButceSayfa(' +
+              (butceSayfa + 1) +
+              ')" ' +
+              (butceSayfa >= maxSayfa ? "disabled" : "") +
+              '>Sonraki <i class="ti ti-chevron-right"></i></button>' +
+              "</div></div>"
+            : "";
+
+        const arsivBtnHtml =
+          '<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:1rem;background:#0f0f0f">' +
+          '<div><div style="font-size:13px;font-weight:700;color:#d3d1c7;margin-bottom:3px"><i class="ti ti-archive"></i> Bütçe Arşivi</div>' +
+          '<div style="font-size:11px;color:#555">Tüm gelir/gider kayıtlarını CSV olarak indirebilir veya çıktı sayfası açabilirsin.</div></div>' +
+          '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
+          '<button class="btn btn-primary btn-sm" onclick="qgButceArsivIndir()"><i class="ti ti-download"></i> Arşivi İndir</button>' +
+          '<button class="btn btn-sm" onclick="qgButceArsivYazdir()"><i class="ti ti-printer"></i> Yazdır</button>' +
+          "</div></div>";
+
         document.getElementById("butceContent").innerHTML =
           "" +
           '<div class="butce-ozet">' +
@@ -6062,6 +6195,7 @@ async function panelAc(rumuz, rol) {
           fmtTL(net) +
           "</div></div>" +
           "</div>" +
+          arsivBtnHtml +
           editForm +
           '<div class="table-wrap"><table>' +
           "<thead><tr>" +
@@ -6069,8 +6203,9 @@ async function panelAc(rumuz, rol) {
           '<th style="width:54px">Tür</th><th style="width:100px">Tutar</th>' +
           (izin("butceDuzenle") ? '<th style="width:44px">Sil</th>' : "") +
           "</tr></thead><tbody>" +
-          tbody +
-          "</tbody></table></div>";
+          (tbody || '<tr><td colspan="' + (izin("butceDuzenle") ? "6" : "5") + '" style="font-size:12px;color:#555;padding:12px">Bütçe kaydı bulunamadı.</td></tr>') +
+          "</tbody></table></div>" +
+          sayfalamaHtml;
       }
 
       // ═══════════════════════════════════════════════════
@@ -14488,6 +14623,298 @@ function qgRenderPuanArsivTable(liste){
 
   // İlk yükleme sonrasında mevcut ekrana da uygula.
   setTimeout(function(){ try { qgUpgradePuanMemberSelect(); } catch(e){} }, 600);
+})();
+</script>
+
+
+
+<!-- ═══════════════════════════════════════════════════
+     Q-PANEL v2.9.4 — Budget pagination/export + case-insensitive login + nav polish
+     ═══════════════════════════════════════════════════ -->
+<style>
+/* v2.9.4 — Modern üst navigasyon */
+.nav{
+  position:relative;
+  gap:8px!important;
+  padding:10px!important;
+  margin-bottom:1.25rem!important;
+  border:0.5px solid #242424!important;
+  border-radius:16px!important;
+  background:linear-gradient(180deg,rgba(24,24,24,.92),rgba(11,11,11,.92))!important;
+  box-shadow:0 14px 34px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.025)!important;
+}
+.nav::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto 0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(250,199,117,.35),transparent);
+  pointer-events:none;
+}
+.nav-item{z-index:2}
+.nav-btn{
+  min-height:34px!important;
+  padding:8px 13px!important;
+  border-radius:11px!important;
+  border:.5px solid #343434!important;
+  background:linear-gradient(180deg,#151515,#0d0d0d)!important;
+  color:#918f86!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 7px 16px rgba(0,0,0,.16)!important;
+  font-weight:650!important;
+  letter-spacing:.15px!important;
+}
+.nav-btn i{font-size:14px;color:#6f6b61;transition:color .18s ease,transform .18s ease}
+.nav-btn:hover{
+  transform:translateY(-1px)!important;
+  color:#d3d1c7!important;
+  border-color:#4a3a20!important;
+  background:linear-gradient(180deg,#1b1b1b,#111)!important;
+}
+.nav-btn:hover i{color:#fac775;transform:scale(1.06)}
+.nav-btn.active,
+.nav-btn.open{
+  color:#fac775!important;
+  border-color:#854f0b!important;
+  background:radial-gradient(circle at top left,rgba(250,199,117,.18),transparent 38%),linear-gradient(180deg,#241600,#120b00)!important;
+  box-shadow:0 0 0 1px rgba(250,199,117,.06),0 10px 24px rgba(0,0,0,.26)!important;
+}
+.nav-btn.active i,.nav-btn.open i{color:#fac775!important}
+.nav-btn .arrow{opacity:.75;margin-left:2px}
+.nav-dropdown{
+  top:calc(100% + 8px)!important;
+  border-radius:14px!important;
+  padding:7px!important;
+  background:linear-gradient(180deg,#191919,#101010)!important;
+  border:.5px solid #383838!important;
+  box-shadow:0 22px 48px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.025)!important;
+  min-width:190px!important;
+}
+.nav-dd-item{
+  border-radius:10px!important;
+  padding:9px 11px!important;
+  font-weight:600!important;
+}
+.nav-dd-item i{color:#6f6b61;transition:color .15s ease}
+.nav-dd-item:hover{
+  background:#201400!important;
+  color:#fac775!important;
+}
+.nav-dd-item:hover i{color:#fac775!important}
+
+/* v2.9.4 — Bütçe arşiv araçları */
+.qb-toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:10px 0 10px;
+  padding:10px;
+  border:.5px solid #252525;
+  border-radius:12px;
+  background:linear-gradient(180deg,#141414,#0f0f0f);
+}
+.qb-toolbar-title{font-size:12px;color:#888780;display:flex;align-items:center;gap:7px}
+.qb-toolbar-title strong{color:#d3d1c7;font-size:13px}
+.qb-actions{display:flex;gap:6px;flex-wrap:wrap}
+.qb-export-btn{
+  border:.5px solid #854f0b!important;
+  background:#2a1800!important;
+  color:#fac775!important;
+}
+.qb-export-btn:hover{background:#3a2200!important;color:#ffd99a!important}
+@media(max-width:620px){.nav{overflow-x:auto;flex-wrap:nowrap!important}.nav-btn{white-space:nowrap}.qb-toolbar{align-items:stretch}.qb-actions{width:100%}.qb-actions .btn{flex:1}}
+</style>
+
+<script>
+(function(){
+  if (window.__qgV294PatchApplied) return;
+  window.__qgV294PatchApplied = true;
+
+  function qgEsc(s){
+    if (typeof htmlEsc === 'function') return htmlEsc(s);
+    return String(s == null ? '' : s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+  }
+
+  function qgBudgetSortedAsc(){
+    try {
+      return (butce || []).slice().sort(function(a,b){
+        var da = new Date(a.tarih || '1900-01-01').getTime() || 0;
+        var db = new Date(b.tarih || '1900-01-01').getTime() || 0;
+        return da - db;
+      });
+    } catch(e) { return []; }
+  }
+
+  window.qgButceArsivIndir = function(){
+    var rows = qgBudgetSortedAsc();
+    if (!rows.length) { alert('İndirilecek bütçe kaydı bulunamadı.'); return; }
+    var toplamGelir = rows.filter(function(b){return b.tur === 'gelir';}).reduce(function(s,b){return s + (Number(b.tutar)||0);},0);
+    var toplamGider = rows.filter(function(b){return b.tur === 'gider';}).reduce(function(s,b){return s + (Number(b.tutar)||0);},0);
+    var net = toplamGelir - toplamGider;
+    var sep = ';';
+    function csvCell(v){ return '"' + String(v == null ? '' : v).replace(/"/g,'""') + '"'; }
+    var lines = [];
+    lines.push(['Q-GANG Bütçe Arşivi'].map(csvCell).join(sep));
+    lines.push(['Oluşturma Tarihi', new Date().toLocaleString('tr-TR')].map(csvCell).join(sep));
+    lines.push(['Toplam Gelir', toplamGelir.toFixed(2), 'Toplam Gider', toplamGider.toFixed(2), 'Net', net.toFixed(2)].map(csvCell).join(sep));
+    lines.push('');
+    lines.push(['Tarih','Tür','Kategori','Açıklama','Tutar (TL)'].map(csvCell).join(sep));
+    rows.forEach(function(b){
+      lines.push([
+        b.tarih || '',
+        b.tur === 'gelir' ? 'Gelir' : 'Gider',
+        b.kategori || 'Diğer',
+        b.aciklama || '',
+        (Number(b.tutar)||0).toFixed(2).replace('.', ',')
+      ].map(csvCell).join(sep));
+    });
+    var blob = new Blob(['\ufeff' + lines.join('\n')], { type:'text/csv;charset=utf-8;' });
+    var a = document.createElement('a');
+    var tarih = new Date().toISOString().slice(0,10);
+    a.href = URL.createObjectURL(blob);
+    a.download = 'q-gang-butce-arsivi-' + tarih + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  };
+
+  window.qgButceArsivYazdir = function(){
+    var rows = qgBudgetSortedAsc();
+    if (!rows.length) { alert('Yazdırılacak bütçe kaydı bulunamadı.'); return; }
+    var toplamGelir = rows.filter(function(b){return b.tur === 'gelir';}).reduce(function(s,b){return s + (Number(b.tutar)||0);},0);
+    var toplamGider = rows.filter(function(b){return b.tur === 'gider';}).reduce(function(s,b){return s + (Number(b.tutar)||0);},0);
+    var net = toplamGelir - toplamGider;
+    var html = '<!doctype html><html><head><meta charset="utf-8"><title>Q-GANG Bütçe Arşivi</title>'+
+      '<style>body{font-family:Arial,sans-serif;color:#111;padding:24px}h1{font-size:20px;margin:0 0 4px}p{font-size:12px;color:#555;margin:0 0 18px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #ddd;padding:7px;text-align:left}th{background:#f4f4f4}.sum{display:flex;gap:10px;margin:14px 0}.sum div{border:1px solid #ddd;padding:8px 10px;border-radius:8px;font-size:12px}</style></head><body>';
+    html += '<h1>Q-GANG Bütçe Arşivi</h1><p>Oluşturma: '+qgEsc(new Date().toLocaleString('tr-TR'))+'</p>';
+    html += '<div class="sum"><div><b>Toplam Gelir:</b> '+qgEsc(typeof fmtTL==='function'?fmtTL(toplamGelir):toplamGelir)+'</div><div><b>Toplam Gider:</b> '+qgEsc(typeof fmtTL==='function'?fmtTL(toplamGider):toplamGider)+'</div><div><b>Net:</b> '+qgEsc(typeof fmtTL==='function'?fmtTL(net):net)+'</div></div>';
+    html += '<table><thead><tr><th>Tarih</th><th>Tür</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>';
+    rows.forEach(function(b){ html += '<tr><td>'+qgEsc(typeof fmtDate==='function'?fmtDate(b.tarih):b.tarih)+'</td><td>'+qgEsc(b.tur==='gelir'?'Gelir':'Gider')+'</td><td>'+qgEsc(b.kategori||'Diğer')+'</td><td>'+qgEsc(b.aciklama||'')+'</td><td>'+qgEsc(typeof fmtTL==='function'?fmtTL(Number(b.tutar)||0):(Number(b.tutar)||0))+'</td></tr>'; });
+    html += '</tbody></table></body></html>';
+    var w = window.open('', '_blank');
+    if (!w) { alert('Tarayıcı pop-up engeli nedeniyle yazdırma penceresi açılamadı. CSV indirme butonunu kullanabilirsiniz.'); return; }
+    w.document.open(); w.document.write(html); w.document.close();
+    setTimeout(function(){ try { w.focus(); w.print(); } catch(e){} }, 350);
+  };
+
+  function qgPaginateButceTable(){
+    var tbody = document.querySelector('#butceContent table tbody');
+    if (!tbody) return;
+    var old = document.getElementById('butcePager'); if (old) old.remove();
+    var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+    var perPage = 10;
+    if (rows.length <= perPage) { rows.forEach(function(r){r.style.display='';}); return; }
+    window.__qgPages = window.__qgPages || {};
+    var page = window.__qgPages.butce || 1;
+    var total = Math.ceil(rows.length / perPage);
+    if (page > total) page = total; if (page < 1) page = 1;
+    window.__qgPages.butce = page;
+    rows.forEach(function(r,i){ r.style.display = (i >= (page-1)*perPage && i < page*perPage) ? '' : 'none'; });
+    var pager = document.createElement('div');
+    pager.id = 'butcePager';
+    pager.className = 'qg-pagination';
+    var html = '<button class="qg-page-btn" data-page="'+Math.max(1,page-1)+'">‹</button>';
+    for (var i=1;i<=total;i++) html += '<button class="qg-page-btn '+(i===page?'active':'')+'" data-page="'+i+'">'+i+'</button>';
+    html += '<button class="qg-page-btn" data-page="'+Math.min(total,page+1)+'">›</button><span class="qg-page-info">'+rows.length+' kayıt · sayfa '+page+'/'+total+'</span>';
+    pager.innerHTML = html;
+    pager.onclick = function(ev){
+      var b = ev.target.closest('button[data-page]');
+      if (!b) return;
+      window.__qgPages.butce = Number(b.dataset.page) || 1;
+      qgPaginateButceTable();
+    };
+    var wrap = document.querySelector('#butceContent .table-wrap');
+    if (wrap && wrap.parentNode) wrap.parentNode.insertBefore(pager, wrap.nextSibling);
+  }
+
+  function qgUpgradeButceToolbar(){
+    var content = document.getElementById('butceContent');
+    if (!content || !content.querySelector('table')) return;
+    var old = document.getElementById('butceToolbar'); if (old) old.remove();
+    var toolbar = document.createElement('div');
+    toolbar.id = 'butceToolbar';
+    toolbar.className = 'qb-toolbar';
+    var count = 0;
+    try { count = (butce || []).length; } catch(e) {}
+    toolbar.innerHTML = '<div class="qb-toolbar-title"><i class="ti ti-archive"></i><div><strong>Bütçe Arşivi</strong><br><span>'+count+' kayıt listeleniyor. Tablo 10 kayıtlık sayfalara bölünür.</span></div></div>'+
+      '<div class="qb-actions"><button class="btn qb-export-btn" onclick="qgButceArsivIndir()"><i class="ti ti-download"></i> Arşivi İndir</button><button class="btn" onclick="qgButceArsivYazdir()"><i class="ti ti-printer"></i> Yazdır</button></div>';
+    var tableWrap = content.querySelector('.table-wrap');
+    if (tableWrap) content.insertBefore(toolbar, tableWrap);
+    qgPaginateButceTable();
+  }
+
+  var oldRenderButce = window.renderButce;
+  if (typeof oldRenderButce === 'function') {
+    window.renderButce = function(){
+      var r = oldRenderButce.apply(this, arguments);
+      setTimeout(qgUpgradeButceToolbar, 30);
+      return r;
+    };
+  }
+
+  function qgKnownRumuzCandidate(input){
+    var known = [
+      'Quadismic','Renovich','Bekir','BonusKafa','Casanovian','CoocooliKoo','Forsaken','HanlyX','JUSTilknur','Kyklos','Lillycha','Lincoln','Muhtar','Pancroft','Ranmaru','SaintDark','Schizo','Sheila','Yalvach','AdolStal','Gaspare','Hamzah','Iazziyo','Molly','p3naMi','Shrapnellx','TheFallingPlane','TraZiS','Yarenna'
+    ];
+    var low = String(input||'').toLocaleLowerCase('tr-TR');
+    return known.find(function(x){ return String(x).toLocaleLowerCase('tr-TR') === low; }) || '';
+  }
+  function qgTitleCaseRumuz(input){
+    var s = String(input || '').trim();
+    if (!s) return s;
+    return s.charAt(0).toLocaleUpperCase('tr-TR') + s.slice(1).toLocaleLowerCase('tr-TR');
+  }
+  function qgLoginCandidates(input){
+    var raw = String(input || '').trim();
+    var arr = [raw, qgKnownRumuzCandidate(raw), qgTitleCaseRumuz(raw), raw.toLocaleLowerCase('tr-TR'), raw.toLocaleUpperCase('tr-TR')];
+    var seen = {};
+    return arr.filter(function(x){ x = String(x || '').trim(); if (!x || seen[x]) return false; seen[x] = true; return true; });
+  }
+
+  // v2.9.4 — Login tarafında küçük/büyük harf toleransı.
+  // Not: En sağlam çözüm backend'de rumuz karşılaştırmasını lowercase yapmak. Bu frontend yaması mevcut çekirdek rumuzları ve yaygın case farklarını yakalar.
+  window.girisYapBtn = async function(){
+    var rumuzEl = document.getElementById('girisRumuz');
+    var sifreEl = document.getElementById('girusSifre');
+    var hata = document.getElementById('girisHata');
+    var rumuz = rumuzEl ? rumuzEl.value.trim() : '';
+    var sifre = sifreEl ? sifreEl.value : '';
+    if (hata) hata.style.display = 'none';
+    if (!rumuz || !sifre) {
+      if (hata) { hata.textContent = 'Rumuz ve şifre gerekli.'; hata.style.display = 'block'; }
+      return;
+    }
+    var btn = document.querySelector('#girisForm .auth-btn') || document.querySelector('.auth-btn');
+    if (btn) { btn.textContent = 'Giriş yapılıyor...'; btn.disabled = true; }
+    var sifreHash = await hashStr(sifre);
+    var candidates = qgLoginCandidates(rumuz);
+    var lastError = '';
+    for (var i=0;i<candidates.length;i++) {
+      try {
+        var res = await secureApiFetch(AUTH_URL, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({ action:'LOGIN', rumuz:candidates[i], rumuzRaw:rumuz, rumuzLower:rumuz.toLocaleLowerCase('tr-TR'), sifreHash:sifreHash })
+        });
+        var data = await res.json();
+        if (data && data.success) {
+          var user = data.result;
+          var beniHatirla = document.getElementById('beniHatirla') && document.getElementById('beniHatirla').checked;
+          var sessionData = { rumuz:user.rumuz, rol:user.rol, token:user.token, zaman:Date.now() };
+          if (beniHatirla) { localStorage.setItem('qg_session', JSON.stringify(sessionData)); sessionStorage.removeItem('qg_session'); }
+          else { sessionStorage.setItem('qg_session', JSON.stringify(sessionData)); localStorage.removeItem('qg_session'); }
+          panelAc(user.rumuz, user.rol);
+          return;
+        }
+        lastError = (data && data.error) || 'Giriş başarısız.';
+      } catch(e) { lastError = 'Bağlantı hatası.'; }
+    }
+    if (hata) { hata.textContent = lastError || 'Giriş başarısız.'; hata.style.display = 'block'; }
+    if (btn) { btn.textContent = 'BENİ İÇERİ AL'; btn.disabled = false; }
+  };
+
+  setTimeout(function(){ try { if (document.getElementById('tab-butce') && document.getElementById('tab-butce').classList.contains('active')) qgUpgradeButceToolbar(); } catch(e){} }, 700);
 })();
 </script>
 
