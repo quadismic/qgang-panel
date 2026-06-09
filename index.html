@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.9.5</title>
+    <title>Q-Panel v2.9.7</title>
 
     <link
       rel="stylesheet"
@@ -4499,26 +4499,44 @@ async function panelAc(rumuz, rol) {
         }, 1);
         // puanList kaldırıldı - Top5 aşağıda gösterilecek
 
-        // Puan düzenleme editörü
+        // Puan Yönetimi: manuel puan düzenleme + arşiv sorgusu tek kart
         const editor = document.getElementById("puanEditor");
-        editor.innerHTML = "";
-        const canEdit = izin("puanDuzenle") || SESSION.rol === "Lider";
+        const arsivWrap = document.getElementById("puanArsivWrap");
+        if (editor) editor.innerHTML = "";
+        if (arsivWrap) arsivWrap.innerHTML = "";
 
-        if (canEdit) {
+        const canEdit = izin("puanDuzenle") || SESSION.rol === "Lider";
+        const siraliU = [...members].sort(function (a, b) {
+          const ra = getRutbeSira(a), rb = getRutbeSira(b);
+          return ra !== rb ? ra - rb : String(a.rumuz || "").localeCompare(String(b.rumuz || ""), "tr");
+        });
+
+        if (canEdit && editor) {
           const hr2 = document.createElement("hr");
           hr2.className = "sep";
           editor.appendChild(hr2);
+
           const title2 = document.createElement("div");
           title2.className = "section-title";
-          title2.textContent = "Puan Düzenleme";
+          title2.textContent = "Puan Yönetimi";
           editor.appendChild(title2);
+
           const card2 = document.createElement("div");
           card2.className = "card";
-          const siraliU = [...members].sort(function (a, b) {
-            return getRutbeSira(a) - getRutbeSira(b);
-          });
+          card2.style.cssText += ";background:linear-gradient(180deg,#181818,#111);border-color:#343434;border-radius:12px;";
+
+          const aciklama = document.createElement("div");
+          aciklama.className = "alert-row alert-info";
+          aciklama.style.cssText = "margin-bottom:12px;font-size:12px;line-height:1.45";
+          aciklama.innerHTML =
+            '<i class="ti ti-info-circle"></i><div><strong>Manuel puan düzenleme</strong><br>' +
+            "Etkinlik ve görev puanları kendi modüllerinden işlenir. Bu alan yalnızca özel katkı, telafi, hata düzeltme veya yönetim kararı gerektiren istisnai manuel puan işlemleri için kullanılmalıdır.</div>";
+          card2.appendChild(aciklama);
+
           const fRow = document.createElement("div");
           fRow.className = "form-row";
+          fRow.style.gridTemplateColumns = "minmax(160px,1fr) minmax(150px,1fr) minmax(110px,.6fr) minmax(220px,1.4fr)";
+
           const uGrp = document.createElement("div");
           uGrp.className = "form-group";
           const uLbl = document.createElement("label");
@@ -4529,11 +4547,34 @@ async function panelAc(rumuz, rol) {
           siraliU.forEach(function (m) {
             const opt = document.createElement("option");
             opt.value = m._id || m.id;
-            opt.textContent = m.rumuz + " (" + m.rutbe + ")";
+            opt.textContent = m.rumuz + " (" + (m.rutbe || m.rol || "—") + ")";
             uSel.appendChild(opt);
           });
           uGrp.appendChild(uSel);
           fRow.appendChild(uGrp);
+
+          const turGrp = document.createElement("div");
+          turGrp.className = "form-group";
+          const turLbl = document.createElement("label");
+          turLbl.textContent = "İşlem türü";
+          turGrp.appendChild(turLbl);
+          const turSel = document.createElement("select");
+          turSel.id = "puanIslemTuru";
+          [
+            ["ozel_katki", "Özel katkı"],
+            ["telafi", "Telafi"],
+            ["hata_duzeltme", "Hata düzeltme"],
+            ["disiplin_pasiflik", "Disiplin / pasiflik"],
+            ["diger", "Diğer"],
+          ].forEach(function (x) {
+            const opt = document.createElement("option");
+            opt.value = x[0];
+            opt.textContent = x[1];
+            turSel.appendChild(opt);
+          });
+          turGrp.appendChild(turSel);
+          fRow.appendChild(turGrp);
+
           const mGrp = document.createElement("div");
           mGrp.className = "form-group";
           const mLbl = document.createElement("label");
@@ -4546,6 +4587,7 @@ async function panelAc(rumuz, rol) {
           mInp.step = "1";
           mGrp.appendChild(mInp);
           fRow.appendChild(mGrp);
+
           const sGrp = document.createElement("div");
           sGrp.className = "form-group";
           const sLbl = document.createElement("label");
@@ -4554,101 +4596,99 @@ async function panelAc(rumuz, rol) {
           const sInp = document.createElement("input");
           sInp.type = "text";
           sInp.id = "puanSebep";
-          sInp.placeholder = "Gerekçe...";
+          sInp.placeholder = "Örn. özel katkı, telafi veya hata düzeltme...";
           sGrp.appendChild(sInp);
           fRow.appendChild(sGrp);
+
           card2.appendChild(fRow);
+
           const bRow = document.createElement("div");
           bRow.style.cssText =
-            "display:flex;gap:6px;flex-wrap:wrap;margin-top:8px";
+            "display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center";
           const bUygula = document.createElement("button");
           bUygula.className = "btn btn-success";
-          bUygula.innerHTML = '<i class="ti ti-check"></i> Uygula';
+          bUygula.innerHTML = '<i class="ti ti-check"></i> Manuel Puanı Uygula';
           bUygula.onclick = reqPuan;
           bRow.appendChild(bUygula);
-          const bEtkinlik = document.createElement("button");
-          bEtkinlik.className = "btn btn-primary";
-          bEtkinlik.innerHTML = "+10 Etkinlik";
-          bEtkinlik.onclick = function () {
-            document.getElementById("puanMiktar").value = 10;
-            document.getElementById("puanSebep").value = "Etkinlik katilimi";
-            reqPuan();
-          };
-          bRow.appendChild(bEtkinlik);
-          const bPasif = document.createElement("button");
-          bPasif.className = "btn btn-danger";
-          bPasif.innerHTML = "-20 Pasiflik";
-          bPasif.onclick = function () {
-            document.getElementById("puanMiktar").value = -20;
-            document.getElementById("puanSebep").value = "Pasiflik";
-            reqPuan();
-          };
-          bRow.appendChild(bPasif);
+
+          const bNot = document.createElement("div");
+          bNot.style.cssText = "font-size:11px;color:#555;line-height:1.4";
+          bNot.textContent = "+10 Etkinlik ve -20 Pasiflik hızlı butonları kaldırıldı; etkinlik puanları Etkinlikler modülünden, görev puanları Görevler modülünden yönetilir.";
+          bRow.appendChild(bNot);
           card2.appendChild(bRow);
+
+          const arsivSep = document.createElement("hr");
+          arsivSep.className = "sep";
+          arsivSep.style.margin = "14px 0 12px";
+          card2.appendChild(arsivSep);
+
+          const arsivBaslik = document.createElement("div");
+          arsivBaslik.className = "section-title";
+          arsivBaslik.style.marginBottom = ".6rem";
+          arsivBaslik.innerHTML = '<i class="ti ti-history"></i> Puan Arşivi';
+          card2.appendChild(arsivBaslik);
+
+          const arsivFiltreSatir = document.createElement("div");
+          arsivFiltreSatir.style.cssText =
+            "display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;align-items:center";
+          const arsivSel = document.createElement("select");
+          arsivSel.id = "arsivFilter";
+          arsivSel.style.cssText =
+            "padding:7px 10px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:12px;min-width:160px";
+          const bosOpt = document.createElement("option");
+          bosOpt.value = "";
+          bosOpt.textContent = "Tüm üyeler";
+          arsivSel.appendChild(bosOpt);
+          siraliU.forEach(function (m) {
+            const opt = document.createElement("option");
+            opt.value = m.rumuz;
+            opt.textContent = m.rumuz;
+            arsivSel.appendChild(opt);
+          });
+          arsivFiltreSatir.appendChild(arsivSel);
+
+          const arsivBtn = document.createElement("button");
+          arsivBtn.className = "btn btn-sm";
+          arsivBtn.innerHTML = '<i class="ti ti-search"></i> Sorgula';
+          arsivBtn.onclick = arsivFiltrele;
+          arsivFiltreSatir.appendChild(arsivBtn);
+
+          const arsivHint = document.createElement("div");
+          arsivHint.style.cssText = "font-size:11px;color:#555";
+          arsivHint.textContent = "Manuel, etkinlik ve görev puan hareketlerini denetlemek için kullanılır.";
+          arsivFiltreSatir.appendChild(arsivHint);
+          card2.appendChild(arsivFiltreSatir);
+
+          const arsivListe = document.createElement("div");
+          arsivListe.id = "arsivListe";
+          arsivListe.innerHTML =
+            '<div style="font-size:12px;color:#555;padding:8px">Üye seçin veya "Sorgula"ya basın...</div>';
+          card2.appendChild(arsivListe);
+
           editor.appendChild(card2);
         }
 
-        // Top5 Genel Puan Tablosu - puan düzenlemenin üstünde
+        // Top5 Genel Puan Tablosu - puan yönetiminin altında
         renderGenelPuanTablosu();
-
-        // Arsiv bolumu - DOM API ile
-        const arsivWrap = document.getElementById("puanArsivWrap");
-        arsivWrap.innerHTML = "";
-        const arsivHr = document.createElement("hr");
-        arsivHr.className = "sep";
-        arsivWrap.appendChild(arsivHr);
-        const arsivBaslik = document.createElement("div");
-        arsivBaslik.className = "section-title";
-        arsivBaslik.style.marginBottom = ".6rem";
-        arsivBaslik.innerHTML = '<i class="ti ti-history"></i> Puan Arşivi';
-        arsivWrap.appendChild(arsivBaslik);
-        const arsivFiltreSatir = document.createElement("div");
-        arsivFiltreSatir.style.cssText =
-          "display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;align-items:center";
-        const arsivSel = document.createElement("select");
-        arsivSel.id = "arsivFilter";
-        arsivSel.style.cssText =
-          "padding:6px 10px;border-radius:8px;border:0.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:12px";
-        const bosOpt = document.createElement("option");
-        bosOpt.value = "";
-        bosOpt.textContent = "Tüm üyeler";
-        arsivSel.appendChild(bosOpt);
-        const siraliArsiv = [...members].sort(function (a, b) {
-          const ra = getRutbeSira(a),
-            rb = getRutbeSira(b);
-          return ra !== rb ? ra - rb : a.rumuz.localeCompare(b.rumuz, "tr");
-        });
-        siraliArsiv.forEach(function (m) {
-          const opt = document.createElement("option");
-          opt.value = m.rumuz;
-          opt.textContent = m.rumuz;
-          arsivSel.appendChild(opt);
-        });
-        arsivFiltreSatir.appendChild(arsivSel);
-        const arsivBtn = document.createElement("button");
-        arsivBtn.className = "btn btn-sm";
-        arsivBtn.innerHTML = '<i class="ti ti-search"></i> Sorgula';
-        arsivBtn.onclick = arsivFiltrele;
-        arsivFiltreSatir.appendChild(arsivBtn);
-        arsivWrap.appendChild(arsivFiltreSatir);
-        const arsivListe = document.createElement("div");
-        arsivListe.id = "arsivListe";
-        arsivListe.innerHTML =
-          '<div style="font-size:12px;color:#555;padding:8px">Üye seçin veya "Sorgula"ya basın...</div>';
-        arsivWrap.appendChild(arsivListe);
       }
 
       async function reqPuan() {
         const idEl = document.getElementById("puanUye");
         const miktarEl = document.getElementById("puanMiktar");
         const sebepEl = document.getElementById("puanSebep");
+        const turEl = document.getElementById("puanIslemTuru");
         if (!idEl || !miktarEl || !sebepEl) {
           alert("Form alanları bulunamadı.");
           return;
         }
         const id = idEl.value;
-        const miktar = parseInt(miktarEl.value) || 0;
+        const miktar = parseInt(miktarEl.value, 10) || 0;
         const sebep = sebepEl.value.trim();
+        const islemTuru = turEl ? turEl.value : "diger";
+        const islemTuruLabel = turEl && turEl.options[turEl.selectedIndex]
+          ? turEl.options[turEl.selectedIndex].textContent
+          : "Diğer";
+
         if (!sebep) {
           alert("Gerekçe zorunlu.");
           return;
@@ -4664,29 +4704,35 @@ async function panelAc(rumuz, rol) {
           alert("Üye bulunamadı.");
           return;
         }
+
         const sign = miktar >= 0 ? "+" : "";
+        const arsivGerekce = islemTuruLabel + " — " + sebep;
+
         confirm2(
-          "Puan değişikliği",
+          "Manuel puan değişikliği",
           "<strong>" +
             m.rumuz +
             "</strong> — " +
             sign +
             miktar +
-            ' puan<br><span style="font-size:12px;color:#888">Gerekçe: ' +
+            ' puan<br><span style="font-size:12px;color:#888">İşlem türü: ' +
+            islemTuruLabel +
+            '<br>Gerekçe: ' +
             sebep +
             "</span>",
           async function () {
             m.puan = Math.max(0, (Number(m.puan) || 0) + miktar);
             addLog(
-              "Puan değişimi",
-              m.rumuz + ": " + sign + miktar + " — " + sebep,
+              "Manuel puan değişimi",
+              m.rumuz + ": " + sign + miktar + " — " + arsivGerekce,
             );
             save();
             await cmsYaz(
               "MEMBER_UPDATE",
               Object.assign({}, m, { _id: m._id || m.id }),
             );
-            await puanArsivEkle(m.rumuz, miktar, sebep, "manuel");
+            await puanArsivEkle(m.rumuz, miktar, arsivGerekce, "manuel", "", islemTuru);
+            sebepEl.value = "";
             renderPuan();
             renderDashboard();
           },
@@ -4736,7 +4782,11 @@ async function panelAc(rumuz, rol) {
           const tr = document.createElement("tr");
           const renk = a.miktar > 0 ? "#4caf7d" : "#e24b4a";
           const isaret = a.miktar > 0 ? "+" : "";
-          const turClass = a.tur === "etkinlik" ? "badge-mavi" : "badge-sari";
+          const kayitTuru = a.tur || a.tip || "manuel";
+          const turClass =
+            kayitTuru === "etkinlik" ? "badge-mavi" :
+            kayitTuru === "gorev" || kayitTuru === "gorev_asama" ? "badge-yesil" :
+            kayitTuru === "manuel" ? "badge-sari" : "badge-beyaz";
           tr.innerHTML =
             '<td style="font-size:11px;color:#555">' +
             (a.tarih || "—") +
@@ -4756,7 +4806,7 @@ async function panelAc(rumuz, rol) {
             '<td><span class="badge ' +
             turClass +
             '" style="font-size:10px">' +
-            (a.tur || "manuel") +
+            kayitTuru +
             "</span></td>" +
             '<td style="font-size:11px;color:#555">' +
             (a.ekleyen || "—") +
@@ -9098,13 +9148,15 @@ async function panelAc(rumuz, rol) {
       // ============================================================
       // PUAN ARŞİVİ
       // ============================================================
-      async function puanArsivEkle(rumuz, miktar, gerekce, tip, refId) {
+      async function puanArsivEkle(rumuz, miktar, gerekce, tip, refId, islemTuru) {
         try {
           var kayit = {
             rumuz: rumuz,
-            miktar: miktar,
+            miktar: Number(miktar) || 0,
             gerekce: gerekce,
             tip: tip || "manuel",
+            tur: tip || "manuel",
+            islemTuru: islemTuru || "",
             refId: refId || "",
             tarih: new Date().toISOString().split("T")[0],
             ekleyen: SESSION.rumuz,
