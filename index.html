@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.9.2</title>
+    <title>Q-Panel v2.9.3</title>
 
     <link
       rel="stylesheet"
@@ -6201,22 +6201,22 @@ async function panelAc(rumuz, rol) {
 /* ═══════════════════════════════════════════════════
    Q-PANEL v2.9.0 — Kariyer Stabilizasyon / Şeffaf Eşikler
    ═══════════════════════════════════════════════════ */
-#tab-kariyer .table-wrap{overflow-x:auto}
-#tab-kariyer table{table-layout:auto!important;min-width:1040px}
-#tab-kariyer th,#tab-kariyer td{overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important}
+#tab-kariyer .table-wrap{overflow-x:visible}
+#tab-kariyer table{table-layout:fixed!important;min-width:0;width:100%}
+#tab-kariyer th,#tab-kariyer td{overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;padding-left:5px!important;padding-right:5px!important}
 #tab-kariyer th:nth-child(1),#tab-kariyer td:nth-child(1){width:44px;text-align:center}
-#tab-kariyer th:nth-child(2),#tab-kariyer td:nth-child(2){width:150px}
+#tab-kariyer th:nth-child(2),#tab-kariyer td:nth-child(2){width:120px}
 #tab-kariyer th:nth-child(3),#tab-kariyer td:nth-child(3){width:95px}
 #tab-kariyer th:nth-child(4),#tab-kariyer td:nth-child(4),
 #tab-kariyer th:nth-child(5),#tab-kariyer td:nth-child(5),
 #tab-kariyer th:nth-child(6),#tab-kariyer td:nth-child(6),
 #tab-kariyer th:nth-child(7),#tab-kariyer td:nth-child(7),
-#tab-kariyer th:nth-child(8),#tab-kariyer td:nth-child(8){width:84px;text-align:center}
-#tab-kariyer th:nth-child(9),#tab-kariyer td:nth-child(9){width:190px}
+#tab-kariyer th:nth-child(8),#tab-kariyer td:nth-child(8){width:66px;text-align:center}
+#tab-kariyer th:nth-child(9),#tab-kariyer td:nth-child(9){width:170px}
 #tab-kariyer th:nth-child(10),#tab-kariyer td:nth-child(10){width:90px;text-align:center}
-.qk-mini-score{display:inline-flex;flex-direction:column;align-items:center;gap:3px;min-width:50px}
+.qk-mini-score{display:inline-flex;flex-direction:column;align-items:center;gap:3px;min-width:42px}
 .qk-mini-score b{font-size:12px;color:#d3d1c7;line-height:1}
-.qk-mini-score .bar{width:44px;height:4px;background:#1e1e1e;border-radius:99px;overflow:hidden}
+.qk-mini-score .bar{width:38px;height:4px;background:#1e1e1e;border-radius:99px;overflow:hidden}
 .qk-mini-score .fill{height:100%;background:linear-gradient(90deg,#fac775,#f97316);border-radius:99px}
 .qk-mini-score.muted b{color:#444}
 .qk-threshold-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 12px}
@@ -6910,7 +6910,7 @@ async function panelAc(rumuz, rol) {
         </div>
 <div class="qfeed-kart" id="qfeedKart">
           <div class="qfeed-kart-baslik">
-            ⚔️ Karargâh Akışı
+            ⚔️ Akış
             <button class="qfeed-yenile-btn" onclick="renderQFeed()" title="Yenile" aria-label="Feed'i yenile">↻</button>
           </div>
           <ul class="qfeed-liste" id="qfeedListe">
@@ -6980,10 +6980,9 @@ async function panelAc(rumuz, rol) {
       <!-- PUAN -->
       <div id="tab-puan" class="tab">
         <div id="puanSezonWrap"></div>
-        <div class="section-title"></div>
-        <div id="puanEditor"></div>
-        <hr class="sep" />
+        <hr class="sep" id="puanSezonSep" />
         <div id="genelPuanTablosu" style="margin-bottom: 0.8rem"></div>
+        <div id="puanEditor"></div>
         <div id="puanArsivWrap"></div>
       </div>
 
@@ -7449,6 +7448,17 @@ async function panelAc(rumuz, rol) {
       <p>Aktivite, katkı, disiplin ve liderlik skorları. Sistem yalnızca analiz sunar — terfi kararı Lider/Vekilharç'a aittir.</p>
     </div>
     <button class="btn btn-sm" onclick="kariyerYenile()"><i class="ti ti-refresh"></i> Yenile</button>
+  </div>
+
+  <div class="qk-info-card">
+    <div class="qk-info-title"><i class="ti ti-info-circle"></i> Kariyer sistemi nasıl hesaplanır?</div>
+    <div class="qk-info-grid">
+      <div><strong>Aktivite</strong><span>Etkinlik katılım oranını ve düzenli görünürlüğü ölçer. Etkinlik sayısı yetersizse skor temkinli okunur.</span></div>
+      <div><strong>Katkı</strong><span>Sezon/genel puan üretimini, görev ve etkinliklerden gelen somut katkıyı gösterir.</span></div>
+      <div><strong>Disiplin</strong><span>Ceza kaydı ve sorunlu davranış yokluğunu ifade eder. 100 temiz sicil, düşük skor riskli sicil demektir.</span></div>
+      <div><strong>Liderlik</strong><span>Görev açma, tamamlama, sorumluluk alma ve kadroya katkı kapasitesini ölçer.</span></div>
+    </div>
+    <div class="qk-info-note">Sistem otomatik hüküm vermez; yalnızca şeffaf analiz üretir. Terfi/tenzil kararı nihai olarak Lider/Vekilharç yönetimindedir. Lider ve Vekilharç kayıtları algoritma dışı zirve rütbe kabul edilir.</div>
   </div>
 
   <!-- Dashboard: 3 kart -->
@@ -13559,7 +13569,7 @@ async function renderKariyer() {
 
 function kariyerDegerlendirilenListe(liste) {
   return (liste || []).filter(function(a) {
-    return a && a.rutbe !== 'Lider' && !a.kariyerAlgoritmaDisi;
+    return a && a.rutbe !== 'Lider' && a.rutbe !== 'Vekilharç' && !a.kariyerAlgoritmaDisi;
   });
 }
 
@@ -13644,13 +13654,13 @@ function kariyerFiltrele() {
 
   function durumLabel(a) {
     var terfi = '';
-    if (a.terfiDurumu === 'Zirve Rütbe') terfi = '<span class="qk-t-zirve">♛ Zirve Rütbe</span>';
+    if (a.rutbe === 'Vekilharç' || a.terfiDurumu === 'Zirve Rütbe') terfi = '<span class="qk-t-zirve">♛ Zirve Rütbe</span>';
     else if (a.terfiDurumu === 'Terfiye Uygun') terfi = '<span class="qk-t-uygun">✅ → ' + (a.terfiHedef || '') + '</span>';
     else if (a.terfiDurumu === 'Lider Onayı Gerekli') terfi = '<span class="qk-t-onay">⭐ Lider Onayı → ' + (a.terfiHedef || '') + '</span>';
     else terfi = '<span class="qk-t-bekle">⏳ ' + ((a.eksikSayisi || 0) ? a.eksikSayisi + ' kriter eksik' : 'Henüz Hazır Değil') + '</span>';
 
     var tenzil = '';
-    if (a.rutbe !== 'Lider') {
+    if (a.rutbe !== 'Lider' && a.rutbe !== 'Vekilharç' && a.rutbe !== 'Gözlemci') {
       if (a.tenzilRiski === 'Yüksek Tenzil Riski') tenzil = '<br><span class="qk-risk-yuksek">🔴 Yüksek tenzil riski</span>';
       else if (a.tenzilRiski === 'Tenzil Uyarısı') tenzil = '<br><span class="qk-risk-uyari">🟡 Tenzil uyarısı</span>';
       else tenzil = '<br><span class="qk-risk-yok">🟢 Tenzil yok</span>';
@@ -13690,7 +13700,7 @@ async function kariyerDetay(rumuz) {
 
   var yonetim = kariyerIsYonetim();
   var sadeceLider = kariyerIsLider();
-  var liderKaydi = a.rutbe === 'Lider' || a.kariyerAlgoritmaDisi;
+  var liderKaydi = a.rutbe === 'Lider' || a.rutbe === 'Vekilharç' || a.kariyerAlgoritmaDisi;
 
   function skorKart(label, val, icon, sub) {
     var valStr = (val === null || val === undefined)
@@ -13707,6 +13717,9 @@ async function kariyerDetay(rumuz) {
 
   function kriterHtml(a) {
     if (liderKaydi) {
+      if (a.rutbe === 'Vekilharç') {
+        return '<div class="qk-rules-card"><strong>♛ Vekilharç rütbesi</strong><br>Bu kayıt terfi/tenzil algoritması dışındadır. Vekilharç için sonraki hedef veya eksik kriter hesaplanmaz.</div>';
+      }
       return '<div class="qk-rules-card"><strong>♛ Lider rütbesi</strong><br>Bu kayıt terfi/tenzil algoritması dışındadır. Lider için sonraki hedef veya eksik kriter hesaplanmaz.</div>';
     }
 
@@ -13755,12 +13768,12 @@ async function kariyerDetay(rumuz) {
   }
 
   var tenzilHtml = '';
-  if (!liderKaydi && (a.tenzilSeviye || 0) > 0) {
+  if (!liderKaydi && a.rutbe !== 'Gözlemci' && (a.tenzilSeviye || 0) > 0) {
     var tcls = a.tenzilSeviye >= 2 ? 'yuksek' : 'uyari';
     var neden = (a.tenzilNedenleri || []).length
       ? '<ul class="qk-risk-liste">' + a.tenzilNedenleri.map(function(n) { return '<li>' + n + '</li>'; }).join('') + '</ul>' : '';
     tenzilHtml = '<div class="qk-tenzil-kutu ' + tcls + '"><strong>⚠️ ' + a.tenzilRiski + '</strong>' + neden + '</div>';
-  } else if (!liderKaydi) {
+  } else if (!liderKaydi && a.rutbe !== 'Gözlemci') {
     tenzilHtml = '<div class="qk-terfi-kutu uygun">🟢 Tenzil riski yok.</div>';
   }
 
@@ -14223,6 +14236,258 @@ function qgRenderPuanArsivTable(liste){
   };
 
   setTimeout(qgPuanArsivUpgradeToolbar, 300);
+})();
+</script>
+
+
+
+<!-- ═══════════════════════════════════════════════════
+     Q-PANEL v2.9.3 — UI / Pagination / Career Hotfix
+     ═══════════════════════════════════════════════════ -->
+<style>
+/* Dashboard modern ortak yüzey */
+#tab-dashboard .stat-card,
+#tab-dashboard .card,
+#tab-dashboard .qfeed-kart{
+  background:#0a0a0a!important;
+  border:.5px solid #1e1e1e!important;
+  border-radius:12px!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.22)!important;
+}
+#tab-dashboard .stat-card{transition:transform .15s ease,border-color .15s ease,background .15s ease}
+#tab-dashboard .stat-card:hover{transform:translateY(-1px);border-color:#2f2f2f!important;background:#0f0f0f!important}
+#tab-dashboard .alert-row{border:.5px solid rgba(255,255,255,.04);border-radius:9px}
+#tab-dashboard .qfeed-kart{padding:14px!important}
+#tab-dashboard .qfeed-kart-baslik{color:#d3d1c7!important}
+
+/* Kariyer açıklama paneli */
+.qk-info-card{
+  background:linear-gradient(180deg,#111,#0b0b0b);
+  border:.5px solid #242424;
+  border-radius:14px;
+  padding:14px;
+  margin:0 0 14px;
+  box-shadow:0 12px 30px rgba(0,0,0,.22);
+}
+.qk-info-title{display:flex;align-items:center;gap:7px;color:#fac775;font-size:13px;font-weight:800;margin-bottom:10px;letter-spacing:.2px}
+.qk-info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.qk-info-grid div{background:#0a0a0a;border:.5px solid #202020;border-radius:10px;padding:10px}
+.qk-info-grid strong{display:block;color:#d3d1c7;font-size:12px;margin-bottom:4px}
+.qk-info-grid span{display:block;color:#777;font-size:11px;line-height:1.45}
+.qk-info-note{margin-top:9px;color:#888780;font-size:11px;line-height:1.5;background:#111;border:.5px solid #222;border-radius:9px;padding:9px 10px}
+@media(max-width:850px){.qk-info-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.qk-info-grid{grid-template-columns:1fr}}
+
+/* Kariyer tablosu sağa kaydırma kaldırma */
+#tab-kariyer .table-wrap{overflow-x:visible!important}
+#tab-kariyer table{width:100%!important;min-width:0!important;table-layout:fixed!important}
+#tab-kariyer th,#tab-kariyer td{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#tab-kariyer .qk-t-bekle,#tab-kariyer .qk-t-uygun,#tab-kariyer .qk-t-onay,#tab-kariyer .qk-t-zirve,#tab-kariyer .qk-risk-yok,#tab-kariyer .qk-risk-uyari,#tab-kariyer .qk-risk-yuksek{font-size:10.5px!important}
+
+/* Puan düzenleme aramalı üye seçimi */
+.qp-member-picker{position:relative;width:100%}
+.qp-member-picker input{width:100%;padding:7px 9px;border-radius:8px;border:.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:13px}
+.qp-member-results{position:absolute;left:0;right:0;top:calc(100% + 4px);background:#111;border:.5px solid #333;border-radius:10px;max-height:190px;overflow:auto;z-index:50;box-shadow:0 14px 32px rgba(0,0,0,.42);display:none}
+.qp-member-result{padding:8px 10px;cursor:pointer;font-size:12px;color:#d3d1c7;border-bottom:.5px solid #1a1a1a}
+.qp-member-result:last-child{border-bottom:none}
+.qp-member-result:hover{background:#1a1a1a;color:#fac775}
+.qp-member-result small{color:#666;margin-left:6px}
+
+/* Sayfalama */
+.qg-pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin:12px 0 4px;flex-wrap:wrap}
+.qg-page-btn{min-width:30px;height:28px;border-radius:8px;border:.5px solid #333;background:#111;color:#888780;font-size:11px;cursor:pointer;padding:0 9px}
+.qg-page-btn:hover{background:#1a1a1a;color:#d3d1c7}
+.qg-page-btn.active{background:#2a1800;color:#fac775;border-color:#854f0b;font-weight:800}
+.qg-page-info{font-size:11px;color:#555;margin-left:4px}
+
+/* Organizasyon şeması modern dikdörtgen kutular */
+.qg-org-node{
+  border-radius:12px!important;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,filter .18s ease!important;
+  will-change:transform;
+}
+.qg-org-node:hover{
+  transform:translateY(-4px) scale(1.045)!important;
+  border-color:#fac775!important;
+  box-shadow:0 18px 36px rgba(0,0,0,.38),0 0 0 1px rgba(250,199,117,.12)!important;
+  filter:brightness(1.08);
+  z-index:5;
+}
+.qg-org-stage-uye .qg-org-node,
+.qg-org-stage-gozlemci .qg-org-node{
+  width:132px!important;
+  min-width:132px!important;
+  min-height:42px!important;
+  border-radius:12px!important;
+  box-shadow:0 8px 18px rgba(0,0,0,.22)!important;
+}
+.qg-org-stage-gozlemci .qg-org-node{border-style:solid!important}
+</style>
+
+<script>
+(function(){
+  if (window.__qgV293PatchApplied) return;
+  window.__qgV293PatchApplied = true;
+
+  function esc(s){
+    if (typeof htmlEsc === 'function') return htmlEsc(s);
+    return String(s == null ? '' : s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+  }
+
+  function qgPaginateContainer(containerId, stateKey, perPage){
+    var el = document.getElementById(containerId);
+    if (!el) return;
+    var old = document.getElementById(containerId + '_pager');
+    if (old) old.remove();
+    var items = Array.prototype.slice.call(el.children).filter(function(x){ return !x.classList.contains('qg-pagination'); });
+    if (items.length <= perPage) { items.forEach(function(x){ x.style.display=''; }); return; }
+    window.__qgPages = window.__qgPages || {};
+    var page = window.__qgPages[stateKey] || 1;
+    var total = Math.ceil(items.length / perPage);
+    if (page > total) page = total;
+    if (page < 1) page = 1;
+    window.__qgPages[stateKey] = page;
+    items.forEach(function(x, i){ x.style.display = (i >= (page-1)*perPage && i < page*perPage) ? '' : 'none'; });
+    var pager = document.createElement('div');
+    pager.id = containerId + '_pager';
+    pager.className = 'qg-pagination';
+    function btn(label, p, active){
+      return '<button class="qg-page-btn ' + (active ? 'active' : '') + '" data-page="' + p + '">' + label + '</button>';
+    }
+    var html = '';
+    html += btn('‹', Math.max(1, page-1), false);
+    for (var i=1;i<=total;i++) html += btn(i, i, i===page);
+    html += btn('›', Math.min(total, page+1), false);
+    html += '<span class="qg-page-info">' + items.length + ' kayıt · sayfa ' + page + '/' + total + '</span>';
+    pager.innerHTML = html;
+    pager.onclick = function(ev){
+      var b = ev.target.closest('button[data-page]');
+      if (!b) return;
+      window.__qgPages[stateKey] = Number(b.dataset.page) || 1;
+      qgPaginateContainer(containerId, stateKey, perPage);
+    };
+    el.parentNode.insertBefore(pager, el.nextSibling);
+  }
+
+  function qgUpgradePuanMemberSelect(){
+    var sel = document.getElementById('puanUye');
+    if (!sel || sel.dataset.qgSearchUpgraded === '1') return;
+    sel.dataset.qgSearchUpgraded = '1';
+    sel.style.display = 'none';
+    var picker = document.createElement('div');
+    picker.className = 'qp-member-picker';
+    var inp = document.createElement('input');
+    inp.id = 'puanUyeSearch';
+    inp.placeholder = 'Üye rumuzu ara...';
+    var results = document.createElement('div');
+    results.className = 'qp-member-results';
+    picker.appendChild(inp); picker.appendChild(results);
+    sel.parentNode.insertBefore(picker, sel);
+
+    function render(q){
+      q = String(q || '').toLowerCase().trim();
+      var opts = Array.prototype.slice.call(sel.options).filter(function(o){ return !q || String(o.textContent || '').toLowerCase().includes(q); }).slice(0, 12);
+      results.innerHTML = opts.map(function(o){ return '<div class="qp-member-result" data-value="' + esc(o.value) + '">' + esc((o.textContent || '').replace(/\s*\([^)]*\)\s*$/, '')) + '<small>' + esc(((o.textContent || '').match(/\(([^)]*)\)/)||[])[1] || '') + '</small></div>'; }).join('') || '<div class="qp-member-result" style="color:#555">Sonuç yok</div>';
+      results.style.display = 'block';
+    }
+    function syncFromSelect(){
+      var o = sel.options[sel.selectedIndex];
+      if (o) inp.value = (o.textContent || '').replace(/\s*\([^)]*\)\s*$/, '');
+    }
+    inp.addEventListener('input', function(){ render(inp.value); var first = results.querySelector('.qp-member-result[data-value]'); if (first) sel.value = first.dataset.value; });
+    inp.addEventListener('focus', function(){ render(inp.value); });
+    document.addEventListener('click', function(ev){ if (!picker.contains(ev.target)) results.style.display = 'none'; });
+    results.addEventListener('click', function(ev){ var item = ev.target.closest('.qp-member-result[data-value]'); if (!item) return; sel.value = item.dataset.value; syncFromSelect(); results.style.display = 'none'; });
+    syncFromSelect();
+  }
+
+  var oldRenderPuan = window.renderPuan;
+  if (typeof oldRenderPuan === 'function') {
+    window.renderPuan = function(){
+      var r = oldRenderPuan.apply(this, arguments);
+      setTimeout(qgUpgradePuanMemberSelect, 50);
+      return r;
+    };
+  }
+
+  var oldEvents = window.renderEvents;
+  if (typeof oldEvents === 'function') {
+    window.renderEvents = function(){
+      var r = oldEvents.apply(this, arguments);
+      setTimeout(function(){ qgPaginateContainer('eventList','events',10); }, 20);
+      return r;
+    };
+  }
+
+  var oldDuyurular = window.renderDuyurular;
+  if (typeof oldDuyurular === 'function') {
+    window.renderDuyurular = function(){
+      var r = oldDuyurular.apply(this, arguments);
+      setTimeout(function(){ qgPaginateContainer('duyuruList','duyurular',10); }, 20);
+      return r;
+    };
+  }
+
+  var oldArsivTable = window.qgRenderPuanArsivTable;
+  if (typeof oldArsivTable === 'function') {
+    window.qgRenderPuanArsivTable = function(liste){
+      var ret = oldArsivTable.apply(this, arguments);
+      setTimeout(function(){
+        var table = document.querySelector('#arsivListe .qp-arsiv-table tbody');
+        if (!table) return;
+        var rows = Array.prototype.slice.call(table.querySelectorAll('tr'));
+        var old = document.getElementById('puanArsivPager'); if (old) old.remove();
+        var perPage = 10;
+        if (rows.length <= perPage) { rows.forEach(function(r){r.style.display='';}); return; }
+        window.__qgPages = window.__qgPages || {};
+        var page = window.__qgPages.puanArsiv || 1;
+        var total = Math.ceil(rows.length / perPage);
+        if (page > total) page = total; if (page < 1) page = 1;
+        window.__qgPages.puanArsiv = page;
+        rows.forEach(function(r, i){ r.style.display = (i >= (page-1)*perPage && i < page*perPage) ? '' : 'none'; });
+        var pager = document.createElement('div');
+        pager.id = 'puanArsivPager';
+        pager.className = 'qg-pagination';
+        var html = '<button class="qg-page-btn" data-page="' + Math.max(1,page-1) + '">‹</button>';
+        for (var i=1;i<=total;i++) html += '<button class="qg-page-btn ' + (i===page?'active':'') + '" data-page="' + i + '">' + i + '</button>';
+        html += '<button class="qg-page-btn" data-page="' + Math.min(total,page+1) + '">›</button><span class="qg-page-info">' + rows.length + ' kayıt · sayfa ' + page + '/' + total + '</span>';
+        pager.innerHTML = html;
+        pager.onclick = function(ev){ var b = ev.target.closest('button[data-page]'); if (!b) return; window.__qgPages.puanArsiv = Number(b.dataset.page)||1; window.qgRenderPuanArsivTable(liste); };
+        var wrap = document.querySelector('#arsivListe .qp-arsiv-table-wrap');
+        if (wrap && wrap.parentNode) wrap.parentNode.insertBefore(pager, wrap.nextSibling);
+      }, 20);
+      return ret;
+    };
+  }
+
+  // Backend Vekilharç için Zirve Rütbe dönmezse frontend güvenlik düzeltmesi.
+  var oldKariyerFiltrele = window.kariyerFiltrele;
+  if (typeof oldKariyerFiltrele === 'function') {
+    window.kariyerFiltrele = function(){
+      try {
+        (_kariyerCache || []).forEach(function(a){
+          if (a && a.rutbe === 'Vekilharç') {
+            a.terfiDurumu = 'Zirve Rütbe';
+            a.terfiHedef = '';
+            a.eksikSayisi = 0;
+            a.eksikler = [];
+            a.tenzilRiski = '';
+            a.tenzilSeviye = 0;
+            a.tenzilNedenleri = [];
+          }
+          if (a && a.rutbe === 'Gözlemci') {
+            a.tenzilRiski = '';
+            a.tenzilSeviye = 0;
+            a.tenzilNedenleri = [];
+          }
+        });
+      } catch(e) {}
+      return oldKariyerFiltrele.apply(this, arguments);
+    };
+  }
+
+  // İlk yükleme sonrasında mevcut ekrana da uygula.
+  setTimeout(function(){ try { qgUpgradePuanMemberSelect(); } catch(e){} }, 600);
 })();
 </script>
 
