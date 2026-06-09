@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v2.9.7</title>
+    <title>Q-GANG Panel v2.9.7</title>
 
     <link
       rel="stylesheet"
@@ -4611,10 +4611,6 @@ async function panelAc(rumuz, rol) {
           bUygula.onclick = reqPuan;
           bRow.appendChild(bUygula);
 
-          const bNot = document.createElement("div");
-          bNot.style.cssText = "font-size:11px;color:#555;line-height:1.4";
-          bNot.textContent = "+10 Etkinlik ve -20 Pasiflik hızlı butonları kaldırıldı; etkinlik puanları Etkinlikler modülünden, görev puanları Görevler modülünden yönetilir.";
-          bRow.appendChild(bNot);
           card2.appendChild(bRow);
 
           const arsivSep = document.createElement("hr");
@@ -14259,6 +14255,7 @@ async function eventResetPoints(eventId) {
   border:.5px solid transparent;
 }
 .qp-chip.event{background:#042c53;color:#b5d4f4;border-color:#185fa5}
+.qp-chip.task{background:#04342c;color:#9fe1cb;border-color:#0f6e56}
 .qp-chip.manual{background:#412402;color:#fac775;border-color:#854f0b}
 .qp-chip.system{background:#222;color:#999;border-color:#333}
 .qp-pos{color:#4ade80}
@@ -14283,16 +14280,20 @@ function qgPuanArsivNormalizeAmount(v){
   return Number.isFinite(n) ? n : 0;
 }
 function qgPuanArsivTypeClass(t){
-  t = String(t || "").toLowerCase();
-  if (t.includes("etkin")) return "event";
-  if (t.includes("manuel")) return "manual";
-  return "system";
+  var raw = String(t || "manuel");
+  var n = raw.toLocaleLowerCase("tr-TR");
+  if (n.includes("etkin")) return "event";
+  if (n.includes("gorev") || n.includes("görev")) return "task";
+  if (n.includes("sistem") || n.includes("system")) return "system";
+  return "manual";
 }
 function qgPuanArsivTypeLabel(t){
-  t = String(t || "manuel");
-  if (t.toLowerCase().includes("etkin")) return "Etkinlik";
-  if (t.toLowerCase().includes("manuel")) return "Manuel";
-  return t;
+  var raw = String(t || "manuel");
+  var n = raw.toLocaleLowerCase("tr-TR");
+  if (n.includes("etkin")) return "Etkinlik";
+  if (n.includes("gorev") || n.includes("görev")) return "Görev";
+  if (n.includes("sistem") || n.includes("system")) return "Sistem";
+  return "Manuel";
 }
 function qgPuanArsivFillMembers(selected){
   var sel = document.getElementById("arsivFilter");
