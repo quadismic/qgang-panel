@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-GANG Panel</title>
+    <title>Q-GANG Panel v3.0.0</title>
 
     <link
       rel="stylesheet"
@@ -15428,3 +15428,414 @@ function qgRenderPuanArsivTable(liste){
 
 </body>
 </html>
+
+<!-- ═══════════════════════════════════════════════════
+     Q-PANEL v3.0.0 — Karargâh Motion & Rank Theme System
+     - Rol/rütbe bazlı accent tema
+     - Sekme, kart, liste, tablo ve modal geçişleri
+     - Q-GATE kimliğini panel geneline yayar
+     - Ses/müzik içermez
+     ═══════════════════════════════════════════════════ -->
+<style>
+  :root {
+    --qg-accent: #fac775;
+    --qg-accent-text: #fac775;
+    --qg-accent-soft: rgba(250, 199, 117, .18);
+    --qg-accent-bg: rgba(65, 36, 2, .24);
+    --qg-accent-border: rgba(133, 79, 11, .58);
+    --qg-accent-glow: rgba(250, 199, 117, .14);
+    --qg-motion-fast: 180ms;
+    --qg-motion-med: 280ms;
+    --qg-motion-slow: 420ms;
+  }
+
+  body.qrank-lider {
+    --qg-accent: #f2efe4;
+    --qg-accent-text: #f2efe4;
+    --qg-accent-soft: rgba(211, 209, 199, .16);
+    --qg-accent-bg: rgba(44, 44, 42, .36);
+    --qg-accent-border: rgba(136, 135, 128, .54);
+    --qg-accent-glow: rgba(211, 209, 199, .13);
+  }
+  body.qrank-vekilharc {
+    --qg-accent: #e24b4a;
+    --qg-accent-text: #e24b4a;
+    --qg-accent-soft: rgba(226, 75, 74, .18);
+    --qg-accent-bg: rgba(58, 16, 16, .28);
+    --qg-accent-border: rgba(163, 45, 45, .64);
+    --qg-accent-glow: rgba(226, 75, 74, .14);
+  }
+  body.qrank-kaptan {
+    --qg-accent: #b5d4f4;
+    --qg-accent-text: #b5d4f4;
+    --qg-accent-soft: rgba(181, 212, 244, .17);
+    --qg-accent-bg: rgba(4, 44, 83, .29);
+    --qg-accent-border: rgba(24, 95, 165, .65);
+    --qg-accent-glow: rgba(181, 212, 244, .14);
+  }
+  body.qrank-tegmen {
+    --qg-accent: #9fe1cb;
+    --qg-accent-text: #9fe1cb;
+    --qg-accent-soft: rgba(159, 225, 203, .17);
+    --qg-accent-bg: rgba(4, 52, 44, .28);
+    --qg-accent-border: rgba(15, 110, 86, .64);
+    --qg-accent-glow: rgba(159, 225, 203, .13);
+  }
+  body.qrank-uye {
+    --qg-accent: #fac775;
+    --qg-accent-text: #fac775;
+    --qg-accent-soft: rgba(250, 199, 117, .18);
+    --qg-accent-bg: rgba(65, 36, 2, .24);
+    --qg-accent-border: rgba(133, 79, 11, .58);
+    --qg-accent-glow: rgba(250, 199, 117, .14);
+  }
+  body.qrank-gozlemci {
+    --qg-accent: #d3d1c7;
+    --qg-accent-text: #d3d1c7;
+    --qg-accent-soft: rgba(184, 184, 184, .13);
+    --qg-accent-bg: rgba(34, 34, 34, .32);
+    --qg-accent-border: rgba(85, 85, 85, .54);
+    --qg-accent-glow: rgba(184, 184, 184, .10);
+  }
+
+  body.qg-rank-theme-active {
+    background:
+      radial-gradient(circle at 50% -10%, var(--qg-accent-soft), transparent 28%),
+      radial-gradient(circle at 110% 12%, rgba(255,255,255,.025), transparent 22%),
+      #0d0d0d !important;
+  }
+
+  body.qg-rank-theme-active .panel {
+    position: relative;
+  }
+  body.qg-rank-theme-active .panel::before {
+    content: "";
+    display: block;
+    height: 1px;
+    margin: 0 0 10px;
+    background: linear-gradient(90deg, transparent, var(--qg-accent-border), transparent);
+    opacity: .72;
+    box-shadow: 0 0 22px var(--qg-accent-glow);
+  }
+
+  body.qg-rank-theme-active .top-bar h1,
+  body.qg-rank-theme-active .section-title,
+  body.qg-rank-theme-active .qfeed-kart-baslik,
+  body.qg-rank-theme-active .qhall-yil-baslik,
+  body.qg-rank-theme-active .qg-unit-title,
+  body.qg-rank-theme-active .qk-header h2 {
+    color: var(--qg-accent-text) !important;
+  }
+
+  body.qg-rank-theme-active .nav {
+    border-bottom-color: color-mix(in srgb, var(--qg-accent-border) 45%, #333) !important;
+  }
+  body.qg-rank-theme-active .nav-btn,
+  body.qg-rank-theme-active .nav-dd-item,
+  body.qg-rank-theme-active .btn,
+  body.qg-rank-theme-active .gsekme-btn {
+    transition:
+      transform var(--qg-motion-fast) ease,
+      border-color var(--qg-motion-fast) ease,
+      background var(--qg-motion-fast) ease,
+      color var(--qg-motion-fast) ease,
+      box-shadow var(--qg-motion-fast) ease !important;
+  }
+  body.qg-rank-theme-active .nav-btn:hover,
+  body.qg-rank-theme-active .btn:hover,
+  body.qg-rank-theme-active .gsekme-btn:hover {
+    transform: translateY(-1px);
+    border-color: var(--qg-accent-border) !important;
+    box-shadow: 0 0 16px var(--qg-accent-glow);
+  }
+  body.qg-rank-theme-active .nav-btn.active,
+  body.qg-rank-theme-active .nav-btn.open,
+  body.qg-rank-theme-active .nav-dd-item.active,
+  body.qg-rank-theme-active .gsekme-btn.gsekme-aktif,
+  body.qg-rank-theme-active .qg-gorev-single-ui .gsekme-btn.gsekme-aktif {
+    color: var(--qg-accent-text) !important;
+    background: var(--qg-accent-bg) !important;
+    border-color: var(--qg-accent-border) !important;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.035), 0 0 18px var(--qg-accent-glow) !important;
+  }
+
+  body.qg-rank-theme-active .card,
+  body.qg-rank-theme-active .stat-card,
+  body.qg-rank-theme-active .event-card,
+  body.qg-rank-theme-active .duyuru-kart,
+  body.qg-rank-theme-active .qfeed-kart,
+  body.qg-rank-theme-active .qhall-podyum-kart,
+  body.qg-rank-theme-active .qhall-sezon-kart,
+  body.qg-rank-theme-active .qhall-aktif-sezon-card,
+  body.qg-rank-theme-active .gorev-kart,
+  body.qg-rank-theme-active .qg-unit-card,
+  body.qg-rank-theme-active .qk-dash-kart,
+  body.qg-rank-theme-active .qk-sk,
+  body.qg-rank-theme-active .butce-kart,
+  body.qg-rank-theme-active #gorevModul,
+  body.qg-rank-theme-active #orgChart {
+    transition:
+      transform var(--qg-motion-med) cubic-bezier(.16,.84,.32,1),
+      border-color var(--qg-motion-med) ease,
+      box-shadow var(--qg-motion-med) ease,
+      background var(--qg-motion-med) ease !important;
+  }
+  body.qg-rank-theme-active .card:hover,
+  body.qg-rank-theme-active .stat-card:hover,
+  body.qg-rank-theme-active .event-card:hover,
+  body.qg-rank-theme-active .duyuru-kart:hover,
+  body.qg-rank-theme-active .qfeed-kart:hover,
+  body.qg-rank-theme-active .qhall-podyum-kart:hover,
+  body.qg-rank-theme-active .qhall-sezon-kart:hover,
+  body.qg-rank-theme-active .gorev-kart:hover,
+  body.qg-rank-theme-active .qg-unit-card:hover,
+  body.qg-rank-theme-active .qk-dash-kart:hover {
+    transform: translateY(-2px);
+    border-color: var(--qg-accent-border) !important;
+    box-shadow: 0 14px 34px rgba(0,0,0,.30), 0 0 20px var(--qg-accent-glow) !important;
+  }
+
+  body.qg-rank-theme-active .card,
+  body.qg-rank-theme-active .event-card,
+  body.qg-rank-theme-active .duyuru-kart,
+  body.qg-rank-theme-active .qfeed-kart,
+  body.qg-rank-theme-active .qhall-podyum-kart,
+  body.qg-rank-theme-active .qhall-sezon-kart,
+  body.qg-rank-theme-active .qg-unit-card,
+  body.qg-rank-theme-active .qk-dash-kart {
+    position: relative;
+    overflow: hidden;
+  }
+  body.qg-rank-theme-active .card::before,
+  body.qg-rank-theme-active .event-card::before,
+  body.qg-rank-theme-active .duyuru-kart::before,
+  body.qg-rank-theme-active .qfeed-kart::before,
+  body.qg-rank-theme-active .qhall-podyum-kart::before,
+  body.qg-rank-theme-active .qhall-sezon-kart::before,
+  body.qg-rank-theme-active .qg-unit-card::before,
+  body.qg-rank-theme-active .qk-dash-kart::before {
+    background: linear-gradient(90deg, var(--qg-accent), transparent) !important;
+    opacity: .58 !important;
+  }
+
+  body.qg-rank-theme-active .puan-bar,
+  body.qg-rank-theme-active .qhall-bar,
+  body.qg-rank-theme-active .gorev-progress-bar,
+  body.qg-rank-theme-active .qk-sbar-fill,
+  body.qg-rank-theme-active .qk-sk .bar-fill {
+    background: linear-gradient(90deg, var(--qg-accent), rgba(255,255,255,.72)) !important;
+    box-shadow: 0 0 14px var(--qg-accent-glow);
+  }
+
+  body.qg-rank-theme-active .modal-overlay,
+  body.qg-rank-theme-active .qk-overlay {
+    backdrop-filter: blur(5px);
+    animation: qgOverlayIn .24s ease both;
+  }
+  body.qg-rank-theme-active .modal-box,
+  body.qg-rank-theme-active .confirm-box,
+  body.qg-rank-theme-active .kod-box,
+  body.qg-rank-theme-active .qk-box {
+    border-color: var(--qg-accent-border) !important;
+    box-shadow: 0 28px 70px rgba(0,0,0,.46), 0 0 28px var(--qg-accent-glow) !important;
+    position: relative;
+    overflow: hidden;
+    animation: qgWindowIn .30s cubic-bezier(.16,.84,.32,1) both;
+  }
+  body.qg-rank-theme-active .modal-box::before,
+  body.qg-rank-theme-active .confirm-box::before,
+  body.qg-rank-theme-active .kod-box::before,
+  body.qg-rank-theme-active .qk-box::before {
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:2px;
+    background:linear-gradient(90deg, transparent, var(--qg-accent), transparent);
+    opacity:.85;
+  }
+  body.qg-rank-theme-active .confirm-box h3,
+  body.qg-rank-theme-active .kod-box h3 {
+    color: var(--qg-accent-text) !important;
+  }
+
+  body.qg-rank-theme-active .tab.active.tab-animating {
+    animation: qgTabIn .34s cubic-bezier(.16,.84,.32,1) both;
+  }
+  body.qg-rank-theme-active .tab.active {
+    transform-origin: 50% 0;
+  }
+  body.qg-rank-theme-active .qg-motion-item {
+    opacity: 0;
+    transform: translateY(8px) scale(.992);
+    animation: qgItemIn .34s cubic-bezier(.16,.84,.32,1) forwards;
+    animation-delay: var(--qg-delay, 0ms);
+  }
+  body.qg-rank-theme-active .table-wrap tbody tr.qg-motion-item {
+    display: table-row;
+  }
+
+  body.qg-rank-theme-active .cms-status.show {
+    border-color: var(--qg-accent-border) !important;
+    box-shadow: 0 0 18px var(--qg-accent-glow);
+  }
+
+  @keyframes qgTabIn {
+    from { opacity: 0; transform: translateY(10px) scale(.992); filter: blur(2px); }
+    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  }
+  @keyframes qgItemIn {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes qgOverlayIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes qgWindowIn {
+    from { opacity: 0; transform: translateY(12px) scale(.975); filter: blur(2px); }
+    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body.qg-rank-theme-active *,
+    body.qg-rank-theme-active *::before,
+    body.qg-rank-theme-active *::after {
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .001ms !important;
+      scroll-behavior: auto !important;
+    }
+    body.qg-rank-theme-active .qg-motion-item {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>
+<script>
+(function(){
+  if (window.__qgV300MotionRankApplied) return;
+  window.__qgV300MotionRankApplied = true;
+
+  function qgRankKey(rol){
+    var s = String(rol || 'Gözlemci').toLocaleLowerCase('tr-TR');
+    if (s.indexOf('lider') > -1) return 'lider';
+    if (s.indexOf('vekil') > -1) return 'vekilharc';
+    if (s.indexOf('kaptan') > -1) return 'kaptan';
+    if (s.indexOf('teğmen') > -1 || s.indexOf('tegmen') > -1) return 'tegmen';
+    if (s.indexOf('üye') > -1 || s.indexOf('uye') > -1) return 'uye';
+    return 'gozlemci';
+  }
+
+  window.qgApplyRankTheme = function(rol){
+    try {
+      var key = qgRankKey(rol || (window.SESSION && SESSION.rol) || 'Gözlemci');
+      document.body.classList.remove('qrank-lider','qrank-vekilharc','qrank-kaptan','qrank-tegmen','qrank-uye','qrank-gozlemci');
+      document.body.classList.add('qg-rank-theme-active', 'qrank-' + key);
+      document.body.setAttribute('data-qg-rank-theme', key);
+    } catch(e) {}
+  };
+
+  window.qgMotionSweep = function(root){
+    try {
+      if (!document.body.classList.contains('qg-rank-theme-active')) return;
+      root = root || document.querySelector('.tab.active') || document.getElementById('mainPanel') || document.body;
+      var selector = [
+        '.stat-card',
+        '.card',
+        '.event-card',
+        '.duyuru-kart',
+        '.qfeed-satir',
+        '.qhall-podyum-satir',
+        '.qhall-sezon-kart',
+        '.qhall-liderlik-satir',
+        '.qhall-aktif-row',
+        '.gorev-kart',
+        '.asama-kart',
+        '.qg-unit-card',
+        '.qg-unit-section',
+        '.qk-dash-kart',
+        '.qk-sk',
+        '.alert-row',
+        '.butce-kart',
+        '.table-wrap tbody tr'
+      ].join(',');
+      var items = Array.prototype.slice.call(root.querySelectorAll(selector));
+      items.slice(0, 80).forEach(function(el, i){
+        el.classList.remove('qg-motion-item');
+        el.style.removeProperty('--qg-delay');
+        void el.offsetWidth;
+        el.style.setProperty('--qg-delay', Math.min(i * 34, 420) + 'ms');
+        el.classList.add('qg-motion-item');
+      });
+    } catch(e) {}
+  };
+
+  function hookPanelAcV300(){
+    if (typeof window.panelAc !== 'function' || window.__qgV300PanelHooked) return;
+    window.__qgV300PanelHooked = true;
+    var oldPanelAc = window.panelAc;
+    window.panelAc = async function(rumuz, rol){
+      try { window.qgApplyRankTheme(rol); } catch(e) {}
+      var result = await oldPanelAc.apply(this, arguments);
+      try {
+        window.qgApplyRankTheme((window.SESSION && SESSION.rol) || rol);
+        setTimeout(function(){ window.qgMotionSweep(document.getElementById('mainPanel')); }, 60);
+        setTimeout(function(){ window.qgMotionSweep(document.querySelector('.tab.active')); }, 420);
+      } catch(e) {}
+      return result;
+    };
+  }
+
+  function hookTabsV300(){
+    if (typeof window._showTabContent !== 'function' || window.__qgV300TabHooked) return;
+    window.__qgV300TabHooked = true;
+    var oldShow = window._showTabContent;
+    window._showTabContent = function(name){
+      var result = oldShow.apply(this, arguments);
+      try {
+        setTimeout(function(){
+          var tab = document.getElementById('tab-' + name) || document.querySelector('.tab.active');
+          window.qgMotionSweep(tab);
+        }, 42);
+        setTimeout(function(){
+          var tab = document.getElementById('tab-' + name) || document.querySelector('.tab.active');
+          window.qgMotionSweep(tab);
+        }, 260);
+      } catch(e) {}
+      return result;
+    };
+  }
+
+  function installModalObserver(){
+    if (window.__qgV300ModalObserver) return;
+    window.__qgV300ModalObserver = true;
+    try {
+      var obs = new MutationObserver(function(mutations){
+        mutations.forEach(function(m){
+          Array.prototype.forEach.call(m.addedNodes || [], function(node){
+            if (!node || node.nodeType !== 1) return;
+            if (node.matches && (node.matches('.modal-overlay,.qk-overlay') || node.querySelector('.modal-overlay,.qk-overlay'))) {
+              setTimeout(function(){ window.qgMotionSweep(node); }, 30);
+            }
+          });
+        });
+      });
+      obs.observe(document.body, { childList:true, subtree:true });
+    } catch(e) {}
+  }
+
+  hookPanelAcV300();
+  hookTabsV300();
+  installModalObserver();
+  setTimeout(hookPanelAcV300, 0);
+  setTimeout(hookTabsV300, 0);
+  setTimeout(function(){
+    try {
+      if (window.SESSION && SESSION.rol) window.qgApplyRankTheme(SESSION.rol);
+      window.qgMotionSweep(document.querySelector('.tab.active'));
+    } catch(e) {}
+  }, 900);
+})();
+</script>
+
