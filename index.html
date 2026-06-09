@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-GANG Panel v2.9.7</title>
+    <title>Q-GANG Panel v2.9.9</title>
 
     <link
       rel="stylesheet"
@@ -14973,3 +14973,178 @@ function qgRenderPuanArsivTable(liste){
 
 </body>
 </html>
+
+<!-- ═══════════════════════════════════════════════════
+     Q-PANEL v2.9.9 — Q-GATE Login Sonrası Karargâh Erişim Animasyonu
+     Ses/müzik içermez. Tamamen görsel animasyondur.
+     ═══════════════════════════════════════════════════ -->
+<style>
+  .qgate-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(circle at 50% 40%, rgba(250, 199, 117, 0.08), transparent 34%),
+      radial-gradient(circle at 20% 80%, rgba(133, 79, 11, 0.08), transparent 28%),
+      #070707;
+    color: #d3d1c7;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity .36s ease;
+  }
+  .qgate-overlay.qgate-active { display: flex; opacity: 1; }
+  .qgate-overlay.qgate-leave { opacity: 0; }
+  .qgate-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, transparent 0%, rgba(255,255,255,.018) 50%, transparent 100%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0, rgba(255,255,255,.025) 1px, transparent 1px, transparent 4px);
+    opacity: .34;
+    pointer-events: none;
+    animation: qgateScan 2.2s linear infinite;
+  }
+  .qgate-overlay::after {
+    content: '';
+    position: absolute;
+    width: 54vmin;
+    height: 54vmin;
+    border-radius: 50%;
+    border: 1px solid var(--qgate-color-soft, rgba(250,199,117,.25));
+    box-shadow: 0 0 60px var(--qgate-glow, rgba(250,199,117,.12));
+    opacity: .22;
+    animation: qgateRing 1.85s ease-out both;
+  }
+  .qgate-card {
+    position: relative;
+    width: min(92vw, 560px);
+    border: .5px solid var(--qgate-border, rgba(250,199,117,.35));
+    border-radius: 18px;
+    padding: 28px 28px 24px;
+    background: linear-gradient(180deg, rgba(20,20,20,.94), rgba(8,8,8,.96));
+    box-shadow: 0 30px 80px rgba(0,0,0,.56), inset 0 0 0 1px rgba(255,255,255,.025), 0 0 44px var(--qgate-glow, rgba(250,199,117,.09));
+    text-align: center;
+    overflow: hidden;
+    transform: translateY(10px) scale(.985);
+    animation: qgateCardIn .52s cubic-bezier(.16,.9,.22,1) forwards;
+  }
+  .qgate-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg, transparent, var(--qgate-color, #fac775), transparent); opacity:.85; }
+  .qgate-card::after { content:''; position:absolute; inset:-40% -20% auto -20%; height:90px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent); transform:rotate(-8deg) translateX(-120%); animation:qgateSweep 1.1s .2s ease-out forwards; pointer-events:none; }
+  .qgate-logo { font-family:'Vanilla Whale','Kenyan Coffee Stencil',Arial,sans-serif; color:var(--qgate-color,#fac775); font-size:clamp(36px,8vw,58px); line-height:.9; letter-spacing:.02em; text-shadow:0 0 26px var(--qgate-glow,rgba(250,199,117,.25)); margin-bottom:10px; }
+  .qgate-kicker { color:var(--qgate-color,#fac775); font-size:10px; font-weight:800; letter-spacing:3px; text-transform:uppercase; opacity:.86; margin-bottom:14px; }
+  .qgate-status { display:inline-flex; align-items:center; gap:7px; border:.5px solid var(--qgate-border,rgba(250,199,117,.35)); border-radius:999px; padding:5px 11px; color:var(--qgate-color,#fac775); background:var(--qgate-bg,rgba(65,36,2,.32)); font-size:11px; font-weight:700; margin-bottom:15px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.02); }
+  .qgate-dot { width:7px; height:7px; border-radius:50%; background:var(--qgate-color,#fac775); box-shadow:0 0 13px var(--qgate-color,#fac775); animation:qgatePulse .75s ease-in-out infinite alternate; }
+  .qgate-welcome { font-size:12px; letter-spacing:1.5px; color:#777166; text-transform:uppercase; margin-bottom:4px; }
+  .qgate-rumuz { font-size:clamp(26px,7vw,42px); font-weight:900; color:#f2efe4; letter-spacing:.02em; line-height:1.1; margin-bottom:7px; text-shadow:0 10px 32px rgba(0,0,0,.5); word-break:break-word; }
+  .qgate-role { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-width:138px; padding:6px 13px; border-radius:9px; background:var(--qgate-bg,rgba(65,36,2,.32)); border:.5px solid var(--qgate-border,rgba(250,199,117,.35)); color:var(--qgate-color,#fac775); font-size:12px; font-weight:800; margin:2px 0 18px; }
+  .qgate-lines { width:min(100%,430px); margin:0 auto 17px; text-align:left; border-radius:12px; background:rgba(0,0,0,.22); border:.5px solid rgba(255,255,255,.05); padding:10px 12px; }
+  .qgate-line { display:flex; align-items:center; gap:7px; color:#888780; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:11px; line-height:1.6; opacity:0; transform:translateX(-8px); animation:qgateLineIn .36s ease forwards; }
+  .qgate-line:nth-child(1){ animation-delay:.18s; }
+  .qgate-line:nth-child(2){ animation-delay:.36s; }
+  .qgate-line:nth-child(3){ animation-delay:.54s; }
+  .qgate-line .ok { color:#4ade80; }
+  .qgate-loader { width:min(100%,430px); height:4px; border-radius:999px; background:rgba(255,255,255,.055); overflow:hidden; margin:0 auto; }
+  .qgate-loader span { display:block; width:0%; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--qgate-color,#fac775),rgba(255,255,255,.8),var(--qgate-color,#fac775)); box-shadow:0 0 20px var(--qgate-glow,rgba(250,199,117,.3)); animation:qgateLoad 1.35s .15s cubic-bezier(.22,.9,.26,1) forwards; }
+  .qgate-footer { margin-top:12px; color:#3d3a32; font-size:9px; letter-spacing:2.6px; text-transform:uppercase; }
+  .qgate-lider { --qgate-color:#fac775; --qgate-border:rgba(250,199,117,.52); --qgate-bg:rgba(65,36,2,.34); --qgate-glow:rgba(250,199,117,.26); --qgate-color-soft:rgba(250,199,117,.25); }
+  .qgate-vekilharc { --qgate-color:#e24b4a; --qgate-border:rgba(226,75,74,.48); --qgate-bg:rgba(58,16,16,.36); --qgate-glow:rgba(226,75,74,.22); --qgate-color-soft:rgba(226,75,74,.22); }
+  .qgate-kaptan { --qgate-color:#69b7ff; --qgate-border:rgba(105,183,255,.46); --qgate-bg:rgba(4,44,83,.36); --qgate-glow:rgba(105,183,255,.22); --qgate-color-soft:rgba(105,183,255,.22); }
+  .qgate-tegmen { --qgate-color:#9fe1cb; --qgate-border:rgba(159,225,203,.46); --qgate-bg:rgba(4,52,44,.34); --qgate-glow:rgba(159,225,203,.20); --qgate-color-soft:rgba(159,225,203,.22); }
+  .qgate-uye { --qgate-color:#fbbf24; --qgate-border:rgba(251,191,36,.45); --qgate-bg:rgba(65,36,2,.32); --qgate-glow:rgba(251,191,36,.2); --qgate-color-soft:rgba(251,191,36,.22); }
+  .qgate-gozlemci { --qgate-color:#b8b8b8; --qgate-border:rgba(184,184,184,.3); --qgate-bg:rgba(34,34,34,.42); --qgate-glow:rgba(184,184,184,.12); --qgate-color-soft:rgba(184,184,184,.16); }
+  @keyframes qgateScan { from { transform:translateY(-12px); } to { transform:translateY(12px); } }
+  @keyframes qgateRing { 0% { transform:scale(.74); opacity:0; } 45% { opacity:.24; } 100% { transform:scale(1.1); opacity:.02; } }
+  @keyframes qgateCardIn { to { transform:translateY(0) scale(1); } }
+  @keyframes qgateSweep { to { transform:rotate(-8deg) translateX(120%); } }
+  @keyframes qgatePulse { to { opacity:.55; transform:scale(.82); } }
+  @keyframes qgateLineIn { to { opacity:1; transform:translateX(0); } }
+  @keyframes qgateLoad { to { width:100%; } }
+  @media (max-width:520px){ .qgate-card{padding:24px 18px 20px;border-radius:15px}.qgate-lines{padding:9px 10px}.qgate-line{font-size:10px}.qgate-kicker{letter-spacing:2.2px} }
+  @media (prefers-reduced-motion:reduce){ .qgate-overlay,.qgate-card,.qgate-overlay::before,.qgate-overlay::after,.qgate-card::after,.qgate-dot,.qgate-line,.qgate-loader span{animation:none!important;transition:none!important}.qgate-line{opacity:1;transform:none}.qgate-loader span{width:100%} }
+</style>
+<script>
+(function(){
+  if (window.__qgGatePatchApplied) return;
+  window.__qgGatePatchApplied = true;
+  function escQGate(s){ return String(s == null ? '' : s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function roleKey(rol){
+    var s = String(rol || 'Gözlemci').toLocaleLowerCase('tr-TR');
+    if (s.indexOf('lider') > -1) return 'lider';
+    if (s.indexOf('vekil') > -1) return 'vekilharc';
+    if (s.indexOf('kaptan') > -1) return 'kaptan';
+    if (s.indexOf('teğmen') > -1 || s.indexOf('tegmen') > -1) return 'tegmen';
+    if (s.indexOf('üye') > -1 || s.indexOf('uye') > -1) return 'uye';
+    return 'gozlemci';
+  }
+  function roleProtocol(rol){
+    var key = roleKey(rol);
+    var map = {
+      lider: { kicker:'Q-GANG KOMUTA ERİŞİMİ', status:'LİDER PROTOKOLÜ AKTİF', lines:['Yetki seviyesi doğrulandı','Karargâh komuta kanalı açıldı','Panel erişimi onaylandı'] },
+      vekilharc: { kicker:'Q-GANG YÖNETİM ERİŞİMİ', status:'VEKİLHARÇ PROTOKOLÜ AKTİF', lines:['Yönetim yetkileri doğrulandı','Karargâh bağlantısı kuruldu','Operasyon paneli hazır'] },
+      kaptan: { kicker:'Q-GANG OPERASYON ERİŞİMİ', status:'KAPTAN PROTOKOLÜ AKTİF', lines:['Operasyon yetkisi doğrulandı','Birim erişimi açıldı','Saha paneli hazır'] },
+      tegmen: { kicker:'Q-GANG SAHA ERİŞİMİ', status:'TEĞMEN PROTOKOLÜ AKTİF', lines:['Saha yetkisi doğrulandı','Görev bağlantısı kuruldu','Panel erişimi onaylandı'] },
+      uye: { kicker:'Q-GANG ÜYE ERİŞİMİ', status:'ÜYE PROTOKOLÜ AKTİF', lines:['Üyelik kaydı doğrulandı','Karargâh bağlantısı kuruldu','Panel erişimi onaylandı'] },
+      gozlemci: { kicker:'Q-GANG SINIRLI ERİŞİM', status:'GÖZLEMCİ PROTOKOLÜ AKTİF', lines:['Gözlemci kaydı doğrulandı','Sınırlı bağlantı kuruldu','Panel erişimi onaylandı'] }
+    };
+    return map[key] || map.gozlemci;
+  }
+  function ensureQGate(){
+    var el = document.getElementById('qgateOverlay');
+    if (el) return el;
+    el = document.createElement('div');
+    el.id = 'qgateOverlay';
+    el.className = 'qgate-overlay';
+    document.body.appendChild(el);
+    return el;
+  }
+  window.qgateShow = function(rumuz, rol){
+    return new Promise(function(resolve){
+      try {
+        var prefersReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var key = roleKey(rol);
+        var proto = roleProtocol(rol);
+        var el = ensureQGate();
+        el.className = 'qgate-overlay qgate-' + key;
+        el.innerHTML = '<div class="qgate-card" role="status" aria-live="polite">' +
+          '<div class="qgate-logo">QG</div>' +
+          '<div class="qgate-kicker">' + escQGate(proto.kicker) + '</div>' +
+          '<div class="qgate-status"><span class="qgate-dot"></span>' + escQGate(proto.status) + '</div>' +
+          '<div class="qgate-welcome">Hoş geldin</div>' +
+          '<div class="qgate-rumuz">' + escQGate(rumuz || 'Ziyaretçi') + '</div>' +
+          '<div class="qgate-role"><i class="ti ti-shield-check"></i> Yetki Seviyesi: ' + escQGate(rol || 'Gözlemci') + '</div>' +
+          '<div class="qgate-lines">' + proto.lines.map(function(line){ return '<div class="qgate-line"><span class="ok">✓</span><span>' + escQGate(line) + '</span></div>'; }).join('') + '</div>' +
+          '<div class="qgate-loader"><span></span></div>' +
+          '<div class="qgate-footer">KARARGÂH BAĞLANTISI KURULDU</div>' +
+        '</div>';
+        el.classList.add('qgate-active');
+        var wait = prefersReduce ? 450 : 1780;
+        setTimeout(function(){
+          el.classList.add('qgate-leave');
+          setTimeout(function(){ el.className = 'qgate-overlay'; el.innerHTML = ''; resolve(); }, prefersReduce ? 40 : 360);
+        }, wait);
+      } catch(e) { resolve(); }
+    });
+  };
+  function hookPanelAc(){
+    if (typeof window.panelAc !== 'function' || window.__qgGatePanelHooked) return;
+    window.__qgGatePanelHooked = true;
+    var originalPanelAc = window.panelAc;
+    window.panelAc = async function(rumuz, rol){
+      if (!window.__qgGatePlaying) {
+        window.__qgGatePlaying = true;
+        try { await window.qgateShow(rumuz, rol); } catch(e) {}
+        window.__qgGatePlaying = false;
+      }
+      return originalPanelAc.apply(this, arguments);
+    };
+  }
+  hookPanelAc();
+  setTimeout(hookPanelAc, 0);
+  setTimeout(hookPanelAc, 500);
+})();
+</script>
+
