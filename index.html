@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-GANG Panel v3.0.1</title>
+    <title>Q-Panel v2.9.2</title>
 
     <link
       rel="stylesheet"
@@ -8336,30 +8336,39 @@ async function panelAc(rumuz, rol) {
       // ONLİNE SİSTEM
       // ============================================================
       function onlineSistemiBaslat() {
-        oturumPing();
-        onlineListeGuncelle();
-        setInterval(
-          function () {
-            oturumPing();
-            onlineListeGuncelle();
-          },
-          5 * 60 * 1000,
-        );
-        window.addEventListener("beforeunload", function () {
-          oturumKapat();
-        });
+        // Aynı panelAc birden fazla kez sarılmış olsa bile tek heartbeat çalışsın.
+        if (window._qgOnlineHeartbeat) clearInterval(window._qgOnlineHeartbeat);
+        if (window._qgPassiveInterval) clearInterval(window._qgPassiveInterval);
+
+        async function heartbeat() {
+          // Önce ping tamamlanır, sonra liste çekilir. Böylece 0 çevrimiçi yarışı oluşmaz.
+          await oturumPing();
+          await onlineListeGuncelle();
+        }
+
+        heartbeat();
+        window._qgOnlineHeartbeat = setInterval(heartbeat, 60 * 1000);
+
+        // Arka plan sekmelerinde tarayıcı interval'i yavaşlatabilir. Geri dönünce anında yenile.
+        if (!window._qgOnlineVisibilityHooked) {
+          window._qgOnlineVisibilityHooked = true;
+          document.addEventListener('visibilitychange', function(){
+            if (!document.hidden && getToken()) heartbeat();
+          });
+          window.addEventListener('focus', function(){ if (getToken()) heartbeat(); });
+          window.addEventListener('online', function(){ if (getToken()) heartbeat(); });
+        }
+
+        // beforeunload sırasında session silinmez. Session yalnızca açık "Çıkış" işlemiyle kapatılır.
         setTimeout(pasiflikKontrol, 10000);
-        setInterval(pasiflikKontrol, 5 * 60 * 1000);
+        window._qgPassiveInterval = setInterval(pasiflikKontrol, 5 * 60 * 1000);
         var ob = document.getElementById("onlineBar");
-        if (ob)
-          setTimeout(function () {
-            ob.style.display = "flex";
-          }, 1000);
+        if (ob) setTimeout(function () { ob.style.display = "flex"; }, 1000);
       }
 
       async function oturumPing() {
         try {
-          await secureApiFetch(API_URL, {
+          var res = await secureApiFetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -8368,7 +8377,10 @@ async function panelAc(rumuz, rol) {
               token: getToken(),
             }),
           });
-        } catch (e) {}
+          if (!res.ok) return false;
+          var data = await res.json().catch(function(){ return {}; });
+          return data && data.success !== false;
+        } catch (e) { return false; }
       }
 
       async function oturumKapat() {
@@ -8394,18 +8406,18 @@ async function panelAc(rumuz, rol) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: "OTURUM_LIST", token: getToken() }),
           });
+          if (!res.ok) return;
           var data = await res.json();
+          if (!data || data.success === false) return;
           var liste = data.result || [];
           var sayEl = document.getElementById("onlineCount");
           var listEl = document.getElementById("onlineList");
-          // Aynı üyeyi tekrar gösterme - unique rumuzları al
           var uniqueRumuzlar = [];
           liste.forEach(function (o) {
-            if (o.rumuz && uniqueRumuzlar.indexOf(o.rumuz) < 0)
-              uniqueRumuzlar.push(o.rumuz);
+            if (o.rumuz && uniqueRumuzlar.indexOf(o.rumuz) < 0) uniqueRumuzlar.push(o.rumuz);
           });
-          if (sayEl) sayEl.textContent = uniqueRumuzlar.length || 0;
-          if (listEl) listEl.textContent = uniqueRumuzlar.join(", ");
+          if (sayEl) sayEl.textContent = uniqueRumuzlar.length;
+          if (listEl) listEl.textContent = uniqueRumuzlar.length ? uniqueRumuzlar.join(", ") : "Bağlantı yenileniyor...";
         } catch (e) {}
       }
 
@@ -14519,6 +14531,15 @@ function qgRenderPuanArsivTable(liste){
   .qgate-uye { --qgate-color:#fbbf24; --qgate-border:rgba(251,191,36,.45); --qgate-bg:rgba(65,36,2,.32); --qgate-glow:rgba(251,191,36,.2); --qgate-color-soft:rgba(251,191,36,.22); --qgate-aura:rgba(251,191,36,.065); }
   .qgate-gozlemci { --qgate-color:#d3d1c7; --qgate-border:rgba(184,184,184,.30); --qgate-bg:rgba(34,34,34,.42); --qgate-glow:rgba(184,184,184,.12); --qgate-color-soft:rgba(184,184,184,.16); --qgate-aura:rgba(184,184,184,.045); }
   @keyframes qgateScan{from{transform:translateY(-12px)}to{transform:translateY(12px)}} @keyframes qgateRing{0%{transform:scale(.74);opacity:0}30%{opacity:.24}100%{transform:scale(1.1);opacity:.02}} @keyframes qgateCardIn{to{transform:translateY(0) scale(1)}} @keyframes qgateSweep{to{transform:rotate(-8deg) translateX(120%)}} @keyframes qgatePulse{to{opacity:.55;transform:scale(.82)}} @keyframes qgateLineIn{to{opacity:1;transform:translateX(0)}} @keyframes qgateLoad{to{width:100%}}
+
+  /* v3.0.2 — Auth → Q-GATE → Dashboard kesintisiz geçiş */
+  #mainPanel.qg-panel-preparing { opacity:0 !important; visibility:hidden !important; pointer-events:none !important; }
+  #mainPanel.qg-panel-ready { animation:qgPanelReveal .72s cubic-bezier(.16,.9,.22,1) both; }
+  #authScreen.qg-auth-exit { opacity:0 !important; visibility:hidden !important; pointer-events:none !important; transition:opacity .22s ease, visibility .22s ease; }
+  @keyframes qgPanelReveal {
+    from { opacity:0; transform:translateY(10px); filter:blur(3px); }
+    to { opacity:1; transform:translateY(0); filter:blur(0); }
+  }
   @media (max-width:520px){ .auth-box{padding:24px 18px 22px!important;border-radius:18px!important}.qgate-card{padding:24px 18px 20px;border-radius:15px}.qgate-lines{padding:9px 10px}.qgate-line{font-size:10px}.qgate-kicker{letter-spacing:2.2px} }
   @media (prefers-reduced-motion:reduce){ .auth-screen::before,.auth-screen::after,.qgate-overlay,.qgate-card,.qgate-overlay::before,.qgate-overlay::after,.qgate-card::after,.qgate-dot,.qgate-line,.qgate-loader span,.tab.qg-tab-enter,.modal-overlay,.qk-overlay,.modal-box,.confirm-box,.kod-box,.qk-box{animation:none!important;transition:none!important}.qgate-line{opacity:1;transform:none}.qgate-loader span{width:100%} }
 </style>
@@ -14567,33 +14588,35 @@ function qgRenderPuanArsivTable(liste){
     document.body.appendChild(el);
     return el;
   }
-  window.qgateShow = function(rumuz, rol){
-    return new Promise(function(resolve){
-      try {
-        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        var key = rankKey(rol);
-        var proto = roleProtocol(rol);
-        var el = ensureQGate();
-        el.className = 'qgate-overlay qgate-' + key;
-        el.innerHTML = '<div class="qgate-card" role="status" aria-live="polite">' +
-          '<div class="qgate-logo">QG</div>' +
-          '<div class="qgate-kicker">' + escQ(proto.kicker) + '</div>' +
-          '<div class="qgate-status"><span class="qgate-dot"></span>' + escQ(proto.status) + '</div>' +
-          '<div class="qgate-welcome">Hoş geldin</div>' +
-          '<div class="qgate-rumuz">' + escQ(rumuz || 'Ziyaretçi') + '</div>' +
-          '<div class="qgate-role"><i class="ti ti-shield-check"></i> Yetki Seviyesi: ' + escQ(rol || 'Gözlemci') + '</div>' +
-          '<div class="qgate-lines">' + proto.lines.map(function(line){ return '<div class="qgate-line"><span class="ok">✓</span><span>' + escQ(line) + '</span></div>'; }).join('') + '</div>' +
-          '<div class="qgate-loader"><span></span></div>' +
-          '<div class="qgate-footer">BAĞLANTI KURULDU</div>' +
-        '</div>';
-        el.classList.add('qgate-active');
-        var wait = reduce ? 450 : 6700;
-        setTimeout(function(){
-          el.classList.add('qgate-leave');
-          setTimeout(function(){ el.className = 'qgate-overlay'; el.innerHTML = ''; resolve(); }, reduce ? 40 : 420);
-        }, wait);
-      } catch(e) { resolve(); }
-    });
+  window.qgateShow = async function(rumuz, rol, readyPromise){
+    try {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var key = rankKey(rol);
+      var proto = roleProtocol(rol);
+      var el = ensureQGate();
+      el.className = 'qgate-overlay qgate-' + key;
+      el.innerHTML = '<div class="qgate-card" role="status" aria-live="polite">' +
+        '<div class="qgate-logo">QG</div>' +
+        '<div class="qgate-kicker">' + escQ(proto.kicker) + '</div>' +
+        '<div class="qgate-status"><span class="qgate-dot"></span>' + escQ(proto.status) + '</div>' +
+        '<div class="qgate-welcome">Hoş geldin</div>' +
+        '<div class="qgate-rumuz">' + escQ(rumuz || 'Ziyaretçi') + '</div>' +
+        '<div class="qgate-role"><i class="ti ti-shield-check"></i> Yetki Seviyesi: ' + escQ(rol || 'Gözlemci') + '</div>' +
+        '<div class="qgate-lines">' + proto.lines.map(function(line){ return '<div class="qgate-line"><span class="ok">✓</span><span>' + escQ(line) + '</span></div>'; }).join('') + '</div>' +
+        '<div class="qgate-loader"><span></span></div>' +
+        '<div class="qgate-footer">BAĞLANTI KURULDU</div>' +
+      '</div>';
+      el.classList.add('qgate-active');
+
+      var minimumWait = new Promise(function(resolve){ setTimeout(resolve, reduce ? 450 : 6700); });
+      var panelReady = Promise.resolve(readyPromise).catch(function(){ return null; });
+      await Promise.all([minimumWait, panelReady]);
+
+      el.classList.add('qgate-leave');
+      await new Promise(function(resolve){ setTimeout(resolve, reduce ? 40 : 420); });
+      el.className = 'qgate-overlay';
+      el.innerHTML = '';
+    } catch(e) {}
   };
 
   function setAuthMode(mode){
@@ -14673,19 +14696,48 @@ function qgRenderPuanArsivTable(liste){
   }
 
   function installPanelHook(){
-    if (typeof window.panelAc !== 'function' || window.__qg301PanelHooked) return;
-    window.__qg301PanelHooked = true;
+    if (typeof window.panelAc !== 'function' || window.__qg302PanelHooked) return;
+    window.__qg302PanelHooked = true;
     var original = window.panelAc;
     window.panelAc = async function(rumuz, rol){
+      var auth = document.getElementById('authScreen');
+      var main = document.getElementById('mainPanel');
       try { window.qgApplyRankTheme(rol); } catch(e) {}
+
+      // Login ekranını Q-GATE arkasında bir an bile görünmeyecek şekilde hemen kapat.
+      if (auth) {
+        auth.classList.add('qg-auth-exit');
+        auth.style.display = 'none';
+      }
+      if (main) {
+        main.style.display = 'block';
+        main.classList.remove('qg-panel-ready');
+        main.classList.add('qg-panel-preparing');
+      }
+
+      // Panel verileri Q-GATE çalışırken arka planda hazırlanır.
+      var openPromise = Promise.resolve().then(function(){
+        return original.apply(window, [rumuz, rol]);
+      });
+
       if (!window.__qgGatePlaying) {
         window.__qgGatePlaying = true;
-        try { await window.qgateShow(rumuz, rol); } catch(e) {}
+        try { await window.qgateShow(rumuz, rol, openPromise); } catch(e) { try { await openPromise; } catch(_) {} }
         window.__qgGatePlaying = false;
+      } else {
+        try { await openPromise; } catch(e) {}
       }
-      var result = await original.apply(this, arguments);
+
+      try { await openPromise; } catch(e) {}
       try { window.qgApplyRankTheme((window.SESSION && SESSION.rol) || rol); } catch(e) {}
-      return result;
+
+      if (main) {
+        main.classList.remove('qg-panel-preparing');
+        void main.offsetWidth;
+        main.classList.add('qg-panel-ready');
+        setTimeout(function(){ try { main.classList.remove('qg-panel-ready'); } catch(e){} }, 850);
+      }
+      return true;
     };
   }
 
