@@ -6940,7 +6940,7 @@ tbody tr:hover td{background:#181818!important;}
 <p>Üye listesi, kariyer analizi, organizasyon şeması ve birim yönetimi tek merkezde.</p>
 </div>
 </div>
-<div class="qg-hub-meta" id="qgMembersHubMeta"></div>
+
 </div>
 <div aria-label="Üyeler alt sekmeleri" class="qg-subnav" id="qgMembersSubnav" role="tablist">
 <button class="qg-subnav-btn active" data-pane="liste" onclick="qgMembersHubOpen('liste', this)"><i class="ti ti-list-details"></i><span>Genel Liste</span></button>
@@ -14997,10 +14997,6 @@ function qgRenderPuanArsivTable(liste){
       }
     };
   }
-  document.addEventListener('DOMContentLoaded',function(){
-    var meta=document.getElementById('qgMembersHubMeta');
-    if(meta){try{meta.textContent=(Array.isArray(window.members)?window.members.length:0)+' kayıt';}catch(e){meta.textContent='';}}
-  });
 })();
 </script>
 
@@ -15198,6 +15194,12 @@ body.qg-gorev-modal-open{overflow:hidden!important}
 #tab-gorev .gorev-progress-bar{background:linear-gradient(90deg,#8b5200,#f0b24c)!important;border-radius:99px!important}
 @media(max-width:820px){.qg-gorev-ozet{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.qg-gorev-ozet{grid-template-columns:1fr 1fr}.qg-gorev-stat{padding:11px;min-height:64px}.qg-gorev-stat-icon{width:32px;height:32px}.qg-gorev-stat b{font-size:17px}.qg-gorev-modal{padding:10px}.qg-gorev-modal-dialog{margin:2vh auto 20px}}
+/* Q-PANEL v3.7.1 — Görev Merkezi ikon hizalama fix */
+#tab-gorev .qg-gorev-stat-icon{display:flex!important;align-items:center!important;justify-content:center!important;line-height:1!important;padding:0!important;overflow:hidden!important}
+#tab-gorev .qg-gorev-stat-icon>i{display:block!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important;line-height:1!important;font-size:17px!important;position:static!important;transform:none!important}
+#tab-gorev .qg-gorev-stat-icon>i:before{display:block!important;line-height:1!important;margin:0!important}
+#tab-gorev .qg-unified-page-header h1>i{display:inline-flex!important;align-items:center!important;justify-content:center!important;line-height:1!important;vertical-align:-1px!important;margin-right:7px!important}
+#tab-gorev .qg-unified-page-header h1>i:before{display:block!important;line-height:1!important}
 </style>
 <script id="qg-stage5-v350-runtime">
 (function(){
