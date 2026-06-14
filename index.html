@@ -9,7 +9,7 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Q-Panel v3.0.3</title>
+    <title>Q-GANG Panel v3.0.4</title>
 
     <link
       rel="stylesheet"
@@ -2045,30 +2045,71 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
       }
       .qg-org-node {
         width: 156px;
-        min-height: 62px;
+        min-height: 66px;
         border: .5px solid #333;
-        border-radius: 11px;
-        padding: 9px 10px;
+        border-radius: 12px;
+        padding: 11px 12px 10px;
         text-align: center;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 2px;
-        box-shadow: 0 10px 24px rgba(0,0,0,.32);
+        gap: 3px;
+        box-shadow: 0 10px 24px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.025);
         position: relative;
         overflow: hidden;
+        isolation: isolate;
         animation: qgOrgDrop .36s ease both;
+        transform: translateY(0) scale(1);
+        transition: transform .22s cubic-bezier(.2,.75,.25,1), border-color .22s ease, box-shadow .22s ease, filter .22s ease;
       }
       .qg-org-node::before {
         content: '';
         position: absolute;
-        left: 0;
-        right: 0;
+        left: 10px;
+        right: 10px;
         top: 0;
         height: 2px;
+        border-radius: 0 0 999px 999px;
         background: currentColor;
-        opacity: .20;
+        opacity: .34;
+        box-shadow: 0 0 12px currentColor;
+      }
+      .qg-org-node::after {
+        content: '';
+        position: absolute;
+        inset: 5px;
+        border: 1px solid currentColor;
+        border-left-color: transparent;
+        border-right-color: transparent;
+        border-radius: 8px;
+        opacity: .08;
+        pointer-events: none;
+        z-index: -1;
+      }
+      .qg-org-node:hover {
+        transform: translateY(-5px) scale(1.035);
+        border-color: currentColor !important;
+        box-shadow: 0 18px 34px rgba(0,0,0,.48), 0 0 18px color-mix(in srgb, currentColor 20%, transparent), inset 0 1px 0 rgba(255,255,255,.06);
+        filter: brightness(1.08);
+        z-index: 5;
+      }
+      .qg-org-node-wrap::after {
+        content: '';
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        right: -3px;
+        bottom: -3px;
+        border-right: 1px solid currentColor;
+        border-bottom: 1px solid currentColor;
+        opacity: .16;
+        pointer-events: none;
+        transition: opacity .22s ease, transform .22s ease;
+      }
+      .qg-org-node-wrap:hover::after {
+        opacity: .42;
+        transform: translate(2px, 2px);
       }
       .qg-org-name {
         font-size: 12px;
@@ -2088,21 +2129,53 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
       .qg-org-chip { justify-content:center; }
       .qg-org-stage-lider .qg-org-node { width: 188px; min-height: 70px; border-radius: 12px; }
       .qg-org-stage-vekil .qg-org-node { width: 176px; min-height: 66px; }
-      .qg-org-stage-uye .qg-org-node,
+      .qg-org-stage-uye .qg-org-node {
+        width: 142px;
+        min-width: 142px;
+        min-height: 58px;
+        padding: 9px 12px 8px;
+        border-radius: 11px;
+        box-shadow: 0 8px 20px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.02);
+      }
       .qg-org-stage-gozlemci .qg-org-node {
         width: auto;
         min-width: 118px;
-        min-height: 40px;
+        min-height: 42px;
         padding: 7px 12px;
         border-radius: 999px;
         box-shadow: none;
-      }
-      .qg-org-stage-gozlemci .qg-org-node {
         opacity: .78;
       }
-      .qg-org-stage-uye .qg-org-rank,
+      .qg-org-stage-uye .qg-org-rank {
+        display: block;
+        margin-top: 1px;
+        font-size: 9.5px;
+        letter-spacing: .7px;
+        text-transform: uppercase;
+      }
       .qg-org-stage-gozlemci .qg-org-rank { display: none; }
-      .qg-org-stage-uye .qg-org-chip { margin-top: 3px; }
+      .qg-org-stage-uye .qg-org-chip { margin-top: 4px; }
+
+      /* Q-PANEL v3.0.4 — OrgChart interactive command cards */
+      .qg-org-stage-lider .qg-org-node,
+      .qg-org-stage-vekil .qg-org-node {
+        background-image: radial-gradient(circle at 50% -20%, rgba(255,255,255,.08), transparent 55%);
+      }
+      .qg-org-stage-kaptan .qg-org-node,
+      .qg-org-stage-tegmen .qg-org-node,
+      .qg-org-stage-uye .qg-org-node {
+        background-image: linear-gradient(145deg, rgba(255,255,255,.025), transparent 42%);
+      }
+      .qg-org-stage-lider .qg-org-node::after,
+      .qg-org-stage-vekil .qg-org-node::after {
+        inset: 6px;
+        opacity: .12;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .qg-org-node { transition: none !important; }
+        .qg-org-node:hover { transform: none !important; }
+      }
+
       .qg-org-footer {
         text-align: center;
         font-size: 10px;
