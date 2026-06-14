@@ -6924,7 +6924,7 @@ tbody tr:hover td{background:#181818!important;}
 <div class="qg-hub-icon"><i class="ti ti-users-group"></i></div>
 <div>
 <h1>Üyeler</h1>
-<p>Üye listesi, kariyer analizi, organizasyon şeması ve birim yönetimi tek merkezde.</p>
+<p>Üye listesi, kariyer analizi, organizasyon şeması ve birim yönetimi merkezi.</p>
 </div>
 </div>
 <div class="qg-hub-meta" id="qgMembersHubMeta"></div>
@@ -7179,7 +7179,7 @@ tbody tr:hover td{background:#181818!important;}
 <!-- ETKİNLİKLER -->
 <div class="tab" id="tab-etkinlik">
 <div class="qg-page-head qg-page-head-actions">
-<div><h1><i class="ti ti-calendar-event"></i> Etkinlikler</h1><p>Topluluk etkinliklerini oluştur, takip et ve puanlandır.</p></div>
+<div><h1><i class="ti ti-calendar-event"></i> Etkinlikler</h1><p>Oluşturulan ve puanlanan tüm etkinliklerimiz.</p></div>
 <div class="qg-page-head-tools">
 <div class="qg-view-toggle">
 <button id="btnListeGorunum" onclick="etkinlikGorunum('liste')" title="Liste görünümü"><i class="ti ti-list"></i></button>
@@ -15008,11 +15008,11 @@ function qgRenderPuanArsivTable(liste){
   function buildKatilim(){
     var tab=document.getElementById('tab-davet'); if(!tab||tab.dataset.qgHubReady)return;
     var kod=document.getElementById('davetKodList'), bekleyen=document.getElementById('davetIcerik'), arsiv=document.getElementById('basvuruArsivIcerik'), badge=document.getElementById('basvuruSayiBadge');
-    tab.innerHTML='<div class="qg-admin-hub">'+hubHeader('ti-user-plus','Katılım Yönetimi','Davet kodlarını, bekleyen başvuruları ve katılım arşivini tek merkezden yönet.','qgKatilimMeta')+
+    tab.innerHTML='<div class="qg-admin-hub">'+hubHeader('ti-user-plus','Katılım Yönetimi','Davet kodları, bekleyen başvurular ve katılım arşivi merkezi.','qgKatilimMeta')+
       subnav('qgKatilimSubnav',[["kodlar","ti-ticket","Davet Kodları","qgKatilimOpen"],["bekleyen","ti-user-check","Bekleyen Başvurular","qgKatilimOpen"],["arsiv","ti-archive","Başvuru Arşivi","qgKatilimOpen"]])+
-      '<section class="qg-admin-pane active" data-pane="kodlar">'+paneHead('ti-ticket','Davet Kodları','Yeni katılımcılar için tek kullanımlık veya kontrollü davet kodları üret.','<button class="btn btn-warn btn-sm" id="btnDavetEkle" onclick="reqDavetKoduUret()" style="display:none"><i class="ti ti-plus"></i> Kod Üret</button>')+'<div id="qgKodMount"></div></section>'+
-      '<section class="qg-admin-pane" data-pane="bekleyen">'+paneHead('ti-user-check','Bekleyen Başvurular','Yeni katılım taleplerini incele, onayla veya reddet.','<div id="qgBasvuruBadgeMount"></div>')+'<div id="qgBekleyenMount"></div></section>'+
-      '<section class="qg-admin-pane" data-pane="arsiv">'+paneHead('ti-archive','Başvuru Arşivi','Sonuçlandırılmış başvuruları rumuza göre ara ve incele.','<input id="arsivFiltreMekan" placeholder="Rumuz filtrele..." style="width:150px"><button class="btn btn-sm" onclick="renderBasvuruArsiv()"><i class="ti ti-search"></i> Ara</button>')+'<div id="qgArsivMount"></div></section></div>';
+      '<section class="qg-admin-pane active" data-pane="kodlar">'+paneHead('ti-ticket','Davet Kodları','Yeni katılımcılar için tek kullanımlık veya kontrollü davet kodları üretilebilir.','<button class="btn btn-warn btn-sm" id="btnDavetEkle" onclick="reqDavetKoduUret()" style="display:none"><i class="ti ti-plus"></i> Kod Üret</button>')+'<div id="qgKodMount"></div></section>'+
+      '<section class="qg-admin-pane" data-pane="bekleyen">'+paneHead('ti-user-check','Bekleyen Başvurular','Yeni katılım talepleri onay veya ret.','<div id="qgBasvuruBadgeMount"></div>')+'<div id="qgBekleyenMount"></div></section>'+
+      '<section class="qg-admin-pane" data-pane="arsiv">'+paneHead('ti-archive','Başvuru Arşivi','Sonuçlandırılmış başvurular.','<input id="arsivFiltreMekan" placeholder="Rumuz filtrele..." style="width:150px"><button class="btn btn-sm" onclick="renderBasvuruArsiv()"><i class="ti ti-search"></i> Ara</button>')+'<div id="qgArsivMount"></div></section></div>';
     if(kod)document.getElementById('qgKodMount').appendChild(kod); else document.getElementById('qgKodMount').innerHTML='<div id="davetKodList"></div>';
     if(bekleyen)document.getElementById('qgBekleyenMount').appendChild(bekleyen); else document.getElementById('qgBekleyenMount').innerHTML='<div id="davetIcerik"></div>';
     if(arsiv)document.getElementById('qgArsivMount').appendChild(arsiv); else document.getElementById('qgArsivMount').innerHTML='<div id="basvuruArsivIcerik"></div>';
@@ -15022,7 +15022,7 @@ function qgRenderPuanArsivTable(liste){
   function buildTuzuk(){
     var tab=document.getElementById('tab-tuzuk'); if(!tab||tab.dataset.qgHubReady)return;
     var btns=document.getElementById('tuzukBtnGroup'), view=document.getElementById('tuzukGorunum'), meta=document.getElementById('tuzukMeta'), editor=document.getElementById('tuzukEditor'), list=document.getElementById('disiplinList');
-    tab.innerHTML='<div class="qg-admin-hub">'+hubHeader('ti-license','Q-GANG TOPLULUK TÜZÜĞÜ','Topluluk esaslarını ve disiplin kayıtlarını tutarlı bir yönetim merkezinde takip et.')+
+    tab.innerHTML='<div class="qg-admin-hub">'+hubHeader('ti-license','Q-GANG TOPLULUK TÜZÜĞÜ','Topluluk esaslarını ve disiplin kayıtları.')+
       subnav('qgTuzukSubnav',[["tuzuk","ti-scroll","Topluluk Tüzüğü","qgTuzukHubOpen"],["disiplin","ti-gavel","Disiplin Kayıtları","qgTuzukHubOpen"]])+
       '<section class="qg-admin-pane active" data-pane="tuzuk">'+paneHead('ti-scroll','Q-GANG Topluluk Tüzüğü','Topluluğun temel ilkeleri, işleyişi ve bağlayıcı kuralları.','<div id="qgTuzukActions"></div>')+'<div id="qgTuzukView"></div><div id="qgTuzukMetaMount"></div><div id="qgTuzukEditorMount"></div></section>'+
       '<section class="qg-admin-pane" data-pane="disiplin">'+paneHead('ti-gavel','Disiplin Kayıtları','Aktif ve geçmiş disiplin işlemlerini yönet.','<button class="btn btn-danger btn-sm" id="btnDisiplinEkle" onclick="openModal(\'addDisiplin\')" style="display:none"><i class="ti ti-plus"></i> Kayıt Ekle</button>')+'<div id="qgDisiplinMount"></div></section></div>';
@@ -15036,7 +15036,7 @@ function qgRenderPuanArsivTable(liste){
   function buildSistem(){
     var tab=document.getElementById('tab-erisim'), logTab=document.getElementById('tab-log'); if(!tab||tab.dataset.qgHubReady)return;
     var board=document.getElementById('izinBoard'), logList=document.getElementById('logList');
-    tab.innerHTML='<div class="qg-admin-hub">'+hubHeader('ti-settings','Sistem Yönetimi','Erişim yetkilerini ve panel işlem geçmişini tek güvenlik merkezinden yönet.')+
+    tab.innerHTML='<div class="qg-admin-hub">'+hubHeader('ti-settings','Sistem Yönetimi','Erişim yetkilerini ve panel işlem geçmişi yönetimi.')+
       subnav('qgSistemSubnav',[["erisim","ti-shield-lock","Erişim Yönetimi","qgSistemHubOpen"],["log","ti-history","İşlem Logları","qgSistemHubOpen"]])+
       '<section class="qg-admin-pane active" data-pane="erisim">'+paneHead('ti-shield-lock','Erişim Yönetimi','Rütbe bazlı panel izinlerini güvenli biçimde düzenle.','<button class="btn btn-success btn-sm" onclick="izinKaydet()"><i class="ti ti-check"></i> Kaydet</button><button class="btn btn-sm" onclick="izinSifirla()"><i class="ti ti-refresh"></i> Sıfırla</button>')+'<div id="qgErisimMount"></div></section>'+
       '<section class="qg-admin-pane" data-pane="log">'+paneHead('ti-history','İşlem Logları','Panelde gerçekleşen yönetim işlemlerini denetle ve yedekle.','<button class="btn btn-success btn-sm" onclick="yedegiAl()"><i class="ti ti-download"></i> Yedek Al</button><button class="btn btn-danger btn-sm" id="btnLogTemizle" onclick="clearLog()" style="display:none"><i class="ti ti-trash"></i> Logu Temizle</button>')+'<div class="card" style="padding:0;overflow:hidden"><div id="qgLogMount"></div></div></section></div>';
@@ -15102,12 +15102,12 @@ function qgRenderPuanArsivTable(liste){
 (function(){
   'use strict';
   var meta={
-    etkinlik:['ti-calendar-event','Etkinlikler','Topluluk etkinliklerini oluştur, takip et ve puanlandır.'],
+    etkinlik:['ti-calendar-event','Etkinlikler','Oluşturulan topluluk etkinlikleri.'],
     gorev:['ti-checklist','Görevler','Görev tekliflerini, aktif görevleri ve tamamlanan çalışmaları tek merkezden yönet.'],
-    puan:['ti-star','Puanlar','Aktif sezonu, genel sıralamayı ve puan arşivini tek merkezden takip et.'],
-    hall:['ti-trophy','Şampiyonlar Salonu','Sezon şampiyonlarını, podyumları ve geçmiş başarıları görüntüle.'],
-    duyurular:['ti-speakerphone','Duyurular','Topluluk duyurularını yayınla ve arşivle.'],
-    butce:['ti-wallet','Bütçe','Gelir, gider ve topluluk fon hareketlerini yönet.']
+    puan:['ti-star','Puanlar','Aktif sezon, genel puan sıralaması ve puan arşiv takibi merkezimiz.'],
+    hall:['ti-trophy','Şampiyonlar Salonu','Geçmiş dönem sezon şampiyonlarına ayrılan bölüm.'],
+    duyurular:['ti-speakerphone','Duyurular','Yayınlanan topluluk duyurularımız.'],
+    butce:['ti-wallet','Bütçe','Gelir, gider ve topluluk fon hareketleri bölümü.']
   };
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function markup(key,actions){var m=meta[key];return '<div class="qg-hub-title-wrap"><div class="qg-hub-icon"><i class="ti '+m[0]+'"></i></div><div><h1>'+esc(m[1])+'</h1><p>'+esc(m[2])+'</p></div></div><div class="qg-hub-actions">'+(actions||'')+'</div>'; }
