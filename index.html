@@ -1,5 +1,10 @@
 <!doctype html>
-
+<!--
+  Q-PANEL v3.0.9 — CLEAN PRODUCTION BUILD
+  - Smooth Login → Q-GATE → Dashboard transition
+  - Consolidated source formatting and whitespace cleanup
+  - Runtime behavior preserved from v3.0.7
+-->
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
@@ -2600,6 +2605,7 @@ input[type="date"]:required:invalid {
      5. _showTabContent fns → kariyer: renderKariyer
      ═══════════════════════════════════════════════════════════════════ -->
 
+<!-- ══════════════ [1] CSS ══════════════ -->
 <style>
 /* Q-PANEL v2.9.0 Kariyer */
 .qk-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
@@ -6440,6 +6446,8 @@ tbody tr:hover td{background:#181818!important;}
 .qg-state.qg-error{color:#d78583;border-color:#4b2222;background:#170d0d;}
 .qg-state.qg-error::before{content:"\\ea06";color:var(--qg-red);}
 @keyframes qgSpin{to{transform:rotate(360deg)}}
+.qg-state:not(:empty):has(> *){min-height:0;display:block;padding:0;border:0;background:transparent;text-align:initial;color:inherit;}
+.qg-state:not(:empty):has(> *)::before{content:none!important;display:none!important;}
 .qfeed-bos,.qhall-yukluyor,.qhall-bos,.qg-unit-empty,.qk-stats-empty{border-radius:10px;color:var(--qg-muted)!important;}
 
 /* Modal tutarlılığı */
@@ -6467,7 +6475,7 @@ tbody tr:hover td{background:#181818!important;}
 
 </head>
   <body>
-
+    <!-- AUTH EKRANI -->
     <div id="authScreen" class="auth-screen">
       <div class="auth-box">
         <div class="auth-logo">
@@ -6499,6 +6507,7 @@ tbody tr:hover td{background:#181818!important;}
           </div>
         </div>
 
+        <!-- TAB -->
         <div class="auth-tabs">
           <div class="auth-tab active" onclick="authTab('giris')">
             Giriş Yap
@@ -6506,6 +6515,7 @@ tbody tr:hover td{background:#181818!important;}
           <div class="auth-tab" onclick="authTab('kayit')">Kayıt Ol</div>
         </div>
 
+        <!-- GİRİŞ FORMU -->
         <div id="girisForm">
           <div class="auth-error" id="girisHata"></div>
           <div class="auth-form-group">
@@ -6546,10 +6556,12 @@ tbody tr:hover td{background:#181818!important;}
           </button>
         </div>
 
+        <!-- KAYIT FORMU -->
         <div id="kayitForm" style="display: none">
           <div class="auth-error" id="kayitHata"></div>
           <div class="auth-success" id="kayitBasari"></div>
 
+          <!-- ADIM 1: Davet kodu -->
           <div class="kayit-adim active" id="adim1">
             <div class="adim-no">Adım 1 / 4 — Davet Kodu</div>
             <div class="auth-form-group">
@@ -6568,6 +6580,7 @@ tbody tr:hover td{background:#181818!important;}
             <button class="auth-btn" onclick="adimIleri(1)">DEVAM ET</button>
           </div>
 
+          <!-- ADIM 2: Kişisel bilgiler -->
           <div class="kayit-adim" id="adim2">
             <div class="adim-no">Adım 2 / 4 — Kimsin?</div>
             <div class="auth-form-group">
@@ -6618,6 +6631,7 @@ tbody tr:hover td{background:#181818!important;}
             </div>
           </div>
 
+          <!-- ADIM 3: Niyet ve durum -->
           <div class="kayit-adim" id="adim3">
             <div class="adim-no">Adım 3 / 4 — Sen Kimsin?</div>
             <div class="auth-form-group">
@@ -6678,6 +6692,7 @@ tbody tr:hover td{background:#181818!important;}
             </div>
           </div>
 
+          <!-- ADIM 4: Taahhüt ve şifre -->
           <div class="kayit-adim" id="adim4">
             <div class="adim-no">Adım 4 / 4 — Son Adım</div>
             <div class="auth-form-group">
@@ -6717,7 +6732,7 @@ tbody tr:hover td{background:#181818!important;}
                 border: 0.5px solid #333;
               "
             >
-
+              <!-- Tüzük metni -->
               <div style="margin-bottom: 10px">
                 <div
                   style="
@@ -6782,7 +6797,7 @@ tbody tr:hover td{background:#181818!important;}
                   kabul, beyan ve taahhüt ederim.
                 </label>
               </div>
-
+              <!-- KVKK metni -->
               <div
                 style="
                   margin-bottom: 10px;
@@ -6914,7 +6929,7 @@ tbody tr:hover td{background:#181818!important;}
     </div>
 
     <div class="panel" id="mainPanel" style="display: none">
-
+      <!-- DUYURU BANNER -->
       <div class="duyuru-banner" id="duyuruBanner">
         <div class="duyuru-inner">
           <div class="duyuru-label">📢 DUYURU</div>
@@ -6976,7 +6991,7 @@ tbody tr:hover td{background:#181818!important;}
       </div>
 
       <nav class="nav" id="mainNav">
-
+        <!-- Dashboard -->
         <div class="nav-item">
           <button
             class="nav-btn active"
@@ -6986,7 +7001,7 @@ tbody tr:hover td{background:#181818!important;}
             <i class="ti ti-chart-bar"></i> Dashboard
           </button>
         </div>
-
+        <!-- Topluluk dropdown -->
         <div class="nav-item">
           <button
             class="nav-btn"
@@ -7036,6 +7051,7 @@ tbody tr:hover td{background:#181818!important;}
           </div>
         </div>
 
+        <!-- Yönetim dropdown -->
         <div class="nav-item">
           <button
             class="nav-btn"
@@ -7096,6 +7112,7 @@ tbody tr:hover td{background:#181818!important;}
           </div>
         </div>
 
+        <!-- Log -->
         <div class="nav-item">
           <button class="nav-btn" onclick="showTab('log', this)" id="navLog">
             <i class="ti ti-history"></i> Log
@@ -7103,6 +7120,7 @@ tbody tr:hover td{background:#181818!important;}
         </div>
       </nav>
 
+      <!-- DASHBOARD -->
       <div id="tab-dashboard" class="tab active">
         <div class="stat-grid" id="statsGrid"></div>
         <div class="dash-grid">
@@ -7143,6 +7161,7 @@ tbody tr:hover td{background:#181818!important;}
         <div id="rutbeChart" style="display: none"></div>
       </div>
 
+      <!-- ÜYELER -->
       <div id="tab-members" class="tab">
         <div class="filters">
           <input
@@ -7198,13 +7217,16 @@ tbody tr:hover td{background:#181818!important;}
         </div>
       </div>
 
+      <!-- PUAN -->
       <div id="tab-puan" class="tab">
         <div id="puanMerkezi"></div>
       </div>
 
+      <!-- GÖREVLER -->
       <div id="tab-gorev" class="tab">
 <div id="gorevModul" style="padding:0">
 
+  <!-- Alt Sekmeler -->
   <div id="gorevAltSekmeler" style="
     display:flex;gap:6px;padding:12px 12px 0;overflow-x:auto;
     -webkit-overflow-scrolling:touch;scrollbar-width:none;
@@ -7214,13 +7236,15 @@ tbody tr:hover td{background:#181818!important;}
     <button class="gsekme-btn" onclick="gorevSekmeAc('gMuzakere',this)">🧭 Görev Merkezi</button>
     <button class="gsekme-btn" onclick="gorevSekmeAc('gTamamlandi',this)">✅ Tamamlananlar</button>
     <button class="gsekme-btn" onclick="gorevSekmeAc('gBenim',this)">📋 Görevlerim</button>
-
+    <!-- v2.8.4: Kategori yönetimi kaldırıldı; görevler Birimler sistemine bağlandı. -->
   </div>
 
+  <!-- Görevlerim -->
   <div id="gBenim" class="gsekme-icerik" style="display:none">
     <div id="gBenimListe" style="padding:12px"></div>
   </div>
 
+  <!-- Teklif Et — v2.5.0 Basit Üye Formu -->
   <div id="gTeklif" class="gsekme-icerik" style="display:block">
     <div style="padding:14px;max-width:620px;margin:0 auto">
       <div style="background:linear-gradient(180deg,#171717 0%,#101010 100%);border:0.5px solid #2b2b2b;border-radius:14px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.18)">
@@ -7271,22 +7295,27 @@ tbody tr:hover td{background:#181818!important;}
     </div>
   </div>
 
+  <!-- Müzakere -->
   <div id="gMuzakere" class="gsekme-icerik" style="display:none">
     <div id="gMuzakereListe" style="padding:12px"></div>
   </div>
 
+  <!-- Onay Bekleyen Aşamalar (Kaptan+) -->
   <div id="gOnay" class="gsekme-icerik" style="display:none">
     <div id="gOnayListe" style="padding:12px"></div>
   </div>
 
+  <!-- Tamamlananlar -->
   <div id="gTamamlandi" class="gsekme-icerik" style="display:none">
     <div id="gTamamlandiListe" style="padding:12px"></div>
   </div>
 
+  <!-- Kategori Kaptan Yönetimi (Lider) -->
   <div id="gKatYonet" class="gsekme-icerik" style="display:none">
     <div id="gKatYonetIcerik" style="padding:12px"></div>
   </div>
 
+  <!-- Görev Detay (overlay) -->
   <div id="gorevDetayOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;overflow-y:auto">
     <div id="gorevDetayIcerik" style="max-width:660px;margin:20px auto;padding:0 12px 40px"></div>
   </div>
@@ -7294,6 +7323,7 @@ tbody tr:hover td{background:#181818!important;}
 </div>
       </div>
 
+      <!-- ETKİNLİKLER -->
       <div id="tab-etkinlik" class="tab">
         <div
           style="
@@ -7360,10 +7390,12 @@ tbody tr:hover td{background:#181818!important;}
         <div id="takvimWrap" style="display: none"></div>
       </div>
 
+      <!-- BÜTÇE -->
       <div id="tab-butce" class="tab">
         <div id="butceContent"></div>
       </div>
 
+      <!-- DUYURULAR -->
       <div id="tab-duyurular" class="tab">
         <div
           style="
@@ -7388,6 +7420,7 @@ tbody tr:hover td{background:#181818!important;}
         <div id="duyuruList"></div>
       </div>
 
+      <!-- ERİŞİM YÖNETİMİ -->
       <div id="tab-erisim" class="tab">
         <div
           style="
@@ -7417,8 +7450,9 @@ tbody tr:hover td{background:#181818!important;}
         <div id="izinBoard"></div>
       </div>
 
+      <!-- DAVET & BAŞVURU -->
       <div id="tab-davet" class="tab">
-
+        <!-- DAVET KODLARI -->
         <div
           style="
             display: flex;
@@ -7445,6 +7479,7 @@ tbody tr:hover td{background:#181818!important;}
 
         <hr class="sep" />
 
+        <!-- BAŞVURULAR -->
         <div
           style="
             display: flex;
@@ -7462,6 +7497,7 @@ tbody tr:hover td{background:#181818!important;}
 
           <hr class="sep" style="margin: 1.5rem 0" />
 
+          <!-- BAŞVURU ARŞİVİ -->
           <div
             style="
               display: flex;
@@ -7505,8 +7541,9 @@ tbody tr:hover td{background:#181818!important;}
         </div>
       </div>
 
+      <!-- TÜZÜK + DİSİPLİN -->
       <div id="tab-tuzuk" class="tab">
-
+        <!-- TÜZÜK -->
         <div
           style="
             display: flex;
@@ -7523,6 +7560,7 @@ tbody tr:hover td{background:#181818!important;}
           <div id="tuzukBtnGroup"></div>
         </div>
 
+        <!-- Görüntüleme -->
         <div id="tuzukGorunum"></div>
         <div
           id="tuzukMeta"
@@ -7534,6 +7572,7 @@ tbody tr:hover td{background:#181818!important;}
           "
         ></div>
 
+        <!-- Düzenleme editörü -->
         <div id="tuzukEditor" style="display: none">
           <div style="font-size: 11px; color: #555; margin-bottom: 8px">
             Tüzük içeriğini HTML olarak düzenleyebilirsin. Mevcut format
@@ -7572,6 +7611,7 @@ tbody tr:hover td{background:#181818!important;}
 
         <hr class="sep" />
 
+        <!-- DİSİPLİN -->
         <div
           style="
             display: flex;
@@ -7597,6 +7637,9 @@ tbody tr:hover td{background:#181818!important;}
         <div id="disiplinList"></div>
       </div>
 
+      <!-- OYLAMALAR -->
+
+      <!-- BİRİMLER -->
       <div id="tab-birimler" class="tab">
         <div class="top-bar">
           <div>
@@ -7621,6 +7664,7 @@ tbody tr:hover td{background:#181818!important;}
         </div>
       </div>
 
+      <!-- ŞAMPİYONLAR SALONU -->
       <div id="tab-hall" class="tab">
         <div class="qhall-header">
           <h2>🏆 Şampiyonlar Salonu</h2>
@@ -7642,6 +7686,7 @@ tbody tr:hover td{background:#181818!important;}
     <button class="btn btn-sm" onclick="kariyerYenile()"><i class="ti ti-refresh"></i> Yenile</button>
   </div>
 
+  <!-- Dashboard: özet istatistikler -->
   <div class="qk-dash-grid">
     <div class="qk-dash-kart">
       <div class="kd-label">🏆 En Yüksek Kariyer</div>
@@ -7677,6 +7722,7 @@ tbody tr:hover td{background:#181818!important;}
     <div class="qk-inactive-list" id="kariyerEtkinliksizListe"><span class="qk-stats-empty">Yükleniyor...</span></div>
   </div>
 
+  <!-- Filtreler -->
   <div class="filters" style="margin-bottom:10px">
     <select id="kariyerRutbeFilter" onchange="kariyerFiltrele()">
       <option value="">Tüm rütbeler</option>
@@ -7693,6 +7739,7 @@ tbody tr:hover td{background:#181818!important;}
       style="padding:5px 9px;border-radius:8px;border:.5px solid #444;background:#1a1a1a;color:#d3d1c7;font-size:12px;width:140px">
   </div>
 
+  <!-- Tablo -->
   <div class="table-wrap">
     <table>
       <thead><tr>
@@ -7748,6 +7795,7 @@ tbody tr:hover td{background:#181818!important;}
     <div id="modalContainer"></div>
     <div class="cms-status" id="cmsStatus"></div>
 
+    <!-- ÇEVRİMİÇİ BAR -->
     <div class="online-bar" id="onlineBar" style="display: none">
       <div class="online-dot"></div>
       <span class="online-count" id="onlineCount">0</span>
@@ -14253,6 +14301,13 @@ async function eventResetPoints(eventId) {
 }
 </script>
 
+<!-- ═══════════════════════════════════════════════════
+     Q-PANEL v2.9.0 — Puan Arşivi UI Fix
+     - Üye arama kolaylaştırıldı
+     - Arşiv tablo görünümü okunur hale getirildi
+     - Gerekçe kısaltma yerine tam metin + tooltip
+     - Özet kartları eklendi
+     ═══════════════════════════════════════════════════ -->
 <style>
 .qp-arsiv-panel{
   background:#0f0f0f;
@@ -14518,6 +14573,13 @@ function qgRenderPuanArsivTable(liste){
 })();
 </script>
 
+<!-- ═══════════════════════════════════════════════════
+     Q-PANEL v3.0.1 — Auth Modernization + Unified Motion Fix
+     - Giriş/kayıt ekranı modernize edildi
+     - Tekil sekme/modal animasyon sistemi
+     - Q-GATE korundu ve tek kez çalışacak şekilde stabilize edildi
+     - Ses/müzik içermez
+     ═══════════════════════════════════════════════════ -->
 <style>
   :root {
     --qg-accent: #fac775;
@@ -14934,6 +14996,14 @@ function qgRenderPuanArsivTable(liste){
     } catch(e) {}
   }
 
+  window.__qgRenderedTabs = window.__qgRenderedTabs || {};
+  window.qgInvalidateTab = function(name){
+    if (!name) return;
+    delete window.__qgRenderedTabs[name];
+    var tab = document.getElementById('tab-' + name);
+    if (tab) tab.removeAttribute('data-qg-rendered');
+  };
+
   function stableShowTab(name){
     try {
       document.querySelectorAll('.tab').forEach(function(t){
@@ -14960,7 +15030,12 @@ function qgRenderPuanArsivTable(liste){
         kariyer: window.renderKariyer,
         log: window.renderLog
       };
-      if (typeof fns[name] === 'function') fns[name]();
+      var shouldRender = !window.__qgRenderedTabs[name];
+      if (shouldRender && typeof fns[name] === 'function') {
+        fns[name]();
+        window.__qgRenderedTabs[name] = true;
+        if (tab) tab.setAttribute('data-qg-rendered','1');
+      }
       if (tab) {
         requestAnimationFrame(function(){
           tab.classList.remove('tab-animating');
@@ -15204,10 +15279,12 @@ function qgRenderPuanArsivTable(liste){
   }
   function classifyState(el){
     if(!el||el.nodeType!==1||el.closest('button,option,select'))return;
+    el.classList.remove('qg-state','qg-loading','qg-empty','qg-error');
+    if(el.children && el.children.length)return;
     var txt=(el.textContent||'').trim();
     if(!txt||txt.length>90)return;
     if(/^Yükleniyor(?:\.\.\.)?$/i.test(txt)){el.classList.add('qg-state','qg-loading');return;}
-    if(/^(Kayıt bulunamadı|Sonuç bulunamadı|Henüz .* yok|Gösterilecek .* yok|Veri yok)/i.test(txt)){el.classList.add('qg-state','qg-empty');return;}
+    if(/^(Kayıt bulunamadı|Sonuç bulunamadı|Henüz .* yok|Gösterilecek .* yok|Veri yok|Bekleyen başvuru yok)/i.test(txt)){el.classList.add('qg-state','qg-empty');return;}
     if(/^(Hata|Yüklenemedi|İşlem başarısız)/i.test(txt)){el.classList.add('qg-state','qg-error');}
   }
   function enhance(root){
@@ -15219,8 +15296,7 @@ function qgRenderPuanArsivTable(liste){
     root.querySelectorAll('.card,.event-card,.duyuru-kart,.qfeed-kart,.qg-unit-card,.gorev-kart,.qk-dash-kart,.qk-stats-panel,.qhall-sezon-kart,.qhall-podyum-kart,.qhall-aktif-sezon-card').forEach(function(el){el.classList.add('qg-card-surface');});
     root.querySelectorAll('.event-card,.duyuru-kart,.qg-unit-card,.gorev-kart,.qhall-sezon-kart').forEach(function(el){el.classList.add('qg-hover-card');});
     root.querySelectorAll('.section-title').forEach(function(el){el.classList.add('qg-section-heading');});
-    root.querySelectorAll('.qfeed-bos,.qhall-yukluyor,.qhall-bos,.qg-unit-empty,.qk-stats-empty').forEach(classifyState);
-    root.querySelectorAll('div,span,td').forEach(classifyState);
+    root.querySelectorAll('.qg-state,.qfeed-bos,.qhall-yukluyor,.qhall-bos,.qg-unit-empty,.qk-stats-empty,.qp-empty,[data-qg-state]').forEach(classifyState);
   }
   function init(){
     enhance(document);
@@ -15229,7 +15305,7 @@ function qgRenderPuanArsivTable(liste){
       var queued=false;
       new MutationObserver(function(muts){
         if(queued)return; queued=true;
-        requestAnimationFrame(function(){queued=false;muts.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1){classifyState(n);enhance(n);}});});});
+        requestAnimationFrame(function(){queued=false;muts.forEach(function(m){if(m.target&&m.target.nodeType===1)classifyState(m.target);m.addedNodes.forEach(function(n){if(n.nodeType===1){classifyState(n);enhance(n);}});});});
       }).observe(target,{childList:true,subtree:true});
     }
   }
