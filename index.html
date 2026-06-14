@@ -6866,15 +6866,15 @@ tbody tr:hover td{background:#181818!important;}
 <i class="ti ti-currency-lira"></i> Bütçe
             </div>
 <div class="nav-dd-item" onclick="showTabDD('davet', 'ddYonetim', 'navYonetimBtn')">
-<i class="ti ti-mail-forward"></i> Davet &amp; Başvuru
+<i class="ti ti-user-plus"></i> Katılım Yönetimi
             </div>
 <div class="nav-dd-item" onclick="showTabDD('tuzuk', 'ddYonetim', 'navYonetimBtn')">
-<i class="ti ti-license"></i> Tüzük &amp; Disiplin
+<i class="ti ti-license"></i> Tüzük ve Disiplin
             </div>
 
 
 <div class="nav-dd-item" id="navErisimDD" onclick="showTabDD('erisim', 'ddYonetim', 'navYonetimBtn')" style="display: none">
-<i class="ti ti-shield-lock"></i> Erişimler
+<i class="ti ti-settings-shield"></i> Sistem Yönetimi
             </div>
 </div>
 </div>
@@ -14595,7 +14595,7 @@ function qgRenderPuanArsivTable(liste){
   };
 
   function stableShowTab(name){
-    // Q-PANEL v3.2.1 — true single-animation tab activation hotfix
+    // Q-PANEL v3.3.0 — true single-animation tab activation hotfix
     try {
       document.querySelectorAll('.tab').forEach(function(t){
         t.classList.remove('active','tab-animating','qg-tab-enter');
@@ -14817,7 +14817,7 @@ function qgRenderPuanArsivTable(liste){
   @media(max-width:600px){.qg-puan-season-banner,.qg-puan-board{margin-left:10px;margin-right:10px}.qg-puan-board-section{padding:11px}}
 
 /* ═══════════════════════════════════════════════════
-   Q-PANEL v3.2.1 — Başlık ve Eylem Alanları UI Hotfix
+   Q-PANEL v3.3.0 — Başlık ve Eylem Alanları UI Hotfix
    ═══════════════════════════════════════════════════ */
 #tab-members{overflow:visible}
 .qg-hub-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:18px 18px 15px;margin-bottom:10px;background:radial-gradient(circle at top left,rgba(250,199,117,.09),transparent 38%),linear-gradient(180deg,#151515,#101010);border:.5px solid #292929;border-radius:14px;box-shadow:0 14px 34px rgba(0,0,0,.20)}
@@ -14912,7 +14912,7 @@ function qgRenderPuanArsivTable(liste){
 </script>
 
 <script>
-/* Q-PANEL v3.2.1 — Üyeler Merkezi Controller */
+/* Q-PANEL v3.3.0 — Üyeler Merkezi Controller */
 (function(){
   var currentPane='liste';
   var rendered={};
@@ -14958,5 +14958,120 @@ function qgRenderPuanArsivTable(liste){
   });
 })();
 </script>
+
+<style id="qg-stage3-v330-style">
+/* ═══════════════════════════════════════════════════
+   Q-PANEL v3.3.0 — Aşama 3 Yönetim Merkezleri
+   ═══════════════════════════════════════════════════ */
+.qg-admin-hub{display:flex;flex-direction:column;gap:10px}
+.qg-admin-hub .qg-hub-header{margin-bottom:0}
+.qg-admin-subnav{display:flex;gap:7px;flex-wrap:wrap;padding:7px;background:#101010;border:.5px solid #292929;border-radius:12px}
+.qg-admin-subnav-btn{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:7px 12px;border:.5px solid #333;border-radius:9px;background:#151515;color:#777;font-size:11px;font-weight:700;cursor:pointer;transition:border-color .18s ease,background .18s ease,color .18s ease,transform .18s ease}
+.qg-admin-subnav-btn:hover{color:#d8d5ca;border-color:#555;transform:translateY(-1px)}
+.qg-admin-subnav-btn.active{background:linear-gradient(180deg,#3a2200,#251600);border-color:#9a6109;color:#fac775;box-shadow:inset 0 0 0 .5px rgba(250,199,117,.18)}
+.qg-admin-pane{display:none;min-height:180px;padding:14px;background:#101010;border:.5px solid #282828;border-radius:13px;animation:qgHubPaneIn .22s ease both}
+.qg-admin-pane.active{display:block}
+.qg-admin-pane-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;padding-bottom:10px;border-bottom:.5px solid #252525}
+.qg-admin-pane-title{display:flex;align-items:center;gap:8px;color:#d8d5ca;font-size:13px;font-weight:800}
+.qg-admin-pane-desc{margin-top:3px;color:#666;font-size:11px;font-weight:400}
+.qg-admin-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.qg-admin-pane .sep{margin:14px 0}
+#tab-log{display:none!important}
+#tab-davet.qg-page>.qg-page-head,#tab-tuzuk.qg-page>.qg-page-head,#tab-erisim.qg-page>.qg-page-head{display:none!important}
+@media(max-width:680px){.qg-admin-subnav{display:grid;grid-template-columns:1fr 1fr}.qg-admin-subnav-btn{justify-content:center;padding:7px 8px}.qg-admin-pane{padding:10px}.qg-admin-pane-head{align-items:flex-start}.qg-admin-actions{width:100%}.qg-admin-actions .btn{flex:1}}
+</style>
+<script id="qg-stage3-v330-runtime">
+(function(){
+  'use strict';
+  var states={katilim:'kodlar',tuzuk:'tuzuk',sistem:'erisim'};
+  function esc(s){return String(s==null?'':s).replace(/[&<>\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c];});}
+  function hubHeader(icon,title,desc,metaId){
+    return '<div class="qg-hub-header"><div class="qg-hub-title-wrap"><div class="qg-hub-icon"><i class="ti '+icon+'"></i></div><div><h1>'+esc(title)+'</h1><p>'+esc(desc)+'</p></div></div>'+(metaId?'<div class="qg-hub-meta" id="'+metaId+'"></div>':'')+'</div>';
+  }
+  function subnav(id,items){
+    return '<div class="qg-admin-subnav" id="'+id+'" role="tablist">'+items.map(function(x,i){return '<button class="qg-admin-subnav-btn'+(i===0?' active':'')+'" data-pane="'+x[0]+'" onclick="'+x[3]+'(\''+x[0]+'\',this)"><i class="ti '+x[1]+'"></i><span>'+esc(x[2])+'</span></button>';}).join('')+'</div>';
+  }
+  function paneHead(icon,title,desc,actions){return '<div class="qg-admin-pane-head"><div><div class="qg-admin-pane-title"><i class="ti '+icon+'"></i>'+esc(title)+'</div><div class="qg-admin-pane-desc">'+esc(desc)+'</div></div><div class="qg-admin-actions">'+(actions||'')+'</div></div>';}
+  function setPane(rootId,navId,name){
+    document.querySelectorAll('#'+rootId+' .qg-admin-pane').forEach(function(p){p.classList.toggle('active',p.getAttribute('data-pane')===name);});
+    document.querySelectorAll('#'+navId+' .qg-admin-subnav-btn').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-pane')===name);});
+  }
+  function buildKatilim(){
+    var tab=document.getElementById('tab-davet'); if(!tab||tab.dataset.qgHubReady)return;
+    var kod=document.getElementById('davetKodList'), bekleyen=document.getElementById('davetIcerik'), arsiv=document.getElementById('basvuruArsivIcerik'), badge=document.getElementById('basvuruSayiBadge');
+    tab.innerHTML='<div class="qg-admin-hub">'+hubHeader('ti-user-plus','Katılım Yönetimi','Davet kodlarını, bekleyen başvuruları ve katılım arşivini tek merkezden yönet.','qgKatilimMeta')+
+      subnav('qgKatilimSubnav',[["kodlar","ti-ticket","Davet Kodları","qgKatilimOpen"],["bekleyen","ti-user-check","Bekleyen Başvurular","qgKatilimOpen"],["arsiv","ti-archive","Başvuru Arşivi","qgKatilimOpen"]])+
+      '<section class="qg-admin-pane active" data-pane="kodlar">'+paneHead('ti-ticket','Davet Kodları','Yeni katılımcılar için tek kullanımlık veya kontrollü davet kodları üret.','<button class="btn btn-warn btn-sm" id="btnDavetEkle" onclick="reqDavetKoduUret()" style="display:none"><i class="ti ti-plus"></i> Kod Üret</button>')+'<div id="qgKodMount"></div></section>'+
+      '<section class="qg-admin-pane" data-pane="bekleyen">'+paneHead('ti-user-check','Bekleyen Başvurular','Yeni katılım taleplerini incele, onayla veya reddet.','<div id="qgBasvuruBadgeMount"></div>')+'<div id="qgBekleyenMount"></div></section>'+
+      '<section class="qg-admin-pane" data-pane="arsiv">'+paneHead('ti-archive','Başvuru Arşivi','Sonuçlandırılmış başvuruları rumuza göre ara ve incele.','<input id="arsivFiltreMekan" placeholder="Rumuz filtrele..." style="width:150px"><button class="btn btn-sm" onclick="renderBasvuruArsiv()"><i class="ti ti-search"></i> Ara</button>')+'<div id="qgArsivMount"></div></section></div>';
+    if(kod)document.getElementById('qgKodMount').appendChild(kod); else document.getElementById('qgKodMount').innerHTML='<div id="davetKodList"></div>';
+    if(bekleyen)document.getElementById('qgBekleyenMount').appendChild(bekleyen); else document.getElementById('qgBekleyenMount').innerHTML='<div id="davetIcerik"></div>';
+    if(arsiv)document.getElementById('qgArsivMount').appendChild(arsiv); else document.getElementById('qgArsivMount').innerHTML='<div id="basvuruArsivIcerik"></div>';
+    if(badge)document.getElementById('qgBasvuruBadgeMount').appendChild(badge);
+    tab.dataset.qgHubReady='1';
+  }
+  function buildTuzuk(){
+    var tab=document.getElementById('tab-tuzuk'); if(!tab||tab.dataset.qgHubReady)return;
+    var btns=document.getElementById('tuzukBtnGroup'), view=document.getElementById('tuzukGorunum'), meta=document.getElementById('tuzukMeta'), editor=document.getElementById('tuzukEditor'), list=document.getElementById('disiplinList');
+    tab.innerHTML='<div class="qg-admin-hub">'+hubHeader('ti-license','Q-GANG TOPLULUK TÜZÜĞÜ','Topluluk esaslarını ve disiplin kayıtlarını tutarlı bir yönetim merkezinde takip et.')+
+      subnav('qgTuzukSubnav',[["tuzuk","ti-scroll","Topluluk Tüzüğü","qgTuzukHubOpen"],["disiplin","ti-gavel","Disiplin Kayıtları","qgTuzukHubOpen"]])+
+      '<section class="qg-admin-pane active" data-pane="tuzuk">'+paneHead('ti-scroll','Q-GANG Topluluk Tüzüğü','Topluluğun temel ilkeleri, işleyişi ve bağlayıcı kuralları.','<div id="qgTuzukActions"></div>')+'<div id="qgTuzukView"></div><div id="qgTuzukMetaMount"></div><div id="qgTuzukEditorMount"></div></section>'+
+      '<section class="qg-admin-pane" data-pane="disiplin">'+paneHead('ti-gavel','Disiplin Kayıtları','Aktif ve geçmiş disiplin işlemlerini yönet.','<button class="btn btn-danger btn-sm" id="btnDisiplinEkle" onclick="openModal(\'addDisiplin\')" style="display:none"><i class="ti ti-plus"></i> Kayıt Ekle</button>')+'<div id="qgDisiplinMount"></div></section></div>';
+    if(btns)document.getElementById('qgTuzukActions').appendChild(btns);
+    if(view)document.getElementById('qgTuzukView').appendChild(view); else document.getElementById('qgTuzukView').innerHTML='<div id="tuzukGorunum"></div>';
+    if(meta)document.getElementById('qgTuzukMetaMount').appendChild(meta);
+    if(editor)document.getElementById('qgTuzukEditorMount').appendChild(editor);
+    if(list)document.getElementById('qgDisiplinMount').appendChild(list); else document.getElementById('qgDisiplinMount').innerHTML='<div id="disiplinList"></div>';
+    tab.dataset.qgHubReady='1';
+  }
+  function buildSistem(){
+    var tab=document.getElementById('tab-erisim'), logTab=document.getElementById('tab-log'); if(!tab||tab.dataset.qgHubReady)return;
+    var board=document.getElementById('izinBoard'), logList=document.getElementById('logList');
+    tab.innerHTML='<div class="qg-admin-hub">'+hubHeader('ti-settings-shield','Sistem Yönetimi','Erişim yetkilerini ve panel işlem geçmişini tek güvenlik merkezinden yönet.')+
+      subnav('qgSistemSubnav',[["erisim","ti-shield-lock","Erişim Yönetimi","qgSistemHubOpen"],["log","ti-history","İşlem Logları","qgSistemHubOpen"]])+
+      '<section class="qg-admin-pane active" data-pane="erisim">'+paneHead('ti-shield-lock','Erişim Yönetimi','Rütbe bazlı panel izinlerini güvenli biçimde düzenle.','<button class="btn btn-success btn-sm" onclick="izinKaydet()"><i class="ti ti-check"></i> Kaydet</button><button class="btn btn-sm" onclick="izinSifirla()"><i class="ti ti-refresh"></i> Sıfırla</button>')+'<div id="qgErisimMount"></div></section>'+
+      '<section class="qg-admin-pane" data-pane="log">'+paneHead('ti-history','İşlem Logları','Panelde gerçekleşen yönetim işlemlerini denetle ve yedekle.','<button class="btn btn-success btn-sm" onclick="yedegiAl()"><i class="ti ti-download"></i> Yedek Al</button><button class="btn btn-danger btn-sm" id="btnLogTemizle" onclick="clearLog()" style="display:none"><i class="ti ti-trash"></i> Logu Temizle</button>')+'<div class="card" style="padding:0;overflow:hidden"><div id="qgLogMount"></div></div></section></div>';
+    if(board)document.getElementById('qgErisimMount').appendChild(board); else document.getElementById('qgErisimMount').innerHTML='<div id="izinBoard"></div>';
+    if(logList)document.getElementById('qgLogMount').appendChild(logList); else document.getElementById('qgLogMount').innerHTML='<div id="logList" style="max-height:600px;overflow-y:auto"></div>';
+    if(logTab){logTab.innerHTML='';logTab.style.display='none';}
+    tab.dataset.qgHubReady='1';
+  }
+  window.qgKatilimOpen=function(name){states.katilim=name;setPane('tab-davet','qgKatilimSubnav',name);try{sessionStorage.setItem('qg_katilim_pane',name);}catch(e){} if(name==='arsiv'&&typeof renderBasvuruArsiv==='function')renderBasvuruArsiv();};
+  window.qgTuzukHubOpen=function(name){states.tuzuk=name;setPane('tab-tuzuk','qgTuzukSubnav',name);try{sessionStorage.setItem('qg_tuzuk_pane',name);}catch(e){} if(name==='tuzuk'&&typeof renderTuzuk==='function')renderTuzuk(); if(name==='disiplin'&&typeof renderDisiplin==='function')renderDisiplin();};
+  window.qgSistemHubOpen=function(name){states.sistem=name;setPane('tab-erisim','qgSistemSubnav',name);try{sessionStorage.setItem('qg_sistem_pane',name);}catch(e){} if(name==='erisim'&&typeof renderErisimBoard==='function')renderErisimBoard(); if(name==='log'&&typeof renderLog==='function')renderLog();};
+  function navFix(){
+    var navLog=document.getElementById('navLog'); if(navLog&&navLog.parentElement)navLog.parentElement.style.display='none';
+    var sys=document.getElementById('navErisimDD'); if(sys){sys.innerHTML='<i class="ti ti-settings-shield"></i> Sistem Yönetimi';sys.setAttribute('onclick',"showTabDD('erisim','ddYonetim','navYonetimBtn')");}
+  }
+  function visibilityFix(){
+    var lider=window.SESSION&&SESSION.rol==='Lider';
+    var canE=lider||(typeof izin==='function'&&izin('erisimYonet'));
+    var canL=lider||(typeof izin==='function'&&izin('logGor'));
+    var sys=document.getElementById('navErisimDD'); if(sys)sys.style.display=(canE||canL)?'':'none';
+    var eBtn=document.querySelector('#qgSistemSubnav [data-pane="erisim"]'); if(eBtn)eBtn.style.display=canE?'':'none';
+    var lBtn=document.querySelector('#qgSistemSubnav [data-pane="log"]'); if(lBtn)lBtn.style.display=canL?'':'none';
+    if(!canE&&canL&&states.sistem==='erisim')window.qgSistemHubOpen('log');
+  }
+  function init(){
+    buildKatilim();buildTuzuk();buildSistem();navFix();
+    try{states.katilim=sessionStorage.getItem('qg_katilim_pane')||'kodlar';states.tuzuk=sessionStorage.getItem('qg_tuzuk_pane')||'tuzuk';states.sistem=sessionStorage.getItem('qg_sistem_pane')||'erisim';}catch(e){}
+    window.qgKatilimOpen(states.katilim);window.qgTuzukHubOpen(states.tuzuk);window.qgSistemHubOpen(states.sistem);visibilityFix();
+    var oldShow=window._showTabContent||_showTabContent;
+    window._showTabContent=function(name){
+      var sub=null;
+      if(name==='log'){name='erisim';sub='log';}
+      oldShow(name);
+      if(name==='davet')setTimeout(function(){qgKatilimOpen(states.katilim);},0);
+      if(name==='tuzuk')setTimeout(function(){qgTuzukHubOpen(states.tuzuk);},0);
+      if(name==='erisim')setTimeout(function(){qgSistemHubOpen(sub||states.sistem);visibilityFix();},0);
+    };
+    var oldUi=window.uiAyarla||null;
+    if(oldUi){window.uiAyarla=function(){var r=oldUi.apply(this,arguments);setTimeout(visibilityFix,0);return r;};}
+    var meta=document.getElementById('qgKatilimMeta');if(meta)meta.textContent='3 yönetim alanı';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+
 </body>
 </html>
