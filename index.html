@@ -1492,6 +1492,7 @@
 .deadline-yakin  { color: #fb923c; }
 .deadline-ok     { color: #888780; }
 
+
 /* Q-PANEL v2.8.4.2 — Birimler Command Cabinet */
 .qg-unit-grid {
   display: grid;
@@ -1627,6 +1628,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
+
       /* ═══════════════════════════════════════════════════
          Q-FEED v2.6.0 — Karargâh Akışı
          ═══════════════════════════════════════════════════ */
@@ -1721,6 +1723,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
         line-height: 1.4;
       }
 
+
       /* ═══════════════════════════════════════════════════
          Q-HALL v2.7.9 — Şampiyonlar Salonu
          ═══════════════════════════════════════════════════ */
@@ -1803,6 +1806,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
           padding: 5px 6px;
         }
       }
+
 
       /* ═══════════════════════════════════════════════════
          Q-GÖREV v2.2.4 — UI polish + org chart duty sync
@@ -2324,6 +2328,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
         filter: grayscale(.25);
       }
 
+
       /* ═══════════════════════════════════════════════════
          Q-PANEL v2.3.1 — Stage workflow/date/comment UX
          ═══════════════════════════════════════════════════ */
@@ -2368,6 +2373,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
       .qg-stage-points-note.warn { color: #fb923c; }
       .qg-stage-points-note.err { color: #f87171; }
 
+
 /* Q-PANEL v2.4.0 — forced visible date calendar indicator */
 input[type="date"],
 .form-input[type="date"] {
@@ -2403,6 +2409,7 @@ input[type="date"]:required:invalid {
   position: relative;
   z-index: 2;
 }
+
 
       /* ═══════════════════════════════════════════════════
          Q-PANEL v2.5.1 — Görevler Tek Ekran UI
@@ -2487,6 +2494,7 @@ input[type="date"]:required:invalid {
         .qg-gorev-chip-row { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
         .qg-gorev-single-ui .gsekme-btn { white-space: nowrap; }
       }
+
 
 /* ═══════════════════════════════════════════════════
    Q-HALL v2.7.9 — UI Polish
@@ -2597,6 +2605,7 @@ input[type="date"]:required:invalid {
 .qhall-aktif-name { flex:1; color:#d3d1c7; font-weight:600; font-size:13px; }
 .qhall-aktif-puan { color:#fac775; font-weight:700; font-size:12px; }
 
+
 /* Q-PANEL v2.9.0 Kariyer */
  bloğuna ekle
      2. NAV: ddTopluluk dropdown'una ekle (comment açılacak)
@@ -2659,6 +2668,7 @@ input[type="date"]:required:invalid {
   .qk-dash-grid { grid-template-columns:1fr; }
   .qk-skor-grid { grid-template-columns:1fr; }
 }
+
 
 /* ═══════════════════════════════════════════════════
    Q-PANEL v2.9.0 — Kariyer + Tenzil + Event Workflow
@@ -3492,6 +3502,7 @@ input[type="date"]:required:invalid {
           .join("");
       }
 
+
       // v2.7.9 Permission helper fallback
       if (typeof window.myPermissions === "undefined") window.myPermissions = {};
       var myPermissions = window.myPermissions || {};
@@ -4173,7 +4184,7 @@ async function panelAc(rumuz, rol) {
             i.classList.remove("active");
           });
         // Sekmeyi goster
-        _showTabContent(name);
+        (window._showTabContent || _showTabContent)(name);
       }
 
       function showTab(name, btn) {
@@ -4184,7 +4195,7 @@ async function panelAc(rumuz, rol) {
           d.classList.remove("show");
         });
         if (btn) btn.classList.add("active");
-        _showTabContent(name);
+        (window._showTabContent || _showTabContent)(name);
       }
 
       function _showTabContent(name) {
@@ -6343,6 +6354,7 @@ async function panelAc(rumuz, rol) {
 @media(max-width:680px){#tab-kariyer th:nth-child(4),#tab-kariyer td:nth-child(4),#tab-kariyer th:nth-child(7),#tab-kariyer td:nth-child(7){display:none}#tab-kariyer th:nth-child(2),#tab-kariyer td:nth-child(2){width:18%}#tab-kariyer th:nth-child(9),#tab-kariyer td:nth-child(9){width:27%}.qk-mini-score .bar{width:30px}}
 @media(max-width:600px){.qk-dash-grid{grid-template-columns:1fr!important}}
 </style>
+
 
 <style id="qg-design-system-v310">
 /* ═══════════════════════════════════════════════════════════════
@@ -10943,6 +10955,7 @@ function gorevSekmeAc(id, btn) {
   else if (id === 'gKatYonet') renderKategoriYonetimi();
 }
 
+
 function renderTeklifVarsaInit() {
   try {
     var active = document.querySelector('#gorevAltSekmeler .gsekme-btn.gsekme-aktif');
@@ -11492,6 +11505,7 @@ function qgEnsureSimpleGorevTeklifReadyV2801() {
 }
 try { window.qgEnsureSimpleGorevTeklifReadyV2801 = qgEnsureSimpleGorevTeklifReadyV2801; } catch(e) {}
 
+
 // ─────────────────────────────────────
 // Teklif gönder — v2.5.0 Basit Üye Akışı
 // ─────────────────────────────────────
@@ -11746,6 +11760,7 @@ function gorevDurumEtiket(d) {
             arsiv:'📦 Arşiv', taslak:'📝 Taslak' };
   return m[d] || d;
 }
+
 
 function asamaDurumStyle(d) {
   var m = {
@@ -12140,6 +12155,7 @@ function deadlineStyle(dl) {
   })();
 </script>
 
+
 <script>
 (function(){
   // ═══════════════════════════════════════════════════
@@ -12419,6 +12435,7 @@ function deadlineStyle(dl) {
   qgFixGorevTabsV240();
 })();
 </script>
+
 
 <style>
 /* Q-PANEL v2.4.1 — calendar icon click + task center hotfix */
@@ -12721,6 +12738,7 @@ function deadlineStyle(dl) {
 })();
 </script>
 
+
 <style>
 /* Q-PANEL v2.4.2 — final visibility/dashboard/date picker hotfix */
 .qg-date-wrap { position: relative !important; display: block !important; width: 100% !important; }
@@ -12959,6 +12977,7 @@ function deadlineStyle(dl) {
 })();
 </script>
 
+
 <script>
 (function(){
   // Q-PANEL v2.4.3 — final access-gate safety patch
@@ -13087,6 +13106,7 @@ function deadlineStyle(dl) {
 })();
 </script>
 
+
 <script>
 (function(){
   // Q-PANEL v2.4.4 — Görev Merkezi 403 noise/access safety patch
@@ -13127,6 +13147,7 @@ function deadlineStyle(dl) {
   }
 })();
 </script>
+
 
 <style>
 /* Q-PANEL v2.4.5 — dashboard/task/date/progress cleanup */
@@ -13416,6 +13437,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 })();
 </script>
 
+
 <script>
 // ═══════════════════════════════════════════════════════════════════
 // Q-FEED v2.6.0 — Karargâh Akışı Frontend
@@ -13550,6 +13572,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 })();
 </script>
 
+
 <script>
 (function(){
   'use strict';
@@ -13681,6 +13704,7 @@ async function renderQHall() {
   el.innerHTML = html;
 }
 
+
   window.renderQHall = renderQHall;
 
   window.qhallDetayAc = async function qhallDetayAc(sezonId) {
@@ -13736,6 +13760,7 @@ async function renderQHall() {
   };
 })();
 </script>
+
 
 <script>
 
@@ -14149,6 +14174,7 @@ async function kariyerYenile() {
 
 </script>
 
+
 <script>
 // ═══════════════════════════════════════════════════
 // Q-PANEL v2.9.0 — Event Workflow API Helpers
@@ -14300,6 +14326,7 @@ async function eventResetPoints(eventId) {
   );
 }
 </script>
+
 
 <!-- ═══════════════════════════════════════════════════
      Q-PANEL v2.9.0 — Puan Arşivi UI Fix
@@ -14572,6 +14599,7 @@ function qgRenderPuanArsivTable(liste){
   setTimeout(qgPuanArsivUpgradeToolbar, 300);
 })();
 </script>
+
 
 <!-- ═══════════════════════════════════════════════════
      Q-PANEL v3.0.1 — Auth Modernization + Unified Motion Fix
@@ -15005,6 +15033,7 @@ function qgRenderPuanArsivTable(liste){
   };
 
   function stableShowTab(name){
+    // Q-PANEL v3.1.2 — single-pass tab activation hotfix
     try {
       document.querySelectorAll('.tab').forEach(function(t){
         t.classList.remove('active','tab-animating','qg-tab-enter');
@@ -15037,12 +15066,11 @@ function qgRenderPuanArsivTable(liste){
         if (tab) tab.setAttribute('data-qg-rendered','1');
       }
       if (tab) {
-        requestAnimationFrame(function(){
-          tab.classList.remove('tab-animating');
-          void tab.offsetWidth;
-          tab.classList.add('qg-tab-enter');
-          setTimeout(function(){ try { tab.classList.remove('qg-tab-enter'); } catch(e){} }, 420);
-        });
+        // Hotfix v3.1.2: Sekme önce görünür olup sonra yeniden animasyona girmesin.
+        // Animasyon sınıfı görünürlükten önce eklenir; böylece tek ve kesintisiz giriş oluşur.
+        tab.classList.remove('tab-animating','qg-tab-enter');
+        tab.classList.add('qg-tab-enter');
+        setTimeout(function(){ try { tab.classList.remove('qg-tab-enter'); } catch(e){} }, 420);
       }
     } catch(e) {
       try { if (typeof window.__qgOriginalShowTabContent === 'function') window.__qgOriginalShowTabContent(name); } catch(_) {}
@@ -15122,6 +15150,7 @@ function qgRenderPuanArsivTable(liste){
   setTimeout(function(){ try { if (window.SESSION && SESSION.rol) window.qgApplyRankTheme(SESSION.rol); } catch(e){} }, 600);
 })();
 </script>
+
 
 <style id="qg-puan-v305-style">
   .qg-puan-shell{background:linear-gradient(180deg,#111,#0b0b0b);border:.5px solid #2b2b2b;border-radius:16px;overflow:hidden;box-shadow:0 18px 44px rgba(0,0,0,.22)}
@@ -15219,6 +15248,7 @@ function qgRenderPuanArsivTable(liste){
   // Varsayılan: Vekilharç açık, Kaptan ve altı kapalı; Lider her zaman tam yetkilidir.
 })();
 </script>
+
 
 <style id="qg-puan-v307-style">
   .qg-puan-season-banner{margin:14px 18px 0;padding:13px 15px;border:.5px solid #6b4b16;border-radius:12px;background:linear-gradient(135deg,rgba(250,199,117,.12),rgba(133,79,11,.06)),#13110d;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
