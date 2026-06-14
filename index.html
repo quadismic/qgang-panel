@@ -14695,7 +14695,7 @@ function qgRenderPuanArsivTable(liste){
   }
 
   /* Tekil sekme animasyonu — içerik çocuklarına ayrı giriş animasyonu bindirmez. */
-  .tab.qg-tab-enter { animation:qgTabEnterStable .32s cubic-bezier(.16,.84,.32,1) both; transform-origin:50% 0; }
+  .tab.qg-tab-enter { animation:none !important; transform:none !important; filter:none !important; }
   @keyframes qgTabEnterStable { from { opacity:0; transform:translateY(10px) scale(.992); filter:blur(1.5px); } to { opacity:1; transform:translateY(0) scale(1); filter:blur(0); } }
 
   /* Tekil modal animasyonu */
@@ -15033,7 +15033,7 @@ function qgRenderPuanArsivTable(liste){
   };
 
   function stableShowTab(name){
-    // Q-PANEL v3.1.2 — single-pass tab activation hotfix
+    // Q-PANEL v3.1.3 — true single-animation tab activation hotfix
     try {
       document.querySelectorAll('.tab').forEach(function(t){
         t.classList.remove('active','tab-animating','qg-tab-enter');
@@ -15066,11 +15066,9 @@ function qgRenderPuanArsivTable(liste){
         if (tab) tab.setAttribute('data-qg-rendered','1');
       }
       if (tab) {
-        // Hotfix v3.1.2: Sekme önce görünür olup sonra yeniden animasyona girmesin.
-        // Animasyon sınıfı görünürlükten önce eklenir; böylece tek ve kesintisiz giriş oluşur.
+        // Hotfix v3.1.3: Aynı sekmede iki ayrı giriş animasyonu çalışmasın.
+        // `.tab.active` zaten tek giriş animasyonunu uygular; qg-tab-enter eklenmez.
         tab.classList.remove('tab-animating','qg-tab-enter');
-        tab.classList.add('qg-tab-enter');
-        setTimeout(function(){ try { tab.classList.remove('qg-tab-enter'); } catch(e){} }, 420);
       }
     } catch(e) {
       try { if (typeof window.__qgOriginalShowTabContent === 'function') window.__qgOriginalShowTabContent(name); } catch(_) {}
