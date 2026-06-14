@@ -3525,11 +3525,7 @@ async function panelAc(rumuz, rol) {
 
         // Veri henüz yüklenmediyse çek
         if (!members.length || !events.length) {
-          cmsStatusGoster(
-            "loading",
-            '<i class="ti ti-loader"></i> Veriler yükleniyor...',
-          );
-
+          
       // ═══════════════════════════════════════════════════
       // MODULE 99 — INIT / BOOTSTRAP
       // ═══════════════════════════════════════════════════
@@ -6874,7 +6870,7 @@ tbody tr:hover td{background:#181818!important;}
 
 
 <div class="nav-dd-item" id="navErisimDD" onclick="showTabDD('erisim', 'ddYonetim', 'navYonetimBtn')" style="display: none">
-<i class="ti ti-settings-shield"></i> Sistem Yönetimi
+<i class="ti ti-settings"></i> Sistem Yönetimi
             </div>
 </div>
 </div>
@@ -14595,7 +14591,7 @@ function qgRenderPuanArsivTable(liste){
   };
 
   function stableShowTab(name){
-    // Q-PANEL v3.3.0 — true single-animation tab activation hotfix
+    // Q-PANEL v3.4.0 — true single-animation tab activation hotfix
     try {
       document.querySelectorAll('.tab').forEach(function(t){
         t.classList.remove('active','tab-animating','qg-tab-enter');
@@ -14817,7 +14813,7 @@ function qgRenderPuanArsivTable(liste){
   @media(max-width:600px){.qg-puan-season-banner,.qg-puan-board{margin-left:10px;margin-right:10px}.qg-puan-board-section{padding:11px}}
 
 /* ═══════════════════════════════════════════════════
-   Q-PANEL v3.3.0 — Başlık ve Eylem Alanları UI Hotfix
+   Q-PANEL v3.4.0 — Başlık ve Eylem Alanları UI Hotfix
    ═══════════════════════════════════════════════════ */
 #tab-members{overflow:visible}
 .qg-hub-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:18px 18px 15px;margin-bottom:10px;background:radial-gradient(circle at top left,rgba(250,199,117,.09),transparent 38%),linear-gradient(180deg,#151515,#101010);border:.5px solid #292929;border-radius:14px;box-shadow:0 14px 34px rgba(0,0,0,.20)}
@@ -14912,7 +14908,7 @@ function qgRenderPuanArsivTable(liste){
 </script>
 
 <script>
-/* Q-PANEL v3.3.0 — Üyeler Merkezi Controller */
+/* Q-PANEL v3.4.0 — Üyeler Merkezi Controller */
 (function(){
   var currentPane='liste';
   var rendered={};
@@ -14961,7 +14957,7 @@ function qgRenderPuanArsivTable(liste){
 
 <style id="qg-stage3-v330-style">
 /* ═══════════════════════════════════════════════════
-   Q-PANEL v3.3.0 — Aşama 3 Yönetim Merkezleri
+   Q-PANEL v3.4.0 — Aşama 3 Yönetim Merkezleri
    ═══════════════════════════════════════════════════ */
 .qg-admin-hub{display:flex;flex-direction:column;gap:10px}
 .qg-admin-hub .qg-hub-header{margin-bottom:0}
@@ -15027,7 +15023,7 @@ function qgRenderPuanArsivTable(liste){
   function buildSistem(){
     var tab=document.getElementById('tab-erisim'), logTab=document.getElementById('tab-log'); if(!tab||tab.dataset.qgHubReady)return;
     var board=document.getElementById('izinBoard'), logList=document.getElementById('logList');
-    tab.innerHTML='<div class="qg-admin-hub">'+hubHeader('ti-settings-shield','Sistem Yönetimi','Erişim yetkilerini ve panel işlem geçmişini tek güvenlik merkezinden yönet.')+
+    tab.innerHTML='<div class="qg-admin-hub">'+hubHeader('ti-settings','Sistem Yönetimi','Erişim yetkilerini ve panel işlem geçmişini tek güvenlik merkezinden yönet.')+
       subnav('qgSistemSubnav',[["erisim","ti-shield-lock","Erişim Yönetimi","qgSistemHubOpen"],["log","ti-history","İşlem Logları","qgSistemHubOpen"]])+
       '<section class="qg-admin-pane active" data-pane="erisim">'+paneHead('ti-shield-lock','Erişim Yönetimi','Rütbe bazlı panel izinlerini güvenli biçimde düzenle.','<button class="btn btn-success btn-sm" onclick="izinKaydet()"><i class="ti ti-check"></i> Kaydet</button><button class="btn btn-sm" onclick="izinSifirla()"><i class="ti ti-refresh"></i> Sıfırla</button>')+'<div id="qgErisimMount"></div></section>'+
       '<section class="qg-admin-pane" data-pane="log">'+paneHead('ti-history','İşlem Logları','Panelde gerçekleşen yönetim işlemlerini denetle ve yedekle.','<button class="btn btn-success btn-sm" onclick="yedegiAl()"><i class="ti ti-download"></i> Yedek Al</button><button class="btn btn-danger btn-sm" id="btnLogTemizle" onclick="clearLog()" style="display:none"><i class="ti ti-trash"></i> Logu Temizle</button>')+'<div class="card" style="padding:0;overflow:hidden"><div id="qgLogMount"></div></div></section></div>';
@@ -15041,7 +15037,7 @@ function qgRenderPuanArsivTable(liste){
   window.qgSistemHubOpen=function(name){states.sistem=name;setPane('tab-erisim','qgSistemSubnav',name);try{sessionStorage.setItem('qg_sistem_pane',name);}catch(e){} if(name==='erisim'&&typeof renderErisimBoard==='function')renderErisimBoard(); if(name==='log'&&typeof renderLog==='function')renderLog();};
   function navFix(){
     var navLog=document.getElementById('navLog'); if(navLog&&navLog.parentElement)navLog.parentElement.style.display='none';
-    var sys=document.getElementById('navErisimDD'); if(sys){sys.innerHTML='<i class="ti ti-settings-shield"></i> Sistem Yönetimi';sys.setAttribute('onclick',"showTabDD('erisim','ddYonetim','navYonetimBtn')");}
+    var sys=document.getElementById('navErisimDD'); if(sys){sys.innerHTML='<i class="ti ti-settings"></i> Sistem Yönetimi';sys.setAttribute('onclick',"showTabDD('erisim','ddYonetim','navYonetimBtn')");}
   }
   function visibilityFix(){
     var lider=window.SESSION&&SESSION.rol==='Lider';
@@ -15068,6 +15064,58 @@ function qgRenderPuanArsivTable(liste){
     var oldUi=window.uiAyarla||null;
     if(oldUi){window.uiAyarla=function(){var r=oldUi.apply(this,arguments);setTimeout(visibilityFix,0);return r;};}
     var meta=document.getElementById('qgKatilimMeta');if(meta)meta.textContent='3 yönetim alanı';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+
+<style id="qg-stage4-v340-style">
+/* Q-PANEL v3.4.0 — Birleşik ikonlu sayfa başlıkları */
+.qg-unified-page-header{margin-bottom:12px!important}
+.qg-unified-page-header .qg-hub-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap;margin-left:auto}
+.qg-unified-page-header .qg-hub-actions:empty{display:none}
+.qg-unified-page-header .qg-view-toggle{margin:0}
+/* Alt sekmeleri yönetim merkezleriyle aynı görsel dilde tut */
+#qgMembersSubnav,.qg-subnav,#gorevAltSekmeler{display:flex!important;gap:7px!important;align-items:center!important;flex-wrap:wrap!important;padding:7px!important;margin-bottom:12px!important;background:#101010!important;border:.5px solid #292929!important;border-radius:12px!important;overflow-x:auto!important}
+#qgMembersSubnav .qg-subnav-btn,.qg-subnav .qg-subnav-btn,#gorevAltSekmeler .gsekme-btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;min-height:34px!important;padding:7px 12px!important;border:.5px solid #333!important;border-radius:9px!important;background:#151515!important;color:#777!important;font-size:11px!important;font-weight:700!important;white-space:nowrap!important;cursor:pointer!important;transition:border-color .18s ease,background .18s ease,color .18s ease,transform .18s ease!important}
+#qgMembersSubnav .qg-subnav-btn:hover,.qg-subnav .qg-subnav-btn:hover,#gorevAltSekmeler .gsekme-btn:hover{color:#d8d5ca!important;border-color:#555!important;transform:translateY(-1px)!important}
+#qgMembersSubnav .qg-subnav-btn.active,.qg-subnav .qg-subnav-btn.active,#gorevAltSekmeler .gsekme-btn.gsekme-aktif{background:linear-gradient(180deg,#3a2200,#251600)!important;border-color:#9a6109!important;color:#fac775!important;box-shadow:inset 0 0 0 .5px rgba(250,199,117,.18)!important}
+/* Yeni üst başlık geldiğinde eski güçlü başlıkların tekrarını gizle */
+#tab-puan.qg-v340-ready #puanMerkezi>.qg-puan-shell>.qg-puan-head{display:none!important}
+#tab-hall.qg-v340-ready>.qhall-header{display:none!important}
+@media(max-width:700px){.qg-unified-page-header{align-items:stretch!important}.qg-unified-page-header .qg-hub-actions{width:100%;justify-content:flex-start;margin-left:0}.qg-unified-page-header .qg-hub-actions .btn{flex:1}.qg-unified-page-header .qg-view-toggle{flex:0 0 auto}#gorevAltSekmeler{flex-wrap:nowrap!important}}
+</style>
+<script id="qg-stage4-v340-runtime">
+(function(){
+  'use strict';
+  var meta={
+    etkinlik:['ti-calendar-event','Etkinlikler','Topluluk etkinliklerini oluştur, takip et ve puanlandır.'],
+    gorev:['ti-checklist','Görevler','Görev tekliflerini, aktif görevleri ve tamamlanan çalışmaları tek merkezden yönet.'],
+    puan:['ti-star','Puanlar','Aktif sezonu, genel sıralamayı ve puan arşivini tek merkezden takip et.'],
+    hall:['ti-trophy','Şampiyonlar Salonu','Sezon şampiyonlarını, podyumları ve geçmiş başarıları görüntüle.'],
+    duyurular:['ti-speakerphone','Duyurular','Topluluk duyurularını yayınla ve arşivle.'],
+    butce:['ti-wallet','Bütçe','Gelir, gider ve topluluk fon hareketlerini yönet.']
+  };
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function markup(key,actions){var m=meta[key];return '<div class="qg-hub-title-wrap"><div class="qg-hub-icon"><i class="ti '+m[0]+'"></i></div><div><h1>'+esc(m[1])+'</h1><p>'+esc(m[2])+'</p></div></div><div class="qg-hub-actions">'+(actions||'')+'</div>'; }
+  function upgrade(key){
+    var tab=document.getElementById('tab-'+key),m=meta[key]; if(!tab||!m)return null;
+    var head=tab.querySelector(':scope > .qg-unified-page-header'); if(head)return head;
+    var old=tab.querySelector(':scope > .qg-page-head');
+    var actions='';
+    if(old){var tools=old.querySelector('.qg-page-head-tools');if(tools)actions=tools.innerHTML;old.className='qg-hub-header qg-unified-page-header';old.innerHTML=markup(key,actions);head=old;}
+    else{head=document.createElement('div');head.className='qg-hub-header qg-unified-page-header';head.innerHTML=markup(key,'');tab.insertBefore(head,tab.firstChild);}
+    tab.classList.add('qg-v340-ready'); return head;
+  }
+  function syncDynamic(){
+    var ph=upgrade('puan');
+    if(ph){var pbtn=document.querySelector('#tab-puan .qg-puan-head button');var pa=ph.querySelector('.qg-hub-actions');if(pbtn&&pa&&!pa.contains(pbtn))pa.appendChild(pbtn);}
+    upgrade('hall');
+    ['etkinlik','gorev','duyurular','butce'].forEach(upgrade);
+  }
+  function init(){syncDynamic();
+    var target=document.getElementById('mainPanel')||document.body,queued=false;
+    if(window.MutationObserver&&target)new MutationObserver(function(){if(queued)return;queued=true;requestAnimationFrame(function(){queued=false;syncDynamic();});}).observe(target,{childList:true,subtree:true});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
