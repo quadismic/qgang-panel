@@ -1,11 +1,5 @@
 <!DOCTYPE html>
 
-<!--
-  Q-PANEL v3.6.1 — v3.5 STABLE BASE + ETKİNLİKLER MERKEZİ
-  - Smooth Login → Q-GATE → Dashboard transition
-  - Consolidated source formatting and whitespace cleanup
-  - Runtime behavior preserved from v3.0.7
--->
 <html lang="tr">
 <head>
 <meta charset="utf-8"/>
@@ -13,7 +7,7 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<title>Q-GANG Panel v3.6.1</title>
+<title>Q-GANG Panel v3.7.2</title>
 <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet"/>
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet"/>
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet"/>
@@ -3995,20 +3989,32 @@ async function panelAc(rumuz, rol) {
       function fmtDate(s) {
         if (!s) return "-";
         try {
-          var p = s.split("-");
-          return p[2] + "." + p[1] + "." + p[0];
-        } catch (e) {
-          return s;
-        }
+          var raw = String(s).trim();
+          if (!raw) return "-";
+          // Zaten TR formatındaysa koru: 16.06.2026 veya 16.06.2026 23:21
+          var tr = raw.match(/^(\d{2})\.(\d{2})\.(\d{4})/);
+          if (tr) return tr[1] + "." + tr[2] + "." + tr[3];
+
+          // ISO veya YYYY-MM-DD formatını tek tip göster: GÜN.AY.YIL
+          var iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+          if (iso) return iso[3] + "." + iso[2] + "." + iso[1];
+
+          var d = new Date(raw);
+          if (!isNaN(d.getTime())) {
+            return d.toLocaleDateString("tr-TR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              timeZone: "Europe/Istanbul"
+            });
+          }
+        } catch (e) {}
+        return String(s);
       }
       function fmtDateTime(s) {
-        if (!s) return "-";
-        const d = new Date(s);
-        return (
-          d.toLocaleDateString("tr-TR") +
-          " " +
-          d.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })
-        );
+        // Panel standardı: tüm görünür tarihler GÜN.AY.YIL.
+        // Teknik saat bilgisi veritabanında kalabilir; ekranda sade gösterilir.
+        return fmtDate(s);
       }
       function daysUntil(s) {
         if (!s) return null;
@@ -4830,7 +4836,7 @@ async function panelAc(rumuz, rol) {
           const turClass = a.tur === "etkinlik" ? "badge-mavi" : "badge-sari";
           tr.innerHTML =
             '<td style="font-size:11px;color:#555">' +
-            (a.tarih || "—") +
+            fmtDate(a.tarih || a.createdAt || "—") +
             "</td>" +
             '<td style="font-size:12px">' +
             (a.rumuz || "") +
@@ -14773,7 +14779,7 @@ function qgRenderPuanArsivTable(liste){
   function qgPuanYetkili(){ return !!(SESSION && (SESSION.rol === 'Lider' || (typeof izin === 'function' && izin('puanManuelYonet')))); }
   function qgEsc(v){ return String(v == null ? '' : v).replace(/[&<>\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c];}); }
   function qgPuanTurLabel(t){ t=String(t||'manuel').toLowerCase(); if(t==='gorev_asama') return 'Görev'; if(t==='gorev') return 'Görev'; if(t==='etkinlik') return 'Etkinlik'; if(t==='geri_alma') return 'Geri alma'; if(t==='duzeltme') return 'Düzeltme'; return 'Manuel'; }
-  function qgPuanDate(v){ if(!v) return '—'; try { var d=new Date(v); if(!isNaN(d.getTime())) return d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}); }catch(e){} return qgEsc(v); }
+  function qgPuanDate(v){ if(!v) return '—'; return fmtDate(v); }
   window.qgPuanArsivCache = [];
 
   window.renderPuan = function(){
@@ -15194,7 +15200,7 @@ body.qg-gorev-modal-open{overflow:hidden!important}
 #tab-gorev .gorev-progress-bar{background:linear-gradient(90deg,#8b5200,#f0b24c)!important;border-radius:99px!important}
 @media(max-width:820px){.qg-gorev-ozet{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.qg-gorev-ozet{grid-template-columns:1fr 1fr}.qg-gorev-stat{padding:11px;min-height:64px}.qg-gorev-stat-icon{width:32px;height:32px}.qg-gorev-stat b{font-size:17px}.qg-gorev-modal{padding:10px}.qg-gorev-modal-dialog{margin:2vh auto 20px}}
-/* Q-PANEL v3.7.1 — Görev Merkezi ikon hizalama fix */
+/* Q-PANEL v3.7.2 — Görev Merkezi ikon hizalama fix */
 #tab-gorev .qg-gorev-stat-icon{display:flex!important;align-items:center!important;justify-content:center!important;line-height:1!important;padding:0!important;overflow:hidden!important}
 #tab-gorev .qg-gorev-stat-icon>i{display:block!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important;line-height:1!important;font-size:17px!important;position:static!important;transform:none!important}
 #tab-gorev .qg-gorev-stat-icon>i:before{display:block!important;line-height:1!important;margin:0!important}
