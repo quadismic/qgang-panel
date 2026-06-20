@@ -7,7 +7,7 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<title>Q-GANG Panel v3.7.2</title>
+<title>Q-GANG Panel v3.7.3</title>
 <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet"/>
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet"/>
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet"/>
@@ -14169,7 +14169,7 @@ function qgRenderPuanArsivTable(liste){
     var typeClass = qgPuanArsivTypeClass(a.tur);
     var gerekce = a.gerekce || "—";
     return '<tr>' +
-      '<td class="qp-date">' + htmlEsc(a.tarih || "—") + '</td>' +
+      '<td class="qp-date">' + htmlEsc(fmtDate(a.tarih || a.createdAt || "—")) + '</td>' +
       '<td class="qp-user">' + htmlEsc(a.rumuz || "") + '</td>' +
       '<td class="qp-amount ' + amountClass + '">' + sign + miktar + '</td>' +
       '<td class="qp-reason" title="' + htmlEsc(gerekce) + '">' + htmlEsc(gerekce) + '</td>' +
@@ -15160,7 +15160,17 @@ function qgRenderPuanArsivTable(liste){
   }
   function syncDynamic(){
     var ph=upgrade('puan');
-    if(ph){var pbtn=document.querySelector('#tab-puan .qg-puan-head button');var pa=ph.querySelector('.qg-hub-actions');if(pbtn&&pa&&!pa.contains(pbtn))pa.appendChild(pbtn);}
+    if(ph){
+      var pbtn=document.querySelector('#tab-puan .qg-puan-head button');
+      var pa=ph.querySelector('.qg-hub-actions');
+      if(pbtn&&pa){
+        // Puan ekranı her render edildiğinde yeni bir buton üretir.
+        // Unified header'a taşırken eskisini temizlemezsek Manuel Puan İşlemi butonu çoğalır.
+        pa.querySelectorAll('[data-qg-action="manuel-puan"]').forEach(function(x){x.remove();});
+        pbtn.setAttribute('data-qg-action','manuel-puan');
+        pa.appendChild(pbtn);
+      }
+    }
     upgrade('hall');
     ['etkinlik','gorev','duyurular','butce'].forEach(upgrade);
   }
@@ -15200,7 +15210,7 @@ body.qg-gorev-modal-open{overflow:hidden!important}
 #tab-gorev .gorev-progress-bar{background:linear-gradient(90deg,#8b5200,#f0b24c)!important;border-radius:99px!important}
 @media(max-width:820px){.qg-gorev-ozet{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.qg-gorev-ozet{grid-template-columns:1fr 1fr}.qg-gorev-stat{padding:11px;min-height:64px}.qg-gorev-stat-icon{width:32px;height:32px}.qg-gorev-stat b{font-size:17px}.qg-gorev-modal{padding:10px}.qg-gorev-modal-dialog{margin:2vh auto 20px}}
-/* Q-PANEL v3.7.2 — Görev Merkezi ikon hizalama fix */
+/* Q-PANEL v3.7.3 — Görev Merkezi ikon hizalama fix */
 #tab-gorev .qg-gorev-stat-icon{display:flex!important;align-items:center!important;justify-content:center!important;line-height:1!important;padding:0!important;overflow:hidden!important}
 #tab-gorev .qg-gorev-stat-icon>i{display:block!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important;line-height:1!important;font-size:17px!important;position:static!important;transform:none!important}
 #tab-gorev .qg-gorev-stat-icon>i:before{display:block!important;line-height:1!important;margin:0!important}
