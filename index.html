@@ -13,7 +13,7 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<title>Q-GANG Panel v3.7.5</title>
+<title>Q-GANG Panel v3.7.6</title>
 <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet"/>
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet"/>
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet"/>
@@ -14915,6 +14915,7 @@ function qgRenderPuanArsivTable(liste){
   .qg-puan-shell{background:linear-gradient(180deg,#111,#0b0b0b);border:.5px solid #2b2b2b;border-radius:16px;overflow:hidden;box-shadow:0 18px 44px rgba(0,0,0,.22)}
   .qg-puan-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:18px 18px 14px;background:radial-gradient(circle at top left,rgba(250,199,117,.09),transparent 38%),#121212;border-bottom:.5px solid #292929;flex-wrap:wrap}
   .qg-puan-head h2{font-size:20px;color:#e3e0d6;margin:0 0 4px;font-weight:800;letter-spacing:.2px}.qg-puan-head p{font-size:12px;color:#6f6b62;margin:0;line-height:1.5}
+  .qg-puan-head-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
   .qg-puan-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;padding:14px 18px;border-bottom:.5px solid #202020;background:#0e0e0e}
   .qg-puan-stat{background:#151515;border:.5px solid #292929;border-radius:11px;padding:11px 12px;min-width:0}.qg-puan-stat span{display:block;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:#555;margin-bottom:5px}.qg-puan-stat b{display:block;font-size:15px;color:#d3d1c7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.qg-puan-stat.gold b{color:#fac775}
   .qg-puan-section{padding:16px 18px;border-bottom:.5px solid #202020}.qg-puan-section:last-child{border-bottom:none}.qg-puan-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap}.qg-puan-section-title{font-size:13px;font-weight:750;color:#d3d1c7;display:flex;align-items:center;gap:7px}
@@ -14941,7 +14942,7 @@ function qgRenderPuanArsivTable(liste){
     root.innerHTML=''
       +'<div class="qg-puan-shell">'
       +'<div class="qg-puan-head"><div><h2><i class="ti ti-star"></i> Puanlar</h2><p>Genel sıralama, manuel işlemler ve puan arşivi tek merkezde.</p></div>'
-      +'<button class="btn btn-warn" onclick="qgPuanModalAc()"><i class="ti ti-adjustments-plus"></i> Manuel Puan İşlemi</button></div>'
+      +'<div class="qg-puan-head-actions"><button class="btn btn-warn" onclick="qgPuanModalAc()"><i class="ti ti-adjustments-plus"></i> Manuel Puan İşlemi</button><button class="btn btn-sm" onclick="qgPuanArsivdenSenkronize()"><i class="ti ti-refresh"></i> Arşivden Senkronize Et</button></div></div>'
       +'<div class="qg-puan-summary">'
       +'<div class="qg-puan-stat gold"><span>Sıralama Lideri</span><b>'+qgEsc(lider.rumuz||'—')+'</b></div>'
       +'<div class="qg-puan-stat"><span>Lider Puanı</span><b>'+Number(lider.puan||0)+' P</b></div>'
@@ -14986,6 +14987,36 @@ function qgRenderPuanArsivTable(liste){
         var result=data.result||data; if(result.member){var idx=members.findIndex(function(x){return String(x._id||x.id)===String(result.member._id||result.member.id);});if(idx>-1)members[idx]=Object.assign({},members[idx],result.member,{id:result.member._id||result.member.id});}
         closeModal(); cmsStatusGoster('ok','<i class="ti ti-check"></i> Puan işlemi tamamlandı'); renderPuan(); renderDashboard();
       }catch(e){cmsStatusGoster('err','<i class="ti ti-alert-circle"></i> '+qgEsc(e.message||'İşlem başarısız')); if(btn){btn.disabled=false;btn.innerHTML='<i class="ti ti-check"></i> İşlemi Onayla';}}
+    });
+  };
+
+
+  window.qgPuanArsivdenSenkronize = async function(){
+    if(!qgPuanYetkili()){ cmsStatusGoster('err','<i class="ti ti-lock"></i> Bu işlem Vekilharç+ yetkisi gerektirir.'); return; }
+    confirm2('Puanları arşivden senkronize et','Puan Arşivi kayıtları esas alınarak üye listesindeki anlık puanlar yeniden hesaplanacak. Bu işlem Schizo gibi eski bozulmuş kayıtları onarır.',async function(){
+      var btn=document.getElementById('confirmOkBtn'); if(btn){btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i> Senkronize ediliyor...';}
+      try{
+        var data=await apiPost({action:'PUAN_RECALC_FROM_ARCHIVE',item:{}});
+        var result=data.result||data||{};
+        if(result.updated && result.updated.length){
+          result.updated.forEach(function(u){
+            var id=u._id||u.id;
+            var idx=(members||[]).findIndex(function(m){return String(m._id||m.id)===String(id) || String(m.rumuz||'').toLocaleLowerCase('tr-TR')===String(u.rumuz||'').toLocaleLowerCase('tr-TR');});
+            if(idx>-1) members[idx]=Object.assign({},members[idx],u,{id:u._id||u.id});
+          });
+        } else {
+          try{
+            var veri=await cmsOku();
+            if(veri && veri.members) members=veri.members.map(function(m){return Object.assign({},m,{id:m._id||m.id,katilimcilar:parseKat(m.katilimcilar)});});
+          }catch(e){}
+        }
+        closeModal();
+        cmsStatusGoster('ok','<i class="ti ti-check"></i> Puanlar arşivden senkronize edildi ('+(result.updatedCount||0)+' kayıt).');
+        renderPuan(); renderMembers(); renderDashboard();
+      }catch(e){
+        cmsStatusGoster('err','<i class="ti ti-alert-circle"></i> '+qgEsc(e.message||'Senkronizasyon başarısız'));
+        if(btn){btn.disabled=false;btn.innerHTML='Onayla';}
+      }
     });
   };
 
@@ -15044,7 +15075,7 @@ function qgRenderPuanArsivTable(liste){
   window.qgAktifSezonYukle=async function(){var label=document.getElementById('qgAktifSezonName'),meta=document.getElementById('qgAktifSezonMeta'),list=document.getElementById('qgAktifSezonListe');try{var d=await apiPost({action:'AKTIF_SEZON_GET',item:{}});var r=d.result||d;window.qgAktifSezonData=r;window.qhallAktifSezon=r;var sv=seasonView(r);if(label)label.textContent=sv.emoji+' '+sv.name;if(meta)meta.textContent=(r.baslangicTarihi&&r.bitisTarihi)?'Sezon dönemi: '+String(r.baslangicTarihi).slice(0,10)+' — '+String(r.bitisTarihi).slice(0,10):'Aktif sezon puanları';qgPuanBoardsRender();}catch(e){if(label)label.textContent='🗓️ Aktif Sezon';if(meta)meta.textContent='Sezon bilgisi alınamadı';if(list)list.innerHTML='<div style="font-size:12px;color:#e24b4a;padding:12px">Aktif sezon puanları yüklenemedi.</div>';}};
   var oldArchive=window.qgPuanArsivRender;
   window.qgPuanArsivRender=function(){var el=document.getElementById('arsivListe');if(!el)return;var ara=String((document.getElementById('puanArsivAra')||{}).value||'').toLocaleLowerCase('tr-TR');var tur=String((document.getElementById('puanArsivTur')||{}).value||'').toLowerCase();var list=(window.qgPuanArsivCache||[]).filter(function(a){var at=String(a.tur||a.tip||'manuel').toLowerCase();var n=at==='gorev_asama'?'gorev':at;if(tur&&n!==tur)return false;if(ara&&!(String(a.rumuz||'')+' '+String(a.gerekce||'')).toLocaleLowerCase('tr-TR').includes(ara))return false;return true;});var size=10,pages=Math.max(1,Math.ceil(list.length/size)),page=Math.min(Math.max(1,window.qgPuanPages.arsiv||1),pages);window.qgPuanPages.arsiv=page;var cut=list.slice((page-1)*size,page*size);if(!cut.length){el.innerHTML='<div style="font-size:12px;color:#555;padding:12px">Kayıt bulunamadı.</div>';return;}var h='<div class="table-wrap"><table><thead><tr><th>Tarih</th><th>Üye</th><th>Miktar</th><th>Gerekçe</th><th>Tür</th><th>İşleyen</th></tr></thead><tbody>';cut.forEach(function(a){var n=Number(a.miktar||a.puan||0),at=String(a.tur||a.tip||'manuel').toLowerCase();h+='<tr><td style="font-size:11px;color:#777">'+(typeof qgPuanDate==='function'?qgPuanDate(a.tarih||a.createdAt):esc(a.tarih||a.createdAt||'—'))+'</td><td>'+esc(a.rumuz||'—')+'</td><td style="font-weight:700;color:'+(n>=0?'#4caf7d':'#e24b4a')+'">'+(n>0?'+':'')+n+'</td><td style="color:#999">'+esc(a.gerekce||'—')+'</td><td>'+esc(typeof qgPuanTurLabel==='function'?qgPuanTurLabel(at):at)+'</td><td style="font-size:11px;color:#666">'+esc(a.ekleyen||a.onaylayanRumuz||'—')+'</td></tr>';});el.innerHTML=h+'</tbody></table></div>'+pager(list.length,page,'arsiv');};
-  window.renderPuan=function(){var root=document.getElementById('puanMerkezi');if(!root)return;window.qgPuanPages={aktif:1,genel:1,arsiv:1};root.innerHTML='<div class="qg-puan-shell"><div class="qg-puan-head"><div><h2><i class="ti ti-star"></i> Puanlar</h2><p>Aktif sezon, genel sıralama ve puan arşivi tek merkezde.</p></div>'+(canManual()?'<button class="btn btn-warn" onclick="qgPuanModalAc()"><i class="ti ti-adjustments-plus"></i> Manuel Puan İşlemi</button>':'')+'</div><div class="qg-puan-season-banner"><div><div class="qg-puan-season-label">Aktif Sezon</div><div id="qgAktifSezonName" class="qg-puan-season-name">☀️ 2026 Yaz</div><div id="qgAktifSezonMeta" class="qg-puan-season-meta">Sezon bilgisi yükleniyor...</div></div></div><div class="qg-puan-board"><div class="qg-puan-board-section"><div class="qg-puan-board-title"><span><i class="ti ti-sun"></i> Aktif Sezon Puan Listesi</span><span class="qg-puan-board-sub">Bu sezon kazanılan puanlar</span></div><div id="qgAktifSezonListe"><div style="font-size:12px;color:#555;padding:12px">Yükleniyor...</div></div></div><div class="qg-puan-board-divider"><span>Genel sıralama</span></div><div class="qg-puan-board-section"><div class="qg-puan-board-title"><span><i class="ti ti-trophy"></i> Genel Puan Listesi</span><span class="qg-puan-board-sub">Toplam üye puanları</span></div><div id="qgGenelPuanListe"></div></div></div><div class="qg-puan-section"><div class="qg-puan-section-head"><div class="qg-puan-section-title"><i class="ti ti-history"></i> Puan Arşivi</div><span style="font-size:10px;color:#555">10 kayıt / sayfa</span></div><div class="qg-puan-archive-filters"><input id="puanArsivAra" class="qg-full-mobile" placeholder="Üye veya gerekçe ara..." oninput="qgPuanPages.arsiv=1;qgPuanArsivRender()"><select id="arsivFilter" onchange="qgPuanPages.arsiv=1;qgPuanArsivYukle()"><option value="">Tüm üyeler</option>'+(members||[]).slice().sort(function(a,b){return String(a.rumuz).localeCompare(String(b.rumuz),'tr');}).map(function(m){return '<option value="'+esc(m.rumuz)+'">'+esc(m.rumuz)+'</option>';}).join('')+'</select><select id="puanArsivTur" onchange="qgPuanPages.arsiv=1;qgPuanArsivRender()"><option value="">Tüm işlem türleri</option><option value="manuel">Manuel</option><option value="etkinlik">Etkinlik</option><option value="gorev">Görev</option><option value="geri_alma">Geri alma</option></select><button class="btn btn-sm" onclick="qgPuanArsivYukle()"><i class="ti ti-refresh"></i> Yenile</button></div><div id="arsivListe"><div style="font-size:12px;color:#555;padding:10px">Yükleniyor...</div></div></div></div>';qgPuanBoardsRender();qgAktifSezonYukle();qgPuanArsivYukle();};
+  window.renderPuan=function(){var root=document.getElementById('puanMerkezi');if(!root)return;window.qgPuanPages={aktif:1,genel:1,arsiv:1};root.innerHTML='<div class="qg-puan-shell"><div class="qg-puan-head"><div><h2><i class="ti ti-star"></i> Puanlar</h2><p>Aktif sezon, genel sıralama ve puan arşivi tek merkezde.</p></div>'+(canManual()?'<div class="qg-puan-head-actions"><button class="btn btn-warn" onclick="qgPuanModalAc()"><i class="ti ti-adjustments-plus"></i> Manuel Puan İşlemi</button><button class="btn btn-sm" onclick="qgPuanArsivdenSenkronize()"><i class="ti ti-refresh"></i> Arşivden Senkronize Et</button></div>':'')+'</div><div class="qg-puan-season-banner"><div><div class="qg-puan-season-label">Aktif Sezon</div><div id="qgAktifSezonName" class="qg-puan-season-name">☀️ 2026 Yaz</div><div id="qgAktifSezonMeta" class="qg-puan-season-meta">Sezon bilgisi yükleniyor...</div></div></div><div class="qg-puan-board"><div class="qg-puan-board-section"><div class="qg-puan-board-title"><span><i class="ti ti-sun"></i> Aktif Sezon Puan Listesi</span><span class="qg-puan-board-sub">Bu sezon kazanılan puanlar</span></div><div id="qgAktifSezonListe"><div style="font-size:12px;color:#555;padding:12px">Yükleniyor...</div></div></div><div class="qg-puan-board-divider"><span>Genel sıralama</span></div><div class="qg-puan-board-section"><div class="qg-puan-board-title"><span><i class="ti ti-trophy"></i> Genel Puan Listesi</span><span class="qg-puan-board-sub">Toplam üye puanları</span></div><div id="qgGenelPuanListe"></div></div></div><div class="qg-puan-section"><div class="qg-puan-section-head"><div class="qg-puan-section-title"><i class="ti ti-history"></i> Puan Arşivi</div><span style="font-size:10px;color:#555">10 kayıt / sayfa</span></div><div class="qg-puan-archive-filters"><input id="puanArsivAra" class="qg-full-mobile" placeholder="Üye veya gerekçe ara..." oninput="qgPuanPages.arsiv=1;qgPuanArsivRender()"><select id="arsivFilter" onchange="qgPuanPages.arsiv=1;qgPuanArsivYukle()"><option value="">Tüm üyeler</option>'+(members||[]).slice().sort(function(a,b){return String(a.rumuz).localeCompare(String(b.rumuz),'tr');}).map(function(m){return '<option value="'+esc(m.rumuz)+'">'+esc(m.rumuz)+'</option>';}).join('')+'</select><select id="puanArsivTur" onchange="qgPuanPages.arsiv=1;qgPuanArsivRender()"><option value="">Tüm işlem türleri</option><option value="manuel">Manuel</option><option value="etkinlik">Etkinlik</option><option value="gorev">Görev</option><option value="geri_alma">Geri alma</option></select><button class="btn btn-sm" onclick="qgPuanArsivYukle()"><i class="ti ti-refresh"></i> Yenile</button></div><div id="arsivListe"><div style="font-size:12px;color:#555;padding:10px">Yükleniyor...</div></div></div></div>';qgPuanBoardsRender();qgAktifSezonYukle();qgPuanArsivYukle();};
 })();
 </script>
 <script id="qg-design-system-runtime-v310">
@@ -15311,14 +15342,16 @@ function qgRenderPuanArsivTable(liste){
   function syncDynamic(){
     var ph=upgrade('puan');
     if(ph){
-      var pbtn=document.querySelector('#tab-puan .qg-puan-head button');
       var pa=ph.querySelector('.qg-hub-actions');
-      if(pbtn&&pa){
-        // Puan ekranı her render edildiğinde yeni bir buton üretir.
-        // Unified header'a taşırken eskisini temizlemezsek Manuel Puan İşlemi butonu çoğalır.
-        pa.querySelectorAll('[data-qg-action="manuel-puan"]').forEach(function(x){x.remove();});
-        pbtn.setAttribute('data-qg-action','manuel-puan');
-        pa.appendChild(pbtn);
+      if(pa){
+        pa.querySelectorAll('[data-qg-action="manuel-puan"],[data-qg-action="puan-sync"]').forEach(function(x){x.remove();});
+        var headActions=document.querySelector('#tab-puan .qg-puan-head .qg-puan-head-actions');
+        if(headActions){
+          var manual=headActions.querySelector('button[onclick*="qgPuanModalAc"]');
+          var sync=headActions.querySelector('button[onclick*="qgPuanArsivdenSenkronize"]');
+          if(manual){manual.setAttribute('data-qg-action','manuel-puan');pa.appendChild(manual);}
+          if(sync){sync.setAttribute('data-qg-action','puan-sync');pa.appendChild(sync);}
+        }
       }
     }
     upgrade('hall');
@@ -15360,7 +15393,7 @@ body.qg-gorev-modal-open{overflow:hidden!important}
 #tab-gorev .gorev-progress-bar{background:linear-gradient(90deg,#8b5200,#f0b24c)!important;border-radius:99px!important}
 @media(max-width:820px){.qg-gorev-ozet{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.qg-gorev-ozet{grid-template-columns:1fr 1fr}.qg-gorev-stat{padding:11px;min-height:64px}.qg-gorev-stat-icon{width:32px;height:32px}.qg-gorev-stat b{font-size:17px}.qg-gorev-modal{padding:10px}.qg-gorev-modal-dialog{margin:2vh auto 20px}}
-/* Q-PANEL v3.7.5 — Görev Merkezi ikon hizalama fix */
+/* Q-PANEL v3.7.6 — Görev Merkezi ikon hizalama fix */
 #tab-gorev .qg-gorev-stat-icon{display:flex!important;align-items:center!important;justify-content:center!important;line-height:1!important;padding:0!important;overflow:hidden!important}
 #tab-gorev .qg-gorev-stat-icon>i{display:block!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important;line-height:1!important;font-size:17px!important;position:static!important;transform:none!important}
 #tab-gorev .qg-gorev-stat-icon>i:before{display:block!important;line-height:1!important;margin:0!important}
