@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 
+<!--
+  Q-PANEL v3.6.1 — v3.5 STABLE BASE + ETKİNLİKLER MERKEZİ
+  - Smooth Login → Q-GATE → Dashboard transition
+  - Consolidated source formatting and whitespace cleanup
+  - Runtime behavior preserved from v3.0.7
+-->
 <html lang="tr">
 <head>
 <meta charset="utf-8"/>
@@ -7,7 +13,7 @@
 <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
 <meta content="no-cache" http-equiv="Pragma"/>
 <meta content="0" http-equiv="Expires"/>
-<title>Q-GANG Panel v3.7.3</title>
+<title>Q-GANG Panel v3.7.4</title>
 <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet"/>
 <link href="https://fonts.cdnfonts.com/css/vanilla-whale-2" rel="stylesheet"/>
 <link href="https://fonts.cdnfonts.com/css/kenyan-coffee-stencil" rel="stylesheet"/>
@@ -9716,9 +9722,9 @@ tbody tr:hover td{background:#181818!important;}
           var b = birimLabel(m);
           var detail = '';
           if (r === 'Lider' || r === 'Vekilharç') {
-            detail = b ? '<span class="qg-org-chip global">' + htmlEsc(b) + '</span>' : '';
+            detail = b ? '<span class="qg-org-chip global" style="color:' + c.txt + ';border-color:' + c.border + ';background:' + c.bg + '">' + htmlEsc(b) + '</span>' : '';
           } else if (r === 'Kaptan' || r === 'Teğmen') {
-            detail = b ? '<span class="qg-org-chip cat">' + htmlEsc(b) + '</span>' : '';
+            detail = b ? '<span class="qg-org-chip cat" style="color:' + c.txt + ';border-color:' + c.border + ';background:' + c.bg + '">' + htmlEsc(b) + '</span>' : '';
           } else if (r === 'Üye') {
             detail = activeTaskLine(m);
           }
@@ -9794,20 +9800,83 @@ tbody tr:hover td{background:#181818!important;}
             + '<div class="qg-unit-actions"><button class="btn btn-sm" onclick="birimModalAc(' + adArg + ')"><i class="ti ti-edit"></i> Düzenle</button><button class="btn btn-sm btn-primary" onclick="birimeKisiEkle(' + adArg + ', \'Kaptan\')"><i class="ti ti-plus"></i> Kaptan</button><button class="btn btn-sm btn-success" onclick="birimeKisiEkle(' + adArg + ', \'Teğmen\')"><i class="ti ti-plus"></i> Teğmen</button></div>'
             + '<div class="qg-unit-section"><h4><i class="ti ti-sword"></i> Kaptanlar</h4>' + people(kaps) + '</div>'
             + '<div class="qg-unit-section"><h4><i class="ti ti-shield"></i> Teğmenler</h4>' + people(tegs) + '</div>'
+            + '<div class="qg-unit-section"><h4><i class="ti ti-users"></i> Üyeler</h4>' + people(aktifUyeler) + '</div>'
             + '</div>';
         });
         el.innerHTML = html + '</div>';
       }
       async function birimModalAc(ad) {
-        var birimler = await qgBirimObjeleriYukle(true); var mevcut = birimler.find(function(b){ return b.ad === ad; }) || { ad:'', aciklama:'' };
-        var yeniAd = prompt('Birim adı:', mevcut.ad || ''); if (yeniAd === null) return; yeniAd = yeniAd.trim(); if (!yeniAd) { alert('Birim adı boş olamaz.'); return; }
-        var aciklama = prompt('Birim açıklaması:', mevcut.aciklama || ''); if (aciklama === null) return;
-        if (ad && ad !== yeniAd && birimler.some(function(b){ return b.ad === yeniAd; })) { alert('Bu isimde birim zaten var.'); return; }
-        if (ad) { birimler = birimler.map(function(b){ return b.ad === ad ? { ad:yeniAd, aciklama:aciklama || '' } : b; }); if (ad !== yeniAd) { for (const m of (members || []).filter(function(x){ return (x.birim || 'Yok') === ad; })) { await cmsYaz('MEMBER_UPDATE', { _id:m._id, birim:yeniAd }); } } }
-        else { if (birimler.some(function(b){ return b.ad === yeniAd; })) { alert('Bu isimde birim zaten var.'); return; } birimler.push({ ad:yeniAd, aciklama:aciklama || '' }); }
-        var data = await gorevAPI('BIRIM_SAVE', { item:{ birimler:birimler } }); if (!data.success) { alert('Birim kaydedilemedi: ' + (data.error || 'Bilinmeyen')); return; }
-        cmsStatusGoster('ok','<i class="ti ti-check"></i> Birimler güncellendi.'); await loadAll(); await renderBirimler(); try { await qgBirimSelectDoldur('gf_kategori', '', false); } catch(e) {}
+        var birimler = await qgBirimObjeleriYukle(true);
+        var mevcut = birimler.find(function(b){ return b.ad === ad; }) || { ad:'', aciklama:'' };
+        var isEdit = !!ad;
+        var mc = document.getElementById('modalContainer');
+        if (!mc) return;
+        mc.innerHTML = ''
+          + '<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+          + '<div class="modal-box" style="max-width:560px">'
+          + '<h3><i class="ti ti-building-community"></i> ' + (isEdit ? 'Birimi Düzenle' : 'Yeni Birim') + '</h3>'
+          + '<div id="birimModalHata" class="auth-error" style="display:none"></div>'
+          + '<input type="hidden" id="bm_original" value="' + htmlEsc(ad || '') + '">'
+          + '<div class="form-group"><label>Birim adı</label><input id="bm_ad" class="form-input" value="' + htmlEsc(mevcut.ad || '') + '" placeholder="Örn. Yönetim"></div>'
+          + '<div class="form-group" style="margin-top:10px"><label>Açıklama</label><textarea id="bm_aciklama" class="form-input" placeholder="Bu birimin amacı ve sorumluluk alanı...">' + htmlEsc(mevcut.aciklama || '') + '</textarea></div>'
+          + '<div style="margin-top:12px;background:#111;border:.5px solid #282828;border-radius:10px;padding:10px 12px;font-size:11.5px;color:#777;line-height:1.5">'
+          + '<strong style="color:#fac775">Not:</strong> Birim adı değişirse bu birime atanmış kişiler de anlık olarak yeni ada taşınır.'
+          + '</div>'
+          + '<div class="modal-footer"><button class="btn" onclick="closeModal()">İptal</button><button class="btn btn-warn" id="birimKaydetBtn" onclick="birimModalKaydet()"><i class="ti ti-device-floppy"></i> Kaydet</button></div>'
+          + '</div></div>';
+        setTimeout(function(){ var input=document.getElementById('bm_ad'); if(input) input.focus(); }, 30);
       }
+
+      function birimModalHata(mesaj) {
+        var el = document.getElementById('birimModalHata');
+        if (!el) { alert(mesaj); return; }
+        el.textContent = mesaj;
+        el.style.display = 'block';
+      }
+
+      async function birimModalKaydet() {
+        var original = (document.getElementById('bm_original') || {}).value || '';
+        var yeniAd = ((document.getElementById('bm_ad') || {}).value || '').trim();
+        var aciklama = ((document.getElementById('bm_aciklama') || {}).value || '').trim();
+        if (!yeniAd) { birimModalHata('Birim adı boş olamaz.'); return; }
+        var btn = document.getElementById('birimKaydetBtn');
+        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Kaydediliyor...'; }
+        try {
+          var birimler = await qgBirimObjeleriYukle(true);
+          var duplicate = birimler.some(function(b){ return b.ad !== original && String(b.ad || '').toLocaleLowerCase('tr-TR') === yeniAd.toLocaleLowerCase('tr-TR'); });
+          if (duplicate) { if(btn){btn.disabled=false;btn.innerHTML='<i class="ti ti-device-floppy"></i> Kaydet';} birimModalHata('Bu isimde birim zaten var.'); return; }
+          if (original) {
+            birimler = birimler.map(function(b){ return b.ad === original ? { ad:yeniAd, aciklama:aciklama || '' } : b; });
+          } else {
+            birimler.push({ ad:yeniAd, aciklama:aciklama || '' });
+          }
+          var data = await gorevAPI('BIRIM_SAVE', { item:{ birimler:birimler } });
+          if (!data || data.success === false) throw new Error((data && data.error) || 'Birim kaydedilemedi.');
+
+          QG_BIRIMLER = birimler.map(function(b){ return b.ad; });
+          GOREVLER.splice(0, GOREVLER.length, ...QG_BIRIMLER);
+          BIRIMLER.splice(0, BIRIMLER.length, 'Yok', ...QG_BIRIMLER);
+
+          if (original && original !== yeniAd) {
+            var tasinacaklar = (members || []).filter(function(x){ return (x.birim || 'Yok') === original; });
+            for (const m of tasinacaklar) {
+              await cmsYaz('MEMBER_UPDATE', { _id:m._id || m.id, rumuz:m.rumuz, birim:yeniAd });
+              var idx = members.findIndex(function(x){ return String(x._id || x.id) === String(m._id || m.id); });
+              if (idx > -1) members[idx] = Object.assign({}, members[idx], { birim:yeniAd });
+            }
+          }
+
+          closeModal();
+          cmsStatusGoster('ok','<i class="ti ti-check"></i> Birimler güncellendi.');
+          await renderBirimler();
+          try { renderOrg(); } catch(e) {}
+          try { await qgBirimSelectDoldur('gf_kategori', '', false); } catch(e) {}
+        } catch(e) {
+          if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-device-floppy"></i> Kaydet'; }
+          birimModalHata((e && e.message) || 'Birim kaydedilemedi.');
+        }
+      }
+
       async function birimSil(ad) {
         if (qgVarsayilanBirimMi(ad)) { alert('Varsayılan birimler silinemez. İstersen adını/açıklamasını düzenleyebilirsin.'); return; }
         var kullaniliyor = (members || []).filter(function(m){ return (m.birim || 'Yok') === ad; });
@@ -9816,18 +9885,87 @@ tbody tr:hover td{background:#181818!important;}
         if (!confirm(msg)) return;
         var birimler = await qgBirimObjeleriYukle(true);
         birimler = birimler.filter(function(b){ return b.ad !== ad; });
-        for (const m of kullaniliyor) { await cmsYaz('MEMBER_UPDATE', { _id:m._id, birim:'Yok' }); }
         var data = await gorevAPI('BIRIM_SAVE', { item:{ birimler:birimler } });
-        if (!data.success) { alert('Birim silinemedi: ' + (data.error || 'Bilinmeyen')); return; }
-        cmsStatusGoster('ok','<i class="ti ti-check"></i> Birim silindi.'); await loadAll(); await renderBirimler(); try { await qgBirimSelectDoldur('gf_kategori', '', false); } catch(e) {}
+        if (!data || data.success === false) { alert('Birim silinemedi: ' + ((data && data.error) || 'Bilinmeyen')); return; }
+        QG_BIRIMLER = birimler.map(function(b){ return b.ad; });
+        GOREVLER.splice(0, GOREVLER.length, ...QG_BIRIMLER);
+        BIRIMLER.splice(0, BIRIMLER.length, 'Yok', ...QG_BIRIMLER);
+        for (const m of kullaniliyor) {
+          await cmsYaz('MEMBER_UPDATE', { _id:m._id || m.id, birim:'Yok' });
+          var idx = members.findIndex(function(x){ return String(x._id || x.id) === String(m._id || m.id); });
+          if (idx > -1) members[idx] = Object.assign({}, members[idx], { birim:'Yok' });
+        }
+        cmsStatusGoster('ok','<i class="ti ti-check"></i> Birim silindi.');
+        await renderBirimler();
+        try { renderOrg(); } catch(e) {}
+        try { await qgBirimSelectDoldur('gf_kategori', '', false); } catch(e) {}
       }
+
       async function birimeKisiEkle(birim, rutbe) {
-        var adaylar = (members || []).filter(function(m){ return (m.rutbe || '') === rutbe; }); if (!adaylar.length) { alert('Uygun ' + rutbe + ' bulunamadı.'); return; }
-        var rumuz = prompt(birim + ' birimine eklenecek ' + rutbe + ' rumuzu:'); if (!rumuz) return;
-        var m = adaylar.find(function(x){ return String(x.rumuz || '').toLowerCase() === rumuz.trim().toLowerCase(); }); if (!m) { alert('Bu rütbede böyle bir rumuz bulunamadı.'); return; }
-        var data = await cmsYaz('MEMBER_UPDATE', { _id:m._id, rumuz:m.rumuz, rutbe:rutbe, rol:rutbe, birim:birim }); if (data && data.success) { cmsStatusGoster('ok','<i class="ti ti-check"></i> ' + htmlEsc(m.rumuz) + ' ' + htmlEsc(birim) + ' birimine ' + htmlEsc(rutbe) + ' olarak eklendi.'); await loadAll(); renderBirimler(); renderOrg(); }
+        var adaylar = (members || []).filter(function(m){
+          return !m.deleted && !m.deletedAt && (m.rutbe || m.rol || '') === rutbe && (m.birim || 'Yok') !== birim;
+        }).sort(function(a,b){ return String(a.rumuz || '').localeCompare(String(b.rumuz || ''), 'tr'); });
+        var mc = document.getElementById('modalContainer');
+        if (!mc) return;
+        var options = adaylar.length ? adaylar.map(function(m){ return '<option value="' + htmlEsc(m._id || m.id) + '">' + htmlEsc(m.rumuz + ' — ' + (m.birim || 'Yok')) + '</option>'; }).join('') : '';
+        mc.innerHTML = ''
+          + '<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'
+          + '<div class="modal-box" style="max-width:560px">'
+          + '<h3><i class="ti ti-user-plus"></i> ' + htmlEsc(birim) + ' birimine ' + htmlEsc(rutbe) + ' ekle</h3>'
+          + '<div id="birimKisiModalHata" class="auth-error" style="display:none"></div>'
+          + '<input type="hidden" id="bk_birim" value="' + htmlEsc(birim) + '">'
+          + '<input type="hidden" id="bk_rutbe" value="' + htmlEsc(rutbe) + '">'
+          + (adaylar.length
+            ? '<div class="form-group"><label>Üye seç</label><select id="bk_member" class="form-input">' + options + '</select></div>'
+            : '<div class="erisim-engel" style="margin:0"><i class="ti ti-users-off"></i> Bu rütbede atanabilecek uygun üye bulunamadı.</div>')
+          + '<div class="modal-footer"><button class="btn" onclick="closeModal()">Kapat</button>'
+          + (adaylar.length ? '<button class="btn btn-warn" id="birimKisiKaydetBtn" onclick="birimeKisiEkleKaydet()"><i class="ti ti-check"></i> Atamayı Yap</button>' : '')
+          + '</div></div></div>';
       }
-      async function birimdenCikar(memberId) { if (!confirm('Bu kişiyi birimden çıkarmak istiyor musun?')) return; var data = await cmsYaz('MEMBER_UPDATE', { _id:memberId, birim:'Yok' }); if (data && data.success) { await loadAll(); renderBirimler(); renderOrg(); } }
+
+      function birimKisiModalHata(mesaj) {
+        var el = document.getElementById('birimKisiModalHata');
+        if (!el) { alert(mesaj); return; }
+        el.textContent = mesaj;
+        el.style.display = 'block';
+      }
+
+      async function birimeKisiEkleKaydet() {
+        var birim = (document.getElementById('bk_birim') || {}).value || '';
+        var rutbe = (document.getElementById('bk_rutbe') || {}).value || '';
+        var memberId = (document.getElementById('bk_member') || {}).value || '';
+        var m = (members || []).find(function(x){ return String(x._id || x.id) === String(memberId); });
+        if (!m) { birimKisiModalHata('Üye bulunamadı.'); return; }
+        var btn = document.getElementById('birimKisiKaydetBtn');
+        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Atanıyor...'; }
+        try {
+          var data = await cmsYaz('MEMBER_UPDATE', { _id:m._id || m.id, rumuz:m.rumuz, rutbe:rutbe, rol:rutbe, birim:birim });
+          if (!data || data.success === false) throw new Error((data && data.error) || 'Atama yapılamadı.');
+          var idx = members.findIndex(function(x){ return String(x._id || x.id) === String(m._id || m.id); });
+          if (idx > -1) members[idx] = Object.assign({}, members[idx], { rutbe:rutbe, rol:rutbe, birim:birim });
+          closeModal();
+          cmsStatusGoster('ok','<i class="ti ti-check"></i> ' + htmlEsc(m.rumuz) + ' ' + htmlEsc(birim) + ' birimine ' + htmlEsc(rutbe) + ' olarak eklendi.');
+          await renderBirimler();
+          try { renderOrg(); } catch(e) {}
+        } catch(e) {
+          if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-check"></i> Atamayı Yap'; }
+          birimKisiModalHata((e && e.message) || 'Atama yapılamadı.');
+        }
+      }
+
+      async function birimdenCikar(memberId) {
+        if (!confirm('Bu kişiyi birimden çıkarmak istiyor musun?')) return;
+        var m = (members || []).find(function(x){ return String(x._id || x.id) === String(memberId); });
+        var data = await cmsYaz('MEMBER_UPDATE', { _id:memberId, birim:'Yok' });
+        if (data && data.success !== false) {
+          if (m) {
+            var idx = members.findIndex(function(x){ return String(x._id || x.id) === String(memberId); });
+            if (idx > -1) members[idx] = Object.assign({}, members[idx], { birim:'Yok' });
+          }
+          await renderBirimler();
+          try { renderOrg(); } catch(e) {}
+        }
+      }
     </script>
 <script>
       // ============================================================
@@ -15210,7 +15348,7 @@ body.qg-gorev-modal-open{overflow:hidden!important}
 #tab-gorev .gorev-progress-bar{background:linear-gradient(90deg,#8b5200,#f0b24c)!important;border-radius:99px!important}
 @media(max-width:820px){.qg-gorev-ozet{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.qg-gorev-ozet{grid-template-columns:1fr 1fr}.qg-gorev-stat{padding:11px;min-height:64px}.qg-gorev-stat-icon{width:32px;height:32px}.qg-gorev-stat b{font-size:17px}.qg-gorev-modal{padding:10px}.qg-gorev-modal-dialog{margin:2vh auto 20px}}
-/* Q-PANEL v3.7.3 — Görev Merkezi ikon hizalama fix */
+/* Q-PANEL v3.7.4 — Görev Merkezi ikon hizalama fix */
 #tab-gorev .qg-gorev-stat-icon{display:flex!important;align-items:center!important;justify-content:center!important;line-height:1!important;padding:0!important;overflow:hidden!important}
 #tab-gorev .qg-gorev-stat-icon>i{display:block!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important;line-height:1!important;font-size:17px!important;position:static!important;transform:none!important}
 #tab-gorev .qg-gorev-stat-icon>i:before{display:block!important;line-height:1!important;margin:0!important}
