@@ -15308,7 +15308,7 @@ body.qg-gorev-modal-open{overflow:hidden!important}
 #tab-gorev .gorev-progress-bar{background:linear-gradient(90deg,#8b5200,#f0b24c)!important;border-radius:99px!important}
 @media(max-width:820px){.qg-gorev-ozet{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.qg-gorev-ozet{grid-template-columns:1fr 1fr}.qg-gorev-stat{padding:11px;min-height:64px}.qg-gorev-stat-icon{width:32px;height:32px}.qg-gorev-stat b{font-size:17px}.qg-gorev-modal{padding:10px}.qg-gorev-modal-dialog{margin:2vh auto 20px}}
-/* Q-PANEL v3.8.1 — Görev Merkezi ikon hizalama fix */
+/* Q-PANEL v3.8.2 — Görev Merkezi ikon hizalama fix */
 #tab-gorev .qg-gorev-stat-icon{display:flex!important;align-items:center!important;justify-content:center!important;line-height:1!important;padding:0!important;overflow:hidden!important}
 #tab-gorev .qg-gorev-stat-icon>i{display:block!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important;line-height:1!important;font-size:17px!important;position:static!important;transform:none!important}
 #tab-gorev .qg-gorev-stat-icon>i:before{display:block!important;line-height:1!important;margin:0!important}
@@ -15461,7 +15461,7 @@ body.qg-gorev-modal-open{overflow:hidden!important}
 
 
 <!-- ═══════════════════════════════════════════════════
-     Q-PANEL v3.8.1 — Genel Revizyon / Dijital Karargâh
+     Q-PANEL v3.8.2 — Genel Revizyon / Dijital Karargâh
      - Sezon uyarısı + Bugünün Panosu
      - Etkinlik düzenleme tek kayıt akışı
      - Görev talebi sistemi kaldırıldı
@@ -15628,7 +15628,7 @@ body.qg-gorev-modal-open{overflow:hidden!important}
     var activeCount = (members||[]).filter(function(m){return m.durum === 'Aktif';}).length;
     var evText = upcomingEventsText();
     var puanLider = (members||[]).slice().sort(function(a,b){return Number(b.puan||0)-Number(a.puan||0);})[0];
-    var needsSeasonNotice = seasonIsFresh();
+    var needsSeasonNotice = false; // v3.8.2: otomatik sezon kapatma uyarısı kaldırıldı
     var board = document.createElement('div');
     board.id = 'qg380Board';
     board.className = 'qg380-board';
@@ -15640,7 +15640,7 @@ body.qg-gorev-modal-open{overflow:hidden!important}
       '<div class="qg380-mini-grid">'+
         '<div class="qg380-mini"><span>Aktif Üye</span><b>'+activeCount+'/'+membersCount+'</b></div>'+
         '<div class="qg380-mini"><span>Sıradaki Etkinlik</span><b>'+esc(evText)+'</b></div>'+
-        '<div class="qg380-mini"><span>Benim Görevlerim</span><b>'+esc(myOpenTasksText())+'</b></div>'+
+        '<div class="qg380-mini"><span>Karargâh Durumu</span><b>Temiz</b></div>'+
         '<div class="qg380-mini"><span>Puan Lideri</span><b>'+esc((puanLider&&puanLider.rumuz)||'—')+'</b></div>'+
       '</div>'+
       (needsSeasonNotice ? '<div class="qg380-season-warn"><i class="ti ti-flag"></i><div><strong>Sezon dönemi değişti.</strong><br>'+(canManageSeason()?'Önceki sezonu kapatıp Şampiyonlar Salonu’na işlemeyi unutma.':'Yeni sezon başladı. Önceki sezon sonuçları yönetim tarafından ilan edilecek.')+'</div>'+(canManageSeason()?'<button class="btn btn-warn btn-sm" onclick="sezonuKapat()"><i class="ti ti-trophy"></i> Sezonu Kapat</button>':'')+'</div>' : '');
@@ -15847,7 +15847,7 @@ body.qg-gorev-modal-open{overflow:hidden!important}
 
 
 <!-- ═══════════════════════════════════════════════════
-     Q-PANEL v3.8.1 — UI/UX Sezon + Görev Merkezi Temizliği
+     Q-PANEL v3.8.2 — UI/UX Sezon + Görev Merkezi Temizliği
      - Browser alert yerine uyumlu sezon sonuç modalı
      - Sezon kapatılınca Dashboard uyarısı temizlenir
      - Görev Merkezi modülü tamamen gizlenir/rota dışına alınır
@@ -16036,6 +16036,65 @@ body.qg-gorev-modal-open{overflow:hidden!important}
 
   document.addEventListener('DOMContentLoaded',function(){setTimeout(uiCleanup, 500);});
   setInterval(uiCleanup, 1200);
+})();
+</script>
+
+
+<!-- ═══════════════════════════════════════════════════
+     Q-PANEL v3.8.2 — Sezon Uyarısı Nihai Fix
+     - Dashboard'daki otomatik "Sezonu Kapat" uyarısı tamamen kaldırıldı
+     - Eski render katmanı uyarıyı tekrar üretse bile anında temizlenir
+     - Görev referansı Dashboard mini kartından çıkarıldı
+     ═══════════════════════════════════════════════════ -->
+<style id="qg-v382-style">
+  .qg380-season-warn{display:none!important}
+</style>
+<script id="qg-v382-script">
+(function(){
+  if(window.__qg382Applied) return;
+  window.__qg382Applied = true;
+
+  function qg382Clean(){
+    document.querySelectorAll('.qg380-season-warn').forEach(function(x){try{x.remove();}catch(e){}});
+    document.querySelectorAll('#qg380Board .qg380-mini span').forEach(function(span){
+      if((span.textContent||'').trim().toLowerCase() === 'benim görevlerim'){
+        span.textContent = 'Karargâh Durumu';
+        var b = span.parentElement && span.parentElement.querySelector('b');
+        if(b) b.textContent = 'Temiz';
+      }
+    });
+    document.querySelectorAll('[onclick*="sezonuKapat"]').forEach(function(btn){
+      var box = btn.closest('.qg380-season-warn');
+      if(box) box.remove();
+    });
+  }
+
+  var oldRenderDashboard = window.renderDashboard;
+  if(typeof oldRenderDashboard === 'function'){
+    window.renderDashboard = function(){
+      var r = oldRenderDashboard.apply(this, arguments);
+      setTimeout(qg382Clean, 20);
+      setTimeout(qg382Clean, 160);
+      return r;
+    };
+  }
+
+  var oldSeasonCheck = window.sezonDegisimKontrol;
+  window.sezonDegisimKontrol = function(){
+    // v3.8.2: Dashboard otomatik sezon kapatma modalı/uyarısı üretmez.
+    // Manuel sezon kapatma Puanlar/Şampiyonlar sistemi içinde korunur.
+    try{
+      var sezon = (typeof getMevcutSezonAdi === 'function') ? getMevcutSezonAdi() : null;
+      if(sezon && sezon.ad) localStorage.setItem('qg_aktif_sezon', sezon.ad);
+    }catch(e){}
+    qg382Clean();
+  };
+
+  document.addEventListener('DOMContentLoaded',function(){
+    setTimeout(qg382Clean,100);
+    setTimeout(qg382Clean,700);
+  });
+  setInterval(qg382Clean, 700);
 })();
 </script>
 
