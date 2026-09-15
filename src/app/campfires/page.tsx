@@ -1,13 +1,1 @@
-import { AppShell } from "@/components/AppShell";
-import { createClient } from "@/lib/supabase/server";
-
-export const dynamic = "force-dynamic";
-
-export default async function Campfires() {
-  const supabase = await createClient();
-  const { data: campfires } = await supabase.from("campfires").select("id,slug,name,description").eq("is_active", true).order("name");
-  return <AppShell><div className="pageHead"><div><span className="kicker">PLAY</span><h1>Campfires</h1></div></div>
-    <p className="intro">Her ateş bir oyunun etrafında kurulan küçük topluluk.</p>
-    <div className="cards">{(campfires ?? []).map(c => <a className="gameCard" href={"/campfires/"+c.slug} key={c.id}><span>🔥</span><h3>{c.name}</h3><p>{c.description}</p><b>Ateşe git →</b></a>)}</div>
-  </AppShell>;
-}
+import Link from "next/link";import { AppShell } from "@/components/AppShell";import { createClient } from "@/lib/supabase/server";export const dynamic="force-dynamic";export default async function Campfires(){const s=await createClient();const {data:campfires}=await s.from("campfires").select("id,slug,name,description,campfire_members(count),play_sessions(count)").eq("is_active",true).order("name");return <AppShell><section className="campfireIndexHero"><div><span className="kicker">Q-GANG · CAMPFIRES</span><h1>Ateşini Bul.</h1><p>Her Campfire bir oyunun etrafında kurulan yaşayan alan. Katıl, paylaş, ekibini bul.</p></div><div className="campfireOrb">🔥</div></section><div className="sectionTitle campfireTitle"><div><span className="kicker">ACTIVE FIRES</span><h2>Campfires</h2></div><span>{campfires?.length??0} ateş</span></div><div className="campfireGrid">{(campfires??[]).map((c:any)=><Link className="campfireCard" href={"/campfires/"+c.slug} key={c.id}><div className="campfireCardTop"><span className="fireMark">🔥</span><span className="livePill"><i/> LIVE</span></div><div><h3>{c.name}</h3><p>{c.description}</p></div><footer><span>◉ {c.campfire_members?.[0]?.count??0} üye</span><b>Ateşe git →</b></footer></Link>)}</div></AppShell>}
