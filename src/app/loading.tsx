@@ -1,0 +1,1 @@
+export default function Loading(){return <main className="statePage"><div className="brandMark">Q</div><p>Ateş hazırlanıyor…</p></main>}

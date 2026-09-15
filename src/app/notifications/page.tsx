@@ -1,0 +1,1 @@
+import { AppShell } from "@/components/AppShell";export default function Notifications(){return <AppShell><div className="pageHead"><div><span className="kicker">ACTIVITY</span><h1>Notifications</h1></div></div><div className="empty"><b>Henüz sessiz.</b><p>Yorumlar, tepkiler ve Birlikte Oyna istekleri burada görünecek.</p></div></AppShell>}

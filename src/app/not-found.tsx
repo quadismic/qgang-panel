@@ -1,0 +1,1 @@
+export default function NotFound(){return <main className="statePage"><div className="brandMark">Q</div><h1>Bu ateş sönmüş.</h1><a className="button primary" href="/">Q-GANG'e dön</a></main>}

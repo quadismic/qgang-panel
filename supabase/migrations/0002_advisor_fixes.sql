@@ -1,0 +1,20 @@
+-- Applied to Q-GANG production after advisor review.
+drop policy if exists "own accounts read" on public.connected_accounts;
+create policy "moderation staff read" on public.moderation_actions for select to authenticated using (exists(select 1 from public.profiles p where p.id=(select auth.uid()) and p.role in ('founder','admin','moderator')));
+create policy "permissions readable" on public.role_permissions for select to authenticated using (true);
+create index if not exists campfire_members_user_idx on public.campfire_members(user_id);
+create index if not exists campfires_created_by_idx on public.campfires(created_by);
+create index if not exists comments_author_idx on public.comments(author_id);
+create index if not exists moderation_moderator_idx on public.moderation_actions(moderator_id);
+create index if not exists moderation_post_idx on public.moderation_actions(post_id);
+create index if not exists moderation_target_idx on public.moderation_actions(target_user_id);
+create index if not exists notifications_actor_idx on public.notifications(actor_id);
+create index if not exists play_campfire_idx on public.play_requests(campfire_id);
+create index if not exists play_sender_idx on public.play_requests(sender_id);
+create index if not exists posts_author_idx on public.posts(author_id);
+create index if not exists reactions_user_idx on public.reactions(user_id);
+create index if not exists reports_comment_idx on public.reports(comment_id);
+create index if not exists reports_post_idx on public.reports(post_id);
+create index if not exists reports_reported_user_idx on public.reports(reported_user_id);
+create index if not exists reports_reporter_idx on public.reports(reporter_id);
+create index if not exists reports_reviewed_by_idx on public.reports(reviewed_by);

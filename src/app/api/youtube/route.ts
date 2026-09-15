@@ -1,0 +1,3 @@
+import { NextResponse } from "next/server";
+export const revalidate=900;
+export async function GET(){const key=process.env.YOUTUBE_API_KEY;const channel=process.env.YOUTUBE_CHANNEL_ID;if(!key||!channel)return NextResponse.json({items:[],configured:false});const u=new URL("https://www.googleapis.com/youtube/v3/search");u.searchParams.set("part","snippet");u.searchParams.set("channelId",channel);u.searchParams.set("order","date");u.searchParams.set("type","video");u.searchParams.set("maxResults","6");u.searchParams.set("key",key);const r=await fetch(u,{next:{revalidate:900}});if(!r.ok)return NextResponse.json({items:[],configured:true},{status:502});const data=await r.json();return NextResponse.json({items:data.items??[],configured:true})}

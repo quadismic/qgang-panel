@@ -1,0 +1,1 @@
+"use client";export default function Error({reset}:{reset:()=>void}){return <main className="statePage"><div className="brandMark">Q</div><h1>Bir şey ters gitti.</h1><button className="primary" onClick={reset}>Tekrar dene</button></main>}
