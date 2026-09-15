@@ -1,0 +1,2 @@
+import { NextResponse } from "next/server";import { createClient } from "@/lib/supabase/server";
+export async function POST(req:Request){const s=await createClient();const {data:{user}}=await s.auth.getUser();const f=await req.formData();const post_id=String(f.get("post_id")??"");if(!user)return NextResponse.redirect(new URL("/login?next=/posts/"+post_id,req.url),303);const body=String(f.get("body")??"").trim();if(body&&body.length<=1000)await s.from("comments").insert({post_id,author_id:user.id,body});return NextResponse.redirect(new URL("/posts/"+post_id,req.url),303)}
