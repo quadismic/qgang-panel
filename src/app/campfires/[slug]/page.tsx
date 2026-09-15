@@ -1,17 +1,1 @@
-import { AppShell } from "@/components/AppShell";
-import { createClient } from "@/lib/supabase/server";
-import { notFound } from "next/navigation";
-
-export const dynamic = "force-dynamic";
-
-export default async function Fire({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const supabase = await createClient();
-  const { data: fire } = await supabase.from("campfires").select("id,slug,name,description").eq("slug", slug).eq("is_active", true).maybeSingle();
-  if (!fire) notFound();
-  const { count } = await supabase.from("campfire_members").select("*", { count: "exact", head: true }).eq("campfire_id", fire.id);
-  return <AppShell><section className="fireHero"><span>🔥 CAMPFIRE</span><h1>{fire.name}</h1><p>{fire.description}</p><div><button className="primary">🔥 Ateşe Katıl</button><button>🎮 Birlikte Oyna</button></div></section>
-    <div className="sectionTitle"><h2>Ateşin başında</h2><span>{count ?? 0} üye</span></div>
-    <div className="empty"><b>Ateş hazır.</b><p>İlk paylaşımı bekliyor.</p></div>
-  </AppShell>;
-}
+import { AppShell } from "@/components/AppShell";import { PostCard } from "@/components/PostCard";import { createClient } from "@/lib/supabase/server";import { getFeed } from "@/lib/data";import { notFound } from "next/navigation";export const dynamic="force-dynamic";export default async function Fire({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const s=await createClient();const {data:fire}=await s.from("campfires").select("id,slug,name,description").eq("slug",slug).eq("is_active",true).maybeSingle();if(!fire)notFound();const {data:{user}}=await s.auth.getUser();const [{count},{data:membership},posts]=await Promise.all([s.from("campfire_members").select("*",{count:"exact",head:true}).eq("campfire_id",fire.id),user?s.from("campfire_members").select("campfire_id").eq("campfire_id",fire.id).eq("user_id",user.id).maybeSingle():Promise.resolve({data:null}),getFeed(fire.id)]);return <AppShell><section className="fireHero"><span>🔥 CAMPFIRE</span><h1>{fire.name}</h1><p>{fire.description}</p><form action="/api/campfires/membership" method="post"><input type="hidden" name="campfire_id" value={fire.id}/><input type="hidden" name="slug" value={fire.slug}/><input type="hidden" name="action" value={membership?"leave":"join"}/><button className="primary" type="submit">{membership?"Ateşten Ayrıl":"🔥 Ateşe Katıl"}</button> <button type="button">🎮 Birlikte Oyna</button></form></section><div className="sectionTitle"><h2>Ateşin başında</h2><span>{count??0} üye</span></div><div className="feed">{posts.length?posts.map((p:any)=><PostCard key={p.id} post={p}/>):<div className="empty"><b>Ateş hazır.</b><p>İlk paylaşımı bekliyor.</p></div>}</div></AppShell>}
