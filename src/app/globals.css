@@ -18,3 +18,14 @@
 
 /* Connected identity/provider marks */
 .authButtons button{display:flex;align-items:center;justify-content:center;gap:10px}.connections b{display:flex;align-items:center;gap:8px}.connections b svg{flex:0 0 auto}
+
+/* Q-GANG 2.1 — living interface */
+.pageMotion{animation:qPageIn .22s cubic-bezier(.2,.8,.2,1)}
+@keyframes qPageIn{from{opacity:.72;transform:translateY(5px)}to{opacity:1;transform:none}}
+.liveDot{display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 14px currentColor;animation:qBreath 2.2s ease-in-out infinite}
+@keyframes qBreath{50%{opacity:.35;transform:scale(.8)}}
+.livingHint{font-size:11px;opacity:.5;letter-spacing:.08em}.livingCard,.ambientCard{position:relative;overflow:hidden}.livingCard:after,.ambientCard:after{content:"";position:absolute;width:130px;height:130px;border-radius:50%;right:-70px;bottom:-75px;background:currentColor;opacity:.035;filter:blur(10px);animation:qAmbient 6s ease-in-out infinite alternate}@keyframes qAmbient{to{transform:scale(1.35) translate(-8px,-8px);opacity:.07}}
+.navOverlayButton,.mobileSignal{font:inherit;color:inherit;background:none;border:0;cursor:pointer}.navOverlayButton{width:100%;display:flex;align-items:center;text-align:left}
+.liveSearch{position:relative;max-width:760px;margin-top:28px}.liveSearchBox{display:flex;align-items:center;gap:12px;border:1px solid var(--line,#27272a);border-radius:16px;padding:0 16px;background:rgba(10,10,12,.86);backdrop-filter:blur(18px)}.liveSearchBox input{width:100%;height:58px;border:0;outline:0;background:transparent;color:inherit;font:inherit}.searchPulse{width:7px;height:7px;border-radius:50%;background:currentColor;animation:qBreath 1s infinite}.searchLayer{position:absolute;z-index:40;top:68px;left:0;right:0;padding:12px;border:1px solid var(--line,#27272a);border-radius:18px;background:rgba(12,12,15,.96);backdrop-filter:blur(24px);box-shadow:0 24px 70px rgba(0,0,0,.45);display:grid;grid-template-columns:1fr 1fr;gap:10px}.searchGroup{display:flex;flex-direction:column;gap:5px}.searchGroup>.kicker{padding:8px 10px}.searchGroup>a{display:flex;gap:10px;align-items:center;padding:9px;border-radius:12px;color:inherit;text-decoration:none;transition:background .16s ease,transform .16s ease}.searchGroup>a:hover{background:rgba(255,255,255,.05);transform:translateX(2px)}.searchGroup>a>span:last-child{display:flex;flex-direction:column;min-width:0}.searchGroup small{opacity:.55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.searchEmpty{grid-column:1/-1;padding:22px;text-align:center;opacity:.6}.profileActions{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:760px){.searchLayer{grid-template-columns:1fr}.pageMotion{animation-duration:.18s}}
+@media(prefers-reduced-motion:reduce){.pageMotion,.liveDot,.livingCard:after,.ambientCard:after,.searchPulse{animation:none!important}.searchGroup>a{transition:none}}
