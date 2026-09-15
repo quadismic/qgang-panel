@@ -1,20 +1,8 @@
-export default function Home() {
-  return (
-    <main className="shell">
-      <section className="hero">
-        <div className="mark">Q</div>
-        <p className="eyebrow">Q-GANG · ALPHA 0.1</p>
-        <h1>Oyunun etrafında<br />insanları bul.</h1>
-        <p className="lead">
-          Campfire'lara katıl. Oyuncularla tanış. İçerik üret. Birlikte oyna.
-        </p>
-        <div className="actions">
-          <button disabled>Google ile devam et</button>
-          <button disabled>Discord ile devam et</button>
-          <button disabled>Steam ile devam et</button>
-        </div>
-        <p className="status">Foundation kuruluyor · girişler bir sonraki aşamada etkinleşecek.</p>
-      </section>
-    </main>
-  );
+import { AppShell } from "@/components/AppShell";
+import { PostCard } from "@/components/PostCard";
+import { posts } from "@/lib/demo";
+export default function Home(){
+ return <AppShell><div className="pageHead"><div><span className="kicker">Q-GANG</span><h1>Home</h1></div><a className="button primary" href="/create">Paylaş</a></div>
+ <section className="composer"><div className="avatar">Q</div><a href="/create">Ateşe ne bırakmak istersin?</a></section>
+ <div className="feed">{posts.map(p=><PostCard key={p.id} post={p}/>)}</div></AppShell>
 }
