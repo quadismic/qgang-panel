@@ -1,0 +1,13 @@
+"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const items=[["/","Home"],["/explore","Explore"],["/campfires","Campfires"],["/members","Members"]];
+export function Nav(){
+ const pathname=usePathname();
+ return <aside className="nav">
+   <Link href="/" className="brand"><span className="brandMark">Q</span><span>Q-GANG</span></Link>
+   <nav>{items.map(([href,label])=><Link key={href} href={href} className={pathname===href?"active":""}>{label}</Link>)}</nav>
+   <div className="navBottom"><Link href="/profile">Profile</Link><Link href="/control">Q-Control</Link></div>
+ </aside>
+}
