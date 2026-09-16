@@ -1,15 +1,1 @@
-import type { Metadata } from "next";
-import "./globals.css";
-
-export const metadata: Metadata = {
-  title: "Q-GANG",
-  description: "Play. Create. Connect.",
-};
-
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <html lang="tr">
-      <body>{children}</body>
-    </html>
-  );
-}
+import type {Metadata} from "next";import "./globals.css";import {EmberStage} from "@/components/EmberStage";export const metadata:Metadata={title:"Q-GANG",description:"Play. Create. Connect."};export default function RootLayout({children}:Readonly<{children:React.ReactNode}>){return <html lang="tr"><body><EmberStage>{children}</EmberStage></body></html>}
