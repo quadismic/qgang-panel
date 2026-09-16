@@ -64,3 +64,30 @@
 /* 2.1 Ocak · unified world */
 .hearthCanvas{position:relative;min-height:calc(100vh - 70px);padding:0 0 70px}.hearthCanvas:before{content:"";position:absolute;z-index:-1;left:-8vw;right:-8vw;top:-40px;height:760px;pointer-events:none;background:radial-gradient(560px 360px at 22% 13%,rgba(255,67,47,.09),transparent 70%),radial-gradient(500px 320px at 82% 27%,rgba(255,100,55,.035),transparent 72%);opacity:.8}.hearthCanvas.isWarm:before{opacity:1}.hearthHero{position:relative;min-height:235px;display:grid;grid-template-columns:1fr auto;align-items:end;gap:28px;padding:42px 32px 30px;margin-bottom:0;border:1px solid rgba(255,255,255,.075);border-bottom-color:transparent;border-radius:26px 26px 8px 8px;background:radial-gradient(500px 270px at 13% 0,rgba(255,67,47,.12),transparent 66%),linear-gradient(145deg,rgba(15,17,20,.92),rgba(6,7,9,.92));overflow:hidden}.hearthHero:after{content:"";position:absolute;width:330px;height:330px;border:1px solid rgba(255,74,43,.07);border-radius:50%;right:-130px;top:-220px;box-shadow:0 0 90px rgba(255,67,47,.025)}.hearthHero h1{font-size:clamp(46px,6vw,72px);line-height:.91;letter-spacing:-.067em;margin:12px 0}.hearthHero h1 em{font-style:normal;color:var(--flame);text-shadow:0 0 30px rgba(255,67,47,.16)}.hearthHero p{max-width:570px;margin:0;color:#a4abb4;line-height:1.65}.hearthHero .heroActions{z-index:2}.hearthJump{background:rgba(255,255,255,.025);color:#b8bdc4;border:1px solid var(--line)}.hearthCanvas>.livingCanvas{margin:-1px 0 0;border-top-color:rgba(255,255,255,.045);border-radius:8px 8px 24px 24px;background:radial-gradient(500px 170px at 13% 0,rgba(255,67,47,.055),transparent 75%),linear-gradient(180deg,rgba(9,11,13,.92),rgba(5,6,8,.72))}.hearthCanvas>.livingCanvas .livingHead{padding-top:7px}.pulseField{position:relative;margin-top:30px}.pulseField:before{content:"";position:absolute;left:0;right:0;top:-15px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.065) 18%,rgba(255,83,48,.11) 50%,rgba(255,255,255,.065) 82%,transparent)}.pulseField .feedHead{margin-top:0}.pulseField .composer{position:relative;z-index:1;background:linear-gradient(110deg,rgba(17,20,25,.93),rgba(8,10,12,.94));border-color:rgba(255,255,255,.085)}.pulseField .feed{position:relative}.pulseField .hearthQuiet{border-radius:20px;background:radial-gradient(300px 120px at 50% 0,rgba(255,67,47,.035),transparent 72%)}html{scroll-behavior:smooth}
 @media(max-width:760px){.hearthCanvas{padding-bottom:95px}.hearthHero{display:block;min-height:auto;padding:31px 20px 24px;border-radius:21px 21px 7px 7px}.hearthHero h1{font-size:47px}.hearthHero .heroActions{margin-top:22px}.hearthCanvas>.livingCanvas{border-radius:7px 7px 20px 20px}.pulseField{margin-top:25px}}
+
+/* 2.1 Ocak · Unified Canvas final pass */
+.hearthCanvas{max-width:980px;margin:0 auto;padding-bottom:44px}
+.hearthHero{min-height:255px;grid-template-columns:minmax(0,1fr) auto;padding:38px 34px 28px;border-radius:26px 26px 0 0;border-bottom:0;background:radial-gradient(650px 330px at 12% -8%,rgba(255,67,47,.14),transparent 67%),radial-gradient(420px 250px at 92% 0,rgba(255,82,48,.045),transparent 72%),linear-gradient(145deg,rgba(14,16,19,.95),rgba(6,7,9,.96))}
+.hearthHero>div:first-child{min-width:0}
+.hearthHero h1{font-size:clamp(54px,5.3vw,76px);line-height:.88;max-width:680px;margin:14px 0 16px}
+.hearthHero h1 span{white-space:nowrap}
+.hearthHero p{max-width:610px;font-size:14px}
+.hearthHero .heroActions{align-self:end;padding-bottom:2px}
+.hearthCanvas>.livingCanvas{margin:0;padding:19px 20px 21px;border-radius:0 0 26px 26px;border-top:0;background:linear-gradient(180deg,rgba(7,9,11,.96),rgba(5,6,8,.91))}
+.hearthCanvas>.livingCanvas:before{content:"";position:absolute;left:20px;right:20px;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.075) 20%,rgba(255,80,45,.13) 50%,rgba(255,255,255,.075) 80%,transparent)}
+.hearthCanvas>.livingCanvas .livingHead{padding:8px 3px 15px}
+.hearthCanvas .livingWorld{gap:10px}
+.hearthCanvas .worldZone{border-color:rgba(255,255,255,.055);background:rgba(255,255,255,.012)}
+.pulseField{margin-top:18px;padding-top:23px}
+.pulseField:before{top:0;opacity:.7}
+.pulseField .feedHead{padding:0 2px 9px}
+.pulseField .feedHead h2{font-size:27px}
+.pulseField .composer{margin-bottom:10px}
+.pulseField .hearthQuiet{min-height:145px;margin-top:4px;padding:25px 18px;background:radial-gradient(260px 100px at 50% 18%,rgba(255,67,47,.055),transparent 75%)}
+.pulseField .hearthQuiet .quietEmber{animation:qBreath 2.6s ease-in-out infinite}
+.emberExpand:has(.expandEmpty){max-width:680px}
+.emberExpand:has(.expandEmpty) .expandGrid{padding:0}
+.emberExpand:has(.expandEmpty) .expandEmpty{padding:34px 28px 38px}
+@media(min-width:1200px){.hearthCanvas{max-width:1040px}.hearthHero{padding-left:40px;padding-right:40px}.hearthCanvas>.livingCanvas{padding-left:25px;padding-right:25px}}
+@media(max-width:900px){.hearthHero h1{font-size:56px}.hearthHero p{max-width:500px}.hearthHero{gap:18px;padding-left:27px;padding-right:27px}.hearthHero .heroActions{min-width:145px}.hearthHero .heroActions .button{width:100%}}
+@media(max-width:760px){.hearthCanvas{width:100%;padding-bottom:84px}.hearthHero{display:block;padding:29px 20px 23px;border-radius:21px 21px 0 0}.hearthHero h1{font-size:46px;line-height:.91;margin:12px 0}.hearthHero h1 span{white-space:normal}.hearthHero p{font-size:12px}.hearthHero .heroActions{display:flex;margin-top:20px}.hearthHero .heroActions .button{width:auto}.hearthCanvas>.livingCanvas{padding:13px;border-radius:0 0 21px 21px}.hearthCanvas>.livingCanvas:before{left:13px;right:13px}.pulseField{margin-top:14px;padding-top:20px}.pulseField .hearthQuiet{min-height:125px}}
