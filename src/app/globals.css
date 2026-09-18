@@ -825,3 +825,124 @@ repeating-linear-gradient(90deg,transparent 0 13%,rgba(147,94,51,.045) 13.1%,tra
  .loginCardV5 .authButtons button{min-height:62px!important;padding:0 20px!important;grid-template-columns:25px 1fr 20px!important;gap:13px!important;border-radius:16px!important}
  .loginCardV5 .authButtons button span{font-size:14px!important}
 }
+
+/* Q-GANG typography system · one visual language */
+html,body,button,.button,select,textarea,input{
+ font-family:var(--qg-brand-font)!important;
+}
+body{font-weight:500;letter-spacing:.005em}
+button,.button,select,textarea,input{letter-spacing:.015em}
+p,.intro,.muted,.post>p,.railCard p{letter-spacing:.01em}
+h1,h2,h3,h4,h5,h6,.pageHead h1,.fireHero h1,.profileHero h1{
+ font-family:var(--qg-brand-font)!important;
+ font-weight:600;
+ letter-spacing:.01em!important;
+}
+.kicker,.fireHero>span{font-family:var(--qg-brand-font)!important;letter-spacing:.18em!important}
+
+/* Login V6 · compact frame + visible ember crest */
+.loginPortalV5{
+ width:min(500px,calc(100vw - 34px))!important;
+}
+.loginCrestV5{
+ width:132px!important;
+ height:132px!important;
+ margin:0 0 3px!important;
+}
+.loginCrestV5 img{
+ width:104px!important;
+ height:104px!important;
+ animation:qgangCrestGlowV6 4.8s ease-in-out infinite!important;
+}
+.loginEmber{
+ inset:0!important;
+ opacity:.85!important;
+ filter:blur(3px)!important;
+ background:
+  radial-gradient(circle at 50% 52%,rgba(255,139,57,.26) 0 9%,rgba(227,70,25,.24) 20%,rgba(159,33,14,.14) 38%,transparent 65%),
+  conic-gradient(from 0deg,transparent 0 6%,rgba(255,103,35,.24) 8%,transparent 12% 25%,rgba(201,47,18,.18) 29%,transparent 34% 53%,rgba(255,116,40,.20) 57%,transparent 62% 79%,rgba(189,42,18,.18) 83%,transparent 88%);
+ animation:qgangEmberPulseV6 4.8s ease-in-out infinite!important;
+}
+.loginEmber:before{
+ content:"";
+ position:absolute;
+ inset:27%;
+ border-radius:50%;
+ background:rgba(216,57,22,.13);
+ box-shadow:0 0 14px rgba(255,105,39,.32),0 0 29px rgba(203,48,20,.22),0 0 48px rgba(131,28,14,.12);
+ animation:qgangCoalCore 4.8s ease-in-out infinite;
+}
+.loginEmber:after{
+ inset:16%!important;
+ box-shadow:0 0 15px rgba(245,82,30,.30),0 0 31px rgba(190,43,19,.20)!important;
+}
+@keyframes qgangCrestGlowV6{
+ 0%,100%{filter:drop-shadow(0 8px 18px rgba(0,0,0,.72)) drop-shadow(0 0 4px rgba(170,39,18,.28));transform:scale(1)}
+ 48%{filter:drop-shadow(0 8px 18px rgba(0,0,0,.72)) drop-shadow(0 0 13px rgba(246,83,29,.62));transform:scale(1.018)}
+}
+@keyframes qgangEmberPulseV6{
+ 0%,100%{opacity:.48;transform:scale(.91) rotate(-3deg)}
+ 48%{opacity:.94;transform:scale(1.08) rotate(2deg)}
+}
+@keyframes qgangCoalCore{
+ 0%,100%{opacity:.30;transform:scale(.86)}
+ 48%{opacity:.90;transform:scale(1.08)}
+}
+.loginClaimV5{
+ font-family:var(--qg-brand-font)!important;
+ font-size:clamp(39px,4.1vw,52px)!important;
+ font-weight:600!important;
+ letter-spacing:.015em!important;
+}
+.loginClaimV5 em{
+ font-family:var(--qg-brand-font)!important;
+ font-style:italic!important;
+ font-weight:600!important;
+}
+.loginDividerV5{
+ width:76%!important;
+ height:24px!important;
+ margin:5px 0 -1px!important;
+}
+.loginCardV5{
+ width:100%!important;
+ padding:31px 36px!important;
+ border-radius:23px!important;
+ border-color:rgba(158,91,56,.42)!important;
+ background:linear-gradient(145deg,rgba(15,10,8,.48),rgba(7,6,5,.61))!important;
+ backdrop-filter:blur(8px) saturate(.88)!important;
+ -webkit-backdrop-filter:blur(8px) saturate(.88)!important;
+ box-shadow:0 20px 55px rgba(0,0,0,.34),inset 0 0 0 1px rgba(230,166,108,.025)!important;
+}
+.loginCardV5:before,.loginCardV5:after{width:25px!important;height:25px!important}
+.loginCardV5 .authButtons{
+ gap:12px!important;
+ margin:0!important;
+}
+.loginCardV5 .authButtons button{
+ min-height:56px!important;
+ padding:0 25px!important;
+ grid-template-columns:24px 1fr 20px!important;
+ gap:13px!important;
+ border-radius:14px!important;
+}
+.loginCardV5 .authButtons button span{
+ font-family:var(--qg-brand-font)!important;
+ font-size:13px!important;
+ letter-spacing:.015em!important;
+}
+.authArrow{
+ font-family:var(--qg-brand-font)!important;
+ font-size:18px!important;
+}
+@media(prefers-reduced-motion:reduce){
+ .loginEmber:before{animation:none!important}
+}
+@media(max-width:760px){
+ .loginPortalV5{width:min(440px,calc(100vw - 26px))!important}
+ .loginCrestV5{width:112px!important;height:112px!important}
+ .loginCrestV5 img{width:88px!important;height:88px!important}
+ .loginClaimV5{font-size:clamp(35px,10vw,46px)!important}
+ .loginCardV5{padding:25px 18px!important;border-radius:20px!important}
+ .loginCardV5 .authButtons button{min-height:54px!important;padding:0 17px!important}
+}
