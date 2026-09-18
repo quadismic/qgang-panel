@@ -1166,3 +1166,17 @@ h1,h2,h3,h4,h5,h6,.commandBrand>strong,.pageHead h1,.fireHero h1,.profileHero h1
 
 /* Q-GANG identity plate */
 .miniMask{overflow:hidden}.miniMask img{width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit}
+
+/* Q-GANG rank insignia system */
+.rankInsignia{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;line-height:1}
+.rankInsignia img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 2px 5px rgba(0,0,0,.58))}
+.rankInsignia-xs{width:23px;height:23px}
+.rankInsignia-sm{width:34px;height:34px}
+.rankInsignia-md{width:48px;height:48px}
+.rankInsignia-lg{width:68px;height:68px}
+.rankInsignia b{margin-left:7px}
+.commandIdentityName{display:flex!important;align-items:center;gap:6px;max-width:142px!important}
+.commandIdentityName .rankInsignia{margin-left:-2px}
+.orgRankTitle{display:flex!important;align-items:center;justify-content:center;gap:8px}
+.orgInsignia{display:flex!important;align-items:center;justify-content:center;gap:6px}
+.orgInsignia>i{display:none!important}
