@@ -1,6 +1,17 @@
 export const brandTheme = {
   mark: "/brand/qgang-mark.png",
   seal: "/brand/quad-seal.png",
+  world: {
+    master: "/brand/world/qgang-fortress-master.png",
+    views: {
+      headquarters: { position: "50% 48%", size: "150%" },
+      codex: { position: "8% 43%", size: "245%" },
+      registry: { position: "29% 44%", size: "235%" },
+      decrees: { position: "39% 72%", size: "250%" },
+      tribunal: { position: "82% 43%", size: "240%" },
+      treasury: { position: "69% 73%", size: "250%" },
+    },
+  },
   command: {
     background: "/brand/command/background.webp",
     quad: "/brand/command/quad.webp",
@@ -12,10 +23,4 @@ export const brandTheme = {
     ],
   },
 } as const;
-
-/**
- * Brand/theme assets live under public/brand.
- * Missing optional council assets are intentionally not rendered until enabled.
- * Swap paths here to reskin Q-GANG without touching page components.
- */
 export const enabledCouncilMembers = [] as const;
