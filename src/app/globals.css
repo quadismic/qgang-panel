@@ -513,3 +513,19 @@ repeating-linear-gradient(90deg,transparent 0 13%,rgba(147,94,51,.045) 13.1%,tra
 .designPreview{padding:16px;display:flex;flex-direction:column;min-width:0}.designPreview>header{display:flex;align-items:center;justify-content:space-between;padding:3px 4px 14px}.designPreview>header a{font-size:9px;color:#9a7655}.previewStage{position:relative;flex:1;min-height:520px;overflow:hidden;border:1px solid #2d211a;background:radial-gradient(circle at 58% 32%,#32100c,#090706 45%,#030303 80%);display:grid;grid-template-columns:var(--qg-sidebar-width,182px) 1fr}.previewRail{padding:26px 14px;background:#080706;border-right:1px solid #2b1c17;display:flex;flex-direction:column;align-items:center;color:var(--qg-bone,#e8ddcb)}.previewEmblem{width:var(--qg-sidebar-emblem,58px);height:var(--qg-sidebar-emblem,58px);border:1px solid var(--qg-primary,#a71b18);border-radius:50%;display:grid;place-items:center;font:600 20px var(--qg-brand-font);color:var(--qg-primary,#a71b18)}.previewRail strong{margin:8px 0 16px;font:600 16px var(--qg-brand-font);letter-spacing:.1em}.previewRail i{width:70%;height:1px;background:#3a2119;margin-bottom:20px}.previewRail span{width:100%;padding:10px;color:#9b8c7d;font-size:10px}.previewHero{position:relative;display:grid;place-items:end center;padding-bottom:30px;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,var(--qg-hero-overlay,.42)))}.previewQuad{position:absolute;top:var(--qg-quad-top,0px);left:50%;transform:translateX(-50%);width:min(var(--qg-quad-width,560px),75%);aspect-ratio:1/1.1;display:grid;place-items:center;border:1px solid rgba(157,75,49,.15);background:radial-gradient(ellipse,#29100d,transparent 66%);font:600 28px var(--qg-brand-font);color:#6d3028}.previewHero button{z-index:2;padding:9px 15px;border:1px solid #7b2a20;background:#60150f;color:#e7d9c8;font:600 8px var(--qg-brand-font);letter-spacing:.08em}.designPreview>p{margin:12px 4px 0;color:#70675f;font-size:10px}
 @media(max-width:1050px){.designCenter{grid-template-columns:1fr}.designPreview{min-height:600px}}
 @media(max-width:760px){.appShell{grid-template-columns:1fr}.designCenter{display:block}.designPreview{margin-top:12px}.previewStage{grid-template-columns:120px 1fr;min-height:420px}}
+
+/* Karargah responsive composition
+   Background uses cover; Quad follows the same hero-relative scale instead of a fixed px width. */
+.commandHero{container-type:inline-size}
+.commandPortrait{
+  width:calc(var(--qg-quad-scale,1) * 43cqw)!important;
+  max-width:none!important;
+  height:78%!important;
+  top:calc(var(--qg-quad-y,0) * 1cqh)!important;
+}
+@supports not (width:1cqw){
+  .commandPortrait{width:calc(var(--qg-quad-scale,1) * 43%)!important;top:0!important}
+}
+@media(max-width:760px){
+  .commandPortrait{width:calc(var(--qg-quad-scale,1) * 48cqw)!important;height:76%!important}
+}
