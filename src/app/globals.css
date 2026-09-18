@@ -1137,3 +1137,29 @@ h1,h2,h3,h4,h5,h6,.commandBrand>strong,.pageHead h1,.fireHero h1,.profileHero h1
  text-overflow:ellipsis;
  white-space:nowrap;
 }
+
+/* Q-GANG SVG icon system · single stroke / scale / state language */
+.qgIcon{
+ display:block;
+ width:20px;
+ height:20px;
+ flex:0 0 20px;
+ color:var(--qg-bronze,#9a7655);
+ vector-effect:non-scaling-stroke;
+ transition:color .18s ease,filter .18s ease,transform .18s ease,opacity .18s ease;
+}
+.commandRail nav .qgIcon,.navBottom .qgIcon,.hubMobile .qgIcon{width:19px;height:19px}
+.commandRail nav a:not(.active) .qgIcon,.navBottom a .qgIcon{color:rgba(164,126,91,.72)}
+.commandRail nav a.active .qgIcon,.hubMobile a.active .qgIcon{color:var(--qg-primary,#a71b18);filter:drop-shadow(0 0 5px rgba(167,27,24,.24))}
+.commandRail nav a:hover .qgIcon,.navBottom a:hover .qgIcon,.hubMobile a:hover .qgIcon{color:#b9513c;filter:drop-shadow(0 0 5px rgba(167,27,24,.18));transform:translateY(-1px)}
+.commandModules .qgIcon{width:20px;height:20px;color:#a86549}
+.commandPanel:hover .qgIcon{color:#c34932;filter:drop-shadow(0 0 6px rgba(167,27,24,.22))}
+.commandPanel footer .qgIcon{width:13px;height:13px}
+.codexSceneMark .qgIcon{width:38px;height:38px}
+.codexToolbar .qgIcon{width:18px;height:18px;color:rgba(201,177,145,.78)}
+.codexIndex>header .qgIcon,.codexDetail>header .qgIcon,.tribunalLedger>header .qgIcon{display:inline-block;width:14px;height:14px;vertical-align:-3px;margin-right:6px}
+.codexDetail>header b .qgIcon{width:11px;height:11px;color:#657c57}
+.orgRankTitle .qgIcon,.orgInsignia .qgIcon{width:18px;height:18px}
+.orgEmpty>span .qgIcon,.decreeEmpty>span .qgIcon,.tribunalEmpty>span .qgIcon,.treasuryEmpty>span .qgIcon{width:30px;height:30px;margin:0 auto;color:var(--qg-primary,#a71b18)}
+.treasuryEmpty>span .qgIcon{color:#a56b36}
+@media(max-width:760px){.hubMobile .qgIcon{width:18px;height:18px}}
