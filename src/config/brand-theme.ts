@@ -1,5 +1,6 @@
 export const brandTheme = {
   mark: "/brand/qgang-mark.png",
+  emblem: "/brand/qgang-emblem.webp",
   seal: "/brand/quad-seal.png",
   login: "/brand/login/background.webp",
   rooms: {
