@@ -445,3 +445,10 @@ repeating-linear-gradient(90deg,transparent 0 13%,rgba(147,94,51,.045) 13.1%,tra
 .commandBrand .qgBrandArtwork{width:58px!important;height:58px!important;display:grid!important;place-items:center!important;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important}
 .commandBrand .qgBrandArtwork img{width:58px!important;height:58px!important;object-fit:contain!important;filter:drop-shadow(0 5px 14px rgba(116,25,19,.32))!important}
 @media(max-width:760px){.loginCrestV3 img{width:76px!important;height:76px!important;flex-basis:76px}}
+
+/* Q-GANG official brand typography · Cinzel */
+:root{--qg-brand-font:var(--font-qgang),Georgia,"Times New Roman",serif}
+.commandBrand>strong,.loginCrestV3 strong{font-family:var(--qg-brand-font)!important;font-weight:600!important;letter-spacing:.12em!important;text-transform:uppercase}
+.commandBrand>small,.loginCrestV3 small,.loginMottoV3,.commandCreed{font-family:var(--qg-brand-font)!important;font-weight:500!important;letter-spacing:.20em!important}
+.commandBrand>strong{letter-spacing:.10em!important}
+.loginCrestV3 strong{letter-spacing:.14em!important}
