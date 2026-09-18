@@ -529,3 +529,41 @@ repeating-linear-gradient(90deg,transparent 0 13%,rgba(147,94,51,.045) 13.1%,tra
 @media(max-width:760px){
   .commandPortrait{width:calc(var(--qg-quad-scale,1) * 48cqw)!important;height:76%!important}
 }
+
+/* Responsive Karargah character composition v2 */
+.commandHero{container-type:size}
+.commandPortrait{
+ width:calc(var(--qg-quad-scale,1) * 43cqw)!important;
+ height:78%!important;
+ top:calc(var(--qg-quad-y,0) * 1cqh)!important;
+ max-width:none!important;
+}
+.councilMember{
+ bottom:auto!important;
+ top:calc(18% + (var(--council-y,0) * 1%))!important;
+ width:calc(var(--council-scale,1) * 23cqw)!important;
+ height:64%!important;
+ max-width:none!important;
+ object-fit:contain!important;
+ object-position:center bottom!important;
+}
+.councilMember.left-1{left:10%!important}.councilMember.left-2{left:24%!important}
+.councilMember.right-1{right:10%!important}.councilMember.right-2{right:24%!important}
+@supports not (width:1cqw){
+ .commandPortrait{width:calc(var(--qg-quad-scale,1) * 43%)!important;top:0!important}
+ .councilMember{width:calc(var(--council-scale,1) * 23%)!important}
+}
+@media(max-width:760px){
+ .commandPortrait{width:calc(var(--qg-quad-scale,1) * 48cqw)!important}
+ .councilMember{width:calc(var(--council-scale,1) * 25cqw)!important;height:58%!important}
+}
+
+/* Design Center · council manager */
+.designSubhead{display:block;margin:22px 0 9px;font:600 8px var(--qg-brand-font);letter-spacing:.22em;color:#9a7655}
+.councilEditor{border-top:1px solid #2c211a;margin-top:18px}
+.councilSlot{padding:11px 0;border-bottom:1px solid #241b16}
+.councilToggle{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:9px;cursor:pointer}
+.councilToggle input{accent-color:var(--qg-primary,#a71b18)}
+.councilToggle b{font:600 9px var(--qg-brand-font);letter-spacing:.08em;color:#c7b6a2}
+.councilToggle em{font-style:normal;font-size:8px;color:#756a60}
+.councilSlot .designField{margin:12px 0 5px;padding-left:23px}
