@@ -2,7 +2,7 @@ import Link from "next/link";
 import {brandTheme} from "@/config/brand-theme";
 import {AppShell} from "@/components/AppShell";
 import {createClient} from "@/lib/supabase/server";
-import {roleLabel} from "@/lib/roles";
+import {roleLabel} from "@/lib/roles";\nimport {RankInsignia} from "@/components/RankInsignia";
 export const dynamic="force-dynamic";
 
 const levels=["founder","admin","moderator","community","member"] as const;
@@ -22,11 +22,11 @@ export default async function Members(){
    <header><span>TEŞKİLAT ŞEMASI</span><b>HİYERARŞİK DÜZEN</b></header>
    {groups.length?<div className="orgTree">{groups.map((group,gi)=><div className={"orgLevel org-"+group.role} key={group.role}>
     {gi>0&&<div className="orgTrunk" aria-hidden="true"/>}
-    <div className="orgRankTitle"><span>{rankIcon[group.role]}</span>{roleLabel(group.role)}</div>
+    <div className="orgRankTitle"><RankInsignia role={group.role} size="sm"/>{roleLabel(group.role)}</div>
     <div className="orgBranch">{group.people.map((p:any)=><Link href={"/u/"+p.handle} className="orgPerson" key={p.id}>
       <div className="orgPortrait">{p.avatar_url?<img src={p.avatar_url} alt=""/>:<span>{p.display_name?.slice(0,1).toUpperCase()||"Q"}</span>}</div>
       <strong>{p.display_name}</strong><small>@{p.handle}</small>
-      <div className="orgInsignia"><i>{rankIcon[p.role]||"•"}</i><b>{roleLabel(p.role)}</b></div>
+      <div className="orgInsignia"><RankInsignia role={p.role} size="sm"/><b>{roleLabel(p.role)}</b></div>
     </Link>)}</div>
    </div>)}</div>:<div className="orgEmpty"><span>◇</span><h2>Teşkilat henüz oluşturulmadı.</h2><p>Üyeler katıldıkça hiyerarşi burada şekillenecek.</p></div>}
   </section>
