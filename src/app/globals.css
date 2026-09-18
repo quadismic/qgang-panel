@@ -1180,3 +1180,7 @@ h1,h2,h3,h4,h5,h6,.commandBrand>strong,.pageHead h1,.fireHero h1,.profileHero h1
 .orgRankTitle{display:flex!important;align-items:center;justify-content:center;gap:8px}
 .orgInsignia{display:flex!important;align-items:center;justify-content:center;gap:6px}
 .orgInsignia>i{display:none!important}
+
+/* Canonical motto: centered */
+.commandMottoClean{display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important}
+.commandMottoClean blockquote{width:100%!important;margin:0 auto!important;text-align:center!important}
