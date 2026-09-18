@@ -1,5 +1,5 @@
 "use client";
 import Link from "next/link";import {usePathname} from "next/navigation";
 import {brandTheme} from "@/config/brand-theme";
-const items=[["/","⌂","Karargâh"],["/rules","§","Kurallar"],["/members","♙","Topluluk"],["/announcements","▤","Duyurular"],["/penalties","⚖","Cezalar"],["/fund","▣","Bütçe"]] as const;
+const items=[["/","⌂","Karargâh"],["/rules","§","Kurallar"],["/members","♙","Topluluk"],["/announcements","▤","Duyurular"],["/penalties","⚖","Disiplin"],["/budget","▣","Bütçe"]] as const;
 export function NavClient({manage}:{unread:number;community:boolean;manage:boolean}){const path=usePathname();return <aside className="nav commandRail"><Link href="/" className="commandBrand"><span className="qgBrandArtwork" aria-hidden="true"><img src={brandTheme.emblem} alt=""/></span><strong>Q-GANG</strong><b/></Link><div className="commandCreed">DISCIPLINA<br/>UNITAS<br/>POTENTIA</div><nav>{items.map(([href,icon,label])=><Link key={href} className={(href==="/"?path==="/":path.startsWith(href))?"active":""} href={href}><i>{icon}</i><span>{label}</span><b/></Link>)}</nav><div className="navBottom"><div className="commandIdentity"><span className="miniMask"><i/></span><div><strong>QUADISMIC</strong><small>LİDER</small></div></div>{manage&&<Link href="/control"><i>⚙</i><span>Yönetim</span></Link>}</div></aside>}
