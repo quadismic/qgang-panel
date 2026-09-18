@@ -1,7 +1,7 @@
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {brandTheme} from "@/config/brand-theme";
-import "./onboarding.css";
+import "./onboarding.css";\nimport {eraLabel} from "@/lib/identity";
 
 export const dynamic="force-dynamic";
 
@@ -29,7 +29,7 @@ export default async function Onboarding({searchParams}:{searchParams:Promise<{n
       <label><span>DOĞUM TARİHİ</span><input name="birth_date" type="date" min="1900-01-01" max={new Date().toISOString().slice(0,10)} required/><em>Gizlidir; topluluk profilinde yayınlanmaz.</em></label>
       <div className="identityGatePreview">
        <div>{p?.avatar_url?<img src={p.avatar_url} alt="" referrerPolicy="no-referrer"/>:<span>Q</span>}</div>
-       <section><small>Q-GANG MÜHRÜ</small><b>{p?.qgang_seal?((p.qgang_era??1)+" · "+p.qgang_seal):"I · ••••"}</b><em>Mühür değiştirilemez.</em></section>
+       <section><small>Q-GANG MÜHRÜ</small><b>{p?.qgang_seal?(eraLabel(p.qgang_era)+" · "+p.qgang_seal):"I · ••••"}</b><em>Mühür değiştirilemez.</em></section>
       </div>
       <button className="identityGateSubmit">KİMLİĞİNİ OLUŞTUR</button>
     </form>
