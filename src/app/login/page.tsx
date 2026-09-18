@@ -6,7 +6,7 @@ export default function Login(){
     <div className="loginGateShade" aria-hidden="true"/>
     <section className="loginPortal loginPortalV3">
       <header className="loginCrest loginCrestV3">
-        <img src={brandTheme.mark} alt="Q-GANG"/>
+        <img src={brandTheme.emblem} alt="Q-GANG"/>
         <div><strong>Q-GANG</strong><small>DISCIPLINA · UNITAS · POTENTIA</small></div>
       </header>
       <div className="loginCard loginCardV3">
