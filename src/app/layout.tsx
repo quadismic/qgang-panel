@@ -8,11 +8,12 @@ import "./checkpoint-c.css";
 import "./checkpoint-c2.css";
 import "./one-surface.css";
 import {EmberStage} from "@/components/EmberStage";
+import {DesignRuntime} from "@/components/DesignRuntime";
 
 const cinzel=Cinzel({subsets:["latin"],weight:["400","500","600","700"],variable:"--font-qgang",display:"swap"});
 
 export const metadata:Metadata={title:"Q-GANG",description:"Play. Create. Connect."};
 
 export default function RootLayout({children}:Readonly<{children:React.ReactNode}>){
-  return <html lang="tr" className={cinzel.variable}><body><EmberStage>{children}</EmberStage></body></html>
+  return <html lang="tr" className={cinzel.variable}><body><DesignRuntime/><EmberStage>{children}</EmberStage></body></html>
 }
