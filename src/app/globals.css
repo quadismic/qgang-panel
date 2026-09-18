@@ -567,3 +567,20 @@ repeating-linear-gradient(90deg,transparent 0 13%,rgba(147,94,51,.045) 13.1%,tra
 .councilToggle b{font:600 9px var(--qg-brand-font);letter-spacing:.08em;color:#c7b6a2}
 .councilToggle em{font-style:normal;font-size:8px;color:#756a60}
 .councilSlot .designField{margin:12px 0 5px;padding-left:23px}
+
+/* Design Center V2 · live assets + council positioning */
+.loginV3{background-image:var(--qg-login-bg,url("/brand/login/background.webp"))!important}
+.codexScene.roomScene{background-image:linear-gradient(90deg,rgba(4,3,2,.76),rgba(4,3,2,.25)),var(--qg-room-codex)!important}
+.registryHero.roomScene{background-image:linear-gradient(90deg,rgba(4,3,2,.76),rgba(4,3,2,.25)),var(--qg-room-registry)!important}
+.decreeHero.roomScene{background-image:linear-gradient(90deg,rgba(4,3,2,.76),rgba(4,3,2,.25)),var(--qg-room-decrees)!important}
+.tribunalHero.roomScene{background-image:linear-gradient(90deg,rgba(4,3,2,.76),rgba(4,3,2,.25)),var(--qg-room-tribunal)!important}
+.treasuryHero.roomScene{background-image:linear-gradient(90deg,rgba(4,3,2,.76),rgba(4,3,2,.25)),var(--qg-room-treasury)!important}
+.councilMember.left{transform:translateX(calc(var(--council-x,0) * 1cqw))!important}
+.councilMember.right{transform:translateX(calc(var(--council-x,0) * 1cqw))!important}
+
+/* Design Center V2 */
+.designPreview iframe{width:100%;flex:1;min-height:650px;border:1px solid #2d211a;background:#030303}
+.assetGrid{display:grid;gap:8px;padding:5px 0 15px}.assetRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px;border:1px solid #2c211a;background:#090807}.assetRow>div{min-width:0;display:grid;gap:4px}.assetRow b{font-size:9px;color:#c7b6a2}.assetRow small{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#6f655d;font-size:8px}
+.assetUpload{display:inline-flex;align-items:center;justify-content:center;min-width:86px;padding:8px 9px;border:1px solid #4b3025;background:#100c0a;color:#a99785;font-size:8px;cursor:pointer}.assetUpload:hover{border-color:#8c382a;color:#dfd1c0}.assetUpload input{display:none}
+.designHistory{display:grid;gap:6px;padding:5px 0 15px}.designHistory button{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px;border:1px solid #2b211a;background:#090807;color:#9d8f81;cursor:pointer;text-align:left}.designHistory button:hover{border-color:#6d2c22}.designHistory b{font-size:9px;font-weight:500}.designHistory span{font-size:8px;color:#a94435}.designHistory p{font-size:10px;color:#756b62}
+@media(max-width:1050px){.designPreview iframe{min-height:560px}}
