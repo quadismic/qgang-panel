@@ -423,3 +423,19 @@ repeating-linear-gradient(90deg,transparent 0 13%,rgba(147,94,51,.045) 13.1%,tra
 .loginMotto{margin-top:19px;color:#74685e;font-family:Georgia,"Times New Roman",serif;font-size:12px;font-style:italic}
 .loginSideMotto{position:absolute;z-index:3;bottom:28px;color:#5f4b3c;font-family:Georgia,"Times New Roman",serif;font-size:9px;letter-spacing:.3em}.loginSideLeft{left:34px}.loginSideRight{right:34px}
 @media(max-width:760px){.loginV2{padding:28px 15px}.loginMonument,.loginSideMotto{display:none}.loginCrest{margin-bottom:16px}.loginCrest img{width:52px;height:52px}.loginCrest strong{font-size:22px}.loginCrest small{font-size:6px}.loginCardV2{padding:35px 24px 28px}.loginCardV2 h1{font-size:40px}.loginCardV2>p{font-size:13px}.loginIdentity{gap:3px}.loginIdentity span{font-size:7px}}
+
+/* Q-GANG Login V3 · Ana Kapı */
+.loginV3{position:relative;min-height:100vh;overflow:hidden;display:grid;place-items:center;padding:40px 24px;background-image:url("/brand/login/background.webp")!important;background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important}
+.loginV3:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(0,0,0,.34),rgba(0,0,0,.08) 28%,rgba(0,0,0,.08) 72%,rgba(0,0,0,.34)),linear-gradient(180deg,rgba(0,0,0,.20),rgba(0,0,0,.05) 48%,rgba(0,0,0,.30));pointer-events:none}
+.loginV3:after{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at center,transparent 20%,rgba(0,0,0,.42) 100%);pointer-events:none}
+.loginGateShade{position:absolute;z-index:2;inset:0;background:radial-gradient(ellipse at 50% 47%,rgba(0,0,0,.08) 0,rgba(0,0,0,.17) 27%,transparent 58%);pointer-events:none}
+.loginPortalV3{z-index:3;width:min(510px,calc(100vw - 36px))}
+.loginCrestV3{margin-bottom:16px;padding:9px 18px;border:1px solid rgba(154,102,63,.24);background:rgba(5,5,4,.58);backdrop-filter:blur(10px);box-shadow:0 12px 40px rgba(0,0,0,.28)}
+.loginCrestV3 img{width:54px;height:54px}
+.loginCrestV3 strong{font-size:24px}.loginCrestV3 small{font-size:7px}
+.loginCardV3{padding:38px 44px 34px;background:linear-gradient(145deg,rgba(9,9,8,.93),rgba(4,5,5,.96));border-color:rgba(172,111,65,.5);box-shadow:0 30px 80px rgba(0,0,0,.58),inset 0 0 0 4px rgba(0,0,0,.4),inset 0 0 0 5px rgba(143,84,49,.14)}
+.loginCardV3 h1{margin:18px 0 14px;font-size:clamp(44px,5vw,56px)}
+.loginCardV3>p{margin:0 auto 24px;max-width:360px;font-size:13px;line-height:1.6}
+.loginCardV3 .authButtons button{min-height:52px}
+.loginMottoV3{margin-top:15px;padding:7px 13px;background:rgba(4,4,3,.48);color:#a38a70;font-style:normal;font-size:8px;letter-spacing:.28em;backdrop-filter:blur(6px)}
+@media(max-width:760px){.loginV3{padding:24px 14px;background-position:center center!important}.loginPortalV3{width:min(470px,calc(100vw - 28px))}.loginCrestV3{padding:7px 14px}.loginCardV3{padding:32px 22px 28px}.loginCardV3 h1{font-size:42px}}
