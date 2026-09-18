@@ -1,6 +1,7 @@
 import {AuthButtons} from "@/components/AuthButtons";
 import {createClient} from "@/lib/supabase/server";
 import {defaultDesign,normalizeDesign} from "@/lib/design";
+import {brandTheme} from "@/config/brand-theme";
 
 export default async function Login(){
   const s=await createClient();
@@ -12,7 +13,7 @@ export default async function Login(){
     <section className="loginPortal loginPortalV5">
       <header className="loginCrest loginCrestV5">
         <span className="loginEmber" aria-hidden="true"/>
-        <img src={design.emblemSrc} alt="Q-GANG"/>
+        <img src={brandTheme.emblem} alt="Q-GANG"/>
       </header>
       <h1 className="loginClaimV5">Yerini <em>al.</em></h1>
       <div className="loginDividerV5" aria-hidden="true"><i/><span>◇</span><i/></div>
