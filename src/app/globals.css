@@ -452,3 +452,42 @@ repeating-linear-gradient(90deg,transparent 0 13%,rgba(147,94,51,.045) 13.1%,tra
 .commandBrand>small,.loginCrestV3 small,.loginMottoV3,.commandCreed{font-family:var(--qg-brand-font)!important;font-weight:500!important;letter-spacing:.20em!important}
 .commandBrand>strong{letter-spacing:.10em!important}
 .loginCrestV3 strong{letter-spacing:.14em!important}
+
+/* Q-GANG Karargah cleanup · brand hierarchy */
+.commandBrand{padding-bottom:20px!important}
+.commandBrand>strong{margin-top:2px!important}
+.commandBrand>b{margin-top:10px!important}
+
+/* The throne scene carries the identity; only authentication action remains. */
+.commandTitleMinimal{
+  width:auto!important;
+  min-width:0!important;
+  bottom:10px!important;
+  padding:0!important;
+  background:none!important;
+}
+.commandTitleMinimal>a{
+  margin:0!important;
+  padding:9px 18px!important;
+}
+
+/* Motto strip now uses the official Q-GANG emblem, not the old character artwork. */
+.mottoArtwork.mottoEmblem{
+  display:grid!important;
+  place-items:center!important;
+  overflow:visible!important;
+  background:radial-gradient(circle at center,rgba(126,16,17,.13),transparent 58%)!important;
+}
+.mottoArtwork.mottoEmblem:before{display:none!important}
+.mottoArtwork.mottoEmblem img{
+  position:static!important;
+  width:82px!important;
+  height:82px!important;
+  transform:none!important;
+  object-fit:contain!important;
+  filter:drop-shadow(0 5px 14px rgba(120,18,16,.32))!important;
+}
+@media(max-width:760px){
+  .commandTitleMinimal{bottom:8px!important}
+  .mottoArtwork.mottoEmblem img{width:68px!important;height:68px!important}
+}
