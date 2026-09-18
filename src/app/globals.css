@@ -372,3 +372,6 @@ linear-gradient(145deg,rgba(24,20,17,.98),rgba(7,7,7,.99))}
 .decreeGrid.fullLedger .decreeLedger,.tribunalGrid.fullLedger .tribunalLedger{width:100%!important;max-width:none!important}
 .decreeGrid.hasEditor,.tribunalGrid.hasEditor{display:grid}
 @media(max-width:760px){.orgHero{min-height:220px}.orgTree{min-width:680px;padding-left:20px;padding-right:20px}.orgBranch{gap:18px}.orgPerson{width:112px}.orgChart{overflow-x:auto}.orgChart>header{position:sticky;left:0}.codexWax img{width:60%;height:60%}}
+
+/* Final Codex seal artwork */
+.codexWax img[src="/brand/codex/qgang-seal.png"]{width:100%!important;height:100%!important;object-fit:contain!important;filter:none!important;opacity:1!important;mix-blend-mode:normal!important;display:block}
