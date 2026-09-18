@@ -274,3 +274,12 @@ linear-gradient(145deg,rgba(24,20,17,.98),rgba(7,7,7,.99))}
  .commandTitle p{display:none}
  .commandTitle>i{margin:6px auto}
 }
+
+/* CODEX V1 */
+.codexHero{padding:42px 46px 30px;border:1px solid #2b211b;background:linear-gradient(120deg,#130b08,#080706 65%);position:relative;overflow:hidden}
+.codexHero:after{content:"§";position:absolute;right:5%;top:-35px;font:160px Georgia,serif;color:#7f2518;opacity:.12}
+.codexHero span,.codexEditor>span{font-size:9px;letter-spacing:.28em;color:#9a7655}.codexHero h1{font:42px Georgia,serif;margin:9px 0;color:#eee4d4}.codexHero p{color:#a99c8c;margin:0}
+.codexGrid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px;margin-top:14px}.codexGrid .rulesLedger{margin:0}
+.rulesLedger article{grid-template-columns:72px 1fr auto}.rulesLedger article div p{max-width:760px;white-space:pre-wrap;color:#b7aa9a;line-height:1.65}.rulesLedger article time{display:block;margin-top:10px;font-size:9px;letter-spacing:.08em;color:#76685b}
+.codexEditor{border:1px solid #30231b;background:linear-gradient(180deg,#130c09,#080706);padding:24px;height:max-content;position:sticky;top:18px}.codexEditor h2{font:22px Georgia,serif;color:#e8ddcc;margin:8px 0 22px}.codexEditor form{display:grid;gap:14px}.codexEditor label{display:grid;gap:6px;font-size:9px;letter-spacing:.14em;color:#8f7b68}.codexEditor input,.codexEditor select,.codexEditor textarea{width:100%;box-sizing:border-box;border:1px solid #34251d;background:#080706;color:#ddd0bd;padding:11px;font:12px Georgia,serif;outline:none}.codexEditor textarea{resize:vertical}.codexEditor input:focus,.codexEditor select:focus,.codexEditor textarea:focus{border-color:#873022}.codexEditor button{border:1px solid #7f291d;background:#35100c;color:#e8d9c5;padding:12px;letter-spacing:.14em;font-size:9px;cursor:pointer}.codexEditor button:hover{background:#4a1510}
+@media(max-width:1050px){.codexGrid{grid-template-columns:1fr}.codexEditor{position:static}}@media(max-width:760px){.codexHero{padding:28px 22px}.codexHero h1{font-size:34px}.rulesLedger article{grid-template-columns:45px 1fr}.rulesLedger article>em{grid-column:2}}
