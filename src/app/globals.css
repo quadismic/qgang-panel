@@ -1065,3 +1065,75 @@ h1,h2,h3,h4,h5,h6,.commandBrand>strong,.pageHead h1,.fireHero h1,.profileHero h1
 .treasuryEditor input,.treasuryEditor select,.treasuryEditor textarea{
  font-family:var(--qg-ui-font)!important;
 }
+
+/* Rules polish + shared symbolic icon language */
+.codexQuote{
+ justify-content:flex-start!important;
+ padding:18px 24px!important;
+}
+.codexQuote i{
+ font-family:Georgia,"Times New Roman",serif!important;
+ font-size:15px!important;
+ font-weight:600!important;
+ font-style:italic!important;
+ color:rgba(222,207,188,.72)!important;
+ letter-spacing:.005em!important;
+ text-shadow:0 1px 12px rgba(0,0,0,.55);
+}
+.codexToolbar>div{
+ display:grid!important;
+ grid-template-columns:auto 1fr!important;
+ grid-template-rows:auto auto!important;
+ column-gap:8px!important;
+ row-gap:2px!important;
+ align-items:center!important;
+ min-width:122px!important;
+}
+.codexToolbar>div b{
+ grid-row:1 / 3!important;
+ display:inline-flex!important;
+ align-items:center!important;
+ gap:7px!important;
+ line-height:1!important;
+}
+.codexToolbar>div span{
+ grid-column:2!important;
+ grid-row:1 / 3!important;
+ align-self:center!important;
+ white-space:nowrap!important;
+}
+.qgMetricIcon{
+ position:relative;
+ display:inline-block;
+ width:18px;
+ height:18px;
+ flex:0 0 18px;
+ color:rgba(201,177,145,.78);
+}
+.metricDocument{border:1px solid currentColor;border-radius:2px}
+.metricDocument:before,.metricDocument:after{content:"";position:absolute;left:4px;right:4px;height:1px;background:currentColor}
+.metricDocument:before{top:5px;box-shadow:0 3px currentColor}.metricDocument:after{top:11px;right:7px}
+.metricSeal{border:1px solid currentColor;border-radius:50%;box-shadow:inset 0 0 0 3px rgba(154,118,85,.12)}
+.metricSeal:before{content:"";position:absolute;inset:4px;transform:rotate(45deg);border:1px solid currentColor}
+.metricArchive{border:1px solid currentColor;border-radius:2px;top:2px;height:14px}
+.metricArchive:before{content:"";position:absolute;left:-2px;right:-2px;top:-4px;height:3px;border:1px solid currentColor;border-radius:1px}
+.metricArchive:after{content:"";position:absolute;left:5px;right:5px;top:5px;height:1px;background:currentColor}
+
+/* Budget follows the same ledger rule as announcements/discipline */
+.treasuryGrid.fullLedger{
+ grid-template-columns:minmax(0,1fr)!important;
+}
+.treasuryGrid.fullLedger .treasuryLedger{
+ width:100%!important;
+ max-width:none!important;
+}
+
+/* Sidebar identity is the signed-in account, not a fixed founder badge */
+.commandIdentity>div{min-width:0}
+.commandIdentity strong{
+ display:block;
+ max-width:112px;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap;
+}
