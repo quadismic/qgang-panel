@@ -131,3 +131,36 @@
 .secureLine{height:35px;display:flex;align-items:center;gap:8px;padding:0 8px;color:#71675e;font:7px Georgia,serif;letter-spacing:.14em}.secureLine i{width:7px;height:7px;border-radius:50%;background:#50d38b;box-shadow:0 0 8px #50d38b}.secureLine span{margin-left:auto}
 @media(max-width:1000px){.commandModules{grid-template-columns:repeat(2,1fr)}.commandPanel:last-child{grid-column:1/-1}.commandHero{height:360px}.heroWords{display:none}}
 @media(max-width:760px){.appShell{display:block}.commandHQ{padding:0 10px 90px}.commandHero{height:330px}.commandFigure{transform:translateX(-50%) scale(.82);transform-origin:top center}.commandTitle{width:94%;bottom:18px}.commandTitle h1{font-size:42px}.commandTitle>b{font-size:14px}.commandModules{grid-template-columns:1fr}.commandPanel{min-height:250px}.commandMotto{grid-template-columns:1fr;height:120px;padding:24px}.commandMotto blockquote{font-size:17px}.commandMotto .mottoMask,.commandMotto>p{display:none}.commandRail{display:none}}
+
+/* KARARGAH PASS II — depth, heraldry, viewport composition */
+.commandHQ{min-height:100vh;display:flex;flex-direction:column}
+.commandHero{height:clamp(350px,38vh,455px);min-height:350px;background:
+linear-gradient(90deg,rgba(0,0,0,.93),transparent 25%,transparent 75%,rgba(0,0,0,.93)),
+linear-gradient(180deg,rgba(22,8,5,.1),rgba(0,0,0,.72)),
+radial-gradient(ellipse at 50% 34%,rgba(205,91,50,.28),transparent 30%),
+linear-gradient(105deg,#090706 0 17%,#1b100b 17.2% 18%,#090706 18.2% 34%,#25140d 34.2% 35%,#0b0807 35.2% 65%,#25140d 65.2% 66%,#090706 66.2% 82%,#1b100b 82.2% 83%,#090706 83.2%)}
+.commandHero:before{opacity:.8;background:
+linear-gradient(90deg,transparent 13%,rgba(112,63,37,.28) 13.1% 13.35%,transparent 13.45% 31%,rgba(112,63,37,.22) 31.1% 31.35%,transparent 31.45% 68%,rgba(112,63,37,.22) 68.1% 68.35%,transparent 68.45% 86%,rgba(112,63,37,.28) 86.1% 86.35%,transparent 86.45%),
+linear-gradient(180deg,transparent 64%,rgba(0,0,0,.82))}
+.commandHero:after{bottom:48px;box-shadow:0 -60px 90px rgba(0,0,0,.42)}
+.commandFigure{top:8px;width:390px;height:355px;filter:drop-shadow(0 20px 20px rgba(0,0,0,.75))}
+.figureHood{left:65px;width:260px;height:275px;background:radial-gradient(circle at 50% 20%,#6d1515 0,#30090b 37%,#0a0505 73%);clip-path:polygon(50% 0,83% 11%,100% 57%,88% 100%,12% 100%,0 57%,17% 11%)}
+.figureHood:after{content:"";position:absolute;inset:8px;background:linear-gradient(110deg,transparent 8%,rgba(210,29,25,.4) 9%,transparent 12% 78%,rgba(132,13,15,.35) 81%,transparent 84%);clip-path:inherit}
+.figureMask{left:132px;top:35px;width:126px;height:184px;background:linear-gradient(90deg,#c9baa5 0 45%,#080707 45% 55%,#f0e4d1 55%);filter:drop-shadow(0 0 8px rgba(212,31,25,.18))}
+.figureMask:after{content:"";position:absolute;inset:3px;background:repeating-linear-gradient(132deg,transparent 0 15px,rgba(65,49,39,.16) 16px 17px,transparent 18px 29px);clip-path:inherit;mix-blend-mode:multiply}
+.figureMask:before{left:20px;top:15px;width:38px;height:126px;border-left:8px solid #b51618;filter:drop-shadow(0 0 4px rgba(255,24,20,.45))}
+.figureMask i{top:76px;height:22px;z-index:3}
+.figureMantle{height:180px;background:linear-gradient(150deg,#0b0303 0 12%,#a10f13 13% 18%,#270607 19% 35%,#7d0b0f 36% 41%,#120405 42% 57%,#a10f13 58% 63%,#260607 64% 79%,#74090d 80% 85%,#080303 86%);clip-path:polygon(8% 20%,35% 0,50% 25%,65% 0,92% 20%,100% 100%,0 100%)}
+.commandTitle{bottom:13px}.commandTitle h1{font-size:64px;letter-spacing:.2em}.commandTitle>b{color:#c49a76}.commandTitle>a{transition:.2s;background:linear-gradient(180deg,#65120e,#310907);border-color:#9a3325}.commandTitle>a:hover{box-shadow:0 0 24px rgba(204,37,26,.25);border-color:#c24b38}
+.commandModules{flex:0 0 auto;gap:8px;margin-top:10px}.commandPanel{position:relative;overflow:hidden;min-height:300px;background:
+linear-gradient(180deg,rgba(55,31,22,.34),transparent 34%),
+linear-gradient(145deg,rgba(24,20,17,.98),rgba(7,7,7,.99))}
+.commandPanel:before{content:"";position:absolute;left:50%;top:-18px;transform:translateX(-50%);width:74px;height:86px;background:linear-gradient(90deg,#2a0809,#6c0d10,#250607);opacity:.42;clip-path:polygon(0 0,100% 0,82% 100%,50% 82%,18% 100%)}
+.commandPanel:after{content:"";position:absolute;inset:5px;pointer-events:none;border:1px solid rgba(180,126,78,.08)}
+.commandPanel header,.commandPanel>div,.commandPanel footer{position:relative;z-index:2}.commandPanel header{padding:20px 9px 13px}.commandPanel header>span{font-size:25px;text-shadow:0 0 14px rgba(174,93,48,.2)}.commandPanel h2{font-size:18px}.commandPanel>div{padding:17px 14px}.commandPanel>div strong{font-size:27px}.commandPanel footer{margin:0 11px 11px}
+.commandPanel:hover:before{opacity:.68}.commandPanel:hover header>span{color:#c49468}
+.commandMotto{height:112px;flex:0 0 112px;margin-top:9px;background:linear-gradient(90deg,#080706,#0b0807 34%,#24090a 50%,#0b0807 66%,#080706)}
+.mottoMask:before{content:"";position:absolute;inset:0;background:linear-gradient(145deg,transparent 18%,rgba(183,18,22,.7) 19% 24%,rgba(24,5,6,.9) 25% 48%,rgba(128,12,15,.65) 49% 54%,transparent 55%)}
+.mottoMask:after{top:4px;height:106px;background:linear-gradient(90deg,#cbbdaa 0 45%,#050505 45% 55%,#eee3d1 55%);filter:drop-shadow(0 0 8px rgba(183,21,20,.25))}
+.secureLine{flex:0 0 31px}
+@media(min-width:1200px) and (min-height:800px){.commandPanel{min-height:310px}.commandHQ{justify-content:flex-start}}
