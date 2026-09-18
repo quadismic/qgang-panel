@@ -946,3 +946,122 @@ h1,h2,h3,h4,h5,h6,.pageHead h1,.fireHero h1,.profileHero h1{
  .loginCardV5{padding:25px 18px!important;border-radius:20px!important}
  .loginCardV5 .authButtons button{min-height:54px!important;padding:0 17px!important}
 }
+
+/* Q-GANG typography v2 · display identity + readable interface */
+:root{
+ --qg-ui-font:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+ --qg-display-font:var(--qg-brand-font),Georgia,"Times New Roman",serif;
+}
+html,body{font-family:var(--qg-ui-font)!important;font-weight:400;letter-spacing:0}
+button,.button,select,textarea,input{font-family:var(--qg-ui-font)!important;letter-spacing:0}
+h1,h2,h3,h4,h5,h6,.commandBrand>strong,.pageHead h1,.fireHero h1,.profileHero h1{
+ font-family:var(--qg-display-font)!important;
+}
+.commandRail nav span,.navBottom span,.commandIdentity strong,.commandIdentity small{
+ font-family:var(--qg-ui-font)!important;
+}
+.kicker,.fireHero>span{font-family:var(--qg-ui-font)!important}
+
+/* Shared room typography baseline */
+.roomScene>h1,.codexSceneCopy h1{font-family:var(--qg-display-font)!important}
+.roomScene>p,.codexSceneCopy>p{
+ font-family:var(--qg-ui-font)!important;
+ font-size:15px!important;
+ line-height:1.55!important;
+ letter-spacing:.015em!important;
+ text-transform:none!important;
+ color:rgba(224,213,198,.76)!important;
+ max-width:650px;
+}
+.roomScene>div>b>small,.roomScene>b>small,
+.codexToolbar>div span{
+ font-family:var(--qg-ui-font)!important;
+ font-size:10px!important;
+ line-height:1.2!important;
+ letter-spacing:.08em!important;
+ font-weight:600!important;
+}
+.orgChart>header,.decreeLedger>header,.tribunalLedger>header,.treasuryLedger>header,.codexIndex>header,.codexDetail>header{
+ min-height:46px!important;
+ padding:0 18px!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ font-family:var(--qg-ui-font)!important;
+}
+.orgChart>header span,.orgChart>header b,
+.decreeLedger>header span,.decreeLedger>header b,
+.tribunalLedger>header span,.tribunalLedger>header b,
+.treasuryLedger>header span,.treasuryLedger>header b,
+.codexIndex>header,.codexDetail>header span,.codexDetail>header b{
+ font-family:var(--qg-ui-font)!important;
+ font-size:10px!important;
+ line-height:1!important;
+ letter-spacing:.10em!important;
+ font-weight:600!important;
+ color:rgba(200,184,165,.64)!important;
+}
+.orgEmpty h2,.decreeEmpty h2,.tribunalEmpty h2,.treasuryEmpty h2{
+ font-family:var(--qg-display-font)!important;
+ font-size:25px!important;
+ line-height:1.2!important;
+ font-weight:500!important;
+ letter-spacing:0!important;
+ text-transform:none!important;
+}
+.orgEmpty p,.decreeEmpty p,.tribunalEmpty p,.treasuryEmpty p{
+ font-family:var(--qg-ui-font)!important;
+ font-size:14px!important;
+ line-height:1.55!important;
+ letter-spacing:.01em!important;
+ text-transform:none!important;
+ color:rgba(194,181,165,.62)!important;
+}
+
+/* Rules: match room brightness and rebalance controls */
+.codexScene.roomScene{
+ background-image:linear-gradient(90deg,rgba(4,3,2,.68),rgba(4,3,2,.25) 48%,rgba(4,3,2,.10)),var(--qg-room-codex)!important;
+}
+.codexSceneShade{opacity:.42!important}
+.codexToolbar>div{gap:7px!important}
+.codexToolbar>div b{
+ font-family:var(--qg-display-font)!important;
+ font-size:17px!important;
+}
+.codexToolbar>div span{opacity:.78!important}
+.codexToolbar input,.codexToolbar select{
+ font-family:var(--qg-ui-font)!important;
+ font-size:13px!important;
+ font-weight:400!important;
+ letter-spacing:0!important;
+ min-height:40px!important;
+}
+.codexToolbar input::placeholder{font-family:var(--qg-ui-font)!important;font-size:13px!important}
+
+/* Login: restore the approved claim type, keep actions readable */
+.loginClaimV5,.loginClaimV5 em{
+ font-family:Georgia,"Times New Roman",serif!important;
+}
+.loginClaimV5{
+ font-size:clamp(39px,4.1vw,52px)!important;
+ font-weight:500!important;
+ letter-spacing:-.025em!important;
+}
+.loginClaimV5 em{font-weight:700!important}
+.loginCardV5 .authButtons button span{
+ font-family:var(--qg-ui-font)!important;
+ font-size:14px!important;
+ font-weight:500!important;
+ letter-spacing:0!important;
+ text-transform:none!important;
+}
+.authArrow{font-family:var(--qg-ui-font)!important}
+
+/* Forms/editors use the readable interface face */
+.codexComposer,.decreeEditor,.tribunalEditor,.treasuryEditor,
+.codexComposer input,.codexComposer select,.codexComposer textarea,
+.decreeEditor input,.decreeEditor select,.decreeEditor textarea,
+.tribunalEditor input,.tribunalEditor select,.tribunalEditor textarea,
+.treasuryEditor input,.treasuryEditor select,.treasuryEditor textarea{
+ font-family:var(--qg-ui-font)!important;
+}
