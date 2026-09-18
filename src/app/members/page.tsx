@@ -2,11 +2,11 @@ import Link from "next/link";
 import {brandTheme} from "@/config/brand-theme";
 import {AppShell} from "@/components/AppShell";
 import {createClient} from "@/lib/supabase/server";
-import {roleLabel} from "@/lib/roles";\nimport {RankInsignia} from "@/components/RankInsignia";
+import {roleLabel} from "@/lib/roles";
+import {RankInsignia} from "@/components/RankInsignia";
 export const dynamic="force-dynamic";
 
 const levels=["founder","admin","moderator","community","member"] as const;
-const rankIcon:Record<string,string>={founder:"♛",admin:"◆",moderator:"▲",community:"✦",member:"•"};
 
 export default async function Members(){
  const s=await createClient();
