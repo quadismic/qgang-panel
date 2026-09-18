@@ -1,22 +1,2 @@
-import {NextResponse} from "next/server";
-import {createClient} from "@/lib/supabase/server";
-
-export async function POST(req:Request){
- const s=await createClient();
- const {data:{user}}=await s.auth.getUser();
- if(!user)return NextResponse.redirect(new URL("/login?next=/onboarding",req.url),303);
- const f=await req.formData();
- const nick=String(f.get("nick")??"").trim();
- const birth=String(f.get("birth_date")??"");
- let next=String(f.get("next")??"/");
- if(!next.startsWith("/")||next.startsWith("//"))next="/";
- if(!/^[A-Za-z0-9_]{3,20}$/.test(nick))return NextResponse.redirect(new URL("/onboarding?error=nick&next="+encodeURIComponent(next),req.url),303);
- if(!/^\d{4}-\d{2}-\d{2}$/.test(birth))return NextResponse.redirect(new URL("/onboarding?error=birth&next="+encodeURIComponent(next),req.url),303);
- const {error}=await s.rpc("complete_qgang_onboarding",{p_nick:nick,p_birth_date:birth});
- if(error){
-   const msg=(error.message||"").toLowerCase();
-   const code=msg.includes("nick_taken")||msg.includes("duplicate")?"taken":msg.includes("birth")?"birth":"nick";
-   return NextResponse.redirect(new URL("/onboarding?error="+code+"&next="+encodeURIComponent(next),req.url),303);
- }
- return NextResponse.redirect(new URL(next,req.url),303);
-}
+import {NextResponse} from "next/server";import {createClient} from "@/lib/supabase/server";
+export async function POST(req:Request){const s=await createClient();const {data:{user}}=await s.auth.getUser();if(!user)return NextResponse.redirect(new URL("/login?next=/onboarding",req.url),303);const f=await req.formData();const name=String(f.get("display_name")??"").trim(),handle=String(f.get("handle")??"").trim().toLowerCase(),birth=String(f.get("birth_date")??"");let next=String(f.get("next")??"/profile");if(!next.startsWith("/")||next.startsWith("//"))next="/profile";if(name.length<2||name.length>60||!/^[a-z0-9_]{3,24}$/.test(handle)||!/^\d{4}-\d{2}-\d{2}$/.test(birth))return NextResponse.redirect(new URL("/onboarding?error=validation&next="+encodeURIComponent(next),req.url),303);let avatarUrl:string|null=null;const avatar=f.get("avatar");if(avatar instanceof File&&avatar.size){if(avatar.size>3145728||!["image/png","image/jpeg","image/webp"].includes(avatar.type))return NextResponse.redirect(new URL("/onboarding?error=avatar&next="+encodeURIComponent(next),req.url),303);const ext=avatar.type==="image/png"?"png":avatar.type==="image/webp"?"webp":"jpg";const path=`${user.id}/avatar-${Date.now()}.${ext}`;const {error:up}=await s.storage.from("qgang-avatars").upload(path,avatar,{contentType:avatar.type,upsert:false});if(up)return NextResponse.redirect(new URL("/onboarding?error=avatar&next="+encodeURIComponent(next),req.url),303);avatarUrl=s.storage.from("qgang-avatars").getPublicUrl(path).data.publicUrl}const {error}=await s.rpc("complete_qgang_onboarding",{p_display_name:name,p_handle:handle,p_birth_date:birth,p_avatar_url:avatarUrl});if(error){const msg=(error.message||"").toLowerCase();return NextResponse.redirect(new URL("/onboarding?error="+(msg.includes("taken")||msg.includes("duplicate")?"taken":"validation")+"&next="+encodeURIComponent(next),req.url),303)}return NextResponse.redirect(new URL(next,req.url),303)}
