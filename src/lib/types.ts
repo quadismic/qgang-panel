@@ -9,10 +9,12 @@ export type Campfire = {
 export type FeedPost = {
   id: string;
   author: string;
+  author_id?: string;
   handle: string;
   body: string;
   campfire?: string;
   created_at: string;
   reactions: number;
   comments: number;
+  is_owner?: boolean;
 };

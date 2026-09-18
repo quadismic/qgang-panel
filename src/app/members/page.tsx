@@ -1,1 +1,34 @@
-import { AppShell } from "@/components/AppShell";import { createClient } from "@/lib/supabase/server";export const dynamic="force-dynamic";export default async function Members({searchParams}:{searchParams:Promise<{q?:string}>}){const {q=""}=await searchParams;const term=q.trim().slice(0,50);const safe=term.replace(/[%_,()]/g,"");const s=await createClient();let query=s.from("profiles").select("display_name,handle,bio,role").order("created_at",{ascending:false}).limit(30);if(safe)query=query.or(`handle.ilike.%${safe}%,display_name.ilike.%${safe}%`);const {data:people}=await query;return <AppShell><section className="utilityHero"><span className="kicker">Q-GANG · İNSANLAR</span><h1>Topluluk</h1><p>Q-GANG kimliklerini keşfet, bağ kur ve ateşi büyüt.</p></section><form className="searchForm" action="/members"><input name="q" defaultValue={term} maxLength={50} placeholder="Q-GANG üyesi ara…"/><button className="primary">Ara</button></form><div className="sectionTitle"><h2>{term?"Sonuçlar":"Topluluk"}</h2><span>{people?.length??0}</span></div><div className="resultList">{(people??[]).map(p=><a className="resultCard" href={"/u/"+p.handle} key={p.handle}><div className="avatar">{p.display_name.slice(0,1).toUpperCase()}</div><div><b>{p.display_name}</b><span>@{p.handle} · {({founder:"Kurucu",admin:"Yönetici",member:"Üye"} as Record<string,string>)[p.role]??p.role}</span><p>{p.bio||"Q-GANG üyesi"}</p></div></a>)}{!(people??[]).length&&<div className="empty"><b>Kimse bulunamadı.</b><p>Başka bir kullanıcı adı veya isim dene.</p></div>}</div></AppShell>}
+import Link from "next/link";
+import {brandTheme} from "@/config/brand-theme";
+import {AppShell} from "@/components/AppShell";
+import {createClient} from "@/lib/supabase/server";
+import {roleLabel} from "@/lib/roles";
+import {RankInsignia} from "@/components/RankInsignia";
+export const dynamic="force-dynamic";
+
+const levels=["founder","admin","moderator","community","member"] as const;
+
+export default async function Members(){
+ const s=await createClient();
+ const {data}=await s.from("profiles").select("id,display_name,handle,role,avatar_url").order("created_at",{ascending:true}).limit(100);
+ const people=data??[];
+ const groups=levels.map(role=>({role,people:people.filter((p:any)=>p.role===role)})).filter(g=>g.people.length);
+ return <AppShell right={false}>
+  <section className="registryHero roomScene orgHero" style={{backgroundImage:`linear-gradient(90deg,rgba(4,3,2,.76),rgba(4,3,2,.32) 48%,rgba(4,3,2,.14)),url(${brandTheme.rooms.registry})`}}>
+   <h1>Topluluk</h1><p>Q-GANG teşkilat yapısı, görev zinciri ve rütbe düzeni.</p>
+   <div><b>{people.length}<small>TOPLAM ÜYE</small></b><b>{groups.length}<small>AKTİF RÜTBE</small></b></div>
+  </section>
+  <section className="orgChart" aria-label="Q-GANG teşkilat şeması">
+   <header><span>TEŞKİLAT ŞEMASI</span><b>HİYERARŞİK DÜZEN</b></header>
+   {groups.length?<div className="orgTree">{groups.map((group,gi)=><div className={"orgLevel org-"+group.role} key={group.role}>
+    {gi>0&&<div className="orgTrunk" aria-hidden="true"/>}
+    <div className="orgRankTitle"><RankInsignia role={group.role} size="sm"/>{roleLabel(group.role)}</div>
+    <div className="orgBranch">{group.people.map((p:any)=><Link href={"/u/"+p.handle} className="orgPerson" key={p.id}>
+      <div className="orgPortrait">{p.avatar_url?<img src={p.avatar_url} alt=""/>:<span>{p.display_name?.slice(0,1).toUpperCase()||"Q"}</span>}</div>
+      <strong>{p.display_name}</strong><small>@{p.handle}</small>
+      <div className="orgInsignia"><RankInsignia role={p.role} size="sm"/><b>{roleLabel(p.role)}</b></div>
+    </Link>)}</div>
+   </div>)}</div>:<div className="orgEmpty"><span>◇</span><h2>Teşkilat henüz oluşturulmadı.</h2><p>Üyeler katıldıkça hiyerarşi burada şekillenecek.</p></div>}
+  </section>
+ </AppShell>
+}

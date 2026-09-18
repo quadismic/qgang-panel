@@ -1,1 +1,1 @@
-export default function Loading(){return <main className="statePage"><div className="brandMark">Q</div><div className="loadingEmber"/><p>Ateş hazırlanıyor…</p><div className="stateSkeleton"><i/><i/><i/></div></main>}
+export default function Loading(){return null}
