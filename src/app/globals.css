@@ -375,3 +375,8 @@ linear-gradient(145deg,rgba(24,20,17,.98),rgba(7,7,7,.99))}
 
 /* Final Codex seal artwork */
 .codexWax img[src="/brand/codex/qgang-seal.png"]{width:100%!important;height:100%!important;object-fit:contain!important;filter:none!important;opacity:1!important;mix-blend-mode:normal!important;display:block}
+
+/* Codex seal: asset only, no generated ring/wax effects */
+.codexWax{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;outline:0!important;overflow:visible!important}
+.codexWax::before,.codexWax::after{content:none!important;display:none!important}
+.codexWax img[src="/brand/codex/qgang-seal.png"]{width:100%!important;height:100%!important;object-fit:contain!important;filter:none!important;opacity:1!important;mix-blend-mode:normal!important;border:0!important;border-radius:0!important;box-shadow:none!important;outline:0!important;background:transparent!important}
