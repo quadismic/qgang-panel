@@ -333,3 +333,7 @@ linear-gradient(145deg,rgba(24,20,17,.98),rgba(7,7,7,.99))}
 
 /* Headquarters stays on its original dedicated artwork. */
 .commandHero{background-image:linear-gradient(90deg,rgba(3,2,2,.68),rgba(5,3,2,.12) 48%,rgba(3,2,2,.68)),var(--command-bg)!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
+
+/* Q-GANG dedicated room artwork */
+.roomScene{background-repeat:no-repeat!important;background-size:cover!important;background-position:center!important}
+.codexScene.roomScene,.registryHero.roomScene,.decreeHero.roomScene,.tribunalHero.roomScene,.treasuryHero.roomScene{isolation:isolate}
