@@ -1,7 +1,8 @@
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {brandTheme} from "@/config/brand-theme";
-import "./onboarding.css";\nimport {eraLabel} from "@/lib/identity";
+import "./onboarding.css";
+import {eraLabel} from "@/lib/identity";
 
 export const dynamic="force-dynamic";
 
