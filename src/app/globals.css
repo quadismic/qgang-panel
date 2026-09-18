@@ -439,3 +439,9 @@ repeating-linear-gradient(90deg,transparent 0 13%,rgba(147,94,51,.045) 13.1%,tra
 .loginCardV3 .authButtons button{min-height:52px}
 .loginMottoV3{margin-top:15px;padding:7px 13px;background:rgba(4,4,3,.48);color:#a38a70;font-style:normal;font-size:8px;letter-spacing:.28em;backdrop-filter:blur(6px)}
 @media(max-width:760px){.loginV3{padding:24px 14px;background-position:center center!important}.loginPortalV3{width:min(470px,calc(100vw - 28px))}.loginCrestV3{padding:7px 14px}.loginCardV3{padding:32px 22px 28px}.loginCardV3 h1{font-size:42px}}
+
+/* Q-GANG primary emblem */
+.loginCrestV3 img{width:92px!important;height:92px!important;object-fit:contain!important;flex:0 0 92px;filter:drop-shadow(0 8px 24px rgba(125,24,18,.38))!important}
+.commandBrand .qgBrandArtwork{width:58px!important;height:58px!important;display:grid!important;place-items:center!important;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important}
+.commandBrand .qgBrandArtwork img{width:58px!important;height:58px!important;object-fit:contain!important;filter:drop-shadow(0 5px 14px rgba(116,25,19,.32))!important}
+@media(max-width:760px){.loginCrestV3 img{width:76px!important;height:76px!important;flex-basis:76px}}
