@@ -6,7 +6,7 @@ const Range=({label,value,min,max,onChange}:{label:string,value:number,min:numbe
 export function DesignEditor({initial}:{initial:DesignSettings}){
  const [d,setD]=useState(initial),[pending,start]=useTransition(),[saved,setSaved]=useState(false);
  const set=(k:keyof DesignSettings,v:any)=>{setSaved(false);setD(x=>({...x,[k]:v}))};
- const vars:any={"--qg-primary":d.primary,"--qg-bone":d.bone,"--qg-bronze":d.bronze,"--qg-sidebar-width":d.sidebarWidth+"px","--qg-sidebar-emblem":d.sidebarEmblem+"px","--qg-hero-overlay":d.heroOverlay/100,"--qg-quad-width":d.quadWidth+"px","--qg-quad-top":d.quadTop+"px","--qg-login-width":d.loginPanelWidth+"px","--qg-login-emblem":d.loginEmblem+"px","--qg-login-overlay":d.loginOverlay/100};
+ const vars:any={"--qg-primary":d.primary,"--qg-bone":d.bone,"--qg-bronze":d.bronze,"--qg-sidebar-width":d.sidebarWidth+"px","--qg-sidebar-emblem":d.sidebarEmblem+"px","--qg-hero-overlay":d.heroOverlay/100,"--qg-quad-scale":d.quadScale/100,"--qg-quad-y":d.quadY,"--qg-login-width":d.loginPanelWidth+"px","--qg-login-emblem":d.loginEmblem+"px","--qg-login-overlay":d.loginOverlay/100};
  return <div className="designCenter" style={vars}>
   <aside className="designControls">
    <div className="designHead"><span>TASARIM MERKEZİ</span><h1>Q-GANG görünümü</h1><p>Güvenli tasarım değişkenlerini buradan yönet.</p></div>
@@ -16,8 +16,9 @@ export function DesignEditor({initial}:{initial:DesignSettings}){
     <Range label="Arma boyutu" value={d.sidebarEmblem} min={36} max={100} onChange={v=>set("sidebarEmblem",v)}/>
    </details>
    <details open><summary>Karargâh</summary>
-    <Range label="Quad genişliği" value={d.quadWidth} min={280} max={850} onChange={v=>set("quadWidth",v)}/>
-    <Range label="Quad Y konumu" value={d.quadTop} min={-120} max={180} onChange={v=>set("quadTop",v)}/>
+    <Range label="Quad ölçeği %" value={d.quadScale} min={65} max={140} onChange={v=>set("quadScale",v)}/>
+    <Range label="Quad Y konumu %" value={d.quadY} min={-30} max={30} onChange={v=>set("quadY",v)}/>
+    <div className="councilEditor"><span className="designSubhead">KONSEY ÜYELERİ</span>{d.council.map((m,i)=><div className="councilSlot" key={m.id}><label className="councilToggle"><input type="checkbox" checked={m.enabled} onChange={e=>set("council",d.council.map((x,j)=>j===i?{...x,enabled:e.target.checked}:x))}/><b>{m.id.replace("-"," ").toUpperCase()}</b><em>{m.enabled?"Aktif":"Gizli"}</em></label>{m.enabled&&<><Range label="Ölçek %" value={m.scale} min={60} max={150} onChange={v=>set("council",d.council.map((x,j)=>j===i?{...x,scale:v}:x))}/><Range label="Y konumu %" value={m.y} min={-30} max={30} onChange={v=>set("council",d.council.map((x,j)=>j===i?{...x,y:v}:x))}/></>}</div>)}</div>
     <Range label="Karartma" value={d.heroOverlay} min={0} max={80} onChange={v=>set("heroOverlay",v)}/>
    </details>
    <details><summary>Login</summary>
