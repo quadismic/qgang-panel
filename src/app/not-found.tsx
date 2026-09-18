@@ -1,1 +1,11 @@
-import Link from "next/link";export default function NotFound(){return <main className="statePage stateAmbient"><div className="brandMark">Q</div><span className="kicker">404 · SİNYAL KAYBOLDU</span><h1>Bu ateş burada değil.</h1><p>Aradığın alan taşınmış, kapanmış veya hiç yakılmamış olabilir.</p><div><Link className="button primary" href="/">Ana Sayfaya Dön</Link><Link className="button" href="/search">Keşfet</Link></div></main>}
+import Link from "next/link";import {brandTheme} from "@/config/brand-theme";
+
+export default function NotFound(){
+  return <main className="statePage stateAmbient qgangNotFound">
+    <img className="qgangNotFoundSeal" src={brandTheme.emblem} alt="Q-GANG"/>
+    <span className="kicker">404 · KAYIT BULUNAMADI</span>
+    <h1>Bu geçit hiç açılmadı.</h1>
+    <p>Aradığınız bölüm Q-GANG kayıtlarında bulunamadı.</p>
+    <div><Link className="button primary" href="/">Karargâha Dön</Link></div>
+  </main>
+}
