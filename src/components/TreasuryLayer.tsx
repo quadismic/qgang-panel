@@ -1,0 +1,13 @@
+"use client";
+import Link from "next/link";
+import {useCallback,useEffect,useState} from "react";
+import {SurfaceLayer} from "./SurfaceLayer";
+type Tx={id:string;kind:string;amount:number;title:string;category?:string|null;supporter_name?:string|null;is_anonymous?:boolean;created_at:string};
+type Summary={balance:number;support:number;expense:number;adjust:number;transactions:Tx[];contributors:{name:string;amount:number}[]};
+const tl=(n:number)=>new Intl.NumberFormat("tr-TR",{style:"currency",currency:"TRY"}).format(n);
+export function TreasuryLayer({open,onClose,initial}:{open:boolean;onClose:()=>void;initial:Summary|null}){
+ const [tab,setTab]=useState<"ledger"|"contributors">("ledger");
+ useEffect(()=>{if(!open)setTab("ledger")},[open]);
+ if(!initial)return <SurfaceLayer open={open} onClose={onClose} kicker="HAZİNE" title="Q-GANG Hazinesi"><div className="surfaceIntro">Hazine yalnızca topluluk üyelerine açıktır.</div></SurfaceLayer>;
+ return <SurfaceLayer open={open} onClose={onClose} kicker="Q-GANG · HAZİNE" title={tl(initial.balance)} wide><div className="treasuryStats"><div><span>Toplam giriş</span><b>{tl(initial.support+Math.max(initial.adjust,0))}</b></div><div><span>Toplam çıkış</span><b>{tl(initial.expense+Math.max(-initial.adjust,0))}</b></div></div><div className="treasuryTabs"><button className={tab==="ledger"?"active":""} onClick={()=>setTab("ledger")}>Hareketler</button><button className={tab==="contributors"?"active":""} onClick={()=>setTab("contributors")}>Katkılar</button></div>{tab==="ledger"?<div className="treasuryLedger">{initial.transactions.length?initial.transactions.slice(0,12).map(x=><div className="treasuryRow" key={x.id}><i className={x.kind}>{x.kind==="expense"?"−":x.kind==="support"?"+":"±"}</i><span><b>{x.title}</b><small>{x.kind==="support"?(x.is_anonymous?"Anonim destekçi":x.supporter_name||"Topluluk desteği"):x.category||"Q-GANG"} · {new Date(x.created_at).toLocaleDateString("tr-TR")}</small></span><strong>{x.kind==="expense"?"−":"+"}{tl(Number(x.amount))}</strong></div>):<div className="treasuryEmpty">Hazine henüz sessiz. İlk hareket burada görünecek.</div>}</div>:<div className="treasuryLedger">{initial.contributors.length?initial.contributors.map((x,i)=><div className="treasuryRow contributor" key={x.name+"-"+i}><i>{i+1}</i><span><b>{x.name}</b><small>Toplam katkı</small></span><strong>{tl(x.amount)}</strong></div>):<div className="treasuryEmpty">Henüz kayıtlı katkı yok.</div>}</div>}<div className="surfaceDeepLink"><Link href="/fund" onClick={onClose}>Tam Hazine kaydı →</Link></div></SurfaceLayer>
+}
