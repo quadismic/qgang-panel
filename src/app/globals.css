@@ -1184,3 +1184,13 @@ h1,h2,h3,h4,h5,h6,.commandBrand>strong,.pageHead h1,.fireHero h1,.profileHero h1
 /* Canonical motto: centered */
 .commandMottoClean{display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important}
 .commandMottoClean blockquote{width:100%!important;margin:0 auto!important;text-align:center!important}
+
+
+/* Q-GANG production asset hardening */
+.qgBrandArtwork{border:0!important;background:transparent!important;box-shadow:none!important}
+.qgBrandArtwork img{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important}
+.codexWax{display:grid!important;place-items:center!important;overflow:visible!important}
+.codexWax img{display:block!important;width:92px!important;height:92px!important;object-fit:contain!important;filter:drop-shadow(0 5px 15px rgba(125,20,17,.38))!important}
+.loginV5{overflow:hidden!important}
+.loginV5 .loginMotionBg{background-image:var(--qg-login-bg,url("/brand/login/background.webp"))!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
+.loginCrestV5 img{display:block!important;object-fit:contain!important}
