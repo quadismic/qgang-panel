@@ -1,0 +1,2 @@
+import {AppShell} from "@/components/AppShell";
+export default function Announcements(){return <AppShell right={false}><section className="utilityHero"><span className="kicker">Q-GANG · DUYURULAR</span><h1>Duyurular</h1><p>Topluluğa ilişkin resmî bilgilendirmeler burada yayımlanır.</p></section><section className="panel"><div className="empty"><b>Henüz yayımlanmış bir duyuru yok.</b><p>İlk Q-GANG duyurusu burada görünecek.</p></div></section></AppShell>}
