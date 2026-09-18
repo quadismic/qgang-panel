@@ -7,7 +7,7 @@ export async function DesignRuntime(){
  const vars:any={
   "--qg-primary":d.primary,"--qg-bone":d.bone,"--qg-bronze":d.bronze,
   "--qg-sidebar-width":d.sidebarWidth+"px","--qg-sidebar-emblem":d.sidebarEmblem+"px",
-  "--qg-hero-overlay":String(d.heroOverlay/100),"--qg-quad-width":d.quadWidth+"px","--qg-quad-top":d.quadTop+"px",
+  "--qg-hero-overlay":String(d.heroOverlay/100),"--qg-quad-scale":String(d.quadScale/100),"--qg-quad-y":String(d.quadY),
   "--qg-login-width":d.loginPanelWidth+"px","--qg-login-emblem":d.loginEmblem+"px","--qg-login-overlay":String(d.loginOverlay/100)
  };
  return <style dangerouslySetInnerHTML={{__html:`:root{${Object.entries(vars).map(([k,v])=>k+":"+v).join(";")}}`}}/>;
