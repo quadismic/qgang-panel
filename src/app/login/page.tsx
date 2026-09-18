@@ -1,12 +1,14 @@
 import {AuthButtons} from "@/components/AuthButtons";
-import {brandTheme} from "@/config/brand-theme";
+import {createClient} from "@/lib/supabase/server";
+import {defaultDesign,normalizeDesign} from "@/lib/design";
 
-export default function Login(){
+export default async function Login(){
+  const s=await createClient(); const {data}=await s.from("design_settings").select("settings").eq("key","active").maybeSingle(); const design=normalizeDesign(data?.settings??defaultDesign);
   return <main className="login loginV3">
     <div className="loginGateShade" aria-hidden="true"/>
     <section className="loginPortal loginPortalV3">
       <header className="loginCrest loginCrestV3">
-        <img src={brandTheme.emblem} alt="Q-GANG"/>
+        <img src={design.emblemSrc} alt="Q-GANG"/>
         <div><strong>Q-GANG</strong><small>DISCIPLINA · UNITAS · POTENTIA</small></div>
       </header>
       <div className="loginCard loginCardV3">
