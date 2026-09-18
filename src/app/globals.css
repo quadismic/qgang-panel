@@ -197,3 +197,80 @@ linear-gradient(145deg,rgba(24,20,17,.98),rgba(7,7,7,.99))}
 .qgBrandArtwork{width:58px;height:64px;margin-bottom:8px;display:grid;place-items:center;position:relative}
 .qgBrandArtwork:after{content:"";position:absolute;left:5%;right:5%;bottom:-3px;height:1px;background:linear-gradient(90deg,transparent,#8e2a20,transparent)}
 .qgBrandArtwork img{display:block;width:100%;height:100%;object-fit:contain;filter:contrast(1.08) brightness(.92) drop-shadow(0 0 8px rgba(160,25,20,.14))}
+
+/* COMMAND SCENE V1 — layered chamber + throne asset */
+.commandHero{
+  height:clamp(390px,43vw,560px);
+  min-height:390px;
+  isolation:isolate;
+  background-image:
+    linear-gradient(90deg,rgba(3,2,2,.64),transparent 22%,transparent 78%,rgba(3,2,2,.64)),
+    linear-gradient(180deg,rgba(0,0,0,.05) 0%,rgba(0,0,0,.08) 58%,rgba(4,3,3,.88) 100%),
+    var(--command-bg);
+  background-size:cover;
+  background-position:center 48%;
+  background-repeat:no-repeat;
+}
+.commandHero:before{
+  z-index:1;
+  opacity:1;
+  background:radial-gradient(ellipse at 50% 47%,transparent 0 24%,rgba(0,0,0,.05) 43%,rgba(0,0,0,.42) 100%);
+}
+.commandHero:after{z-index:5;bottom:50px;background:linear-gradient(90deg,transparent,rgba(154,87,49,.65),transparent)}
+.commandPortrait{
+  z-index:2;
+  top:18%;
+  width:clamp(250px,28vw,410px);
+  height:66%;
+  overflow:visible;
+  align-items:flex-end;
+}
+.commandPortrait:before{
+  inset:-10% -25% -5%;
+  background:radial-gradient(ellipse at center,transparent 0 52%,rgba(4,3,3,.14) 70%,rgba(4,3,3,.58) 100%);
+}
+.commandPortrait:after{
+  bottom:-4%;
+  width:120%;
+  height:30%;
+  background:radial-gradient(ellipse,rgba(0,0,0,.72),transparent 70%);
+  filter:blur(10px);
+}
+.commandPortrait img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center bottom;
+  mix-blend-mode:normal;
+  filter:saturate(.88) contrast(1.06) brightness(.77) drop-shadow(0 20px 24px rgba(0,0,0,.85));
+}
+.commandCouncil{position:absolute;z-index:2;inset:0;pointer-events:none}
+.councilMember{position:absolute;bottom:13%;height:49%;width:auto;object-fit:contain;filter:saturate(.82) brightness(.66) contrast(1.08) drop-shadow(0 16px 22px #000)}
+.councilMember.left{left:13%}.councilMember.right{right:13%}
+.commandTitle{
+  z-index:6;
+  bottom:8px;
+  width:min(650px,72%);
+  padding:12px 22px 4px;
+  background:linear-gradient(90deg,transparent,rgba(5,3,3,.78) 18% 82%,transparent);
+}
+.commandTitle>span{font-size:7px}
+.commandTitle h1{font-size:clamp(42px,4.2vw,62px);line-height:.92}
+.commandTitle>b{font-size:clamp(13px,1.3vw,18px)}
+.commandTitle>i{margin:9px auto}
+.commandTitle p{font-size:8px}
+.commandTitle>a{margin-top:7px}
+.heroWords{z-index:4;text-shadow:0 2px 8px #000;color:#9a7655}
+@media(max-width:1000px){
+ .commandHero{height:420px;background-position:center center}
+ .commandPortrait{top:18%;width:300px;height:65%}
+ .commandTitle{width:78%}
+}
+@media(max-width:760px){
+ .commandHero{height:360px;min-height:360px;background-position:center center}
+ .commandPortrait{top:18%;width:270px;max-width:62vw;height:62%}
+ .commandTitle{width:94%;bottom:5px;padding-bottom:2px}
+ .commandTitle h1{font-size:38px}
+ .commandTitle p{display:none}
+ .commandTitle>i{margin:6px auto}
+}
