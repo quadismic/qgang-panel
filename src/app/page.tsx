@@ -11,5 +11,5 @@ const modules=[
 ];
 export default async function Hub(){
  const s=await createClient(); const {data:{user}}=await s.auth.getUser();
- return <AppShell right={false}><section className="hubHero"><span className="kicker">Q-GANG · Q-HUB</span><h1>Topluluğun merkezi.</h1><p>Kurallar, üyeler, duyurular, cezalar ve bütçe. Q-GANG'in temel kayıtlarına tek yerden ulaş.</p>{!user&&<Link className="button primary" href="/login">Google ile giriş yap</Link>}</section><section className="hubGrid">{modules.map(m=><Link className="hubCard" href={m.href} key={m.href}><span className="hubIcon">{m.icon}</span><div><h2>{m.title}</h2><p>{m.text}</p></div><em>→</em></Link>)}</section></AppShell>
+ return <AppShell right={false}><section className="hubHero"><span className="kicker">Q-GANG · Q-GANG</span><h1>Topluluğun merkezi.</h1><p>Kurallar, üyeler, duyurular, cezalar ve bütçe. Q-GANG'in temel kayıtlarına tek yerden ulaş.</p>{!user&&<Link className="button primary" href="/login">Google ile giriş yap</Link>}</section><section className="hubGrid">{modules.map(m=><Link className="hubCard" href={m.href} key={m.href}><span className="hubIcon">{m.icon}</span><div><h2>{m.title}</h2><p>{m.text}</p></div><em>→</em></Link>)}</section></AppShell>
 }
