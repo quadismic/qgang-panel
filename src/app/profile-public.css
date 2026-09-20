@@ -66,3 +66,12 @@
 .profileV2FutureState{min-height:120px;display:grid;place-items:center;align-content:center;gap:8px;text-align:center;color:#776d62}.profileV2FutureState .rankInsignia{width:52px;height:58px;opacity:.72}.profileV2FutureState b{color:#c5ad8d;font:500 13px var(--qg-display-font,Georgia,serif)}.profileV2FutureState span{max-width:240px;font-size:10px;line-height:1.55}.profileV2FutureState.compact{min-height:80px}
 .profileV2AccountsPanel .playerAccount>span:last-child{color:#6da876!important}
 .profileV2 .playerStatusBadge{color:#78b77f!important}
+
+/* Profile 2.0 · final polish */
+.profileV2Dossier .playerDossierGrid{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+.profileV2 .playerProviderIcon .providerLogo{width:21px;height:21px}.profileV2 .playerProviderIcon.provider-steam{color:#c7d5e0!important}
+.profileV2 .playerAccount{transition:border-color .16s ease,background .16s ease}.profileV2 .playerAccount:hover{border-color:rgba(197,145,80,.26);background:rgba(171,126,78,.035)}
+.profileV2FutureState span{color:#81766a}
+@media(max-width:1100px){.profileV2Dossier .playerDossierGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:700px){.profileV2Dossier .playerDossierGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:480px){.profileV2Dossier .playerDossierGrid{grid-template-columns:1fr!important}}
