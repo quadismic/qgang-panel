@@ -1,2 +1,2 @@
 import {MobileNavClient} from "./MobileNavClient";
-export function MobileNav({manage=false,community=false,user=false,unread=0}:{manage?:boolean;community?:boolean;user?:boolean;unread?:number}){const moreHref=manage?"/control":community?"/budget":user?"/profile":"/login";const moreLabel=manage?"Yönetim":community?"Bütçe":user?"Profil":"Giriş";return <MobileNavClient unread={unread} moreHref={moreHref} moreLabel={moreLabel}/>}
+export function MobileNav({user=false}:{user?:boolean}){return <MobileNavClient user={user}/>}
