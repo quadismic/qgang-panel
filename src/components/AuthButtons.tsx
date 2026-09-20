@@ -48,8 +48,11 @@ export function AuthButtons(){
     },{onConflict:"user_id,provider"});
     if(accountError){setBusy(false);setError("Google hesabı bağlandı ancak profil bağlantısı kaydedilemedi. Lütfen yeniden deneyin.");return}
     if(avatar){
-     const {error:avatarError}=await s.from("profiles").update({avatar_url:avatar,updated_at:new Date().toISOString()}).eq("id",data.user.id);
-     if(avatarError){setBusy(false);setError("Google hesabı bağlandı ancak profil resmi eşitlenemedi. Lütfen yeniden deneyin.");return}
+     const {data:profileAvatar}=await s.from("profiles").select("avatar_url").eq("id",data.user.id).maybeSingle();
+     if(!profileAvatar?.avatar_url){
+      const {error:avatarError}=await s.from("profiles").update({avatar_url:avatar,updated_at:new Date().toISOString()}).eq("id",data.user.id);
+      if(avatarError){setBusy(false);setError("Google hesabı bağlandı ancak profil resmi eşitlenemedi. Lütfen yeniden deneyin.");return}
+     }
     }
    }
    const next=new URLSearchParams(location.search).get("next")||"/profile";
