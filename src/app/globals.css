@@ -1229,3 +1229,20 @@ h1,h2,h3,h4,h5,h6,.commandBrand>strong,.pageHead h1,.fireHero h1,.profileHero h1
 .orgInsignia .rankInsignia{width:31px;height:31px}
 .orgInsignia b{font-size:10px;letter-spacing:.11em}
 @media(max-width:760px){.orgTree{min-width:720px;padding-top:38px}.orgLevel{padding-top:40px}.orgTrunk{height:40px}.orgPerson{width:128px}.orgPortrait{width:68px;height:68px}.org-founder .orgPortrait{width:84px;height:84px}}
+
+
+/* Q-GANG · Sidebar Identity Plate 2.0 */
+.navBottom{padding:12px 10px 14px;border-top:1px solid rgba(139,75,43,.2)}
+.identityPlate{position:relative;min-height:78px;display:grid!important;grid-template-columns:58px minmax(0,1fr) 18px;align-items:center;gap:10px;padding:9px 10px!important;border:1px solid rgba(174,126,78,.28)!important;border-radius:7px;background:radial-gradient(140px 70px at 5% 50%,rgba(154,93,44,.09),transparent 72%),linear-gradient(115deg,rgba(13,10,7,.98),rgba(5,5,5,.99))!important;box-shadow:inset 3px 0 0 rgba(190,139,77,.72),inset 0 1px rgba(255,244,224,.025),0 12px 28px rgba(0,0,0,.2);overflow:hidden;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+.identityPlate:before{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 55%,rgba(179,124,70,.025));pointer-events:none}
+.identityPlate:hover,.identityPlate.active{transform:translateY(-1px);border-color:rgba(211,161,91,.56)!important;box-shadow:inset 3px 0 0 #d1a05f,inset 0 1px rgba(255,244,224,.04),0 0 0 1px rgba(176,119,61,.08),0 13px 32px rgba(0,0,0,.28)}
+.identityPlateInsignia{width:58px;height:58px;display:grid;place-items:center;border-right:1px solid rgba(165,116,70,.18)}
+.identityPlateInsignia .rankInsignia{width:50px;height:58px}
+.identityPlateInsignia .rankInsignia img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 7px 9px rgba(0,0,0,.42))}
+.identityPlateCopy{position:relative;z-index:1;min-width:0;display:grid;gap:6px}
+.identityPlateCopy strong{overflow:hidden;text-overflow:ellipsis;color:#eee4d6;font:600 14px/1 Georgia,"Times New Roman",serif;letter-spacing:.09em;white-space:nowrap}
+.identityPlateCopy small{overflow:hidden;text-overflow:ellipsis;color:#b18a61;font:700 8px/1.25 Inter,Arial,sans-serif;letter-spacing:.16em;white-space:nowrap}
+.identityPlateArrow{position:relative;z-index:1;color:#c9a06d;font:300 27px/1 Georgia,serif;transition:transform .18s ease,color .18s ease}
+.identityPlate:hover .identityPlateArrow{transform:translateX(2px);color:#edc889}
+.identityPlateGuest{grid-template-columns:1fr;min-height:58px;box-shadow:inset 3px 0 0 rgba(118,93,68,.45)}
+@media(max-width:760px){.identityPlate{min-height:68px;grid-template-columns:50px minmax(0,1fr) 16px}.identityPlateInsignia{width:50px;height:50px}.identityPlateInsignia .rankInsignia{width:44px;height:50px}.identityPlateCopy strong{font-size:13px}}
