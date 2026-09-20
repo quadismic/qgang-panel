@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {RankInsignia} from "@/components/RankInsignia";
 import {AppShell} from "@/components/AppShell";
-import {createClient} from "@/lib/supabase/server";
+import {createClient,getCurrentUser} from "@/lib/supabase/server";
 import {redirect} from "next/navigation";
 import {eraLabel} from "@/lib/identity";
 import "../profile-public.css";
@@ -9,7 +9,7 @@ export const dynamic="force-dynamic";
 
 export default async function Profile(){
  const s=await createClient();
- const {data:{user}}=await s.auth.getUser();
+ const user=await getCurrentUser();
  if(!user)redirect("/login?next=/profile");
  const [{data:p},{data:membership},{data:accounts}]=await Promise.all([
   s.from("profiles").select("display_name,handle,bio,avatar_url,role,qgang_era,qgang_seal,onboarding_completed_at").eq("id",user.id).maybeSingle(),
