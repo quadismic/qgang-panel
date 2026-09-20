@@ -6,6 +6,8 @@ import {brandTheme} from "@/config/brand-theme";
 import {defaultDesign,normalizeDesign} from "@/lib/design";
 import {QGIcon,QGIconName} from "@/components/QGIcon";
 export const dynamic="force-dynamic";
+export async function generateMetadata(){const s=await createClient();const {data}=await s.from("design_settings").select("settings").eq("key","active").maybeSingle();const d=normalizeDesign(data?.settings??defaultDesign);return {title:"Karargâh",description:d.pageDescriptions.home}}
+
 const tl=(n:number)=>new Intl.NumberFormat("tr-TR",{style:"currency",currency:"TRY",maximumFractionDigits:0}).format(n);
 export default async function Headquarters(){
  const s=await createClient(); const {data:{user}}=await s.auth.getUser();
