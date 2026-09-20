@@ -15,7 +15,8 @@ export default async function Headquarters(){
  const [{count:members},{data:rules},{data:fund},{data:membership}]=await Promise.all([
   s.from("community_memberships").select("*",{count:"exact",head:true}).eq("status","active"),
   s.from("regulations").select("id,title").order("published_at",{ascending:false}).limit(5),
-  s.from("fund_transactions").select("kind,amount,reversed_at").limit(100)
+  s.from("fund_transactions").select("kind,amount,reversed_at").limit(100),
+  user?s.from("community_memberships").select("status").eq("user_id",user.id).eq("status","active").maybeSingle():Promise.resolve({data:null})
  ]);
  const live=(fund??[]).filter((x:any)=>!x.reversed_at),income=live.filter((x:any)=>x.kind==="support").reduce((a:number,x:any)=>a+Number(x.amount),0),expense=live.filter((x:any)=>x.kind==="expense").reduce((a:number,x:any)=>a+Number(x.amount),0),balance=income-expense;
  const cards=[
