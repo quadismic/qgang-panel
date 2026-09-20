@@ -1,11 +1,14 @@
-import Link from "next/link";import {brandTheme} from "@/config/brand-theme";
+"use client";
+import Link from "next/link";
+import {useEffect} from "react";
 
 export default function NotFound(){
-  return <main className="statePage stateAmbient qgangNotFound">
-    <img className="qgangNotFoundSeal" src={brandTheme.emblem} alt="Q-GANG"/>
-    <span className="kicker">404 · KAYIT BULUNAMADI</span>
-    <h1>Bu geçit hiç açılmadı.</h1>
-    <p>Aradığınız bölüm Q-GANG kayıtlarında bulunamadı.</p>
-    <div><Link className="button primary" href="/">Karargâha Dön</Link></div>
-  </main>
+ useEffect(()=>{const id=window.setTimeout(()=>location.assign("/"),2400);return()=>window.clearTimeout(id)},[]);
+ return <main className="qgangReturnPage">
+  <Link href="/" className="qgangReturnMessage" aria-label="Karargâha dön">
+   <h1>Geri dön.</h1>
+   <p>Burada bir şey yok.</p>
+   <span>Karargâha dönülüyor…</span>
+  </Link>
+ </main>
 }
