@@ -1205,3 +1205,5 @@ h1,h2,h3,h4,h5,h6,.commandBrand>strong,.pageHead h1,.fireHero h1,.profileHero h1
 .qgangReturnMessage p{margin:5px 0 25px;color:#b9aaa0;font-family:Georgia,"Times New Roman",serif;font-size:clamp(23px,3vw,36px);font-style:italic}
 .qgangReturnMessage span{color:#725f55;font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
 @keyframes qgangReturnIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.commandModulesCentered{display:flex!important;justify-content:center;flex-wrap:wrap}.commandModulesCentered>.commandPanel{flex:1 1 230px;max-width:330px}
