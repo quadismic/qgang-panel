@@ -7,7 +7,7 @@ const GOOGLE_CLIENT_ID="440772662668-ojvph7ct3b9fpc0jkc0n7sj1tu0ao7pi.apps.googl
 declare global{
  interface Window{
   google?:{accounts:{id:{
-   initialize:(config:{client_id:string;callback:(response:{credential?:string})=>void;auto_select?:boolean;cancel_on_tap_outside?:boolean})=>void;
+   initialize:(config:{client_id:string;callback:(response:{credential?:string})=>void;auto_select?:boolean;cancel_on_tap_outside?:boolean;nonce?:string;use_fedcm_for_prompt?:boolean})=>void;
    prompt:()=>void;
   }}};
  }
@@ -18,13 +18,13 @@ function GoogleIcon(){return <svg aria-hidden="true" viewBox="0 0 24 24" width="
 export function AuthButtons(){
  const [busy,setBusy]=useState(false);
  const [ready,setReady]=useState(false);
- const callbackRef=useRef<(response:{credential?:string})=>void>(()=>{});
+ const callbackRef=useRef<(response:{credential?:string})=>void>(()=>{});\n const nonceRef=useRef<string>("");
 
  useEffect(()=>{
   callbackRef.current=async response=>{
    if(!response.credential){setBusy(false);alert("Google kimliği alınamadı.");return}
    const s=createClient();
-   const {data,error}=await s.auth.signInWithIdToken({provider:"google",token:response.credential});
+   const {data,error}=await s.auth.signInWithIdToken({provider:"google",token:response.credential,nonce:nonceRef.current});
    if(error||!data.user){setBusy(false);alert("Giriş tamamlanamadı: "+(error?.message??"Bilinmeyen hata"));return}
    const next=new URLSearchParams(location.search).get("next")||"/profile";
    const safeNext=next.startsWith("/")&&!next.startsWith("//")?next:"/profile";
