@@ -5,3 +5,19 @@
 
 /* Q-GANG identity dossier */
 .playerProfile{max-width:1120px;padding-top:24px}.playerIdentity{border-color:rgba(154,118,85,.2);border-radius:10px;background:linear-gradient(120deg,rgba(12,8,6,.98),rgba(4,4,4,.99));box-shadow:inset 0 1px rgba(232,221,203,.025),0 30px 80px rgba(0,0,0,.28)}.playerIdentity:after{content:"";position:absolute;right:7%;top:-70px;width:270px;height:270px;border:1px solid rgba(154,118,85,.07);border-radius:50%;box-shadow:0 0 90px rgba(130,31,22,.06)}.playerIdentityTop{color:#776b60}.playerIdentityTop b{color:#a07858}.playerIdentityAvatar{border-radius:8px;border-color:rgba(154,118,85,.24);background:#0b0806}.playerIdentityCopy small,.playerPanelHead small{color:#a07858}.playerIdentityCopy h1{font-family:var(--qg-display-font,Georgia,serif);font-weight:500;letter-spacing:.01em}.playerIdentityCopy>span{color:#9a8877;font-size:11px}.playerProfileGrid{grid-template-columns:minmax(0,1fr) 330px}.playerPanel{border-color:rgba(154,118,85,.15);border-radius:8px;background:linear-gradient(145deg,rgba(11,8,6,.96),rgba(4,4,4,.99))}.playerPanelHead h2{font-family:var(--qg-display-font,Georgia,serif);font-weight:500;letter-spacing:.02em}.playerBio{color:#a79b8d;font-size:12px}.playerConnect .button{border-color:rgba(154,118,85,.28)!important;background:rgba(154,118,85,.07)!important;color:#d8c5aa!important}
+
+/* Q-GANG · Profile 2.0 readability and dossier */
+.playerIdentityTop{font-size:10px;letter-spacing:.12em}.playerIdentityTop b{font-size:10px}
+.playerIdentityMain{gap:24px;margin-top:38px}.playerIdentityAvatar{width:92px;height:92px}
+.playerIdentityCopy small{font-size:9px}.playerIdentityCopy h1{font-size:42px;line-height:1.08;margin:7px 0 4px}.playerIdentityCopy>span{font-size:13px}
+.playerIdentityBadges{gap:8px;margin-top:14px}.playerIdentityBadges span{font-size:9px;padding:6px 9px}
+.playerRankBadge .rankInsignia{width:31px;height:31px}.playerStatusBadge{display:inline-flex;align-items:center;color:#a58d71!important}
+.playerConnect .button{padding:11px 15px!important;font-size:10px!important}
+.playerPanel{padding:24px}.playerPanelHead small{font-size:9px}.playerPanelHead h2{font-size:23px}.playerBio{font-size:14px;line-height:1.75}
+.playerDossierGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;border:1px solid rgba(154,118,85,.13);background:rgba(154,118,85,.13)}
+.playerDossierGrid>div{min-width:0;display:grid;gap:7px;padding:15px;background:#080604}.playerDossierGrid span{color:#796d61;font-size:9px;letter-spacing:.1em;text-transform:uppercase}.playerDossierGrid b{overflow:hidden;text-overflow:ellipsis;color:#d8c8b4;font:500 14px/1.25 var(--qg-display-font,Georgia,serif);white-space:nowrap}
+.playerAccount{justify-content:flex-start;gap:10px;padding:12px}.playerAccount>div{min-width:0;flex:1}.playerAccount b{font-size:11px}.playerAccount span{font-size:9px}.playerAccount>span:last-child{flex:0 0 auto}
+.playerProviderIcon{width:29px;height:29px;flex:0 0 29px;display:grid;place-items:center;border:1px solid rgba(154,118,85,.22);border-radius:50%;color:#cdb58f!important;font:700 11px Georgia,serif;background:rgba(154,118,85,.06)}
+.playerPanel .accountLinks a{font-size:10px;padding:11px 12px}
+@media(max-width:820px){.playerProfile{padding:8px 12px 105px}.playerIdentity{padding:22px 18px}.playerIdentityTop{align-items:flex-start;gap:12px}.playerIdentityTop b{text-align:right}.playerIdentityMain{gap:15px;margin-top:28px}.playerIdentityAvatar{width:72px;height:72px}.playerIdentityCopy h1{font-size:31px}.playerIdentityCopy>span{font-size:11px}.playerDossierGrid{grid-template-columns:1fr 1fr}.playerPanel{padding:18px}}
+@media(max-width:460px){.playerIdentityTop{display:grid}.playerIdentityTop b{text-align:left}.playerIdentityMain{display:grid;grid-template-columns:72px minmax(0,1fr)}.playerConnect{grid-column:1/-1}.playerDossierGrid{grid-template-columns:1fr}}
