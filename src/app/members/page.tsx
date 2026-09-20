@@ -8,7 +8,7 @@ import {pageMeta} from "@/lib/design";export const dynamic="force-dynamic";
 export const metadata=pageMeta.members;
 
 
-const levels=["founder","admin","moderator","community","member"] as const;
+const levels=["founder","admin","moderator","creator","member"] as const;
 
 export default async function Members(){
  const s=await createClient();
