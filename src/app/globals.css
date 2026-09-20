@@ -1263,3 +1263,10 @@ h1,h2,h3,h4,h5,h6,.commandBrand>strong,.pageHead h1,.fireHero h1,.profileHero h1
 .commandRail .identityPlateGuest .identityGuestEmblem{width:38px!important;height:44px!important;padding-right:6px!important}
 .commandRail .identityPlateGuest .identityGuestEmblem img{width:29px!important;height:35px!important}
 .commandRail .identityPlateArrow{font-size:22px!important}
+
+/* Identity Plate 2.0 · all rank states */
+.commandRail .identityPlate:not(.identityPlateGuest){grid-template-columns:42px minmax(0,1fr) 12px!important}
+.commandRail .identityPlateInsignia{width:38px!important;height:48px!important;padding-right:5px!important}
+.commandRail .identityPlateInsignia .rankInsignia{width:36px!important;height:44px!important;max-width:36px!important}
+.commandRail .identityPlateInsignia .rankInsignia img{max-width:36px!important;max-height:44px!important}
+.commandRail .identityPlate:not(.identityPlateGuest) .identityPlateCopy small{font-size:6.2px!important;letter-spacing:.065em!important}
