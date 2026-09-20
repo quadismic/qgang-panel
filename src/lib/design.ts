@@ -18,7 +18,7 @@ export const defaultDesign:DesignSettings={
  emblemSrc:"/brand/qgang-emblem.webp",loginBackground:"/brand/login/background.webp",
  roomCodex:"/brand/rooms/codex.webp",roomRegistry:"/brand/rooms/registry.webp",roomDecrees:"/brand/rooms/decrees.webp",roomTribunal:"/brand/rooms/tribunal.webp",roomTreasury:"/brand/rooms/treasury.webp",
  council:defaultCouncil,loginPanelWidth:510,loginEmblem:92,loginOverlay:42,
- motto:"Düzen, özgürlüğün en güçlü hâlidir.",systemLine:"SİSTEM\nİNSANLARLA\nYAŞAR."
+ motto:"Düzen, özgürlüğün en güçlü hâlidir.",systemLine:"SİSTEM\nİNSANLARLA\nYAŞAR.",favicon:"/brand/qgang-emblem.webp",siteTitle:"Q-GANG",siteDescription:"Q-GANG topluluk karargâhı.",pageDescriptions:{home:"Q-GANG Karargâhı",rules:"Q-GANG kuralları ve düzeni",members:"Q-GANG topluluğu",announcements:"Q-GANG duyuruları",discipline:"Q-GANG disiplin kayıtları",budget:"Q-GANG hazine kayıtları"}
 };
 export function normalizeDesign(v:any):DesignSettings{
  const n=(x:any,d:number,min:number,max:number)=>Math.min(max,Math.max(min,Number.isFinite(Number(x))?Number(x):d));
