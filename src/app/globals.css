@@ -1246,3 +1246,10 @@ h1,h2,h3,h4,h5,h6,.commandBrand>strong,.pageHead h1,.fireHero h1,.profileHero h1
 .identityPlate:hover .identityPlateArrow{transform:translateX(2px);color:#edc889}
 .identityPlateGuest{grid-template-columns:1fr;min-height:58px;box-shadow:inset 3px 0 0 rgba(118,93,68,.45)}
 @media(max-width:760px){.identityPlate{min-height:68px;grid-template-columns:50px minmax(0,1fr) 16px}.identityPlateInsignia{width:50px;height:50px}.identityPlateInsignia .rankInsignia{width:44px;height:50px}.identityPlateCopy strong{font-size:13px}}
+
+.identityPlateGuest{grid-template-columns:46px minmax(0,1fr) 18px!important;min-height:68px!important;padding:8px 10px!important;box-shadow:inset 3px 0 0 rgba(151,112,71,.55),inset 0 1px rgba(255,244,224,.02),0 10px 24px rgba(0,0,0,.18)}
+.identityGuestEmblem{width:42px;height:46px;display:grid;place-items:center;border-right:1px solid rgba(165,116,70,.16);padding-right:8px}
+.identityGuestEmblem img{width:32px;height:38px;object-fit:contain;opacity:.72;filter:sepia(.18) drop-shadow(0 5px 8px rgba(0,0,0,.35))}
+.identityPlateGuest .identityPlateCopy strong{font-size:12px;color:#d8cec0}
+.identityPlateGuest .identityPlateCopy small{font-size:7px;color:#806f5d;letter-spacing:.12em}
+.identityPlateGuest:hover .identityGuestEmblem img{opacity:.9}
