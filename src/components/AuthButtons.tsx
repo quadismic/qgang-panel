@@ -37,6 +37,21 @@ export function AuthButtons(){
    const s=createClient();
    const {data,error:authError}=await s.auth.signInWithIdToken({provider:"google",token:response.credential,nonce:nonceRef.current});
    if(authError||!data.user){setBusy(false);setError("Giriş tamamlanamadı. Lütfen yeniden deneyin.");return}
+   const google=(data.user.identities??[]).find(i=>i.provider==="google");
+   if(google){
+    const meta=(google.identity_data??{}) as Record<string,unknown>;
+    const handle=String(meta.full_name||meta.name||data.user.email||"").trim()||null;
+    const avatar=String(meta.avatar_url||meta.picture||"").trim()||null;
+    const {error:accountError}=await s.from("connected_accounts").upsert({
+     user_id:data.user.id,provider:"google",provider_user_id:google.id,provider_handle:handle,profile_url:null,
+     metadata:{avatar,email:meta.email||data.user.email||null}
+    },{onConflict:"user_id,provider"});
+    if(accountError){setBusy(false);setError("Google hesabı bağlandı ancak profil bağlantısı kaydedilemedi. Lütfen yeniden deneyin.");return}
+    if(avatar){
+     const {error:avatarError}=await s.from("profiles").update({avatar_url:avatar,updated_at:new Date().toISOString()}).eq("id",data.user.id);
+     if(avatarError){setBusy(false);setError("Google hesabı bağlandı ancak profil resmi eşitlenemedi. Lütfen yeniden deneyin.");return}
+    }
+   }
    const next=new URLSearchParams(location.search).get("next")||"/profile";
    const safeNext=next.startsWith("/")&&!next.startsWith("//")?next:"/profile";
    const {data:profile}=await s.from("profiles").select("onboarding_completed_at").eq("id",data.user.id).maybeSingle();
