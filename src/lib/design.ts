@@ -7,7 +7,7 @@ export type DesignSettings={
  roomCodex:string;roomRegistry:string;roomDecrees:string;roomTribunal:string;roomTreasury:string;
  council:CouncilSlot[];
  loginPanelWidth:number; loginEmblem:number; loginOverlay:number;
- motto:string; systemLine:string;
+ motto:string; systemLine:string; favicon:string; siteTitle:string; siteDescription:string; pageDescriptions:Record<string,string>;
 };
 export const councilIds=["left-1","left-2","right-1","right-2"] as const;
 const councilDefaultSrc:Record<string,string>={"left-1":"/brand/command/council-left-1.webp","left-2":"/brand/command/council-left-2.webp","right-1":"/brand/command/council-right-1.webp","right-2":"/brand/command/council-right-2.webp"};
@@ -33,6 +33,6 @@ export function normalizeDesign(v:any):DesignSettings{
   commandBackground:path(v?.commandBackground,defaultDesign.commandBackground),quadSrc:path(v?.quadSrc,defaultDesign.quadSrc),emblemSrc:path(v?.emblemSrc,defaultDesign.emblemSrc),loginBackground:path(v?.loginBackground,defaultDesign.loginBackground),
   roomCodex:path(v?.roomCodex,defaultDesign.roomCodex),roomRegistry:path(v?.roomRegistry,defaultDesign.roomRegistry),roomDecrees:path(v?.roomDecrees,defaultDesign.roomDecrees),roomTribunal:path(v?.roomTribunal,defaultDesign.roomTribunal),roomTreasury:path(v?.roomTreasury,defaultDesign.roomTreasury),
   council,loginPanelWidth:n(v?.loginPanelWidth,510,360,720),loginEmblem:n(v?.loginEmblem,92,48,160),loginOverlay:n(v?.loginOverlay,42,0,80),
-  motto:String(v?.motto||defaultDesign.motto).slice(0,120),systemLine:String(v?.systemLine||defaultDesign.systemLine).slice(0,80)
+  motto:String(v?.motto||defaultDesign.motto).slice(0,120),systemLine:String(v?.systemLine||defaultDesign.systemLine).slice(0,80),favicon:path(v?.favicon,defaultDesign.favicon),siteTitle:String(v?.siteTitle||defaultDesign.siteTitle).slice(0,60),siteDescription:String(v?.siteDescription||defaultDesign.siteDescription).slice(0,180),pageDescriptions:{...defaultDesign.pageDescriptions,...(v?.pageDescriptions&&typeof v.pageDescriptions==="object"?v.pageDescriptions:{})}
  };
 }
