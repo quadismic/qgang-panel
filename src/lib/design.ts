@@ -36,3 +36,12 @@ export function normalizeDesign(v:any):DesignSettings{
   motto:String(v?.motto||defaultDesign.motto).slice(0,120),systemLine:String(v?.systemLine||defaultDesign.systemLine).slice(0,80),favicon:path(v?.favicon,defaultDesign.favicon),siteTitle:String(v?.siteTitle||defaultDesign.siteTitle).slice(0,60),siteDescription:String(v?.siteDescription||defaultDesign.siteDescription).slice(0,180),pageDescriptions:{...defaultDesign.pageDescriptions,...(v?.pageDescriptions&&typeof v.pageDescriptions==="object"?v.pageDescriptions:{})}
  };
 }
+
+export const pageMeta = {
+ home:{title:"Karargâh",description:defaultDesign.pageDescriptions.home},
+ rules:{title:"Kurallar",description:defaultDesign.pageDescriptions.rules},
+ members:{title:"Topluluk",description:defaultDesign.pageDescriptions.members},
+ announcements:{title:"Duyurular",description:defaultDesign.pageDescriptions.announcements},
+ discipline:{title:"Disiplin",description:defaultDesign.pageDescriptions.discipline},
+ budget:{title:"Bütçe",description:defaultDesign.pageDescriptions.budget}
+} as const;
