@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type {CSSProperties} from "react";
 import {AppShell} from "@/components/AppShell";
-import {createClient} from "@/lib/supabase/server";
+import {createClient,getCurrentUser} from "@/lib/supabase/server";
 import {brandTheme} from "@/config/brand-theme";
 import {defaultDesign,normalizeDesign} from "@/lib/design";
 import {QGIcon,QGIconName} from "@/components/QGIcon";
@@ -10,7 +10,7 @@ export async function generateMetadata(){const s=await createClient();const {dat
 
 const tl=(n:number)=>new Intl.NumberFormat("tr-TR",{style:"currency",currency:"TRY",maximumFractionDigits:0}).format(n);
 export default async function Headquarters(){
- const s=await createClient(); const {data:{user}}=await s.auth.getUser();
+ const s=await createClient(); const user=await getCurrentUser();
  const {data:designRow}=await s.from("design_settings").select("settings").eq("key","active").maybeSingle(); const design=normalizeDesign(designRow?.settings??defaultDesign);
  const [{count:members},{data:rules},{data:fund},{data:membership}]=await Promise.all([
   s.from("community_memberships").select("*",{count:"exact",head:true}).eq("status","active"),
