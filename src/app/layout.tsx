@@ -13,7 +13,7 @@ import {DesignPreviewBridge} from "@/components/DesignPreviewBridge";
 
 const cinzel=Cinzel({subsets:["latin"],weight:["400","500","600","700"],variable:"--font-qgang",display:"swap"});
 
-export const metadata:Metadata={title:"Q-GANG",description:"Play. Create. Connect."};
+export const metadata:Metadata={title:"Q-GANG",description:"Play. Create. Connect.",icons:{icon:"/brand/qgang-emblem.webp",shortcut:"/brand/qgang-emblem.webp",apple:"/brand/qgang-emblem.webp"}};
 
 export default function RootLayout({children}:Readonly<{children:React.ReactNode}>){
   return <html lang="tr" className={cinzel.variable}><body><DesignRuntime/><DesignPreviewBridge/><EmberStage>{children}</EmberStage></body></html>
