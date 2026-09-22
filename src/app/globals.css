@@ -1339,3 +1339,6 @@ img,svg{max-width:100%}
  .panel,.resultCard,.commandPanel{padding:14px}
  .commandMotto blockquote{font-size:18px}
 }
+
+/* Progressive record reveal */
+.progressiveList{position:relative}.progressiveGate{position:relative;display:grid;place-items:center;min-height:86px;margin-top:-12px;padding-top:38px}.progressiveFade{position:absolute;inset:-34px 0 0;pointer-events:none;background:linear-gradient(180deg,rgba(8,7,6,0),rgba(8,7,6,.76) 52%,rgba(8,7,6,.98) 86%)}.progressiveGate button{position:relative;z-index:1;min-height:38px;padding:9px 16px;border:1px solid rgba(174,126,78,.34);border-radius:4px;background:rgba(22,15,11,.96);color:#d8c9b5;font-size:9px;font-weight:850;letter-spacing:.14em;cursor:pointer}.progressiveGate button:hover{border-color:rgba(211,161,91,.62);color:#f0dfc7}
