@@ -6,9 +6,9 @@ export function DiscordConnectButton() {
     const supabase = createClient();
     const { error } = await supabase.auth.linkIdentity({
       provider: "discord",
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=/profile` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/account")}` },
     });
-    if (error) window.alert("Discord bağlantısı başlatılamadı: " + error.message);
+    if (error) window.location.assign("/account?error=discord");
   }
   return <button type="button" className="accountLink" onClick={connect}>Discord'u Bağla</button>;
 }
