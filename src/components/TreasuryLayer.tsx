@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import {useCallback,useEffect,useState} from "react";
+import {useEffect,useState} from "react";
 import {SurfaceLayer} from "./SurfaceLayer";
 type Tx={id:string;kind:string;amount:number;title:string;category?:string|null;supporter_name?:string|null;is_anonymous?:boolean;created_at:string};
 type Summary={balance:number;support:number;expense:number;adjust:number;transactions:Tx[];contributors:{name:string;amount:number}[]};
