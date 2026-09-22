@@ -1,7 +1,7 @@
 import {AppShell} from "@/components/AppShell";
 import {createClient,getCurrentUser} from "@/lib/supabase/server";
-import {redirect} from "next/navigation";
-export const dynamic="force-dynamic";
+import {redirect} from "next/navigation";import {pageMeta} from "@/lib/design";
+export const dynamic="force-dynamic";export const metadata={title:"Yönetim",description:"Q-GANG yönetim merkezi"};
 export default async function Control(){
  const s=await createClient();const user=await getCurrentUser();
  if(!user)redirect("/login?next=/control");
