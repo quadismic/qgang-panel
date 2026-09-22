@@ -20,8 +20,7 @@ export default async function Members(){
    <header><span>TOPLULUK</span><b>ÜYE KAYITLARI</b></header>
    {people.length?<div className="orgBranch orgCommunityGrid">{people.map((p:any)=><Link href={"/u/"+p.handle} className="orgPerson" key={p.id}>
     <div className="orgPortrait">{p.avatar_url?<img src={p.avatar_url} alt=""/>:<span>{p.display_name?.slice(0,1).toUpperCase()||"Q"}</span>}</div>
-    <strong>{p.display_name}</strong><small>@{p.handle}</small>
-    <div className="orgInsignia"><RankInsignia role={p.role} size="sm"/><b>{roleLabel(p.role)}</b></div>
+    <div className="orgMemberIdentity"><div className="orgInsignia"><RankInsignia role={p.role} size="sm"/></div><div><strong>{p.display_name}</strong><small>{roleLabel(p.role)} · @{p.handle}</small></div></div>
    </Link>)}</div>:<div className="orgEmpty"><span>◇</span><h2>Topluluk henüz oluşturulmadı.</h2><p>Üyeler katıldıkça burada görünecek.</p></div>}
   </section>
  </AppShell>
