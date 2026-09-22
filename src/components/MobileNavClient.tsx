@@ -1,4 +1,4 @@
 "use client";
 import Link from "next/link";import {usePathname} from "next/navigation";import {QGIcon} from "@/components/QGIcon";
-const core=[["/members","community","Topluluk"],["/announcements","announcements","Duyurular"],["/penalties","discipline","Disiplin"]] as const;
+const core=[["/rules","rules","Kurallar"],["/announcements","announcements","Duyurular"],["/members","community","Topluluk"],["/penalties","discipline","Disiplin"]] as const;
 export function MobileNavClient({user}:{user:boolean}){const path=usePathname();const account=user?["/profile","identity","Profil"] as const:["/login","identity","Giriş"] as const;const items=[...core,account];return <nav className="mobileNav hubMobile" aria-label="Q-GANG mobil menü"><Link className={path==="/"?"active":""} href="/"><i><QGIcon name="headquarters"/></i><span>Karargâh</span></Link>{items.map(([href,icon,label])=><Link key={href} className={path.startsWith(href)?"active":""} href={href}><i><QGIcon name={icon}/></i><span>{label}</span></Link>)}</nav>}

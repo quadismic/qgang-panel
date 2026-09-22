@@ -4,7 +4,23 @@ create table if not exists public.moderation_appeals(id uuid primary key default
 alter table public.moderation_actions add column if not exists finality_status text not null default 'final' check(finality_status in ('pending_review','final','revoked')),add column if not exists finalized_at timestamptz,add column if not exists issuer_role public.qgang_role;
 alter table public.moderation_reviews enable row level security;alter table public.moderation_appeals enable row level security;
 create index if not exists moderation_reviews_action_idx on public.moderation_reviews(action_id,created_at desc);create index if not exists moderation_reviews_reviewer_idx on public.moderation_reviews(reviewer_id);create index if not exists moderation_appeals_user_idx on public.moderation_appeals(user_id);create index if not exists moderation_appeals_reviewed_by_idx on public.moderation_appeals(reviewed_by);
--- Live policies/functions are intentionally maintained by the named Supabase migrations:
--- qgang_moderation_review_flow, qgang_moderation_review_finalize,
--- qgang_member_appeals, secure_moderation_trigger_functions,
--- harden_moderation_hierarchy_and_appeals.
+
+-- Canonical RLS policies mirrored from production.
+drop policy if exists "users create own appeals" on public.moderation_appeals;
+create policy "users create own appeals" on public.moderation_appeals for insert to authenticated with check (
+ user_id=(select auth.uid()) and exists(select 1 from public.moderation_actions a where a.id=action_id and a.target_user_id=(select auth.uid()) and a.issuer_role<>'founder'::public.qgang_role and a.finality_status='final' and a.status<>'revoked')
+);
+drop policy if exists "users read own appeals" on public.moderation_appeals;
+create policy "users read own appeals" on public.moderation_appeals for select to authenticated using (user_id=(select auth.uid()));
+drop policy if exists "moderation staff read appeals" on public.moderation_appeals;
+create policy "moderation staff read appeals" on public.moderation_appeals for select to authenticated using (exists(select 1 from public.profiles p where p.id=(select auth.uid()) and p.role in ('moderator','admin','founder')));
+drop policy if exists "hierarchy resolves appeals" on public.moderation_appeals;
+create policy "hierarchy resolves appeals" on public.moderation_appeals for update to authenticated using (
+ status='open' and exists(select 1 from public.moderation_actions a join public.profiles p on p.id=(select auth.uid()) where a.id=action_id and ((a.issuer_role='moderator' and p.role in ('admin','founder')) or (a.issuer_role='admin' and p.role='founder')))
+) with check (reviewed_by=(select auth.uid()) and status in ('accepted','rejected'));
+drop policy if exists "moderation reviewers read" on public.moderation_reviews;
+create policy "moderation reviewers read" on public.moderation_reviews for select to authenticated using (exists(select 1 from public.profiles p where p.id=(select auth.uid()) and p.role in ('moderator','admin','founder')));
+drop policy if exists "moderation reviewers create" on public.moderation_reviews;
+create policy "moderation reviewers create" on public.moderation_reviews for insert to authenticated with check (
+ reviewer_id=(select auth.uid()) and reviewer_role=(select p.role from public.profiles p where p.id=(select auth.uid())) and exists(select 1 from public.moderation_actions a where a.id=action_id and ((a.issuer_role='moderator' and reviewer_role='admin') or (a.issuer_role='moderator' and reviewer_role='founder' and exists(select 1 from public.moderation_reviews ar where ar.action_id=a.id and ar.reviewer_role='admin' and ar.decision='approve')) or (a.issuer_role='admin' and reviewer_role='founder')))
+);
