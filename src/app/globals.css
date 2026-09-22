@@ -1339,3 +1339,16 @@ img,svg{max-width:100%}
  .panel,.resultCard,.commandPanel{padding:14px}
  .commandMotto blockquote{font-size:18px}
 }
+
+
+/* Q-GANG V3 closure */
+.commandModules{grid-template-columns:repeat(3,minmax(0,1fr))}
+.navSignOut{margin-top:8px}.navSignOut button{width:100%;background:transparent;color:#a89c8c;border-color:rgba(255,255,255,.08)}
+.identityPlateCopy{min-width:0}.identityPlateCopy strong{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
+.rankFrame .playerIdentityAvatar{position:relative}.rank-founder .playerIdentityAvatar{box-shadow:0 0 0 2px #b89b55,0 0 30px rgba(184,155,85,.2)}.rank-admin .playerIdentityAvatar{box-shadow:0 0 0 2px #9b8262}.rank-moderator .playerIdentityAvatar{box-shadow:0 0 0 2px #7d7161}.rank-creator .playerIdentityAvatar{box-shadow:0 0 0 2px #675f55}.profileRoleName{font-weight:900;letter-spacing:.16em;font-size:11px}
+.playerIdentity[class*="banner-"]{background-size:cover;background-position:center}.banner-pan-left{animation:qBannerLeft 18s ease-in-out infinite alternate}.banner-pan-right{animation:qBannerRight 18s ease-in-out infinite alternate}.banner-zoom-in{animation:qBannerZoomIn 18s ease-in-out infinite alternate}.banner-zoom-out{animation:qBannerZoomOut 18s ease-in-out infinite alternate}
+@keyframes qBannerLeft{from{background-position:35% center}to{background-position:65% center}}@keyframes qBannerRight{from{background-position:65% center}to{background-position:35% center}}@keyframes qBannerZoomIn{from{background-size:100% auto}to{background-size:115% auto}}@keyframes qBannerZoomOut{from{background-size:115% auto}to{background-size:100% auto}}
+.profileBannerEditor{display:grid;gap:12px;margin:18px 0}.profileBannerEditor>img,.defaultProfileBanner{width:100%;aspect-ratio:3/1;object-fit:cover;border-radius:18px;border:1px solid var(--line)}.defaultProfileBanner{background:radial-gradient(circle at 75% 30%,rgba(255,70,35,.18),transparent 35%),linear-gradient(135deg,#17100e,#08090b)}
+.profileBadges{display:grid;gap:8px}.profileBadge{padding:12px;border:1px solid var(--line);border-radius:13px;display:grid;gap:4px}.profileBadge span{color:var(--muted);font-size:12px}.profileCommentForm{display:grid;gap:8px;margin-bottom:15px}.profileCommentForm textarea{min-height:90px;background:#080a0d;color:var(--text);border:1px solid var(--line);border-radius:13px;padding:12px}.profileComments{display:grid;gap:8px}.profileComments article{border-top:1px solid var(--line);padding-top:10px}.profileComments small{display:block;color:var(--muted);font-size:11px}.profileComments p{margin:6px 0 0;line-height:1.5}
+.maintenanceGate{min-height:100vh;display:grid;place-content:center;text-align:center;padding:30px;background:radial-gradient(circle at 50% 30%,rgba(145,25,18,.16),transparent 35%),#080706}.maintenanceSeal{margin:auto;width:86px;height:86px;border:1px solid #8e6f47;border-radius:50%;display:grid;place-items:center;font:700 42px Georgia,serif}.maintenanceGate small{margin-top:20px;letter-spacing:.22em;color:#a28e72}.maintenanceGate h1{font:600 clamp(32px,5vw,62px) Georgia,serif;margin:12px 0}.maintenanceGate p{color:#9e968b}
+@media(max-width:900px){.commandModules{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.commandModules{grid-template-columns:1fr}}
