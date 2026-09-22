@@ -8,7 +8,7 @@ export async function GET(request:Request){
  let next=url.searchParams.get("next")||"/profile";
  try{next=decodeURIComponent(next)}catch{}
  if(!next.startsWith("/")||next.startsWith("//"))next="/profile";
- const origin=url.hostname==="localhost"?url.origin:PROD_ORIGIN;
+ const forwardedHost=request.headers.get("x-forwarded-host");const forwardedProto=request.headers.get("x-forwarded-proto")||"https";const previewOrigin=forwardedHost?`${forwardedProto}://${forwardedHost}`:url.origin;const origin=url.hostname==="q-gang.com"||url.hostname==="www.q-gang.com"?PROD_ORIGIN:previewOrigin;
  if(code){
   const s=await createClient();
   const {error}=await s.auth.exchangeCodeForSession(code);
