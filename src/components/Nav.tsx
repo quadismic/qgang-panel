@@ -1,2 +1,2 @@
-import {NavClient} from "./NavClient";import {createClient} from "@/lib/supabase/server";
-export async function Nav(){const s=await createClient();const {data:{user}}=await s.auth.getUser();let manage=false,identity:any=null,canViewBudget=false;if(user){const [{data:p},{data:membership}]=await Promise.all([s.from("profiles").select("display_name,handle,role,avatar_url,qgang_era,qgang_seal").eq("id",user.id).maybeSingle(),s.from("community_memberships").select("status").eq("user_id",user.id).eq("status","active").maybeSingle()]);identity=p;manage=!!p&&["founder","admin"].includes(p.role);canViewBudget=!!membership}return <NavClient manage={manage} identity={identity} canViewBudget={canViewBudget}/>}
+import {NavClient} from "./NavClient";
+export function Nav({manage=false,identity=null,canViewBudget=false}:{manage?:boolean;canViewBudget?:boolean;identity?:any}){return <NavClient manage={manage} identity={identity} canViewBudget={canViewBudget}/>}

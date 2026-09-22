@@ -15,14 +15,15 @@ export async function GET(request:Request){
   if(!error){
    const {data:{user}}=await s.auth.getUser();
    if(user){
-    const google=(user.identities??[]).find(i=>i.provider==="google");
-    if(google){
-     const meta:any=google.identity_data??{};
-     const handle=meta.full_name||meta.name||user.email||null;
-     await s.from("connected_accounts").upsert({user_id:user.id,provider:"google",provider_user_id:google.id,provider_handle:handle,profile_url:null,metadata:{avatar:meta.avatar_url||meta.picture||null,email:meta.email||null}},{onConflict:"user_id,provider"});
+    for(const identity of user.identities??[]){
+     if(identity.provider!=="google"&&identity.provider!=="discord")continue;
+     const meta:any=identity.identity_data??{};
+     const handle=identity.provider==="discord"?(meta.full_name||meta.name||meta.preferred_username||meta.user_name||null):(meta.full_name||meta.name||user.email||null);
+     await s.from("connected_accounts").upsert({user_id:user.id,provider:identity.provider,provider_user_id:identity.id,provider_handle:handle,profile_url:null,metadata:{avatar:meta.avatar_url||meta.picture||null,email:meta.email||null}},{onConflict:"user_id,provider"});
     }
+    const {data:currentProfile}=await s.from("profiles").select("avatar_url").eq("id",user.id).maybeSingle();
     const avatar=(user.user_metadata?.avatar_url||user.user_metadata?.picture||null) as string|null;
-    if(avatar)await s.from("profiles").update({avatar_url:avatar,updated_at:new Date().toISOString()}).eq("id",user.id);
+    if(avatar&&!currentProfile?.avatar_url)await s.from("profiles").update({avatar_url:avatar,updated_at:new Date().toISOString()}).eq("id",user.id);
     const {data:profile}=await s.from("profiles").select("onboarding_completed_at").eq("id",user.id).maybeSingle();
     if(!profile?.onboarding_completed_at)return NextResponse.redirect(new URL("/onboarding?next="+encodeURIComponent(next),origin));
    }

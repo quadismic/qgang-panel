@@ -4,11 +4,11 @@ import {AppShell} from "@/components/AppShell";
 import {createClient} from "@/lib/supabase/server";
 import {roleLabel} from "@/lib/roles";
 import {RankInsignia} from "@/components/RankInsignia";
-import {defaultDesign,normalizeDesign} from "@/lib/design";export const dynamic="force-dynamic";
-export async function generateMetadata(){const s=await createClient();const {data}=await s.from("design_settings").select("settings").eq("key","active").maybeSingle();const d=normalizeDesign(data?.settings??defaultDesign);return {title:"Topluluk",description:d.pageDescriptions.members}}
+import {pageMeta} from "@/lib/design";export const dynamic="force-dynamic";
+export const metadata=pageMeta.members;
 
 
-const levels=["founder","admin","moderator","community","member"] as const;
+const levels=["founder","admin","moderator","creator","member"] as const;
 
 export default async function Members(){
  const s=await createClient();

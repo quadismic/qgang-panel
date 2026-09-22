@@ -2,7 +2,7 @@ import {roleLabel} from "@/lib/roles";
 
 const assets:Record<string,string>={
  member:"/brand/ranks/member.webp",
- community:"/brand/ranks/lieutenant.webp",
+ creator:"/brand/ranks/lieutenant.webp",
  moderator:"/brand/ranks/captain.webp",
  admin:"/brand/ranks/deputy.webp",
  founder:"/brand/ranks/leader.webp"

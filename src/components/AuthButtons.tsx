@@ -8,7 +8,7 @@ declare global{
  interface Window{
   google?:{accounts:{id:{
    initialize:(config:{client_id:string;callback:(response:{credential?:string})=>void;auto_select?:boolean;cancel_on_tap_outside?:boolean;nonce?:string;use_fedcm_for_prompt?:boolean})=>void;
-   prompt:()=>void;
+   renderButton:(parent:HTMLElement,options:{type?:"standard"|"icon";theme?:"outline"|"filled_blue"|"filled_black";size?:"large"|"medium"|"small";text?:"signin_with"|"signup_with"|"continue_with"|"signin";shape?:"rectangular"|"pill"|"circle"|"square";logo_alignment?:"left"|"center";width?:number})=>void;
   }}};
  }
 }
@@ -30,10 +30,12 @@ export function AuthButtons(){
  const [error,setError]=useState<string|null>(null);
  const callbackRef=useRef<(response:{credential?:string})=>void>(()=>{});
  const nonceRef=useRef("");
+ const googleButtonRef=useRef<HTMLDivElement>(null);
 
  useEffect(()=>{
   callbackRef.current=async response=>{
    if(!response.credential){setBusy(false);setError("Google kimliği alınamadı. Lütfen yeniden deneyin.");return}
+   setBusy(true);
    const s=createClient();
    const {data,error:authError}=await s.auth.signInWithIdToken({provider:"google",token:response.credential,nonce:nonceRef.current});
    if(authError||!data.user){setBusy(false);setError("Giriş tamamlanamadı. Lütfen yeniden deneyin.");return}
@@ -75,6 +77,11 @@ export function AuthButtons(){
     nonce:await sha256(raw),
     use_fedcm_for_prompt:true
    });
+   if(googleButtonRef.current){
+    googleButtonRef.current.replaceChildren();
+    const width=Math.max(240,Math.min(360,window.innerWidth-64));
+    window.google.accounts.id.renderButton(googleButtonRef.current,{theme:"filled_black",size:"large",text:"continue_with",shape:"rectangular",logo_alignment:"left",width});
+   }
    setReady(true);
   };
   if(window.google){void init();return}
@@ -88,13 +95,8 @@ export function AuthButtons(){
   document.head.appendChild(script);
  },[]);
 
- function login(){
-  if(!ready||!window.google){setError("Google giriş servisi henüz hazır değil. Lütfen yeniden deneyin.");return}
-  setError(null);setBusy(true);window.google.accounts.id.prompt();window.setTimeout(()=>setBusy(false),15000);
- }
-
  return <div className="authButtons">
   {error&&<div className="qgangInlineError" role="alert"><span>GİRİŞ BAŞARISIZ</span><p>{error}</p></div>}
-  <button disabled={busy||!ready} onClick={login}><GoogleIcon/><span>{busy?"Google açılıyor…":ready?"Google ile devam et":"Google hazırlanıyor…"}</span><b className="authArrow" aria-hidden="true">→</b></button>
+  <div className="googleSignIn" aria-busy={busy}>{!ready&&<button disabled><GoogleIcon/><span>Google hazırlanıyor…</span><b className="authArrow" aria-hidden="true">→</b></button>}<div ref={googleButtonRef} hidden={!ready}/>{busy&&<span className="googleSignInBusy">Google ile giriş yapılıyor…</span>}</div>
  </div>
 }
