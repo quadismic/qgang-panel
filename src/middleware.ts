@@ -9,7 +9,8 @@ export async function middleware(request:NextRequest){
  const supabase=createServerClient(url,key,{cookies:{getAll(){return request.cookies.getAll()},setAll(items){items.forEach(({name,value})=>request.cookies.set(name,value));response=NextResponse.next({request});items.forEach(({name,value,options})=>response.cookies.set(name,value,options))}}});
  const {data:{user}}=await supabase.auth.getUser();
  const path=request.nextUrl.pathname;
- const exempt=path==="/login"||path.startsWith("/auth/")||path==="/onboarding"||path==="/api/onboarding";
+ const exempt=path==="/login"||path.startsWith("/auth/")||path==="/onboarding"||path==="/api/onboarding"||path==="/maintenance";
+ if(!exempt){const {data:settings}=await supabase.from("site_settings").select("maintenance_mode").eq("id",true).maybeSingle();if(settings?.maintenance_mode){let founder=false;if(user){const {data:role}=await supabase.from("profiles").select("role").eq("id",user.id).maybeSingle();founder=role?.role==="founder"}if(!founder){const target=request.nextUrl.clone();target.pathname="/maintenance";target.search="";return NextResponse.redirect(target)}}}
  if(user&&!exempt){
   const {data:p}=await supabase.from("profiles").select("onboarding_completed_at").eq("id",user.id).maybeSingle();
   if(!p?.onboarding_completed_at){
