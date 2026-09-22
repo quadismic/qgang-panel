@@ -16,7 +16,7 @@ export default async function Control(){
   <div className="stats"><div><span>Üye Sayısı</span><b>{users??0}</b></div><div><span>Aktif Bildirimler</span><b>{reports??0}</b></div></div>
   <div className="controlGrid">
    <a className="controlCard" href="/control/community"><span className="kicker">KİMLİK & ROLLER</span><h2>Üyelik Merkezi</h2><p>Lider, Vekilharç, Kaptan, Teğmen ve Üye yetkilerini yönet.</p></a>
-   <a className="controlCard" href="/control/moderation"><span className="kicker">GÜVENLİK</span><h2>Moderasyon Merkezi</h2><p>Bildirimler, yaptırımlar, incelemeler ve itiraz süreçleri.</p></a>
+   <a className="controlCard" href="/penalties"><span className="kicker">GÜVENLİK</span><h2>Disiplin Merkezi</h2><p>Bildirimler, yaptırımlar, incelemeler ve itiraz süreçleri.</p></a>
    <a className="controlCard" href="/control/design"><span className="kicker">GÖRÜNÜM</span><h2>Tasarım Merkezi</h2><p>Marka, Karargâh, giriş ve temel tasarım değişkenlerini canlı önizlemeyle yönet.</p></a>
   </div>
  </AppShell>
