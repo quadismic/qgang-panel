@@ -1,0 +1,10 @@
+-- Q-GANG moderation hierarchy, appeals and review flow
+create table if not exists public.moderation_reviews(id uuid primary key default gen_random_uuid(),action_id uuid not null references public.moderation_actions(id) on delete cascade,reviewer_id uuid not null references public.profiles(id) on delete restrict,reviewer_role public.qgang_role not null,decision text not null check(decision in ('approve','revoke')),note text,created_at timestamptz not null default now(),unique(action_id,reviewer_role));
+create table if not exists public.moderation_appeals(id uuid primary key default gen_random_uuid(),action_id uuid not null references public.moderation_actions(id) on delete cascade,user_id uuid not null references public.profiles(id) on delete cascade,body text not null check(char_length(body) between 10 and 1500),status text not null default 'open' check(status in ('open','accepted','rejected')),reviewed_by uuid references public.profiles(id) on delete set null,review_note text,created_at timestamptz not null default now(),reviewed_at timestamptz,unique(action_id,user_id));
+alter table public.moderation_actions add column if not exists finality_status text not null default 'final' check(finality_status in ('pending_review','final','revoked')),add column if not exists finalized_at timestamptz,add column if not exists issuer_role public.qgang_role;
+alter table public.moderation_reviews enable row level security;alter table public.moderation_appeals enable row level security;
+create index if not exists moderation_reviews_action_idx on public.moderation_reviews(action_id,created_at desc);create index if not exists moderation_reviews_reviewer_idx on public.moderation_reviews(reviewer_id);create index if not exists moderation_appeals_user_idx on public.moderation_appeals(user_id);create index if not exists moderation_appeals_reviewed_by_idx on public.moderation_appeals(reviewed_by);
+-- Live policies/functions are intentionally maintained by the named Supabase migrations:
+-- qgang_moderation_review_flow, qgang_moderation_review_finalize,
+-- qgang_member_appeals, secure_moderation_trigger_functions,
+-- harden_moderation_hierarchy_and_appeals.
