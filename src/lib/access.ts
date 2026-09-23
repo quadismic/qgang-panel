@@ -1,0 +1,2 @@
+import {cache} from "react";import {createClient} from "@/lib/supabase/server";import type {Permission} from "@/lib/roles";
+export const hasPermission=cache(async(userId:string|undefined|null,permission:Permission)=>{if(!userId)return false;const s=await createClient();const {data:p}=await s.from("profiles").select("role").eq("id",userId).maybeSingle();if(!p)return false;if(p.role==="founder")return true;const {data:r}=await s.from("role_permissions").select("enabled").eq("role",p.role).eq("permission",permission).maybeSingle();return !!r?.enabled;});
