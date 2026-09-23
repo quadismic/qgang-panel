@@ -1412,3 +1412,12 @@ img,svg{max-width:100%}
 .rankPortrait-founder .rankPortraitCrown{width:176px;height:auto;left:50%;top:-58px;transform:translateX(-50%);filter:drop-shadow(0 7px 7px rgba(0,0,0,.62))}
 .rankPortrait-founder .playerIdentityAvatar{border-color:transparent!important;box-shadow:none!important;overflow:hidden}
 @media(max-width:700px){.rankPortrait{width:96px;height:96px}.rankPortrait-founder .rankPortraitFrame{width:126px;height:126px}.rankPortrait-founder .rankPortraitCrown{width:112px;top:-38px}}
+
+/* Rank frame hierarchy: Leader / Vekilharç / Kaptan */
+.rankPortrait-admin .rankPortraitFrame{width:196px;height:196px;left:50%;top:50%;transform:translate(-50%,-50%);filter:drop-shadow(0 6px 8px rgba(0,0,0,.58))}
+.rankPortrait-moderator .rankPortraitCaptainFrame{width:196px;height:196px;left:50%;top:50%;transform:translate(-50%,-50%);filter:drop-shadow(0 6px 8px rgba(0,0,0,.62))}
+.rankPortrait-admin .playerIdentityAvatar,.rankPortrait-moderator .playerIdentityAvatar{border-color:transparent!important;box-shadow:none!important;overflow:hidden}
+.memberPlatePortrait-admin,.memberPlatePortrait-moderator{position:relative;overflow:visible!important;isolation:isolate}
+.memberPlatePortrait-admin>img:not(.memberRankFrame),.memberPlatePortrait-moderator>img:not(.memberRankFrame),.memberPlatePortrait-admin>span,.memberPlatePortrait-moderator>span{position:relative;z-index:1}
+.memberPlatePortrait-admin .memberRankFrame,.memberPlatePortrait-moderator .memberRankFrame{width:132%!important;height:132%!important;left:50%;top:50%;transform:translate(-50%,-50%);filter:drop-shadow(0 3px 4px rgba(0,0,0,.58))}
+@media(max-width:700px){.rankPortrait-admin .rankPortraitFrame,.rankPortrait-moderator .rankPortraitCaptainFrame{width:126px;height:126px}}
