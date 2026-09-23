@@ -1443,3 +1443,16 @@ img,svg{max-width:100%}
 .codexScene.codexHeroUnified>p{position:relative;z-index:2;max-width:640px;margin:0;color:#9f9284;line-height:1.55}
 .codexScene.codexHeroUnified .codexSceneMark{right:6%;top:-28px;opacity:.32}
 @media(max-width:700px){.codexScene.codexHeroUnified{padding:30px 24px 26px}.codexScene.codexHeroUnified h1{font-size:36px}}
+
+/* FIX 2.0 · Community portraits use the rectangular rank-frame geometry */
+.orgChart .orgPortrait{width:72px;height:86px;border-radius:5px}
+.orgChart .org-founder .orgPortrait{width:84px;height:100px;border-radius:5px}
+.orgChart .orgPortrait img{border-radius:3px;object-fit:cover}
+.orgTreePlates .memberPlatePortrait{width:60px;height:72px;border-radius:4px;aspect-ratio:5/6}
+.orgTreePlates .memberPlate-founder .memberPlatePortrait{width:68px;height:82px;border-radius:4px}
+.orgTreePlates .memberPlatePortrait>img:not(.memberRankFrame):not(.memberRankCrown){border-radius:2px;object-fit:cover}
+.orgTreePlates .memberPlate{grid-template-columns:72px minmax(0,1fr) 74px;min-height:100px}
+.orgTreePlates .memberPlate-founder{grid-template-columns:80px minmax(0,1fr) 74px;min-height:112px}
+.memberPlatePortrait-admin .memberRankFrame,.memberPlatePortrait-moderator .memberRankFrame{width:142%!important;height:132%!important}
+.memberPlatePortrait-founder .memberRankFrame{width:142%!important;height:132%!important;left:50%;top:50%;transform:translate(-50%,-50%)}
+@media(max-width:760px){.orgTreePlates .memberPlate,.orgTreePlates .memberPlate-founder{grid-template-columns:66px minmax(0,1fr) 62px}.orgTreePlates .memberPlatePortrait,.orgTreePlates .memberPlate-founder .memberPlatePortrait{width:56px;height:68px}}
