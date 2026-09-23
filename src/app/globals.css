@@ -1403,3 +1403,12 @@ img,svg{max-width:100%}
 .profileReportPanel{margin-top:0}.profileReportForm{display:grid;gap:10px}.profileReportForm label{display:grid;gap:6px;color:#8c755e;font-size:9px}.profileReportForm textarea{min-height:90px;padding:10px;border:1px solid rgba(151,103,67,.22);border-radius:4px;background:#080706;color:#d9c9b6}.profileReportForm button{justify-self:start;padding:9px 13px;border:1px solid rgba(151,103,67,.35);border-radius:4px;background:#2c120d;color:#d6b99a;font-size:8px;font-weight:800;letter-spacing:.1em}
 @media(max-width:980px){.profileV2Grid{grid-template-columns:1fr!important}.profileV2Side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.profileV2Side .profileV2AccountsPanel{grid-column:1/-1}}
 @media(max-width:700px){.profileV2{padding:8px 8px 60px}.profileV2Hero{min-height:0}.profileV2Hero .playerIdentityMain{min-height:0;align-items:flex-start}.profileV2Hero .playerIdentityAvatar{width:96px;height:96px}.profileV2Hero .playerIdentityCopy h1{font-size:36px}.profileV2Hero .playerConnect{margin-left:0;align-self:auto;padding-bottom:0}.profileV2 .playerDossierGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.profileV2Side{grid-template-columns:1fr}}
+
+/* Leader portrait ornaments */
+.rankPortrait{position:relative;display:grid;place-items:center;flex:0 0 auto;width:150px;height:150px;isolation:isolate}
+.rankPortrait .playerIdentityAvatar{position:relative;z-index:1;width:100%!important;height:100%!important}
+.rankPortraitFrame,.rankPortraitCrown{position:absolute;z-index:3;pointer-events:none;user-select:none;max-width:none;object-fit:contain}
+.rankPortrait-founder .rankPortraitFrame{width:196px;height:196px;left:50%;top:50%;transform:translate(-50%,-50%);filter:drop-shadow(0 6px 8px rgba(0,0,0,.58))}
+.rankPortrait-founder .rankPortraitCrown{width:176px;height:auto;left:50%;top:-58px;transform:translateX(-50%);filter:drop-shadow(0 7px 7px rgba(0,0,0,.62))}
+.rankPortrait-founder .playerIdentityAvatar{border-color:transparent!important;box-shadow:none!important;overflow:hidden}
+@media(max-width:700px){.rankPortrait{width:96px;height:96px}.rankPortrait-founder .rankPortraitFrame{width:126px;height:126px}.rankPortrait-founder .rankPortraitCrown{width:112px;top:-38px}}
