@@ -1,0 +1,1 @@
+"use client";export function EraAdvanceButton({era}:{era:string}){return <form action="/api/era" method="post" onSubmit={e=>{if(!confirm(`ERA ${era} kapanacak ve yeni dönem başlayacak. Mevcut üyelik kayıtları tarihsel kimlik olarak korunacak. Devam edilsin mi?`))e.preventDefault()}}><button className="primary" type="submit">YENİ ERA BAŞLAT</button></form>}
