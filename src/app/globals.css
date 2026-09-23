@@ -1348,3 +1348,111 @@ img,svg{max-width:100%}
 
 /* Final filters and member identity alignment */
 .decreeFilters{display:grid;grid-template-columns:minmax(0,1fr) 140px auto;gap:8px;padding:12px 14px;border-bottom:1px solid rgba(151,103,67,.16)}.decreeFilters input,.decreeFilters select{min-height:38px;border:1px solid rgba(151,103,67,.25);background:rgba(11,8,7,.72);color:#d4c5b3;padding:0 10px}.decreeFilters button{border:1px solid rgba(174,126,78,.34);background:rgba(30,18,13,.8);color:#d8c9b5;font-size:9px;font-weight:800;letter-spacing:.12em}.orgMemberIdentity{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:8px}.orgMemberIdentity>div:last-child{display:grid;text-align:left}.orgMemberIdentity strong{margin:0}.orgMemberIdentity small{display:block}.orgMemberIdentity .orgInsignia{margin:0}@media(max-width:640px){.decreeFilters{grid-template-columns:1fr}.orgMemberIdentity{justify-content:flex-start}}
+
+/* FIX 2.0 · Headquarters, hierarchy and identity plate */
+.commandModules.commandModulesSix{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.commandModules.commandModulesSix .commandPanel{min-height:300px}
+.orgTreePlates{min-width:0;display:grid;gap:0;padding:30px 24px 60px}
+.orgTreePlates .orgLevel{padding:30px 0 0}
+.orgTreePlates .orgLevel:first-child{padding-top:0}
+.orgTreePlates .orgTrunk{top:0;height:30px}
+.orgTreePlates .orgPlateBranch{padding:16px 12px 12px;gap:18px;flex-wrap:wrap}
+.orgTreePlates .orgPlateBranch:before{top:0;left:18%;right:18%}
+.memberPlate{position:relative;width:min(330px,100%);min-height:86px;display:grid;grid-template-columns:66px minmax(0,1fr) 74px;align-items:center;gap:12px;padding:10px 12px;border:1px solid rgba(151,103,67,.32);border-left:3px solid #725035;border-radius:5px;background:radial-gradient(circle at 85% 0,rgba(103,31,22,.12),transparent 38%),linear-gradient(110deg,rgba(24,18,14,.98),rgba(8,7,6,.99));box-shadow:inset 0 0 24px rgba(0,0,0,.42),0 12px 30px rgba(0,0,0,.18);transition:.18s ease}
+.memberPlate:before{content:"";position:absolute;left:50%;top:-17px;width:1px;height:17px;background:#8c6039}
+.memberPlate:hover{transform:translateY(-2px);border-color:rgba(187,132,77,.58)}
+.memberPlate-founder{width:min(390px,100%);min-height:104px;border-left-color:#a42a21;box-shadow:inset 0 0 30px rgba(0,0,0,.48),0 0 32px rgba(142,34,25,.08)}
+.memberPlatePortrait{width:60px;height:60px;overflow:hidden;display:grid;place-items:center;border:1px solid #855839;border-radius:4px;background:#0b0705;color:#dbc9b0;font:700 22px Georgia,serif}
+.memberPlate-founder .memberPlatePortrait{width:68px;height:68px;border-color:#a93b2c}
+.memberPlatePortrait img{width:100%;height:100%;object-fit:cover}
+.memberPlateCopy{min-width:0;display:grid;gap:5px;text-align:left}.memberPlateCopy strong{overflow-wrap:anywhere;color:#eee1cf;font:700 15px Georgia,serif}.memberPlateCopy small{color:#89796b;font-size:10px}
+.memberPlateRank{height:100%;display:grid;place-items:center;align-content:center;gap:3px;border-left:1px solid rgba(151,103,67,.18);color:#b28b61}.memberPlateRank .rankInsignia{max-width:34px}.memberPlateRank b{font:700 8px Georgia,serif;letter-spacing:.1em}
+.commandRail .navBottom>a.identityPlate{grid-template-columns:42px minmax(0,1fr) 10px!important;width:calc(100% - 4px)!important;margin:0 2px!important;padding-left:7px!important;padding-right:5px!important}
+.commandRail .navBottom>a.identityPlate .identityPlateCopy{overflow:visible!important}
+.commandRail .navBottom>a.identityPlate .identityPlateCopy strong{font-size:clamp(8px,.72vw,10.5px)!important;letter-spacing:.015em!important;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;line-height:1.08!important;overflow-wrap:anywhere}
+.commandRail .navBottom>a.identityPlate .identityPlateCopy small{font-size:6px!important;white-space:normal!important;line-height:1.25!important;text-overflow:clip!important;overflow:visible!important}
+.identityPlateLogout{margin:5px 2px 0}.identityPlateLogout button{width:100%;min-height:30px;padding:6px;border:1px solid rgba(151,103,67,.22);border-radius:4px;background:rgba(13,9,7,.88);color:#92765e;font:700 7px Georgia,serif;letter-spacing:.16em}.identityPlateLogout button:hover{color:#d7c1a7;border-color:rgba(173,112,65,.45)}
+@media(max-width:1100px) and (min-width:761px){.commandModules.commandModulesSix{grid-template-columns:repeat(3,minmax(0,1fr))!important}.commandPanel{min-height:250px!important}}
+@media(max-width:760px){.commandModules.commandModulesSix{grid-template-columns:1fr!important}.orgTreePlates{min-width:0;padding:20px 8px 45px}.orgTreePlates .orgPlateBranch{padding-left:4px;padding-right:4px}.memberPlate,.memberPlate-founder{width:min(100%,390px);grid-template-columns:58px minmax(0,1fr) 62px}.memberPlatePortrait,.memberPlate-founder .memberPlatePortrait{width:54px;height:54px}}
+
+/* FIX 2.0 · Management / Access Center */
+.accessHero{background:radial-gradient(480px 230px at 82% 22%,rgba(117,36,24,.17),transparent 62%),linear-gradient(125deg,#140d0a,#070707 64%)}
+.accessMatrix{border-color:rgba(151,103,67,.26);border-radius:6px;background:linear-gradient(180deg,rgba(16,12,10,.96),rgba(6,6,6,.99))}
+.accessMatrix>header{display:flex;align-items:end;justify-content:space-between;gap:18px;padding-bottom:17px;border-bottom:1px solid rgba(151,103,67,.2)}.accessMatrix h2{margin:5px 0 0;font-family:Georgia,serif}.accessMatrix>header small{color:#806f60;font-size:10px}
+.accessTable{overflow-x:auto}.accessRow{min-width:850px;display:grid;grid-template-columns:minmax(230px,1.8fr) repeat(5,minmax(92px,.7fr));align-items:center;border-bottom:1px solid rgba(151,103,67,.13)}.accessRow:last-child{border-bottom:0}.accessRow>div:first-child{display:grid;gap:3px;padding:13px 10px}.accessRow strong{color:#ddcfbd;font:600 13px Georgia,serif}.accessRow small{color:#705f52;font-size:8px;letter-spacing:.08em}.accessHead{min-height:42px;color:#8f765e;font:700 8px Georgia,serif;letter-spacing:.12em}.accessHead>*{padding:10px;text-align:center}.accessHead>b:first-child{text-align:left}.accessRow form{display:grid;place-items:center;padding:8px;border-left:1px solid rgba(151,103,67,.1)}.accessRow button{min-width:66px;min-height:29px;padding:6px 8px;border-radius:3px;font-size:7px;font-weight:850;letter-spacing:.12em}.permissionOn{border-color:rgba(151,111,58,.5);background:rgba(86,57,24,.34);color:#d5b777}.permissionOff{border-color:rgba(106,81,64,.22);background:rgba(18,15,13,.72);color:#6f645b}.accessRow button:disabled{opacity:.72;cursor:not-allowed}
+.controlGrid .controlCard{border-radius:5px;border-color:rgba(151,103,67,.24);background:radial-gradient(230px 120px at 100% 0,rgba(93,29,20,.08),transparent 70%),linear-gradient(145deg,rgba(17,13,11,.98),rgba(6,6,6,.99))}.controlGrid .controlCard h2{font-family:Georgia,serif;color:#e4d7c6}.controlGrid .controlCard:hover{border-color:rgba(180,119,67,.48)}
+
+/* FIX 2.0 · Inline profile editing */
+.profileInlineEdit{min-height:38px;padding:9px 15px;border:1px solid rgba(169,106,59,.4);border-radius:4px;background:rgba(33,18,13,.86);color:#ddc6a9;font:800 8px Georgia,serif;letter-spacing:.12em}
+.profileEditOverlay{position:fixed;z-index:1000;inset:0;display:grid;place-items:center;padding:22px;background:rgba(0,0,0,.76);backdrop-filter:blur(8px)}
+.profileEditSheet{width:min(780px,100%);max-height:90vh;overflow:auto;border:1px solid rgba(164,105,61,.36);border-radius:7px;background:radial-gradient(circle at 90% 0,rgba(105,30,20,.15),transparent 34%),#090807;box-shadow:0 30px 90px rgba(0,0,0,.7)}
+.profileEditSheet>header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid rgba(151,103,67,.2)}.profileEditSheet>header small{color:#a87554;font-size:8px;letter-spacing:.14em}.profileEditSheet>header h2{margin:4px 0 0;color:#eadccc;font:600 26px Georgia,serif}.profileEditSheet>header>button{width:34px;height:34px;border:1px solid rgba(151,103,67,.25);border-radius:50%;background:#0d0a08;color:#aa8b70;font-size:20px}
+.profileEditSheet form{padding:20px 22px}.profileEditGrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.profileEditGrid label{display:grid;gap:6px;color:#907760;font-size:9px}.profileEditGrid input,.profileEditGrid textarea,.profileEditGrid select{width:100%;border:1px solid rgba(151,103,67,.22);border-radius:4px;background:#070707;color:#ddd0bf;padding:10px 11px}.profileEditWide{grid-column:1/-1}.profileEditSheet footer{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;padding-top:16px;border-top:1px solid rgba(151,103,67,.15)}.profileEditSheet footer button{min-height:36px;padding:8px 13px;border:1px solid rgba(151,103,67,.26);border-radius:4px;background:#100c09;color:#a99480;font-size:8px;font-weight:800}.profileEditSheet footer .primary{background:#54170f;border-color:#8f2c20;color:#f0d9c2}.publicIdentityFacts{display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding-top:14px;border-top:1px solid rgba(151,103,67,.16)}.publicIdentityFacts span{color:#806b59;font-size:8px;letter-spacing:.12em}.publicIdentityFacts b{color:#d4c3ae;font:600 13px Georgia,serif}
+@media(max-width:640px){.profileEditGrid{grid-template-columns:1fr}.profileEditWide{grid-column:auto}.profileEditOverlay{padding:8px}.profileEditSheet{max-height:96vh}}
+
+/* FIX 2.0 · Shared profile composition from approved mockup */
+.profileV2{width:100%;max-width:1480px;margin:0 auto;padding:16px 18px 70px}
+.profileV2Hero{min-height:330px;border:1px solid rgba(151,103,67,.38);border-radius:7px;background-color:#090706;background-image:radial-gradient(circle at 80% 5%,rgba(92,29,21,.11),transparent 32%),linear-gradient(120deg,#110b08,#060606 70%);box-shadow:inset 0 0 70px rgba(0,0,0,.48)}
+.profileV2Hero .playerIdentityMain{min-height:250px;align-items:center}.profileV2Hero .playerIdentityAvatar{width:150px;height:150px;border-radius:6px;border:1px solid #7e542e;box-shadow:0 0 0 5px rgba(32,18,12,.9),0 12px 35px rgba(0,0,0,.5)}
+.rankFrame-founder .playerIdentityAvatar{border-color:#a77938;box-shadow:0 0 0 4px #25150d,0 0 0 6px rgba(151,103,45,.45),0 14px 40px rgba(0,0,0,.55)}
+.profileV2Hero .playerIdentityCopy h1{font-size:clamp(42px,5vw,72px);letter-spacing:.015em}.profileV2Hero .playerIdentityCopy>span{font-size:15px}.profileV2Hero .playerConnect{margin-left:auto;align-self:end;padding-bottom:16px}
+.profileV2Grid{grid-template-columns:minmax(0,1.75fr) minmax(330px,.92fr)!important;gap:26px!important;margin-top:26px}.profileV2Main,.profileV2Side{gap:24px!important}.profileV2 .playerPanel{border-radius:6px;border-color:rgba(151,103,67,.32);background:radial-gradient(circle at 100% 0,rgba(90,28,18,.08),transparent 34%),linear-gradient(145deg,rgba(15,11,9,.98),rgba(6,6,6,.99));box-shadow:inset 0 0 28px rgba(0,0,0,.2)}
+.profileV2About{min-height:190px}.profileV2About .playerBio{font-size:15px;line-height:1.75}.profileV2Dossier{min-height:240px}.profileV2 .playerDossierGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.profileV2 .playerDossierGrid>div{min-height:86px}
+.profileV2Side .playerPanel{min-height:0}.profileV2AccountsPanel .playerAccounts{gap:10px}.profileV2AccountsPanel .playerAccount{min-height:64px;border:1px solid rgba(151,103,67,.17);border-radius:5px;background:rgba(13,11,10,.74)}
+.profileV2Future{min-height:220px}.profileV2FutureState{min-height:145px;display:grid;place-items:center;align-content:center;gap:8px;text-align:center;color:#806f60}.profileV2FutureState b{color:#cdb695;font:600 13px Georgia,serif;text-transform:uppercase}.profileV2FutureState span{font-size:10px}.profileV2FutureState.compact{min-height:120px}
+.profileReportPanel{margin-top:0}.profileReportForm{display:grid;gap:10px}.profileReportForm label{display:grid;gap:6px;color:#8c755e;font-size:9px}.profileReportForm textarea{min-height:90px;padding:10px;border:1px solid rgba(151,103,67,.22);border-radius:4px;background:#080706;color:#d9c9b6}.profileReportForm button{justify-self:start;padding:9px 13px;border:1px solid rgba(151,103,67,.35);border-radius:4px;background:#2c120d;color:#d6b99a;font-size:8px;font-weight:800;letter-spacing:.1em}
+@media(max-width:980px){.profileV2Grid{grid-template-columns:1fr!important}.profileV2Side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.profileV2Side .profileV2AccountsPanel{grid-column:1/-1}}
+@media(max-width:700px){.profileV2{padding:8px 8px 60px}.profileV2Hero{min-height:0}.profileV2Hero .playerIdentityMain{min-height:0;align-items:flex-start}.profileV2Hero .playerIdentityAvatar{width:96px;height:96px}.profileV2Hero .playerIdentityCopy h1{font-size:36px}.profileV2Hero .playerConnect{margin-left:0;align-self:auto;padding-bottom:0}.profileV2 .playerDossierGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.profileV2Side{grid-template-columns:1fr}}
+
+/* Leader portrait ornaments */
+.rankPortrait{position:relative;display:grid;place-items:center;flex:0 0 auto;width:150px;height:150px;isolation:isolate}
+.rankPortrait .playerIdentityAvatar{position:relative;z-index:1;width:100%!important;height:100%!important}
+.rankPortraitFrame,.rankPortraitCrown{position:absolute;z-index:3;pointer-events:none;user-select:none;max-width:none;object-fit:contain}
+.rankPortrait-founder .rankPortraitFrame{width:196px;height:196px;left:50%;top:50%;transform:translate(-50%,-50%);filter:drop-shadow(0 6px 8px rgba(0,0,0,.58))}
+.rankPortrait-founder .rankPortraitCrown{width:176px;height:auto;left:50%;top:-58px;transform:translateX(-50%);filter:drop-shadow(0 7px 7px rgba(0,0,0,.62))}
+.rankPortrait-founder .playerIdentityAvatar{border-color:transparent!important;box-shadow:none!important;overflow:hidden}
+@media(max-width:700px){.rankPortrait{width:96px;height:96px}.rankPortrait-founder .rankPortraitFrame{width:126px;height:126px}.rankPortrait-founder .rankPortraitCrown{width:112px;top:-38px}}
+
+/* Rank frame hierarchy: Leader / Vekilharç / Kaptan */
+.rankPortrait-admin .rankPortraitFrame{width:196px;height:196px;left:50%;top:50%;transform:translate(-50%,-50%);filter:drop-shadow(0 6px 8px rgba(0,0,0,.58))}
+.rankPortrait-moderator .rankPortraitCaptainFrame{width:196px;height:196px;left:50%;top:50%;transform:translate(-50%,-50%);filter:drop-shadow(0 6px 8px rgba(0,0,0,.62))}
+.rankPortrait-admin .playerIdentityAvatar,.rankPortrait-moderator .playerIdentityAvatar{border-color:transparent!important;box-shadow:none!important;overflow:hidden}
+.memberPlatePortrait-admin,.memberPlatePortrait-moderator{position:relative;overflow:visible!important;isolation:isolate}
+.memberPlatePortrait-admin>img:not(.memberRankFrame),.memberPlatePortrait-moderator>img:not(.memberRankFrame),.memberPlatePortrait-admin>span,.memberPlatePortrait-moderator>span{position:relative;z-index:1}
+.memberPlatePortrait-admin .memberRankFrame,.memberPlatePortrait-moderator .memberRankFrame{width:132%!important;height:132%!important;left:50%;top:50%;transform:translate(-50%,-50%);filter:drop-shadow(0 3px 4px rgba(0,0,0,.58))}
+@media(max-width:700px){.rankPortrait-admin .rankPortraitFrame,.rankPortrait-moderator .rankPortraitCaptainFrame{width:126px;height:126px}}
+
+.disciplineViews{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid rgba(186,126,72,.14)}
+.disciplineViews a{padding:8px 12px;border:1px solid rgba(186,126,72,.18);font-size:10px;letter-spacing:.12em;color:#8d7b69;text-decoration:none}
+.disciplineViews a[aria-current="page"]{color:#e7c69a;border-color:rgba(186,126,72,.5);background:rgba(120,47,24,.12)}
+.disciplinePicker{position:relative;display:grid;gap:7px}
+.disciplinePickerResults{position:absolute;z-index:20;top:calc(100% + 4px);left:0;right:0;display:grid;max-height:260px;overflow:auto;background:#090706;border:1px solid rgba(186,126,72,.28);box-shadow:0 18px 36px rgba(0,0,0,.55)}
+.disciplinePickerResults button{display:flex!important;justify-content:space-between!important;gap:12px!important;padding:10px 12px!important;border:0!important;border-bottom:1px solid rgba(186,126,72,.1)!important;background:transparent!important;text-align:left!important;color:#d8c5ad!important}
+.disciplinePickerResults button:hover{background:rgba(120,47,24,.14)!important}
+.disciplinePickerResults span{color:#776b60;font-size:10px}
+.disciplinePickerResults small{padding:12px;color:#776b60}
+.disciplinePickerClear{justify-self:start!important;width:auto!important;padding:5px 8px!important;font-size:9px!important}
+
+.membershipCenter{display:grid;gap:18px}.membershipHero{margin-bottom:0}.membershipEra{padding:22px;border:1px solid rgba(186,126,72,.18);background:linear-gradient(145deg,rgba(20,13,10,.88),rgba(7,6,5,.94))}
+.membershipLedger{border:1px solid rgba(186,126,72,.18);background:rgba(8,6,5,.84)}.membershipLedger>header{display:flex;align-items:end;justify-content:space-between;padding:20px 22px;border-bottom:1px solid rgba(186,126,72,.14)}.membershipLedger>header h2{margin:5px 0 0}.membershipLedger>header>b{font-size:10px;letter-spacing:.12em;color:#92785f}.membershipList{display:grid}.membershipCard{display:grid;grid-template-columns:46px minmax(180px,1fr) minmax(320px,auto);gap:15px;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(186,126,72,.1)}.membershipCard:last-child{border-bottom:0}.membershipCard .avatar{width:42px;height:42px}.membershipCard>div:nth-child(2){display:grid;gap:3px}.membershipCard>div:nth-child(2)>span,.membershipCard>div:nth-child(2)>p{font-size:11px;color:#796f66;margin:0}.memberAdminActions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}.memberAdminActions form{display:flex;gap:6px;align-items:center}.memberAdminActions button,.memberAdminActions select{min-height:34px}.memberAdminActions .danger{border-color:rgba(151,48,38,.42);color:#b56b61;background:rgba(80,20,17,.12)}.memberAdminActions .danger:hover{border-color:rgba(190,61,48,.72);color:#df887c}@media(max-width:900px){.membershipCard{grid-template-columns:42px 1fr}.memberAdminActions{grid-column:1/-1;justify-content:flex-start}}
+.purgeModalBackdrop{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.78);backdrop-filter:blur(7px)}.purgeModal{width:min(520px,100%);padding:24px;border:1px solid rgba(176,59,47,.48);background:linear-gradient(150deg,#120b09,#070605 72%);box-shadow:0 30px 80px rgba(0,0,0,.7)}.purgeModal>small{font-size:9px;letter-spacing:.16em;color:#b86257}.purgeModal h2{margin:7px 0 10px}.purgeModal p{color:#92857a;font-size:12px;line-height:1.6}.purgeModal label{display:grid;gap:7px;margin-top:16px;font-size:10px;letter-spacing:.1em;color:#a99989}.purgeModal input{min-height:42px}.purgeModalActions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.purgeModalActions button{min-height:38px}.purgeModalActions .danger:disabled{opacity:.35;cursor:not-allowed}
+
+/* FIX 2.0 · Rules hero aligned with the core room pages */
+.codexScene.codexHeroUnified{height:auto;min-height:0;padding:42px 46px 34px;border:1px solid #30211a;background-position:center!important}
+.codexScene.codexHeroUnified h1{position:relative;z-index:2;margin:9px 0;color:#eee4d4;font:42px Georgia,serif}
+.codexScene.codexHeroUnified>p{position:relative;z-index:2;max-width:640px;margin:0;color:#9f9284;line-height:1.55}
+.codexScene.codexHeroUnified .codexSceneMark{right:6%;top:-28px;opacity:.32}
+@media(max-width:700px){.codexScene.codexHeroUnified{padding:30px 24px 26px}.codexScene.codexHeroUnified h1{font-size:36px}}
+
+/* FIX 2.0 · Community portraits use the rectangular rank-frame geometry */
+.orgChart .orgPortrait{width:72px;height:86px;border-radius:5px}
+.orgChart .org-founder .orgPortrait{width:84px;height:100px;border-radius:5px}
+.orgChart .orgPortrait img{border-radius:3px;object-fit:cover}
+.orgTreePlates .memberPlatePortrait{width:60px;height:72px;border-radius:4px;aspect-ratio:5/6}
+.orgTreePlates .memberPlate-founder .memberPlatePortrait{width:68px;height:82px;border-radius:4px}
+.orgTreePlates .memberPlatePortrait>img:not(.memberRankFrame):not(.memberRankCrown){border-radius:2px;object-fit:cover}
+.orgTreePlates .memberPlate{grid-template-columns:72px minmax(0,1fr) 74px;min-height:100px}
+.orgTreePlates .memberPlate-founder{grid-template-columns:80px minmax(0,1fr) 74px;min-height:112px}
+.memberPlatePortrait-admin .memberRankFrame,.memberPlatePortrait-moderator .memberRankFrame{width:142%!important;height:132%!important}
+.memberPlatePortrait-founder .memberRankFrame{width:142%!important;height:132%!important;left:50%;top:50%;transform:translate(-50%,-50%)}
+@media(max-width:760px){.orgTreePlates .memberPlate,.orgTreePlates .memberPlate-founder{grid-template-columns:66px minmax(0,1fr) 62px}.orgTreePlates .memberPlatePortrait,.orgTreePlates .memberPlate-founder .memberPlatePortrait{width:56px;height:68px}}

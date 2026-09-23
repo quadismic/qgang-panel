@@ -1,23 +1,3 @@
-import {AppShell} from "@/components/AppShell";
-import {createClient,getCurrentUser} from "@/lib/supabase/server";
-import {redirect} from "next/navigation";
-export const dynamic="force-dynamic";export const metadata={title:"Yönetim",description:"Q-GANG yönetim merkezi"};
-export default async function Control(){
- const s=await createClient();const user=await getCurrentUser();
- if(!user)redirect("/login?next=/control");
- const {data:p}=await s.from("profiles").select("role").eq("id",user.id).maybeSingle();
- if(!p||!["founder","admin"].includes(p.role))redirect("/");
- const [{count:users},{count:reports}]=await Promise.all([
-  s.from("profiles").select("*",{count:"exact",head:true}),
-  s.from("reports").select("*",{count:"exact",head:true}).in("status",["open","reviewing"])
- ]);
- return <AppShell right={false}>
-  <section className="utilityHero"><span className="kicker">Q-GANG · YÖNETİM MERKEZİ</span><h1>Topluluğun işletim sistemi.</h1><p>Üyelik, moderasyon ve görünüm araçlarını tek merkezden yönet.</p></section>
-  <div className="stats"><div><span>Üye Sayısı</span><b>{users??0}</b></div><div><span>Aktif Bildirimler</span><b>{reports??0}</b></div></div>
-  <div className="controlGrid">
-   <a className="controlCard" href="/control/community"><span className="kicker">KİMLİK & ROLLER</span><h2>Üyelik Merkezi</h2><p>Lider, Vekilharç, Kaptan, Teğmen ve Üye yetkilerini yönet.</p></a>
-   <a className="controlCard" href="/penalties"><span className="kicker">GÜVENLİK</span><h2>Disiplin Merkezi</h2><p>Bildirimler, yaptırımlar, incelemeler ve itiraz süreçleri.</p></a>
-   <a className="controlCard" href="/control/design"><span className="kicker">GÖRÜNÜM</span><h2>Tasarım Merkezi</h2><p>Marka, Karargâh, giriş ve temel tasarım değişkenlerini canlı önizlemeyle yönet.</p></a>
-  </div>
- </AppShell>
-}
+import {AppShell} from "@/components/AppShell";import {createClient,getCurrentUser} from "@/lib/supabase/server";import {hasPermission} from "@/lib/access";import {redirect} from "next/navigation";
+export const dynamic="force-dynamic";export const metadata={title:"Yönetim Merkezi · Q-GANG",description:"Q-GANG yönetim merkezi"};
+export default async function Control(){const s=await createClient();const user=await getCurrentUser();if(!user)redirect("/login?next=/control");const {data:me}=await s.from("profiles").select("role").eq("id",user.id).maybeSingle();const [membersView,accessManage,designManage]=await Promise.all([hasPermission(user.id,"members.view"),hasPermission(user.id,"access.manage"),hasPermission(user.id,"design.manage")]);const accessVisible=me?.role==="founder"&&accessManage;if(!membersView&&!accessVisible&&!designManage)redirect("/");const {count:users}=membersView?await s.from("profiles").select("*",{count:"exact",head:true}):{count:null};const moduleCount=Number(membersView)+Number(accessVisible)+Number(designManage);return <AppShell right={false}><section className="utilityHero"><span className="kicker">Q-GANG · YÖNETİM MERKEZİ</span><h1>Topluluğun işletim sistemi.</h1><p>Yetkili olduğun yönetim araçlarına buradan eriş.</p></section><div className="stats">{membersView&&<div><span>Üye Sayısı</span><b>{users??0}</b></div>}<div><span>Erişilebilir Modül</span><b>{moduleCount}</b></div></div><div className="controlGrid">{membersView&&<a className="controlCard" href="/control/community"><span className="kicker">KİMLİK & ROLLER</span><h2>Üyelik Merkezi</h2><p>Topluluk kimliklerini, üyelikleri ve izin verilen rol işlemlerini yönet.</p></a>}{accessVisible&&<a className="controlCard" href="/control/access"><span className="kicker">YETKİ MİMARİSİ</span><h2>Erişim Merkezi</h2><p>Rütbelerin özellik ve yönetim yetkilerini canlı matris üzerinden kontrol et.</p></a>}{designManage&&<a className="controlCard" href="/control/design"><span className="kicker">GÖRÜNÜM</span><h2>Tasarım Merkezi</h2><p>Marka, giriş ve temel tasarım değişkenlerini canlı önizlemeyle yönet.</p></a>}</div></AppShell>}
