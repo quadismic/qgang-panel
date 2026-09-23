@@ -1,4 +1,4 @@
-export type AppRole="founder"|"admin"|"moderator"|"creator"|"member";
+export type AppRole="founder"|"admin"|"moderator"|"creator"|"member"|"guest";
 export const ROLE_LABEL:Record<AppRole,string>={founder:"LİDER",admin:"VEKİLHARÇ",moderator:"KAPTAN",creator:"TEĞMEN",member:"ÜYE"};
 export const ROLE_LEVEL:Record<AppRole,number>={founder:50,admin:40,moderator:30,creator:20,member:10};
 export const PERMISSIONS=[
