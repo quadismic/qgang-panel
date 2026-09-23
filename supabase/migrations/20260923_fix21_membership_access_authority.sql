@@ -1,0 +1,17 @@
+alter table public.community_memberships add column if not exists era integer, add column if not exists seal text;
+update public.community_memberships m set era=coalesce(m.era,p.qgang_era,(select current_era from public.qgang_identity_settings where singleton=true),1), seal=coalesce(m.seal,p.qgang_seal,'PRIME') from public.profiles p where p.id=m.user_id;
+insert into public.community_memberships(user_id,status,joined_at,granted_by,era,seal)
+select p.id,'active',coalesce(p.created_at,now()),(select id from public.profiles where role='founder' limit 1),coalesce(p.qgang_era,(select current_era from public.qgang_identity_settings where singleton=true),1),coalesce(p.qgang_seal,'PRIME') from public.profiles p where not exists(select 1 from public.community_memberships m where m.user_id=p.id);
+create or replace function public.set_role_permission(p_role text,p_permission text,p_enabled boolean) returns void language plpgsql security definer set search_path=public as $$
+declare v_uid uuid:=auth.uid(); v_role text;
+begin select role into v_role from public.profiles where id=v_uid; if v_role<>'founder' then raise exception 'forbidden'; end if; if p_role='founder' then raise exception 'founder_locked'; end if;
+if p_role not in ('admin','moderator','creator','member') then raise exception 'invalid_role'; end if;
+if p_permission not in ('members.view','members.manage','members.delete','discipline.view','discipline.issue','discipline.review','announcements.publish','budget.view','budget.manage','design.manage','access.manage') then raise exception 'invalid_permission'; end if;
+insert into public.role_permissions(role,permission,enabled,updated_by,updated_at) values(p_role,p_permission,p_enabled,v_uid,now()) on conflict(role,permission) do update set enabled=excluded.enabled,updated_by=v_uid,updated_at=now();
+if p_enabled and p_permission='members.manage' then insert into public.role_permissions(role,permission,enabled,updated_by,updated_at) values(p_role,'members.view',true,v_uid,now()) on conflict(role,permission) do update set enabled=true,updated_by=v_uid,updated_at=now(); end if;
+if p_enabled and p_permission in ('discipline.issue','discipline.review') then insert into public.role_permissions(role,permission,enabled,updated_by,updated_at) values(p_role,'discipline.view',true,v_uid,now()) on conflict(role,permission) do update set enabled=true,updated_by=v_uid,updated_at=now(); end if;
+if p_enabled and p_permission='budget.manage' then insert into public.role_permissions(role,permission,enabled,updated_by,updated_at) values(p_role,'budget.view',true,v_uid,now()) on conflict(role,permission) do update set enabled=true,updated_by=v_uid,updated_at=now(); end if;
+if not p_enabled and p_permission='members.view' then update public.role_permissions set enabled=false,updated_by=v_uid,updated_at=now() where role=p_role and permission='members.manage'; end if;
+if not p_enabled and p_permission='discipline.view' then update public.role_permissions set enabled=false,updated_by=v_uid,updated_at=now() where role=p_role and permission in ('discipline.issue','discipline.review'); end if;
+if not p_enabled and p_permission='budget.view' then update public.role_permissions set enabled=false,updated_by=v_uid,updated_at=now() where role=p_role and permission='budget.manage'; end if; end$$;
+revoke all on function public.set_role_permission(text,text,boolean) from public; grant execute on function public.set_role_permission(text,text,boolean) to authenticated;
