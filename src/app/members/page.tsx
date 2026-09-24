@@ -9,7 +9,7 @@ export const dynamic="force-dynamic";
 export const metadata=pageMeta.members;
 export default async function Members(){
  const s=await createClient();
- const {data}=await s.from("profiles").select("id,display_name,handle,role,avatar_url,community_memberships!inner(status,member_no,era,seal)").eq("community_memberships.status","active").order("created_at",{ascending:true}).limit(100);
+ const {data}=await s.rpc("list_active_community_members");
  const people=data??[];const order=["founder","admin","moderator","creator","member"];const levels=order.map(role=>({role,people:people.filter((p:any)=>p.role===role)})).filter(x=>x.people.length);
  return <AppShell right={false}>
   <section className="registryHero roomScene orgHero" style={{backgroundImage:`linear-gradient(90deg,rgba(4,3,2,.76),rgba(4,3,2,.32) 48%,rgba(4,3,2,.14)),url(${brandTheme.rooms.registry})`}}>
