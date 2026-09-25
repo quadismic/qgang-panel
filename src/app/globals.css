@@ -1464,3 +1464,39 @@ img,svg{max-width:100%}
 
 /* FIX 2.1 · control dashboard */
 .controlDashboard{width:100%;padding:8px 0 42px}.controlDashboardHero{min-height:220px;padding:34px 38px;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;border:1px solid rgba(174,118,62,.18);background:radial-gradient(circle at 82% 10%,rgba(117,49,24,.13),transparent 34%),linear-gradient(125deg,rgba(18,12,9,.92),rgba(5,6,7,.98));position:relative;overflow:hidden}.controlDashboardHero:after{content:"";position:absolute;width:300px;height:300px;border:1px solid rgba(183,127,67,.07);border-radius:50%;right:7%;top:-185px}.controlDashboardHero h1{font-family:Georgia,serif;font-size:clamp(46px,6vw,74px);font-weight:400;letter-spacing:-.045em;line-height:.96;margin:10px 0 14px;color:#f0e8dc}.controlDashboardHero p{max-width:620px;color:#8f8982;font-size:14px;line-height:1.6;margin:0}.controlDashboardStatus{min-width:180px;padding:14px 16px;border-left:1px solid rgba(180,124,67,.22);display:grid;gap:8px;position:relative;z-index:1}.controlDashboardStatus>span,.controlDashboardBar span{font-size:8px;font-weight:900;letter-spacing:.16em;color:#746c64}.controlDashboardStatus b{font-size:10px;letter-spacing:.1em;color:#a98a68}.controlDashboardStatus i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#69b978;box-shadow:0 0 10px rgba(105,185,120,.55);margin-right:6px}.controlDashboardBar{display:grid;grid-template-columns:160px 190px minmax(260px,1fr);border:1px solid rgba(174,118,62,.15);border-top:0;background:#080909}.controlDashboardBar>div{min-height:74px;padding:14px 20px;display:flex;flex-direction:column;justify-content:center;gap:6px;border-right:1px solid rgba(174,118,62,.12)}.controlDashboardBar>div:last-child{border-right:0}.controlDashboardBar b{font-family:Georgia,serif;font-size:22px;font-weight:400;color:#ddd2c3}.controlDashboardBar .controlDashboardHint b{font-family:inherit;font-size:11px;color:#91877d;letter-spacing:.02em}.controlModules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}.controlModuleCard{min-height:300px;padding:22px;text-decoration:none;border:1px solid rgba(174,118,62,.2);background:linear-gradient(145deg,rgba(18,12,9,.86),rgba(7,7,7,.97));display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .18s ease,border-color .18s ease,background .18s ease}.controlModuleCard:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 15% 0,rgba(143,59,28,.12),transparent 35%);opacity:0;transition:opacity .18s}.controlModuleCard:hover{transform:translateY(-3px);border-color:rgba(190,129,68,.48);background:linear-gradient(145deg,rgba(24,15,10,.92),rgba(8,8,8,.98))}.controlModuleCard:hover:before{opacity:1}.controlModuleTop{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1}.controlModuleIcon{width:52px;height:52px;display:grid;place-items:center;border:1px solid rgba(183,126,66,.28);background:rgba(93,45,22,.08);font-family:Georgia,serif;font-size:22px;color:#b88a57}.controlModuleArrow{font-size:18px;color:#55483c;transition:color .18s,transform .18s}.controlModuleCard:hover .controlModuleArrow{color:#bd8e5b;transform:translate(2px,-2px)}.controlModuleCopy{margin-top:44px;position:relative;z-index:1}.controlModuleCopy h2{font:32px Georgia,serif;font-weight:400;color:#e7ddd0;margin:7px 0 12px}.controlModuleCopy p{color:#817970;font-size:12px;line-height:1.65;max-width:330px;margin:0}.controlModuleFoot{margin-top:auto;padding-top:22px;border-top:1px solid rgba(174,118,62,.12);display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1;color:#9e7952;font-size:9px;font-weight:900;letter-spacing:.14em}.controlModuleFoot b{font-size:16px}.controlModuleCard:hover .controlModuleFoot{color:#d1a16c}@media(max-width:900px){.controlDashboardHero{min-height:190px;padding:28px 24px}.controlDashboardStatus{display:none}.controlDashboardBar{grid-template-columns:repeat(2,1fr)}.controlDashboardHint{grid-column:1/-1}.controlModules{grid-template-columns:1fr}.controlModuleCard{min-height:230px}.controlModuleCopy{margin-top:28px}}@media(max-width:560px){.controlDashboardHero h1{font-size:44px}.controlDashboardBar{grid-template-columns:1fr}.controlDashboardBar>div{border-right:0;border-bottom:1px solid rgba(174,118,62,.12)}.controlModules{gap:9px}.controlModuleCard{padding:18px}}
+
+
+/* Q-GANG 2.2 · responsive desktop/laptop density */
+@media (min-width:761px) and (max-width:1599px){
+  .appShell{grid-template-columns:clamp(164px,13.2vw,190px) minmax(0,1fr);gap:0;justify-content:stretch;padding-right:0}
+  .appShell>.content{width:100%;max-width:none;padding:clamp(18px,2vw,28px) clamp(18px,2.2vw,34px) 72px}
+  .appShell>.rail{display:none}
+  .commandRail{height:100dvh;min-height:0;padding:clamp(14px,2vh,22px) 12px 12px;overflow:hidden}
+  .commandRail .commandBrand{flex:0 0 auto}
+  .commandRail .commandCreed{flex:0 0 auto;margin-top:clamp(10px,1.8vh,20px)}
+  .commandRail nav{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;margin-top:clamp(12px,2.2vh,26px);padding-bottom:8px}
+  .commandRail nav a{padding-block:clamp(8px,1.25vh,12px)}
+  .commandRail .navBottom{flex:0 0 auto;margin-top:8px;padding-top:8px;background:linear-gradient(180deg,transparent,#080604 14%)}
+  .identityPlate{min-height:0}
+  .identityPlateLogout button{padding:8px 10px}
+  .codexHero,.managementHero,.membershipHero{min-height:clamp(120px,18vh,170px)!important}
+  .codexHero h1,.managementHero h1{font-size:clamp(38px,4vw,58px)!important}
+}
+@media (min-width:761px) and (max-width:1279px){
+  .appShell{grid-template-columns:164px minmax(0,1fr)}
+  .appShell>.content{padding-left:18px;padding-right:18px}
+  .commandRail .commandBrand strong{font-size:23px}
+  .commandRail .commandCreed{font-size:7px}
+  .commandRail nav a{font-size:11px}
+}
+@media (min-width:761px) and (max-height:820px){
+  .commandRail{padding-top:10px;padding-bottom:8px}
+  .commandRail .qgBrandArtwork{transform:scale(.82);transform-origin:center top}
+  .commandRail .commandBrand{gap:2px}
+  .commandRail .commandCreed{margin-top:5px;line-height:1.35}
+  .commandRail nav{margin-top:8px}
+  .commandRail nav a{padding-top:7px;padding-bottom:7px}
+  .commandRail .navBottom{margin-top:4px;padding-top:5px}
+  .identityPlate{padding-top:8px!important;padding-bottom:8px!important}
+  .identityPlateLogout button{padding:6px 8px;font-size:8px}
+}
