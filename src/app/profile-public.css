@@ -85,3 +85,9 @@
 @media(max-width:760px){.playerDossierGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.profileV2Hero{min-height:290px}}
 
 .profileV2PortraitRank{position:absolute;left:50%;top:calc(100% + 12px);transform:translateX(-50%);z-index:8;display:flex;align-items:center;gap:7px;white-space:nowrap;padding:6px 10px;border:1px solid rgba(181,128,65,.28);border-radius:999px;background:rgba(9,7,5,.94);box-shadow:0 8px 24px rgba(0,0,0,.35)}.profileV2PortraitRank b{font-size:9px;letter-spacing:.12em;color:#c9a26f}.profileV2Portrait{margin-bottom:30px}.profileV2HeroTop>b{letter-spacing:.14em;color:#b78b58;font-size:9px}
+
+
+/* Q-GANG 2.2 · balanced identity dossier */
+.profileV2Dossier .playerDossierGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+@media(max-width:700px){.profileV2Dossier .playerDossierGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:480px){.profileV2Dossier .playerDossierGrid{grid-template-columns:1fr!important}}
