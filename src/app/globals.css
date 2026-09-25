@@ -1500,3 +1500,15 @@ img,svg{max-width:100%}
   .identityPlate{padding-top:8px!important;padding-bottom:8px!important}
   .identityPlateLogout button{padding:6px 8px;font-size:8px}
 }
+
+
+/* Q-GANG 2.2 · canonical rank portrait positioning
+   One coordinate system for every rank surface: avatar center = frame center.
+   Founder crown is a separate ornament anchored above that same center line. */
+.rankPortrait,.memberPlatePortrait{--rank-frame-scale:1.42;--rank-crown-width:1.16;--rank-crown-gap:.06;position:relative;overflow:visible!important;isolation:isolate}
+.rankPortraitFrame,.memberRankFrame{position:absolute!important;z-index:3!important;pointer-events:none;user-select:none;object-fit:contain!important;max-width:none!important;left:50%!important;top:50%!important;width:calc(100% * var(--rank-frame-scale))!important;height:calc(100% * var(--rank-frame-scale))!important;transform:translate(-50%,-50%)!important;inset:auto!important;filter:drop-shadow(0 5px 7px rgba(0,0,0,.58))}
+.rankPortraitCrown,.memberRankCrown{position:absolute!important;z-index:4!important;pointer-events:none;user-select:none;object-fit:contain!important;max-width:none!important;left:50%!important;top:calc(-1 * (100% * var(--rank-crown-gap)))!important;width:calc(100% * var(--rank-crown-width))!important;height:auto!important;transform:translate(-50%,-100%)!important;inset:auto!important;filter:drop-shadow(0 5px 6px rgba(0,0,0,.62))}
+.rankPortrait-moderator,.memberPlatePortrait-moderator{--rank-frame-scale:1.42}
+.rankPortrait-admin,.memberPlatePortrait-admin{--rank-frame-scale:1.42}
+.rankPortrait-founder,.memberPlatePortrait-founder{--rank-frame-scale:1.42;--rank-crown-width:1.16;--rank-crown-gap:.04}
+.rankPortrait .playerIdentityAvatar,.memberPlatePortrait>img:not(.rankPortraitFrame):not(.rankPortraitCrown):not(.memberRankFrame):not(.memberRankCrown),.memberPlatePortrait>span{position:relative;z-index:1}
