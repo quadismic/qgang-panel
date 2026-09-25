@@ -1512,3 +1512,11 @@ img,svg{max-width:100%}
 .rankPortrait-admin,.memberPlatePortrait-admin{--rank-frame-scale:1.42}
 .rankPortrait-founder,.memberPlatePortrait-founder{--rank-frame-scale:1.42;--rank-crown-width:1.16;--rank-crown-gap:.04}
 .rankPortrait .playerIdentityAvatar,.memberPlatePortrait>img:not(.rankPortraitFrame):not(.rankPortraitCrown):not(.memberRankFrame):not(.memberRankCrown),.memberPlatePortrait>span{position:relative;z-index:1}
+
+
+/* Q-GANG 2.2 · portrait frame optical fit
+   Profile portrait is square; the leader artwork has wider side ornaments, so use a tighter
+   profile-only frame scale while preserving the shared centered coordinate system. */
+.rankPortrait-founder{--rank-frame-scale:1.31;--rank-crown-width:1.08}
+.rankPortrait-admin{--rank-frame-scale:1.31}
+.rankPortrait-moderator{--rank-frame-scale:1.31}
