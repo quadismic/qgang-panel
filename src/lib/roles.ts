@@ -8,7 +8,7 @@ export const PERMISSIONS=[
  ["design.manage","Tasarımı Yönet"],["access.manage","Erişim Merkezini Yönet"]
 ] as const;
 export type Permission=(typeof PERMISSIONS)[number][0];
-export function roleLabel(role?:string|null){return ROLE_LABEL[(role||"member") as AppRole]??"ÜYE"}
+export function roleLabel(role?:string|null){return ROLE_LABEL[(role||"guest") as AppRole]??"PLATFORM"}
 export function canManage(role?:string|null){return role==="founder"||role==="admin"}
 export function canModerate(role?:string|null){return role==="founder"||role==="admin"||role==="moderator"}
 export function canAssign(actor?:string|null,target?:string|null){if(actor==="founder")return target!=="founder";if(actor==="admin")return target==="moderator"||target==="creator"||target==="member"||target==="guest";return false}
