@@ -1,0 +1,12 @@
+create or replace function private.role_weight(r public.qgang_role) returns int language sql immutable set search_path='' as $f$ select case r when 'founder' then 50 when 'admin' then 40 when 'moderator' then 30 when 'creator' then 20 when 'member' then 10 else 0 end $f$;
+create index if not exists community_memberships_granted_by_idx on public.community_memberships(granted_by);
+create index if not exists fund_transactions_created_by_idx on public.fund_transactions(created_by);
+create index if not exists fund_transactions_reversed_by_idx on public.fund_transactions(reversed_by);
+create index if not exists profile_badges_badge_id_idx on public.profile_badges(badge_id);
+create index if not exists profile_badges_granted_by_idx on public.profile_badges(granted_by);
+create index if not exists profile_comments_author_id_idx on public.profile_comments(author_id);
+create index if not exists profile_comments_profile_id_idx on public.profile_comments(profile_id);
+create index if not exists qgang_identity_settings_updated_by_idx on public.qgang_identity_settings(updated_by);
+create index if not exists reports_moderation_action_id_idx on public.reports(moderation_action_id);
+create index if not exists role_permissions_updated_by_idx on public.role_permissions(updated_by);
+create index if not exists site_settings_updated_by_idx on public.site_settings(updated_by);
