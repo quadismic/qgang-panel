@@ -1,0 +1,19 @@
+create or replace function public.set_role_permission(p_role text,p_permission text,p_enabled boolean)
+returns void language plpgsql security definer set search_path='public','private' as $$
+declare v_uid uuid:=auth.uid(); v_actor public.qgang_role;
+begin
+ select role into v_actor from public.profiles where id=v_uid;
+ if v_actor is distinct from 'founder'::public.qgang_role then raise exception 'founder_only'; end if;
+ if p_role='founder' then raise exception 'founder_locked'; end if;
+ if p_role not in ('admin','moderator','creator','member') then raise exception 'invalid_role'; end if;
+ if p_permission not in ('members.view','members.manage','members.delete','discipline.view','discipline.issue','discipline.review','announcements.publish','budget.view','budget.manage','design.manage','access.manage') then raise exception 'invalid_permission'; end if;
+ if p_permission='access.manage' and p_enabled then raise exception 'access_manage_founder_only'; end if;
+ insert into public.role_permissions(role,permission,enabled,updated_by,updated_at) values(p_role,p_permission,p_enabled,v_uid,now()) on conflict(role,permission) do update set enabled=excluded.enabled,updated_by=v_uid,updated_at=now();
+ if p_enabled and p_permission='members.manage' then insert into public.role_permissions(role,permission,enabled,updated_by,updated_at) values(p_role,'members.view',true,v_uid,now()) on conflict(role,permission) do update set enabled=true,updated_by=v_uid,updated_at=now(); end if;
+ if p_enabled and p_permission in ('discipline.issue','discipline.review') then insert into public.role_permissions(role,permission,enabled,updated_by,updated_at) values(p_role,'discipline.view',true,v_uid,now()) on conflict(role,permission) do update set enabled=true,updated_by=v_uid,updated_at=now(); end if;
+ if p_enabled and p_permission='budget.manage' then insert into public.role_permissions(role,permission,enabled,updated_by,updated_at) values(p_role,'budget.view',true,v_uid,now()) on conflict(role,permission) do update set enabled=true,updated_by=v_uid,updated_at=now(); end if;
+ if not p_enabled and p_permission='members.view' then update public.role_permissions set enabled=false,updated_by=v_uid,updated_at=now() where role=p_role and permission='members.manage'; end if;
+ if not p_enabled and p_permission='discipline.view' then update public.role_permissions set enabled=false,updated_by=v_uid,updated_at=now() where role=p_role and permission in ('discipline.issue','discipline.review'); end if;
+ if not p_enabled and p_permission='budget.view' then update public.role_permissions set enabled=false,updated_by=v_uid,updated_at=now() where role=p_role and permission='budget.manage'; end if;
+end$$;
+update public.role_permissions set enabled=false where permission='access.manage' and role<>'founder'::public.qgang_role;
