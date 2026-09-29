@@ -1,0 +1,3 @@
+import '../profile-public.css';
+import {ProfileView} from '@/components/ProfileView';
+export default function QA(){return <ProfileView own profile={{id:'fixture',display_name:'Quadismic',handle:'quadismic',role:'founder',bio:'<!--qgang-rich:v1--><p><strong>Sunucudan</strong> gelen metin.</p>',avatar_url:'/brand/command/quad.webp'}} membership={{era:1,seal:'PRIME',member_no:1,joined_at:'2026-01-01'}}/>}

@@ -1,0 +1,403 @@
+/* Scoped editorial controls: bronze, quiet, touch-friendly. */
+.qgEditor {
+  position: relative;
+  display: block;
+  min-width: 0;
+  width: 100%;
+  color: #dbcebd;
+  border: 1px solid #58412d;
+  border-radius: 5px;
+  background: #100c09;
+  text-align: left;
+  letter-spacing: normal;
+  font:
+    400 15px/1.65 system-ui,
+    sans-serif;
+}
+.qgEditor .qgEditorToolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding: 7px;
+  border-bottom: 1px solid #392c22;
+  background: #17100b;
+}
+.qgEditor .qgEditorToolbar button,
+.qgEditor .qgEditorLink button {
+  width: auto !important;
+  min-width: 34px;
+  min-height: 36px;
+  margin: 0 !important;
+  padding: 6px 8px !important;
+  border: 1px solid transparent !important;
+  border-radius: 3px;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #c5aa89 !important;
+  font: 600 12px/1.3 system-ui !important;
+  letter-spacing: normal !important;
+  transform: none !important;
+}
+.qgEditor .qgEditorToolbar button:hover,
+.qgEditor .qgEditorToolbar button[aria-pressed="true"] {
+  background: #39271a !important;
+  border-color: #85613f !important;
+  color: #fff0d7 !important;
+}
+.qgEditorToolbar details {
+  position: relative;
+}
+.qgEditorToolbar summary {
+  padding: 7px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.qgEditorMore {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px;
+  max-width: 100%;
+  border-top: 1px solid #58412d;
+}
+.qgEditorToolbar details[open] {
+  flex-basis: 100%;
+  order: 2;
+}
+.qgWritingArea {
+  min-height: calc(var(--editor-lines, 5) * 1.65em);
+  max-height: 65vh;
+  overflow: auto;
+  outline: none;
+  padding: 14px;
+  font-size: 16px;
+  cursor: text;
+}
+.qgEditor .qgEditorLink {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 8px;
+  border-bottom: 1px solid #58412d;
+}
+.qgEditorLink input {
+  flex: 1;
+  min-width: 120px;
+}
+.qgEditorLink span {
+  flex-basis: 100%;
+  color: #ec9886;
+  font-size: 12px;
+}
+.qgEditor > footer {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 5px;
+  padding: 7px 10px !important;
+  margin: 0 !important;
+  border-top: 1px solid #392c22;
+  font: 400 10px/1.5 system-ui !important;
+  color: #a28c74;
+  letter-spacing: normal !important;
+}
+.qgEditor > .qgProse {
+  padding: 14px;
+  min-height: 120px;
+}
+.qgEditor textarea.qgEditorValidator {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  min-height: 0 !important;
+  max-height: 1px !important;
+  opacity: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+}
+.qgProse {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+  white-space: normal;
+}
+.qgProse p {
+  margin: 0.5em 0 !important;
+  font: inherit !important;
+  color: inherit !important;
+  line-height: inherit !important;
+  white-space: pre-wrap;
+}
+.qgProse strong {
+  font-weight: 750;
+}
+.qgProse em {
+  font-style: italic;
+}
+.qgProse a {
+  color: #deb57f;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.qgProse h2,
+.qgProse h3,
+.qgProse h4 {
+  margin: 1em 0 0.5em !important;
+  line-height: 1.25 !important;
+  letter-spacing: normal !important;
+}
+.qgProse h2 {
+  font-size: 1.5em !important;
+}
+.qgProse h3 {
+  font-size: 1.25em !important;
+}
+.qgProse h4 {
+  font-size: 1.1em !important;
+}
+.qgProse ul,
+.qgProse ol {
+  padding-left: 1.5em;
+  list-style-position: outside;
+}
+.qgProse ul {
+  list-style-type: disc;
+}
+.qgProse ol {
+  list-style-type: decimal;
+}
+.qgProse blockquote {
+  border-left: 3px solid #997044;
+  margin: 1em 0;
+  padding: 0.3em 1em;
+  color: #c0ad96;
+}
+.qgProse table {
+  border-collapse: collapse;
+  display: block;
+  max-width: 100%;
+  overflow: auto;
+}
+.qgProse td,
+.qgProse th {
+  border: 1px solid #674b33;
+  min-width: 70px;
+  padding: 8px;
+  vertical-align: top;
+}
+.qgProse th {
+  background: #251a11;
+}
+.qgProse pre {
+  overflow: auto;
+  max-width: 100%;
+  padding: 12px;
+  background: #090706;
+}
+.qgProse .selectedCell {
+  background: #493020;
+}
+/* A single SVG coordinate space includes the crown in its intrinsic height. */
+.qgPortrait {
+  display: block;
+  flex: none;
+  max-width: 100%;
+  line-height: 0;
+}
+.qgPortrait svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+.qgPortrait-profile {
+  width: 174px;
+}
+.qgPortrait-card {
+  width: 88px;
+}
+.qgProfilePortrait {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.qgPortraitRank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #c8aa7b;
+  font: 700 11px/1.3 system-ui;
+}
+.qgPortraitRank .rankInsignia {
+  width: 32px;
+  height: 36px;
+}
+.profileV2Hero .playerIdentityMain {
+  display: grid !important;
+  grid-template-columns: 174px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 24px !important;
+  margin-top: 24px !important;
+  min-height: 0 !important;
+}
+.profileV2Hero .playerIdentityCopy {
+  min-width: 0;
+}
+.profileV2Hero .playerIdentityCopy h1 {
+  font-size: clamp(30px, 4vw, 64px) !important;
+  overflow-wrap: anywhere;
+  line-height: 1.1 !important;
+}
+.profileV2Hero .playerConnect {
+  grid-column: 1/-1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-self: auto !important;
+}
+.profileV2Hero .profileInlineEdit {
+  width: 100%;
+  min-height: 44px;
+}
+.profileV2Hero {
+  min-height: 0 !important;
+}
+.orgChart {
+  min-height: 0 !important;
+}
+.orgTreePlates {
+  min-width: 0 !important;
+  padding: 24px !important;
+}
+.orgTreePlates .orgPlateBranch {
+  padding: 20px 0 0 !important;
+  gap: 18px;
+}
+.orgTreePlates .memberPlate,
+.orgTreePlates .memberPlate-founder {
+  grid-template-columns: 88px minmax(0, 1fr) auto !important;
+  gap: 16px !important;
+  min-width: 0 !important;
+  width: min(440px, 100%) !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  transform: none !important;
+  padding: 18px !important;
+}
+.memberPlateCopy small {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .profileV2Hero .playerIdentityMain {
+    grid-template-columns: 124px minmax(0, 1fr) !important;
+    gap: 18px !important;
+  }
+  .qgPortrait-profile {
+    width: 124px;
+  }
+  .profileV2Hero .playerIdentityCopy h1 {
+    font-size: clamp(28px, 6vw, 40px) !important;
+  }
+  .profileV2Hero .playerIdentityCopy > span {
+    font-size: 13px !important;
+  }
+  .orgTreePlates {
+    padding: 18px 12px 28px !important;
+  }
+  .orgTreePlates .memberPlate,
+  .orgTreePlates .memberPlate-founder {
+    grid-template-columns: 76px minmax(0, 1fr) !important;
+    gap: 8px 14px !important;
+  }
+  .qgPortrait-card {
+    width: 76px;
+    grid-row: 1/3;
+  }
+  .orgTreePlates .memberPlateRank {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    height: auto;
+    border: 0;
+    display: flex;
+    justify-content: flex-start;
+    padding: 0 !important;
+  }
+  .orgTreePlates .memberPlateRank .rankInsignia {
+    display: none;
+  }
+  .qgEditorToolbar button {
+    min-height: 40px;
+  }
+  .qgEditor {
+    grid-column: 1/-1;
+  }
+}
+@media (max-width: 460px) {
+  .profileV2Hero .playerIdentityMain {
+    grid-template-columns: minmax(0, 1fr) !important;
+    text-align: center;
+  }
+  .profileV2Hero .playerIdentityCopy h1 {
+    font-size: 32px !important;
+    word-break: normal;
+  }
+  .profileV2Hero .playerIdentityCopy {
+    width: 100%;
+  }
+  .profileV2Hero .playerIdentityBadges {
+    justify-content: center;
+  }
+  .profileV2Hero .playerIdentityTop {
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .profileV2Hero .playerIdentityTop > * {
+    font-size: 9px !important;
+  }
+}
+.qgEditorField {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  grid-column: 1/-1;
+}
+.qgEditorField > span {
+  font-size: 12px;
+  color: #b59b7d;
+}
+.qgEditor:focus-within {
+  border-color: #b18958;
+}
+.qgEditorToolbar button:nth-of-type(1) {
+  font-weight: 800 !important;
+}
+.qgEditorToolbar button:nth-of-type(2) {
+  font-style: italic !important;
+}
+.qgEditorToolbar button:nth-of-type(3) {
+  text-decoration: underline;
+}
+.qgEditorToolbar button:focus-visible,
+.qgEditorToolbar summary:focus-visible {
+  outline: 2px solid #c5a477;
+  outline-offset: 2px;
+}
+@media (max-width: 760px) {
+  .orgTreePlates .memberPlateCopy strong {
+    font-size: clamp(18px, 4.8vw, 24px) !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+  }
+  .orgTreePlates .memberPlateCopy {
+    min-width: 0;
+  }
+}

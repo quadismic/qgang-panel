@@ -1,0 +1,9 @@
+'use client';
+import '../profile-public.css';
+import {useState} from 'react';
+import {ProfileView} from '@/components/ProfileView';
+import {RankPortrait} from '@/components/RankPortrait';
+import {RankInsignia} from '@/components/RankInsignia';
+import {RichTextEditor} from '@/components/RichTextEditor';
+import {RichText} from '@/components/RichText';
+export default function QA(){const [saved,setSaved]=useState('');return <main style={{maxWidth:1400,margin:'auto',padding:20}}><ProfileView own profile={{id:'fixture',display_name:'Quadismic',handle:'quadismic',role:'founder',bio:'Önceden kaydedilmiş düz metin.',avatar_url:'/brand/command/quad.webp'}} membership={{era:1,seal:'PRIME',member_no:1,joined_at:'2026-01-01'}}/><section className="orgChart"><header>TOPLULUK</header><div className="orgTree orgTreePlates">{['founder','admin','moderator','creator','member','guest'].map(role=><section className={`orgLevel org-${role}`} key={role}><div className="orgTrunk"/><div className="orgBranch orgPlateBranch"><a href="#" className={`memberPlate memberPlate-${role}`}><RankPortrait role={role} name="Quadismic" src="/brand/command/quad.webp" size="card"/><div className="memberPlateCopy"><strong>Quadismic</strong><small>@uzun_bir_kullanici_adi</small></div><div className="memberPlateRank"><RankInsignia role={role}/><b>{role}</b></div></a></div></section>)}</div></section><section className="decreeEditor" style={{width:'100%',maxWidth:900,margin:'30px auto'}}><form onSubmit={e=>{e.preventDefault();setSaved(String(new FormData(e.currentTarget).get('body')))}}><RichTextEditor name="body" required minLength={3} maxLength={4000} placeholder="Test metni"/><button type="submit">Test kaydet</button></form><div data-testid="saved"><RichText value={saved}/></div><details><summary>Yeniden düzenle</summary><RichTextEditor value={saved} onValueChange={setSaved}/></details></section></main>}
