@@ -1719,3 +1719,14 @@ img,svg{max-width:100%}
 .codexV3Reader{padding:20px}.codexV3Paper{padding:44px 50px}.codexV3Paper header>span{font-size:48px}.codexV3Paper h2{font-size:42px;margin-bottom:20px}.codexV3Paper header>div{font-size:10px;gap:14px}.codexV3Body{padding:32px 0 40px}.codexV3Body,.codexV3Body .richText{font-size:18px;line-height:1.82}.codexV3Paper footer span{font-size:9px}.codexV3Paper footer strong{font-size:16px}
 @media(max-width:1100px){.codexV3Bar{flex-wrap:wrap}.codexV3Controls{width:100%;margin-left:0}.codexV3Controls input{flex:1}.codexV3Workspace{grid-template-columns:minmax(280px,35%) minmax(0,1fr)}}
 @media(max-width:760px){.codexV3Hero{height:165px;padding:22px}.codexV3Hero h1{font-size:38px}.codexV3Hero p{font-size:13px}.codexV3Controls{display:grid;grid-template-columns:1fr}.codexV3Controls label{display:grid;grid-template-columns:52px 1fr}.codexV3Controls select,.codexV3Controls input{width:100%;min-width:0}.codexV3Workspace{display:block;height:auto;padding:12px}.codexV3Index{max-height:360px}.codexV3Section{min-height:58px}.codexV3Items button{min-height:64px}.codexV3Paper{padding:28px 22px}.codexV3Paper header>span{font-size:36px}.codexV3Paper h2{font-size:30px}.codexV3Body,.codexV3Body .richText{font-size:16px}}
+
+/* Q-GANG polish · centered org rank + Codex book cover */
+.memberPlate{position:relative}
+.memberPlateRank{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:74px;height:auto;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.memberPlateRank .rankInsignia{display:block;margin-inline:auto}
+.codexV3Cover{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;background:radial-gradient(circle at 50% 42%,rgba(120,43,28,.12),transparent 34%),linear-gradient(145deg,rgba(22,14,10,.7),rgba(6,5,4,.98))}
+.codexV3Cover:before{content:"";position:absolute;inset:18px;border:1px solid rgba(151,103,67,.18);pointer-events:none}
+.codexV3CoverMark{position:relative;width:min(310px,58%);filter:drop-shadow(0 18px 38px rgba(0,0,0,.55))}
+.codexV3CoverMark img{display:block;width:100%;height:auto;opacity:.94}
+.codexV3Cover p{position:absolute;bottom:54px;left:50%;transform:translateX(-50%);width:max-content;max-width:75%;margin:0;color:#806e5d;font:10px var(--qg-ui-font,Arial,sans-serif);letter-spacing:.16em;text-transform:uppercase}
+@media(max-width:760px){.memberPlateRank{right:8px;width:62px;min-height:54px}.codexV3CoverMark{width:min(250px,70%)}.codexV3Cover p{bottom:34px;font-size:8px}}
