@@ -22,12 +22,12 @@ export default async function Headquarters(){
  const live=(fund??[]).filter((x:any)=>!x.reversed_at),income=live.filter((x:any)=>x.kind==="support").reduce((a:number,x:any)=>a+Number(x.amount),0),expense=live.filter((x:any)=>x.kind==="expense").reduce((a:number,x:any)=>a+Number(x.amount),0),balance=income-expense;
  const manage=!!viewerProfile&&["founder","admin"].includes(viewerProfile.role);
  const cards=[
-  {href:"/rules",icon:"rules",title:"KURALLAR",sub:"CODEX",value:(rules??[]).length+" kayıt",text:"Topluluk düzeni, üyelik, davranış ve disiplin."},
-  {href:"/members",icon:"community",title:"TOPLULUK",sub:"REGISTRY",value:String(members??0),text:"Aktif üyeler, kimlikler ve roller."},
-  {href:"/publications",icon:"document",title:"YAYINLAR",sub:"ARCHIVE",value:"ARŞİV",text:"Duyurular, kararlar ve editoryal Q-GANG yayınları."},
-  {href:"/penalties",icon:"discipline",title:"DİSİPLİN",sub:"TRIBUNAL",value:"SİCİL",text:"Kararlar, dayanaklar ve yaptırım kayıtları."},
-  ...(manage?[{href:"/control",icon:"control",title:"YÖNETİM",sub:"CONTROL",value:"DENETİM",text:"Q-GANG yönetimi, roller, tasarım ve topluluk araçları."}]:[]),
-  ...((membership||manage)?[{href:"/budget",icon:"treasury",title:"BÜTÇE",sub:"TREASURY",value:tl(balance),text:"Ortak kaynak, gelirler ve giderler."}]:[])
+  {href:"/kodeks",icon:"rules",title:"KURALLAR",sub:"CODEX",value:(rules??[]).length+" kayıt",text:"Topluluk düzeni, üyelik, davranış ve disiplin."},
+  {href:"/topluluk",icon:"community",title:"TOPLULUK",sub:"REGISTRY",value:String(members??0),text:"Aktif üyeler, kimlikler ve roller."},
+  {href:"/yayinlar",icon:"document",title:"YAYINLAR",sub:"ARCHIVE",value:"ARŞİV",text:"Duyurular, kararlar ve editoryal Q-GANG yayınları."},
+  {href:"/disiplin",icon:"discipline",title:"DİSİPLİN",sub:"TRIBUNAL",value:"SİCİL",text:"Kararlar, dayanaklar ve yaptırım kayıtları."},
+  ...(manage?[{href:"/yonetim",icon:"control",title:"YÖNETİM",sub:"CONTROL",value:"DENETİM",text:"Q-GANG yönetimi, roller, tasarım ve topluluk araçları."}]:[]),
+  ...((membership||manage)?[{href:"/butce",icon:"treasury",title:"BÜTÇE",sub:"TREASURY",value:tl(balance),text:"Ortak kaynak, gelirler ve giderler."}]:[])
  ];
  return <AppShell right={false}><div className="commandHQ"><section className="commandHero" style={{"--command-bg":`url(${design.commandBackground})`} as CSSProperties}><div className="commandCouncil" aria-hidden="true">{brandTheme.command.council.map((m:any)=>{const slot=design.council.find(x=>x.id===m.id);if(!slot)return null;return <img key={m.id} className={`councilMember ${m.side} ${m.id}`} src={slot.src||m.src} alt="" style={{"--council-scale":slot.scale/100,"--council-x":slot.x,"--council-y":slot.y,display:slot.enabled?"":"none"} as CSSProperties}/>})}</div><div className="commandPortrait" aria-hidden="true"><img src={design.quadSrc} alt=""/></div><div className="commandTitle commandTitleMinimal">{!user&&<Link href="/login">KİMLİĞİNİ DOĞRULA</Link>}</div></section><section className="commandModules commandModulesSix">{cards.map(c=><Link href={c.href} className="commandPanel" key={c.href}><header><span><QGIcon name={c.icon as QGIconName}/></span><h2>{c.title}</h2></header><div><strong>{c.value}</strong><p>{c.text}</p></div><footer>İNCELE <b><QGIcon name="chevron"/></b></footer></Link>)}</section></div></AppShell>
 }
