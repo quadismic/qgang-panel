@@ -1,7 +1,7 @@
 "use client";
 import {useRef,useState} from "react";
 
-const tools=[
+const tools:ReadonlyArray<readonly [string,string,string?]>=[
   ["B","bold"],["I","italic"],["U","underline"],["H2","formatBlock","h2"],
   ["•","insertUnorderedList"],["1.","insertOrderedList"],["↗","createLink"],["↶","undo"],["↷","redo"]
 ] as const;
