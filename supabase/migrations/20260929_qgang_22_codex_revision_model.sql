@@ -29,6 +29,7 @@ create policy "regulation revisions readable"
 on public.regulation_revisions for select
 using (true);
 
+create unique index if not exists regulations_number_unique_idx on public.regulations(number) where number is not null;
 create index if not exists regulations_section_number_idx on public.regulations(section_number,number);
 create index if not exists regulation_revisions_regulation_idx on public.regulation_revisions(regulation_id,revision desc);
 
