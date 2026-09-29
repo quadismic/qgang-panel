@@ -259,7 +259,7 @@ Sonradan yürürlüğe giren hükmün hakkında disiplin süreci yürütülen ki
 ($q$07$q$,$q$07.06$q$,$q$KURAL$q$,$q$Yorum ve Düzenleme Boşluğu$q$,$q$Kodeks hükümlerinin anlam veya uygulanması konusunda ortaya çıkan uyuşmazlıklarda nihai yorum yetkisi LİDER'e aittir.
 
 Kodeks'te düzenlenmeyen bir konuda yorum, İlke, Yönerge veya Karar yoluyla yeni bir genel yükümlülük, yasak veya yaptırım oluşturulamaz. Böyle bir düzenlemeye ihtiyaç duyulması hâlinde LİDER tarafından Kural konulur.$q$,'yururlukte',now(),57,1,$q$Kodeks 1.0 ilk yayımı$q$)
-on conflict (number) do update set
+on conflict (number) where number is not null do update set
  section_number=excluded.section_number,
  kind=excluded.kind,
  title=excluded.title,

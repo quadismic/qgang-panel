@@ -60,3 +60,6 @@ drop trigger if exists archive_regulation_revision on public.regulations;
 create trigger archive_regulation_revision
 before update on public.regulations
 for each row execute function public.archive_regulation_revision();
+
+-- Trigger-only helper: prevent direct RPC execution through exposed API roles.
+revoke all on function public.archive_regulation_revision() from public, anon, authenticated;
