@@ -38,7 +38,7 @@ export function normalizeDesign(v:any):DesignSettings{
 }
 
 export const pageMeta = {
- home:{title:"Karargâh",description:defaultDesign.pageDescriptions.home},
+ home:{title:"Anasayfa",description:defaultDesign.pageDescriptions.home},
  rules:{title:"Kodeks",description:defaultDesign.pageDescriptions.rules},
  members:{title:"Topluluk",description:defaultDesign.pageDescriptions.members},
  announcements:{title:"Duyurular",description:defaultDesign.pageDescriptions.announcements},
