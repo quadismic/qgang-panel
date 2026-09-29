@@ -1730,3 +1730,8 @@ img,svg{max-width:100%}
 .codexV3CoverMark img{display:block;width:100%;height:auto;opacity:.94}
 .codexV3Cover p{position:absolute;bottom:54px;left:50%;transform:translateX(-50%);width:max-content;max-width:75%;margin:0;color:#806e5d;font:10px var(--qg-ui-font,Arial,sans-serif);letter-spacing:.16em;text-transform:uppercase}
 @media(max-width:760px){.memberPlateRank{right:8px;width:62px;min-height:54px}.codexV3CoverMark{width:min(250px,70%)}.codexV3Cover p{bottom:34px;font-size:8px}}
+
+/* Codex cover emblem · true center */
+.codexV3Cover{display:grid!important;place-items:center!important}
+.codexV3CoverMark{position:absolute!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;width:min(360px,62%)!important}
+.codexV3CoverMark img{width:100%!important;height:auto!important;object-fit:contain!important}
