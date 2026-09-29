@@ -24,7 +24,7 @@ export default async function Headquarters(){
  const cards=[
   {href:"/rules",icon:"rules",title:"KURALLAR",sub:"CODEX",value:(rules??[]).length+" kayıt",text:"Topluluk düzeni, üyelik, davranış ve disiplin."},
   {href:"/members",icon:"community",title:"TOPLULUK",sub:"REGISTRY",value:String(members??0),text:"Aktif üyeler, kimlikler ve roller."},
-  {href:"/announcements",icon:"announcements",title:"DUYURULAR",sub:"DECREES",value:"KAYIT",text:"Karargâhtan yayımlanan güncel duyurular."},
+  {href:"/publications",icon:"document",title:"YAYINLAR",sub:"ARCHIVE",value:"ARŞİV",text:"Duyurular, kararlar ve editoryal Q-GANG yayınları."},
   {href:"/penalties",icon:"discipline",title:"DİSİPLİN",sub:"TRIBUNAL",value:"SİCİL",text:"Kararlar, dayanaklar ve yaptırım kayıtları."},
   ...(manage?[{href:"/control",icon:"control",title:"YÖNETİM",sub:"CONTROL",value:"DENETİM",text:"Q-GANG yönetimi, roller, tasarım ve topluluk araçları."}]:[]),
   ...((membership||manage)?[{href:"/budget",icon:"treasury",title:"BÜTÇE",sub:"TREASURY",value:tl(balance),text:"Ortak kaynak, gelirler ve giderler."}]:[])
