@@ -1763,3 +1763,10 @@ img,svg{max-width:100%}
 @media(min-width:1101px){.appShell:has(.pubV2){grid-template-columns:224px minmax(0,1380px);max-width:1640px;margin-inline:auto;padding-right:28px}.appShell:has(.pubV2)>.content{width:100%;max-width:none}}
 @media(max-width:1100px){.pubHeroV2{height:210px;min-height:210px;padding:30px}.pubCategories button{flex-basis:128px}.pubMedia{height:176px}}
 @media(max-width:760px){.pubHeroV2{height:165px;min-height:165px;padding:22px}.pubHeroV2 h1{font-size:38px;margin:8px 0 12px}.pubHeroV2 p{font-size:13px}.pubHeroV2 small{font-size:9px}.pubCategories{padding:7px;gap:5px}.pubCategories button{flex-basis:116px;min-height:64px;padding:9px}.pubCategories span{font-size:11px}.pubCategories small{font-size:9px}.pubTools{padding:15px 0 12px;gap:10px}.pubTools button{min-height:42px;font-size:11px}.pubTools label{height:44px}.pubMedia{height:178px}.pubCardBody{padding:17px}.pubCardBody h2{font-size:19px}.pubCardBody p{font-size:13px}}
+
+
+/* YAYINLAR 2.1.1 · preserve global shell axis */
+@media(min-width:1101px){
+  .appShell:has(.pubV2){max-width:none;margin:0;grid-template-columns:224px minmax(0,1380px);justify-content:center;padding-right:0}
+  .appShell:has(.pubV2)>.content{width:100%;max-width:none;min-width:0}
+}
