@@ -13,11 +13,11 @@ const shortDate=(v:string|null)=>v?new Date(v).toLocaleDateString("tr-TR",{day:"
 export default async function Headquarters(){
  const s=await createClient();const user=await getCurrentUser();
  const {data:designRow}=await s.from("design_settings").select("settings").eq("key","active").maybeSingle();const design=normalizeDesign(designRow?.settings??defaultDesign);
- const [{data:viewerProfile},{data:membership},{data:announcements},{data:publications}]=await Promise.all([
+ const [{data:viewerProfile},{data:membership},{data:announcements},{data:publications},{data:birthdays}]=await Promise.all([
   user?s.from("profiles").select("role").eq("id",user.id).maybeSingle():Promise.resolve({data:null}),
   user?s.from("community_memberships").select("status").eq("user_id",user.id).eq("status","active").maybeSingle():Promise.resolve({data:null}),
   s.from("announcements").select("id,title,body,category,priority,is_pinned,published_at").order("is_pinned",{ascending:false}).order("published_at",{ascending:false}).limit(12),
-  s.from("publications").select("title,slug,excerpt,cover_url,content_type,published_at,youtube_url,author:profiles!publications_author_id_fkey(display_name,handle)").eq("status","published").order("published_at",{ascending:false}).limit(3)
+  s.from("publications").select("title,slug,excerpt,cover_url,content_type,published_at,youtube_url,author:profiles!publications_author_id_fkey(display_name,handle)").eq("status","published").order("published_at",{ascending:false}).limit(3),user?s.rpc("list_today_community_birthdays"):Promise.resolve({data:[]})
  ]);
  const manage=!!viewerProfile&&["founder","admin"].includes(viewerProfile.role);
  const priorityRank:Record<string,number>={critical:3,important:2,normal:1};
@@ -38,7 +38,7 @@ export default async function Headquarters(){
    <div className="commandTitle commandTitleMinimal">{!user&&<Link href="/login">KİMLİĞİNİ DOĞRULA</Link>}</div>
   </section>
 
-  <section className="homeFeedSection homeNotices"><header className="homeSectionHead"><div><span><QGIcon name="announcements"/></span><div><h2>DUYURULAR</h2><p>Topluluğa ilişkin resmî açıklamalar, kararlar ve önemli gelişmeler.</p></div></div><Link href="/duyurular">TÜM DUYURULAR <QGIcon name="chevron"/></Link></header>
+  {(birthdays??[]).length>0&&<section className="birthdayBanner birthdayBannerHome"><span className="birthdaySigil">✦</span><div><small>BUGÜN TOPLULUKTA</small><h2>{(birthdays??[]).map((b:any)=>b.display_name).join(" · ")}</h2><p>{(birthdays??[]).length===1?"Bugün doğum günü. Nice yıllara!":"Bugün doğum günlerini kutluyoruz. Nice yıllara!"}</p></div></section>}<section className="homeFeedSection homeNotices"><header className="homeSectionHead"><div><span><QGIcon name="announcements"/></span><div><h2>DUYURULAR</h2><p>Topluluğa ilişkin resmî açıklamalar, kararlar ve önemli gelişmeler.</p></div></div><Link href="/duyurular">TÜM DUYURULAR <QGIcon name="chevron"/></Link></header>
    <div className="homeNoticeList">{notices.length?notices.map((a:any)=><Link href="/duyurular" className={"homeNotice "+(a.is_pinned?"isPinned ":"")+a.priority} key={a.id}><time>{shortDate(a.published_at)}</time><span className="homeNoticeKind">{a.category}</span><div><h3>{a.title}</h3><p>{richPlain(a.body).slice(0,150)||"Ayrıntılar için duyuruyu aç."}</p></div><QGIcon name="chevron"/></Link>):<div className="homeFeedEmpty"><b>Henüz duyuru yok.</b><span>İlk resmî kayıt yayımlandığında burada görünecek.</span></div>}</div>
   </section>
 

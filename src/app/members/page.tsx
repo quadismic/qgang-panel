@@ -10,14 +10,14 @@ export const dynamic="force-dynamic";
 export const metadata=pageMeta.members;
 export default async function Members(){
  const s=await createClient();
- const {data}=await s.rpc("list_active_community_members");
+ const [{data},{data:birthdays}]=await Promise.all([s.rpc("list_active_community_members"),s.rpc("list_today_community_birthdays")]);
  const people=data??[];const order=["founder","admin","moderator","creator","member"];const levels=order.map(role=>({role,people:people.filter((p:any)=>p.role===role)})).filter(x=>x.people.length);
  return <AppShell right={false}>
   <section className="registryHero roomScene orgHero" style={{backgroundImage:`linear-gradient(90deg,rgba(4,3,2,.76),rgba(4,3,2,.32) 48%,rgba(4,3,2,.14)),url(${brandTheme.rooms.registry})`}}>
    <h1>Topluluk</h1><p>Q-GANG üyeleri ve topluluk kimlikleri.</p>
    <div><b>{people.length}<small>TOPLAM ÜYE</small></b></div>
   </section>
-  <section className="orgChart" aria-label="Q-GANG topluluk üyeleri">
+  {(birthdays??[]).length>0&&<section className="birthdayBanner"><span className="birthdaySigil">✦</span><div><small>BUGÜN TOPLULUKTA</small><h2>{(birthdays??[]).map((b:any)=>b.display_name).join(" · ")}</h2><p>{(birthdays??[]).length===1?"Bugün doğum günü. Nice yıllara!":"Bugün doğum günlerini kutluyoruz. Nice yıllara!"}</p></div></section>}<section className="orgChart" aria-label="Q-GANG topluluk üyeleri">
    <header><span>TOPLULUK</span><b>ÜYE KAYITLARI</b></header>
    {people.length?<div className="orgTree orgTreePlates">{levels.map((level:any)=><section className={`orgLevel org-${level.role}`} key={level.role}>{<div className="orgTrunk"/>}<div className="orgBranch orgPlateBranch">{level.people.map((p:any)=><Link href={"/u/"+p.handle} className={`memberPlate memberPlate-${p.role}`} key={p.id}><RankPortrait role={p.role} src={p.avatar_url} name={p.display_name||"Q"} size="card"/><div className="memberPlateCopy"><strong>{p.display_name}</strong><small>@{p.handle}</small></div><div className="memberPlateRank"><RankInsignia role={p.role} size="sm"/><b>{roleLabel(p.role)}</b></div></Link>)}</div></section>)}</div>:<div className="orgEmpty"><span>◇</span><h2>Topluluk henüz oluşturulmadı.</h2><p>Üyeler katıldıkça burada görünecek.</p></div>}
   </section>
