@@ -1878,3 +1878,35 @@ img,svg{max-width:100%}
 
 /* Q-GANG legacy membership + birthday UI */
 .birthdayBanner,.birthdayAdminPanel,.legacyMatchPanel{border:1px solid rgba(197,151,73,.24);background:radial-gradient(circle at 8% 50%,rgba(197,151,73,.09),transparent 32%),linear-gradient(145deg,rgba(18,17,15,.96),rgba(8,10,12,.98));box-shadow:0 18px 55px rgba(0,0,0,.2);border-radius:18px}.birthdayBanner{display:flex;align-items:center;gap:16px;padding:18px 20px;margin:0 0 18px}.birthdayBannerHome{margin-top:14px}.birthdaySigil{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border:1px solid rgba(197,151,73,.32);border-radius:50%;color:#d8b66d;background:radial-gradient(circle,rgba(197,151,73,.12),transparent 70%);font-size:18px}.birthdayBanner small,.birthdayAdminPanel small,.legacyMatchPanel small{color:#9e927d;font-size:10px;font-weight:850;letter-spacing:.16em}.birthdayBanner h2{margin:2px 0 3px;font-family:Georgia,serif;font-size:21px;letter-spacing:.01em}.birthdayBanner p{margin:0;color:#aaa39a;font-size:13px}.birthdayAdminPanel,.legacyMatchPanel{padding:20px;margin-bottom:14px}.birthdayAdminPanel header,.legacyMatchPanel>header{display:flex;justify-content:space-between;align-items:end;margin-bottom:14px}.birthdayAdminPanel h2,.legacyMatchPanel h2{margin:4px 0 0}.birthdayAdminList,.legacyMatchList{display:grid;gap:8px}.birthdayAdminRow{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.018)}.birthdayAdminRow .birthdaySigil{width:30px;height:30px;flex-basis:30px;font-size:12px}.birthdayAdminRow>div{display:grid}.birthdayAdminRow time{color:#d8b66d;font-weight:800}.birthdayAdminRow strong{min-width:56px;text-align:right;font-size:10px;letter-spacing:.12em;color:#aaa39a}.legacyMatchList article{display:grid;grid-template-columns:1fr 1fr auto;gap:14px;align-items:center;padding:13px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.018)}.legacyMatchList article>div{display:grid;gap:3px}.legacyMatchList span{color:var(--muted);font-size:12px}@media(max-width:760px){.birthdayBanner{padding:15px;gap:12px}.birthdayBanner h2{font-size:18px}.birthdayAdminPanel,.legacyMatchPanel{padding:15px}.birthdayAdminRow{grid-template-columns:auto 1fr auto}.birthdayAdminRow strong{grid-column:2/-1;text-align:left}.legacyMatchList article{grid-template-columns:1fr}.legacyMatchList article form button{width:100%}}
+
+
+/* HOME 2.2 · editorial split feed — no quick access */
+.homeEditorialGrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:18px}
+.homeEditorialGrid .homeFeedSection{margin-top:0;padding:18px 20px;min-width:0}
+.homeEditorialGrid .homeSectionHead{min-height:48px;padding-bottom:14px;margin-bottom:0;border-bottom:1px solid rgba(126,87,55,.22)}
+.homeEditorialGrid .homeSectionHead h2{font-size:18px}.homeEditorialGrid .homeSectionHead p{font-size:10px}
+.homeEditorialGrid .homeSectionHead>a{min-height:34px;padding:0 10px;font-size:8px}
+.homeNoticeList,.homePubList{display:grid;gap:0}
+.homeEditorialGrid .homeNotice{grid-template-columns:126px minmax(0,1fr) 16px;gap:14px;min-height:118px;padding:12px 0;border:0;border-bottom:1px solid rgba(126,87,55,.19);background:transparent}
+.homeEditorialGrid .homeNotice:hover,.homePubRow:hover{background:linear-gradient(90deg,rgba(92,38,21,.12),transparent)}
+.homeNoticeVisual,.homePubThumb{height:88px;display:grid;place-items:center;overflow:hidden;border:1px solid rgba(126,87,55,.28);background:radial-gradient(circle at 50% 45%,rgba(105,40,26,.2),transparent 62%),#080706;color:#9d5438}
+.homeNoticeVisual .qgIcon{width:28px;height:28px}
+.homeNoticeContent,.homePubRowBody{min-width:0;align-self:center}
+.homeEditorialGrid .homeNoticeKind{display:inline-flex;width:max-content;margin-bottom:7px;padding:3px 7px;border:1px solid rgba(166,76,48,.35);background:rgba(94,29,20,.35);font-size:8px}
+.homeEditorialGrid .homeNotice h3,.homePubRow h3{margin:0 0 5px;color:#d8c9b8;font:500 15px/1.25 var(--qg-display-font,Georgia,serif)}
+.homeEditorialGrid .homeNotice p,.homePubRow p{display:-webkit-box;margin:0;color:#756b62;font-size:9px;line-height:1.5;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:normal;overflow:hidden}
+.homeNoticeContent footer,.homePubRowBody footer{display:flex;align-items:center;gap:10px;margin-top:8px;color:#76695f;font-size:8px}
+.homeNoticeContent footer b{color:#a66a43;font-size:7px;letter-spacing:.1em}
+.homePubRow{display:grid;grid-template-columns:156px minmax(0,1fr) 16px;align-items:center;gap:14px;min-height:118px;padding:12px 0;border-bottom:1px solid rgba(126,87,55,.19);transition:background .18s}
+.homePubThumb{height:88px}.homePubThumb img{width:100%;height:100%;object-fit:cover;filter:saturate(.78) brightness(.72)}.homePubThumb>span .qgIcon{width:28px;height:28px}
+.homePubRowBody>.pubBadge{position:static;display:inline-flex;width:max-content;margin:0 0 7px;padding:3px 7px;border-radius:0;font-size:8px}
+.homePubRow>.qgIcon,.homeEditorialGrid .homeNotice>.qgIcon{width:12px;height:12px;color:#875037}
+.homeEditorialGrid .homeFeedEmpty{min-height:330px;border:0}
+@media(max-width:1050px){.homeEditorialGrid{grid-template-columns:1fr}.homeEditorialGrid .homeFeedSection{margin-top:0}}
+@media(max-width:760px){
+ .homeEditorialGrid{gap:12px;margin-top:12px}.homeEditorialGrid .homeFeedSection{padding:13px 12px}
+ .homeEditorialGrid .homeSectionHead{min-height:0;padding-bottom:11px}.homeEditorialGrid .homeSectionHead h2{font-size:14px}.homeEditorialGrid .homeSectionHead p{font-size:9px}
+ .homeEditorialGrid .homeNotice,.homePubRow{grid-template-columns:88px minmax(0,1fr) 12px;min-height:96px;gap:10px;padding:10px 0}
+ .homeNoticeVisual,.homePubThumb{height:70px}.homeEditorialGrid .homeNotice h3,.homePubRow h3{font-size:12px}
+ .homeEditorialGrid .homeNotice p,.homePubRow p{display:none}.homeNoticeContent footer,.homePubRowBody footer{margin-top:6px}
+}
