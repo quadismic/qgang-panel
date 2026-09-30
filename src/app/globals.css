@@ -1859,3 +1859,16 @@ img,svg{max-width:100%}
 @keyframes qgPosterAtmospherePortrait{0%{transform:scale(1.075) translate3d(-.45%,0,0)}100%{transform:scale(1.12) translate3d(.55%,-.35%,0)}}
 @media(max-width:760px){.homeV2 .commandPoster{height:auto!important;min-height:clamp(340px,100vw,455px)!important}.homeV2 .commandPoster .commandAtmosphere{filter:brightness(.5) saturate(.68) blur(1px)}.homeV2 .commandQuadPoster{width:calc(var(--qg-quad-scale,1) * 56cqw)!important;height:91%!important;top:2%!important}.homeV2 .commandCouncilPoster .councilPortrait{top:13%!important;width:39cqw!important;height:76%!important}.homeV2 .commandCouncilPoster .councilPortrait.left{left:calc(50% - 45cqw - (var(--poster-depth,0) * 15cqw))!important}.homeV2 .commandCouncilPoster .councilPortrait.right{right:calc(50% - 45cqw - (var(--poster-depth,0) * 15cqw))!important}.homeV2 .commandPoster:after{height:34%!important}.homeV2 .commandCouncilPoster .depth-1,.homeV2 .commandCouncilPoster .depth-2{opacity:.42!important}}
 @media(prefers-reduced-motion:reduce){.homeV2 .commandPoster .commandAtmosphere{animation:none!important;transform:scale(1.075)!important}}
+
+/* HOME HERO 3.2 · visible atmosphere + restrained living portraits */
+.homeV2 .commandPoster .commandAtmosphere{filter:brightness(.72) saturate(.8) blur(.8px)!important;opacity:.96}
+.homeV2 .commandPoster:before{background:radial-gradient(ellipse at 50% 42%,transparent 0 25%,rgba(0,0,0,.035) 48%,rgba(0,0,0,.44) 100%),linear-gradient(180deg,rgba(0,0,0,.025) 0 55%,rgba(4,3,3,.22) 76%,#060505 100%)!important}
+.homeV2 .commandCouncilPoster .councilPortrait{will-change:transform;animation:qgCouncilIdleLeft 12.5s ease-in-out infinite alternate}
+.homeV2 .commandCouncilPoster .councilPortrait.right{animation-name:qgCouncilIdleRight;animation-duration:14s;animation-delay:-5.2s}
+.homeV2 .commandCouncilPoster .depth-1{animation-duration:15.5s;animation-delay:-8s}.homeV2 .commandCouncilPoster .depth-2{animation-duration:17s;animation-delay:-3s}
+.homeV2 .commandQuadPoster img{will-change:transform;animation:qgQuadBreath 10s ease-in-out infinite alternate}
+@keyframes qgQuadBreath{0%{transform:translateY(0) scale(1)}100%{transform:translateY(-2px) scale(1.004)}}
+@keyframes qgCouncilIdleLeft{0%{translate:0 1px;rotate:-.06deg}100%{translate:-1px -2px;rotate:-.14deg}}
+@keyframes qgCouncilIdleRight{0%{translate:1px -1px;rotate:.12deg}100%{translate:0 2px;rotate:.04deg}}
+@media(max-width:760px){.homeV2 .commandPoster .commandAtmosphere{filter:brightness(.67) saturate(.76) blur(.7px)!important}}
+@media(prefers-reduced-motion:reduce){.homeV2 .commandCouncilPoster .councilPortrait,.homeV2 .commandQuadPoster img{animation:none!important;translate:none!important;rotate:none!important;transform:none!important}}
