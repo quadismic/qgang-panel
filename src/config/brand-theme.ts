@@ -7,6 +7,7 @@ export const brandTheme = {
     codex: "/brand/rooms/codex.webp",
     registry: "/brand/rooms/registry.webp",
     decrees: "/brand/rooms/decrees.webp",
+    publications: "/brand/rooms/publications.webp",
     tribunal: "/brand/rooms/tribunal.webp",
     treasury: "/brand/rooms/treasury.webp",
   },
