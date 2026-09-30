@@ -2,7 +2,6 @@ import Link from "next/link";
 import type {CSSProperties} from "react";
 import {AppShell} from "@/components/AppShell";
 import {createClient,getCurrentUser} from "@/lib/supabase/server";
-import {brandTheme} from "@/config/brand-theme";
 import {defaultDesign,normalizeDesign,pageMeta} from "@/lib/design";
 import {QGIcon,QGIconName} from "@/components/QGIcon";
 import {richPlain} from "@/lib/rich-text";
@@ -32,9 +31,10 @@ export default async function Headquarters(){
   ...((membership||manage)?[{href:"/butce",icon:"treasury",title:"BÜTÇE",text:"Hazine kayıtları ve işlemler."}]:[])
  ];
  return <AppShell right={false}><div className="commandHQ homeV2">
-  <section className="commandHero" style={{"--command-bg":`url(${design.commandBackground})`} as CSSProperties}>
-   <div className="commandCouncil" aria-hidden="true">{brandTheme.command.council.map((m:any)=>{const slot=design.council.find(x=>x.id===m.id);if(!slot)return null;return <img key={m.id} className={`councilMember ${m.side} ${m.id}`} src={slot.src||m.src} alt="" style={{"--council-scale":slot.scale/100,"--council-x":slot.x,"--council-y":slot.y,display:slot.enabled?"":"none"} as CSSProperties}/>})}</div>
-   <div className="commandPortrait" aria-hidden="true"><img src={design.quadSrc} alt=""/></div>
+  <section className="commandHero commandPoster" style={{"--command-bg":`url(${design.commandBackground})`} as CSSProperties}>
+   <div className="commandAtmosphere" aria-hidden="true"/>
+   <div className="commandCouncil commandCouncilPoster" aria-hidden="true">{design.council.filter(m=>m.enabled).map((slot,i,all)=>{const left=i%2===0,depth=Math.floor(i/2),side=left?"left":"right";return <img key={slot.id} className={`councilMember councilPortrait ${side} depth-${Math.min(depth,2)} ${slot.id}`} src={slot.src} alt="" style={{"--council-scale":slot.scale/100,"--poster-depth":depth} as CSSProperties}/>})}</div>
+   <div className="commandPortrait commandQuadPoster" aria-hidden="true"><img src={design.quadSrc} alt=""/></div>
    <div className="commandTitle commandTitleMinimal">{!user&&<Link href="/login">KİMLİĞİNİ DOĞRULA</Link>}</div>
   </section>
 
