@@ -5,30 +5,47 @@ import {createClient,getCurrentUser} from "@/lib/supabase/server";
 import {brandTheme} from "@/config/brand-theme";
 import {defaultDesign,normalizeDesign,pageMeta} from "@/lib/design";
 import {QGIcon,QGIconName} from "@/components/QGIcon";
+import {richPlain} from "@/lib/rich-text";
 export const dynamic="force-dynamic";
 export const metadata=pageMeta.home;
 
-const tl=(n:number)=>new Intl.NumberFormat("tr-TR",{style:"currency",currency:"TRY",maximumFractionDigits:0}).format(n);
+const kindLabel:Record<string,string>={research:"ARAŞTIRMA",review:"İNCELEME",thought:"DÜŞÜNCE",game:"OYUN",technology:"TEKNOLOJİ",video:"VİDEO"};
+const shortDate=(v:string|null)=>v?new Date(v).toLocaleDateString("tr-TR",{day:"2-digit",month:"short",year:"numeric"}):"";
 export default async function Headquarters(){
- const s=await createClient(); const user=await getCurrentUser();
- const {data:designRow}=await s.from("design_settings").select("settings").eq("key","active").maybeSingle(); const design=normalizeDesign(designRow?.settings??defaultDesign);
- const [{count:members},{data:rules},{data:fund},{data:membership},{data:viewerProfile}]=await Promise.all([
-  s.from("community_memberships").select("*",{count:"exact",head:true}).eq("status","active"),
-  s.from("regulations").select("id,title").order("published_at",{ascending:false}).limit(5),
-  s.from("fund_transactions").select("kind,amount,reversed_at").limit(100),
+ const s=await createClient();const user=await getCurrentUser();
+ const {data:designRow}=await s.from("design_settings").select("settings").eq("key","active").maybeSingle();const design=normalizeDesign(designRow?.settings??defaultDesign);
+ const [{data:viewerProfile},{data:membership},{data:announcements},{data:publications}]=await Promise.all([
+  user?s.from("profiles").select("role").eq("id",user.id).maybeSingle():Promise.resolve({data:null}),
   user?s.from("community_memberships").select("status").eq("user_id",user.id).eq("status","active").maybeSingle():Promise.resolve({data:null}),
-  user?s.from("profiles").select("role").eq("id",user.id).maybeSingle():Promise.resolve({data:null})
+  s.from("announcements").select("id,title,body,category,priority,is_pinned,published_at").order("is_pinned",{ascending:false}).order("published_at",{ascending:false}).limit(12),
+  s.from("publications").select("title,slug,excerpt,cover_url,content_type,published_at,youtube_url,author:profiles!publications_author_id_fkey(display_name,handle)").eq("status","published").order("published_at",{ascending:false}).limit(3)
  ]);
- const live=(fund??[]).filter((x:any)=>!x.reversed_at),income=live.filter((x:any)=>x.kind==="support").reduce((a:number,x:any)=>a+Number(x.amount),0),expense=live.filter((x:any)=>x.kind==="expense").reduce((a:number,x:any)=>a+Number(x.amount),0),balance=income-expense;
  const manage=!!viewerProfile&&["founder","admin"].includes(viewerProfile.role);
- const cards=[
-  {href:"/kodeks",icon:"rules",title:"KURALLAR",sub:"CODEX",value:(rules??[]).length+" kayıt",text:"Topluluk düzeni, üyelik, davranış ve disiplin."},
-  {href:"/topluluk",icon:"community",title:"TOPLULUK",sub:"REGISTRY",value:String(members??0),text:"Aktif üyeler, kimlikler ve roller."},
-  {href:"/duyurular",icon:"announcements",title:"DUYURULAR",sub:"DECREES",value:"KAYIT",text:"Resmî duyurular, kararlar ve önemli gelişmeler."},
-  {href:"/yayinlar",icon:"document",title:"YAYINLAR",sub:"ARCHIVE",value:"ARŞİV",text:"Araştırmalar, incelemeler ve editoryal Q-GANG yayınları."},
-  {href:"/disiplin",icon:"discipline",title:"DİSİPLİN",sub:"TRIBUNAL",value:"SİCİL",text:"Kararlar, dayanaklar ve yaptırım kayıtları."},
-  ...(manage?[{href:"/yonetim",icon:"control",title:"YÖNETİM",sub:"CONTROL",value:"DENETİM",text:"Q-GANG yönetimi, roller, tasarım ve topluluk araçları."}]:[]),
-  ...((membership||manage)?[{href:"/butce",icon:"treasury",title:"BÜTÇE",sub:"TREASURY",value:tl(balance),text:"Ortak kaynak, gelirler ve giderler."}]:[])
+ const priorityRank:Record<string,number>={critical:3,important:2,normal:1};
+ const notices=(announcements??[]).sort((a:any,b:any)=>Number(b.is_pinned)-Number(a.is_pinned)||(priorityRank[b.priority]||0)-(priorityRank[a.priority]||0)||new Date(b.published_at||0).getTime()-new Date(a.published_at||0).getTime()).slice(0,3);
+ const pubs=(publications??[]).map((p:any)=>{const author=Array.isArray(p.author)?p.author[0]:p.author;return{...p,kind:p.youtube_url?"video":p.content_type,authorName:author?.display_name||author?.handle||"Q-GANG"}});
+ const quick=[
+  {href:"/kodeks",icon:"rules",title:"KODEKS",text:"İlkeler, kurallar ve normatif yapı."},
+  {href:"/topluluk",icon:"community",title:"TOPLULUK",text:"Üyeler, kimlikler ve roller."},
+  {href:"/disiplin",icon:"discipline",title:"DİSİPLİN",text:"Kararlar, süreçler ve kayıtlar."},
+  ...(manage?[{href:"/yonetim",icon:"control",title:"YÖNETİM",text:"Yapı, yetkiler ve organizasyon."}]:[]),
+  ...((membership||manage)?[{href:"/butce",icon:"treasury",title:"BÜTÇE",text:"Hazine kayıtları ve işlemler."}]:[])
  ];
- return <AppShell right={false}><div className="commandHQ"><section className="commandHero" style={{"--command-bg":`url(${design.commandBackground})`} as CSSProperties}><div className="commandCouncil" aria-hidden="true">{brandTheme.command.council.map((m:any)=>{const slot=design.council.find(x=>x.id===m.id);if(!slot)return null;return <img key={m.id} className={`councilMember ${m.side} ${m.id}`} src={slot.src||m.src} alt="" style={{"--council-scale":slot.scale/100,"--council-x":slot.x,"--council-y":slot.y,display:slot.enabled?"":"none"} as CSSProperties}/>})}</div><div className="commandPortrait" aria-hidden="true"><img src={design.quadSrc} alt=""/></div><div className="commandTitle commandTitleMinimal">{!user&&<Link href="/login">KİMLİĞİNİ DOĞRULA</Link>}</div></section><section className="commandModules commandModulesSix">{cards.map(c=><Link href={c.href} className="commandPanel" key={c.href}><header><span><QGIcon name={c.icon as QGIconName}/></span><h2>{c.title}</h2></header><div><strong>{c.value}</strong><p>{c.text}</p></div><footer>İNCELE <b><QGIcon name="chevron"/></b></footer></Link>)}</section></div></AppShell>
+ return <AppShell right={false}><div className="commandHQ homeV2">
+  <section className="commandHero" style={{"--command-bg":`url(${design.commandBackground})`} as CSSProperties}>
+   <div className="commandCouncil" aria-hidden="true">{brandTheme.command.council.map((m:any)=>{const slot=design.council.find(x=>x.id===m.id);if(!slot)return null;return <img key={m.id} className={`councilMember ${m.side} ${m.id}`} src={slot.src||m.src} alt="" style={{"--council-scale":slot.scale/100,"--council-x":slot.x,"--council-y":slot.y,display:slot.enabled?"":"none"} as CSSProperties}/>})}</div>
+   <div className="commandPortrait" aria-hidden="true"><img src={design.quadSrc} alt=""/></div>
+   <div className="commandTitle commandTitleMinimal">{!user&&<Link href="/login">KİMLİĞİNİ DOĞRULA</Link>}</div>
+  </section>
+
+  <section className="homeFeedSection homeNotices"><header className="homeSectionHead"><div><span><QGIcon name="announcements"/></span><div><h2>DUYURULAR</h2><p>Topluluğa ilişkin resmî açıklamalar, kararlar ve önemli gelişmeler.</p></div></div><Link href="/duyurular">TÜM DUYURULAR <QGIcon name="chevron"/></Link></header>
+   <div className="homeNoticeList">{notices.length?notices.map((a:any)=><Link href="/duyurular" className={"homeNotice "+(a.is_pinned?"isPinned ":"")+a.priority} key={a.id}><time>{shortDate(a.published_at)}</time><span className="homeNoticeKind">{a.category}</span><div><h3>{a.title}</h3><p>{richPlain(a.body).slice(0,150)||"Ayrıntılar için duyuruyu aç."}</p></div><QGIcon name="chevron"/></Link>):<div className="homeFeedEmpty"><b>Henüz duyuru yok.</b><span>İlk resmî kayıt yayımlandığında burada görünecek.</span></div>}</div>
+  </section>
+
+  <section className="homeFeedSection homePublications"><header className="homeSectionHead"><div><span><QGIcon name="document"/></span><div><h2>SON YAYINLAR</h2><p>Araştırmalar, incelemeler, düşünceler, oyun, teknoloji ve daha fazlası.</p></div></div><Link href="/yayinlar">TÜM YAYINLAR <QGIcon name="chevron"/></Link></header>
+   <div className="homePubRail">{pubs.length?pubs.map((p:any)=><Link href={"/yayinlar/"+p.slug} className="homePubCard" key={p.slug}><div className="homePubCover">{p.cover_url?<img src={p.cover_url} alt=""/>:<span><QGIcon name="document"/></span>}<b className={"pubBadge pubBadge-"+p.kind}>{kindLabel[p.kind]||"YAYIN"}</b></div><div className="homePubBody"><h3>{p.title}</h3><p>{richPlain(p.excerpt||"").slice(0,165)||"Bu yayın için henüz özet eklenmedi."}</p><footer><span>{p.authorName}</span><time>{shortDate(p.published_at)}</time></footer></div></Link>):<div className="homeFeedEmpty"><b>Arşiv hazırlanıyor.</b><span>İlk yayın yayımlandığında burada görünecek.</span></div>}</div>
+  </section>
+
+  <section className="homeQuick"><header className="homeSectionHead"><div><span><QGIcon name="grid"/></span><div><h2>HIZLI ERİŞİM</h2><p>Sistemin ana bölümlerine hızlı erişim.</p></div></div></header><div className="homeQuickGrid">{quick.map(c=><Link href={c.href} className="homeQuickCard" key={c.href}><span><QGIcon name={c.icon as QGIconName}/></span><h3>{c.title}</h3><p>{c.text}</p><b><QGIcon name="chevron"/></b></Link>)}</div></section>
+ </div></AppShell>
 }

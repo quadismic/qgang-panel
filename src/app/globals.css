@@ -1792,3 +1792,32 @@ img,svg{max-width:100%}
     margin-inline:auto;
   }
 }
+
+/* HOME 2.0 · live institutional feed */
+.homeV2{gap:0;padding-bottom:72px}
+.homeV2 .commandHero{margin-bottom:18px}
+.homeFeedSection,.homeQuick{border:1px solid rgba(132,88,52,.24);background:linear-gradient(145deg,rgba(15,11,9,.94),rgba(6,6,6,.98));margin-top:18px;padding:20px}
+.homeSectionHead{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:16px}
+.homeSectionHead>div{display:flex;align-items:center;gap:14px;min-width:0}.homeSectionHead>div>span{display:grid;place-items:center;width:34px;height:34px;color:#b76643;border:1px solid rgba(158,85,51,.25);background:#110b08}.homeSectionHead .qgIcon{width:18px;height:18px}
+.homeSectionHead h2{margin:0 0 4px;font:500 17px/1.1 var(--qg-display-font,Georgia,serif);letter-spacing:.05em;color:#d9c9b5}.homeSectionHead p{margin:0;color:#766c62;font-size:11px;line-height:1.5}
+.homeSectionHead>a{display:flex;align-items:center;gap:8px;flex:0 0 auto;min-height:38px;padding:0 13px;border:1px solid rgba(153,66,40,.38);background:rgba(63,16,12,.32);color:#c7a58b;font-size:9px;letter-spacing:.08em}.homeSectionHead>a .qgIcon{width:12px;height:12px}
+.homeNoticeList{display:grid;gap:7px}.homeNotice{display:grid;grid-template-columns:78px 78px minmax(0,1fr) 20px;align-items:center;gap:14px;min-height:76px;padding:12px 15px;border:1px solid rgba(121,83,54,.19);background:rgba(3,3,3,.38);transition:border-color .18s,background .18s}.homeNotice:hover{border-color:rgba(164,91,53,.45);background:rgba(31,15,10,.42)}
+.homeNotice time{font:500 11px/1.35 var(--qg-display-font,Georgia,serif);color:#bba48c;text-transform:uppercase}.homeNoticeKind{font-size:9px;letter-spacing:.09em;color:#b65a3f}.homeNotice.critical .homeNoticeKind{color:#d44231}.homeNotice.important .homeNoticeKind{color:#d08b42}.homeNotice>div{min-width:0}.homeNotice h3{margin:0 0 5px;color:#d8c9b8;font:500 14px/1.25 var(--qg-display-font,Georgia,serif)}.homeNotice p{margin:0;color:#706860;font-size:10px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.homeNotice>.qgIcon{width:13px;height:13px;color:#7c432e}.homeNotice.isPinned{border-left:2px solid #8d2a20}
+.homePubRail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.homePubCard{min-width:0;border:1px solid rgba(126,87,55,.24);background:#080706;overflow:hidden}.homePubCover{position:relative;height:150px;display:grid;place-items:center;background:radial-gradient(circle at 50% 30%,#2a1710,#080706 70%);overflow:hidden}.homePubCover>img{width:100%;height:100%;object-fit:cover;filter:saturate(.82) brightness(.72)}.homePubCover>span{color:#6e432d}.homePubCover>span .qgIcon{width:30px;height:30px}.homePubCover .pubBadge{position:absolute;left:10px;bottom:10px}.homePubBody{padding:15px}.homePubBody h3{margin:0 0 9px;color:#d9cbbb;font:500 16px/1.3 var(--qg-display-font,Georgia,serif)}.homePubBody p{margin:0;min-height:48px;color:#766e66;font-size:10px;line-height:1.6}.homePubBody footer{display:flex;justify-content:space-between;gap:10px;margin-top:14px;padding-top:11px;border-top:1px solid rgba(122,82,52,.15);color:#826f61;font-size:9px}
+.homeFeedEmpty{grid-column:1/-1;display:grid;place-items:center;gap:5px;min-height:120px;border:1px dashed rgba(126,87,55,.22);color:#776b61;text-align:center}.homeFeedEmpty b{color:#b7a694;font:500 15px var(--qg-display-font,Georgia,serif)}.homeFeedEmpty span{font-size:10px}
+.homeQuickGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.homeQuickCard{position:relative;min-height:126px;padding:15px;border:1px solid rgba(126,87,55,.2);background:rgba(5,5,5,.48)}.homeQuickCard>span{color:#a45e3c}.homeQuickCard>span .qgIcon{width:17px;height:17px}.homeQuickCard h3{margin:12px 0 6px;color:#c9b8a5;font:500 12px var(--qg-display-font,Georgia,serif);letter-spacing:.04em}.homeQuickCard p{margin:0;padding-right:12px;color:#6f665f;font-size:9px;line-height:1.5}.homeQuickCard>b{position:absolute;right:12px;bottom:12px;color:#87462f}.homeQuickCard>b .qgIcon{width:11px;height:11px}
+
+@media(max-width:1100px){.homeQuickGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.homePubCover{height:140px}}
+@media(max-width:760px){
+ .homeV2{padding-left:10px;padding-right:10px;padding-bottom:90px}
+ .homeV2 .commandHero{height:auto!important;min-height:clamp(360px,118vw,480px)!important;margin:0 -10px 14px;background-position:center!important}
+ .homeV2 .commandPortrait{width:calc(var(--qg-quad-scale,1) * 62cqw)!important;height:72%!important;top:4%!important}
+ .homeV2 .councilMember{width:calc(var(--council-scale,1) * 34cqw)!important;height:55%!important;top:23%!important;opacity:.72}
+ .homeV2 .councilMember.left-1{left:-2%!important}.homeV2 .councilMember.left-2{left:14%!important}.homeV2 .councilMember.right-1{right:-2%!important}.homeV2 .councilMember.right-2{right:14%!important}
+ .homeFeedSection,.homeQuick{margin-top:12px;padding:14px 12px}
+ .homeSectionHead{align-items:flex-start;gap:10px;margin-bottom:12px}.homeSectionHead>div{gap:9px}.homeSectionHead>div>span{width:30px;height:30px}.homeSectionHead h2{font-size:14px}.homeSectionHead p{font-size:9px;max-width:210px}.homeSectionHead>a{min-height:34px;padding:0 9px;font-size:8px}.homeSectionHead>a .qgIcon{display:none}
+ .homeNoticeList{gap:5px}.homeNotice{grid-template-columns:52px minmax(0,1fr) 16px;grid-template-areas:"date body arrow" "kind body arrow";gap:2px 9px;min-height:68px;padding:10px}.homeNotice time{grid-area:date;font-size:9px}.homeNoticeKind{grid-area:kind;font-size:8px}.homeNotice>div{grid-area:body}.homeNotice>div h3{font-size:12px;margin:0}.homeNotice>div p{display:none}.homeNotice>.qgIcon{grid-area:arrow}
+ .homePubRail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 16% 7px 0;scrollbar-width:none}.homePubRail::-webkit-scrollbar{display:none}.homePubCard{flex:0 0 84%;scroll-snap-align:start}.homePubCover{height:150px}.homePubBody h3{font-size:15px}.homePubBody p{font-size:10px}
+ .homeFeedEmpty{flex:0 0 100%;min-height:100px}
+ .homeQuickGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.homeQuickCard{min-height:102px;padding:12px}.homeQuickCard h3{margin:9px 0 4px;font-size:11px}.homeQuickCard p{font-size:8px}
+}
