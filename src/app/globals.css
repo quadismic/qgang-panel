@@ -1770,3 +1770,25 @@ img,svg{max-width:100%}
   .appShell:has(.pubV2){max-width:none;margin:0;grid-template-columns:224px minmax(0,1380px);justify-content:center;padding-right:0}
   .appShell:has(.pubV2)>.content{width:100%;max-width:none;min-width:0}
 }
+
+
+/* YAYINLAR 2.1.2 · inherit the global AppShell axis */
+@media(min-width:1101px){
+  .appShell:has(.pubV2){
+    grid-template-columns:clamp(164px,13.2vw,190px) minmax(0,1fr);
+    gap:0;
+    justify-content:stretch;
+    max-width:none;
+    margin:0;
+    padding-right:0;
+  }
+  .appShell:has(.pubV2)>.content{
+    width:100%;
+    max-width:none;
+    min-width:0;
+  }
+  .pubV2{
+    width:min(100%,1380px);
+    margin-inline:auto;
+  }
+}
