@@ -3,6 +3,7 @@ import {redirect} from "next/navigation";
 import {AppShell} from "@/components/AppShell";
 import {createClient} from "@/lib/supabase/server";
 import {currentQaeManager,getAsterSnapshot} from "@/lib/qae";
+import {awakenAster} from "./actions";
 export const dynamic="force-dynamic";
 export const metadata={title:"ASTER · QAE-001"};
 
@@ -10,11 +11,12 @@ async function propose(formData:FormData){"use server";if(!await currentQaeManag
 async function review(formData:FormData){"use server";if(!await currentQaeManager())redirect("/entities/aster?error=auth");const s=await createClient();const id=String(formData.get("id")||""),decision=String(formData.get("decision")||"");if(!id||!["approved","rejected"].includes(decision))redirect("/entities/aster?error=validation");const {error}=await s.rpc("qae_review_memory_proposal",{p_proposal_id:id,p_decision:decision});if(error)redirect("/entities/aster?error=review");revalidatePath("/entities/aster");redirect("/entities/aster?ok=reviewed")}
 
 export default async function AsterPage({searchParams}:{searchParams:Promise<{error?:string;ok?:string}>}){
- const q=await searchParams;const [{entity,memories,proposals,activity},manager]=await Promise.all([getAsterSnapshot(),currentQaeManager()]);
+ const q=await searchParams;const [{entity,memories,proposals,activity,tasks},manager]=await Promise.all([getAsterSnapshot(),currentQaeManager()]);
  return <AppShell right={false}><main className="qaePage">
   <section className="qaeHero"><div className="qaeEyebrow">Q-GANG ARTIFICIAL ENTITY · {entity?.code??"QAE-001"}</div><h1>{entity?.name??"ASTER"}</h1><p className="qaeRole">{entity?.function_title??"Institutional Memory / Keeper of Records"}</p><p className="qaePurpose">{entity?.purpose??"Q-GANG'in kurumsal hafızasını korur."}</p><div className="qaeState"><span/> UYKUDA</div></section>
   {q.error&&<p className="notice" role="alert">Aster işlemi tamamlanamadı. Yetkiyi ve alanları kontrol edin.</p>}
-  {manager&&<section className="qaeConsole"><header><small>QAE-001 · YÖNETİCİ TETİKLEMESİ</small><h2>Aster'e kaydetmeyi öner</h2></header><form action={propose}><input name="title" required minLength={2} placeholder="Hafıza başlığı"/><textarea name="body" required minLength={2} placeholder="Aster'in korumasını istediğiniz olay, karar veya bağlam"/><div><input name="source_type" defaultValue="manual" placeholder="Kaynak türü"/><input name="source_ref" placeholder="Kaynak referansı (opsiyonel)"/></div><button type="submit">ASTER'E GÖNDER</button></form></section>}
+  {manager&&<section className="qaeConsole"><header><small>QAE-001 · YÖNETİCİ TETİKLEMESİ</small><h2>Aster'i uyandır</h2></header><form action={awakenAster}><input name="title" required minLength={2} placeholder="Hafıza başlığı"/><textarea name="body" required minLength={2} placeholder="Aster'in korumasını istediğiniz olay, karar veya bağlam"/><div><input name="source_type" defaultValue="manual" placeholder="Kaynak türü"/><input name="source_ref" placeholder="Kaynak referansı (opsiyonel)"/></div><button type="submit">ASTER'İ UYANDIR</button></form></section>}
+  <section className="qaeTasks"><header><small>SON GÖREVLER</small><b>{tasks.length}</b></header>{tasks.length?tasks.map((t:any)=><div className="qaeTask" key={t.id}><strong>{t.title}</strong><span>{String(t.status).toUpperCase()}</span><small>{t.provider&&t.model?t.provider+" · "+t.model:t.error_message||"QAE Core"}</small></div>):<p className="qaeEmpty">Aster henüz uyandırılmadı.</p>}</section>
   <section className="qaeGrid">
    <article><header><small>KALICI HAFIZA</small><b>{memories.length}</b></header>{memories.length?memories.map((m:any)=><div className="qaeRecord" key={m.id}><strong>{m.title}</strong><p>{m.body}</p><small>{m.source_type}{m.source_ref?` · ${m.source_ref}`:""}</small></div>):<p className="qaeEmpty">Aster'in onaylanmış hafıza kaydı henüz yok.</p>}</article>
    <article><header><small>HAFIZA ÖNERİLERİ</small><b>{proposals.length}</b></header>{proposals.length?proposals.map((m:any)=><div className="qaeRecord" key={m.id}><strong>{m.title}</strong><small>{m.status.toUpperCase()}</small>{manager&&m.status==="pending"&&<form className="qaeReview" action={review}><input type="hidden" name="id" value={m.id}/><button name="decision" value="approved">ONAYLA</button><button name="decision" value="rejected">REDDET</button></form>}</div>):<p className="qaeEmpty">Bekleyen hafıza önerisi yok.</p>}</article>
