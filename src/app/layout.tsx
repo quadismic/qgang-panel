@@ -8,6 +8,7 @@ import "./checkpoint-c.css";
 import "./checkpoint-c2.css";
 import "./one-surface.css";
 import "./editor-portrait.css";
+import "./aster.css";
 import {createClient} from "@/lib/supabase/server";
 import {defaultDesign,normalizeDesign} from "@/lib/design";
 import {EmberStage} from "@/components/EmberStage";
