@@ -13,7 +13,19 @@ export async function middleware(request:NextRequest){
  if(!url||!key)return response;
  const supabase=createServerClient(url,key,{cookies:{getAll(){return request.cookies.getAll()},setAll(items){items.forEach(({name,value})=>request.cookies.set(name,value));response=makeResponse();items.forEach(({name,value,options})=>response.cookies.set(name,value,options))}}});
  const {data:{user}}=await supabase.auth.getUser();
- const exempt=path==="/login"||path.startsWith("/auth/")||path==="/onboarding"||path==="/api/onboarding";
+ const exempt=path==="/login"||path.startsWith("/auth/")||path==="/onboarding"||path==="/api/onboarding"||path==="/bakim";
+ const {data:maintenance}=await supabase.from("system_settings").select("value").eq("key","maintenance").maybeSingle();
+ const maintenanceOn=Boolean((maintenance?.value as any)?.enabled);
+ if(maintenanceOn&&!exempt){
+  let allowed=false;
+  if(user){
+   const {data:mp}=await supabase.from("profiles").select("role").eq("id",user.id).maybeSingle();
+   if(mp?.role==="founder"||mp?.role==="admin")allowed=true;
+   else if(mp?.role==="moderator"||mp?.role==="creator"){const {data:grant}=await supabase.from("maintenance_access").select("user_id").eq("user_id",user.id).maybeSingle();allowed=Boolean(grant)}
+  }
+  if(!allowed){const target=request.nextUrl.clone();target.pathname="/bakim";target.search="";return NextResponse.redirect(target)}
+ }
+ if(!maintenanceOn&&path==="/bakim"){const target=request.nextUrl.clone();target.pathname="/";target.search="";return NextResponse.redirect(target)}
  if(user&&!exempt){
   const {data:p}=await supabase.from("profiles").select("onboarding_completed_at").eq("id",user.id).maybeSingle();
   if(!p?.onboarding_completed_at){
