@@ -24,7 +24,8 @@ export default async function Headquarters(){
  const cards=[
   {href:"/kodeks",icon:"rules",title:"KURALLAR",sub:"CODEX",value:(rules??[]).length+" kayıt",text:"Topluluk düzeni, üyelik, davranış ve disiplin."},
   {href:"/topluluk",icon:"community",title:"TOPLULUK",sub:"REGISTRY",value:String(members??0),text:"Aktif üyeler, kimlikler ve roller."},
-  {href:"/yayinlar",icon:"document",title:"YAYINLAR",sub:"ARCHIVE",value:"ARŞİV",text:"Duyurular, kararlar ve editoryal Q-GANG yayınları."},
+  {href:"/duyurular",icon:"announcements",title:"DUYURULAR",sub:"DECREES",value:"KAYIT",text:"Resmî duyurular, kararlar ve önemli gelişmeler."},
+  {href:"/yayinlar",icon:"document",title:"YAYINLAR",sub:"ARCHIVE",value:"ARŞİV",text:"Araştırmalar, incelemeler ve editoryal Q-GANG yayınları."},
   {href:"/disiplin",icon:"discipline",title:"DİSİPLİN",sub:"TRIBUNAL",value:"SİCİL",text:"Kararlar, dayanaklar ve yaptırım kayıtları."},
   ...(manage?[{href:"/yonetim",icon:"control",title:"YÖNETİM",sub:"CONTROL",value:"DENETİM",text:"Q-GANG yönetimi, roller, tasarım ve topluluk araçları."}]:[]),
   ...((membership||manage)?[{href:"/butce",icon:"treasury",title:"BÜTÇE",sub:"TREASURY",value:tl(balance),text:"Ortak kaynak, gelirler ve giderler."}]:[])

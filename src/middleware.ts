@@ -1,8 +1,8 @@
 import {createServerClient} from "@supabase/ssr";
 import {NextResponse,type NextRequest} from "next/server";
 
-const canonical:Record<string,string>={"/rules":"/kodeks","/publications":"/yayinlar","/members":"/topluluk","/penalties":"/disiplin","/control":"/yonetim","/budget":"/butce","/profile":"/profil","/announcements":"/yayinlar"};
-const internal:Record<string,string>={"/kodeks":"/rules","/yayinlar":"/publications","/topluluk":"/members","/disiplin":"/penalties","/yonetim":"/control","/butce":"/budget","/profil":"/profile"};
+const canonical:Record<string,string>={"/rules":"/kodeks","/publications":"/yayinlar","/members":"/topluluk","/penalties":"/disiplin","/control":"/yonetim","/budget":"/butce","/profile":"/profil","/announcements":"/duyurular"};
+const internal:Record<string,string>={"/kodeks":"/rules","/duyurular":"/announcements","/yayinlar":"/publications","/topluluk":"/members","/disiplin":"/penalties","/yonetim":"/control","/butce":"/budget","/profil":"/profile"};
 function remap(path:string,map:Record<string,string>){for(const [from,to] of Object.entries(map))if(path===from||path.startsWith(from+"/"))return to+path.slice(from.length);return null}
 export async function middleware(request:NextRequest){
  const path=request.nextUrl.pathname;
