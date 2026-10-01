@@ -17,4 +17,23 @@ export async function getAsterSnapshot(){
  ]);
  return {entity,memories:memories??[],proposals:proposals??[],activity:activity??[],tasks:tasks??[]};
 }
-export async function currentQaeManager(){\n const s=await createClient(); const user=await getCurrentUser(); if(!user)return null;\n const {data}=await s.rpc("qae_is_manager");\n return data===true?user:null;\n}\nexport async function currentQaeInvoker(){\n const s=await createClient(); const user=await getCurrentUser(); if(!user)return null;\n const {data}=await s.rpc("qae_can_invoke");\n return data===true?user:null;\n}
+export async function currentQaeManager(){
+ const s=await createClient(); const user=await getCurrentUser(); if(!user)return null;
+ const {data}=await s.rpc("qae_is_manager");
+ return data===true?user:null;
+}
+export async function currentQaeInvoker(){
+ const s=await createClient(); const user=await getCurrentUser(); if(!user)return null;
+ const {data}=await s.rpc("qae_can_invoke");
+ return data===true?user:null;
+}
+
+export async function getAsterConversation(id?:string){
+ const s=await createClient(); const user=await getCurrentUser(); if(!user)return {conversation:null,messages:[]};
+ let conversation:any=null;
+ if(id){const {data}=await s.from("ai_conversations").select("id,title,created_at,updated_at").eq("id",id).eq("user_id",user.id).maybeSingle();conversation=data}
+ if(!conversation){const {data}=await s.from("ai_conversations").select("id,title,created_at,updated_at").eq("user_id",user.id).order("updated_at",{ascending:false}).limit(1).maybeSingle();conversation=data}
+ if(!conversation)return {conversation:null,messages:[]};
+ const {data:messages}=await s.from("ai_messages").select("id,role,body,sources,provider,model,created_at").eq("conversation_id",conversation.id).order("created_at",{ascending:true}).limit(60);
+ return {conversation,messages:messages??[]};
+}
