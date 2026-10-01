@@ -5,7 +5,7 @@ import {createClient,getCurrentUser} from "@/lib/supabase/server";
 import {defaultDesign,normalizeDesign} from "@/lib/design";import {hasPermission} from "@/lib/access";
 export const dynamic="force-dynamic";export const metadata={title:"Tasarım Merkezi · Q-GANG",description:"Q-GANG tasarım ve görünüm merkezi"};
 export default async function DesignPage(){
- const s=await createClient();const user=await getCurrentUser();if(!user)redirect("/login?next=/control/design");
+ const s=await createClient();const user=await getCurrentUser();if(!user)redirect("/login?next=/yonetim/tasarim");
  const {data:p}=await s.from("profiles").select("role").eq("id",user.id).maybeSingle();if(!p||!await hasPermission(user.id,"design.manage"))redirect("/");
  const [{data},{data:history}]=await Promise.all([s.from("design_settings").select("settings").eq("key","active").maybeSingle(),s.from("design_history").select("id,created_at").order("created_at",{ascending:false}).limit(12)]);
  return <AppShell right={false}><DesignEditor initial={normalizeDesign(data?.settings??defaultDesign)} history={history??[]}/></AppShell>
