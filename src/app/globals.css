@@ -1938,3 +1938,19 @@ img,svg{max-width:100%}
 .registryHero.unifiedPageHero>h1,.tribunalHero.unifiedPageHero>h1,.treasuryHero.unifiedPageHero>h1{align-self:end!important}.registryHero.unifiedPageHero>p,.tribunalHero.unifiedPageHero>p,.treasuryHero.unifiedPageHero>p{align-self:start!important}.registryHero.unifiedPageHero>div,.tribunalHero.unifiedPageHero>div,.treasuryHero.unifiedPageHero>div{grid-column:2!important;grid-row:1/3!important;align-self:center!important;margin-top:0!important}
 .maintenanceLogin{display:inline-flex!important;margin-top:22px;text-decoration:none!important;justify-content:center!important}
 @media(max-width:760px){.registryHero.unifiedPageHero,.tribunalHero.unifiedPageHero,.treasuryHero.unifiedPageHero{display:flex!important;align-items:flex-start!important;justify-content:flex-end!important}.registryHero.unifiedPageHero>div,.tribunalHero.unifiedPageHero>div,.treasuryHero.unifiedPageHero>div{margin-top:12px!important;gap:18px!important}}
+
+
+/* WAVE I · transient horizontal overflow hardening */
+html{max-width:100%;overflow-x:clip}
+body{max-width:100%;overflow-x:clip}
+.appShell{width:100%;max-width:100%;min-width:0}
+.content{width:100%;max-width:100%;min-width:0}
+.appShell>*,.content>*{min-width:0}
+.pageMotion{overflow-x:clip}
+.surfaceVeil{max-width:100vw}
+.surfaceLayer{max-width:calc(100vw - 36px)}
+@media(max-width:760px){
+  .appShell{width:100%;max-width:100%;overflow-x:clip}
+  .content{width:100%;max-width:100%;overflow-x:clip}
+  .surfaceLayer,.surfaceLayer.wide{max-width:calc(100vw - 20px)}
+}
