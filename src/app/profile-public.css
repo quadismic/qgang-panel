@@ -91,3 +91,6 @@
 .profileV2Dossier .playerDossierGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 @media(max-width:700px){.profileV2Dossier .playerDossierGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(max-width:480px){.profileV2Dossier .playerDossierGrid{grid-template-columns:1fr!important}}
+
+/* WAVE III · inline rank + provider marks */
+.profileNameRank{display:flex;align-items:center;gap:13px;min-width:0}.profileNameRank h1{margin-right:0!important}.profileInlineRank{display:inline-flex;align-items:center;gap:6px;padding:4px 8px 4px 5px;border-left:1px solid rgba(181,128,65,.32);color:#c9a26f;white-space:nowrap}.profileInlineRank .rankInsignia{width:27px;height:27px}.profileInlineRank b{font-size:8px;letter-spacing:.11em}.playerProviderIcon svg{width:19px;height:19px;display:block}.qgProfilePortrait{margin-bottom:0!important}@media(max-width:600px){.profileNameRank{gap:7px;flex-wrap:wrap}.profileInlineRank{padding:2px 5px}.profileInlineRank .rankInsignia{width:22px;height:22px}.profileInlineRank b{font-size:7px}}

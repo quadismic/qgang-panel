@@ -1,0 +1,3 @@
+-- Stabilization: reconcile the already-active founder account with its exact historical legacy identity.
+update public.community_memberships m set joined_at=least(m.joined_at,l.joined_at::timestamptz),updated_at=now() from public.legacy_members l,public.profiles p where l.legacy_nickname='Quadismic' and p.handle='quadismic' and m.user_id=p.id and l.claimed_by is null;
+update public.legacy_members l set claimed_by=p.id,claimed_at=now(),verified_by=p.id from public.profiles p where l.legacy_nickname='Quadismic' and p.handle='quadismic' and l.claimed_by is null;

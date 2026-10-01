@@ -1,27 +1,3 @@
 "use client";
-import {RichTextEditor} from "@/components/RichTextEditor";
-
-export function CodexComposer({action,sections}:{action:(formData:FormData)=>void|Promise<void>;sections:{number:string;title:string}[]}){
- return <details className="codexComposer">
-  <summary>＋ YENİ HÜKÜM YAYIMLA</summary>
-  <form action={action} className="codexComposerForm">
-   <div className="codexComposerMeta">
-    <label><span>BÖLÜM</span><select name="section_number" required>{sections.map(s=><option key={s.number} value={s.number}>§ {s.number} — {s.title}</option>)}</select></label>
-    <label><span>HÜKÜM NO</span><input name="number" required placeholder="01.01"/></label>
-    <label><span>TÜR</span><select name="kind"><option>KURAL</option><option>YÖNERGE</option><option>KARAR</option><option>İLKE</option></select></label>
-    <label className="codexTitleField"><span>BAŞLIK</span><input name="title" required placeholder="Hüküm başlığı"/></label>
-   </div>
-   <div className="codexComposerGrid">
-    <section className="codexWriting"><RichTextEditor name="body" required rows={12} placeholder="Hüküm metnini yazın…"/></section>
-    <aside className="codexSealPanel">
-     <header><b>YAYIM / MÜHÜRLEME</b><span>Son işlem</span></header>
-     <label><span>YÜRÜRLÜK</span><select name="effective_mode" defaultValue="now"><option value="now">Derhal</option><option value="scheduled">İleri tarih</option></select></label>
-     <label><span>İLERİ YÜRÜRLÜK TARİHİ</span><input type="datetime-local" name="effective_at"/></label>
-     <label><span>DEĞİŞİKLİK / YAYIM GEREKÇESİ</span><textarea name="reason" rows={4} placeholder="İlk yayım veya değişiklik gerekçesi…"/></label>
-     <div className="codexSealNotice">Mühürleme, hükmün resmî Codex kaydını oluşturur. Önceki sürümler değiştirilemez biçimde saklanır.</div>
-     <button className="codexSealButton">CODEX'E MÜHÜRLE →</button>
-    </aside>
-   </div>
-  </form>
- </details>
-}
+import {useState} from "react";import {RichTextEditor} from "@/components/RichTextEditor";
+export function CodexComposer({action,sections}:{action:(formData:FormData)=>void|Promise<void>;sections:{number:string;title:string}[]}){const[open,setOpen]=useState(false);return <><button type="button" className="codexComposerLaunch" onClick={()=>setOpen(true)}>＋ YENİ HÜKÜM YAYIMLA</button>{open&&<div className="codexComposerOverlay" role="dialog" aria-modal="true" aria-label="Yeni hüküm yayımla" onMouseDown={e=>{if(e.currentTarget===e.target)setOpen(false)}}><section className="codexComposerDrawer"><header><div><span>YENİ KAYIT</span><h2>Hüküm Yayımla</h2></div><button type="button" onClick={()=>setOpen(false)} aria-label="Kapat">×</button></header><form action={action} className="codexComposerForm"><div className="codexComposerMeta"><label><span>BÖLÜM</span><select name="section_number" required>{sections.map(s=><option key={s.number} value={s.number}>§ {s.number} — {s.title}</option>)}</select></label><label><span>HÜKÜM NO</span><input name="number" required placeholder="Kural: 03.04 · Yönerge: 03.04/1"/></label><label><span>TÜR</span><select name="kind"><option>KURAL</option><option>İLKE</option><option>YÖNERGE</option><option>KARAR</option></select></label><label className="codexTitleField"><span>BAŞLIK</span><input name="title" required placeholder="Hüküm başlığı"/></label></div><div className="codexComposerGrid"><section className="codexWriting"><RichTextEditor name="body" required rows={16} placeholder="Hüküm metnini yazın…"/></section><aside className="codexSealPanel"><header><b>YAYIM / MÜHÜRLEME</b><span>Resmî kayıt</span></header><label><span>YÜRÜRLÜK</span><select name="effective_mode" defaultValue="now"><option value="now">Derhal</option><option value="scheduled">İleri tarih</option></select></label><label><span>İLERİ YÜRÜRLÜK TARİHİ</span><input type="datetime-local" name="effective_at"/></label><label><span>DEĞİŞİKLİK / YAYIM GEREKÇESİ</span><textarea name="reason" rows={5} placeholder="İlk yayım veya değişiklik gerekçesi…"/></label><div className="codexSealNotice">Kural ve İlke doğrudan Kodeks hükmüdür. Yönergelerde dayanak hüküm numarasını “03.04/1” biçiminde kullan; arayüz bunu ilgili hükmün ikincil düzenlemesi olarak gösterir.</div><button className="codexSealButton" type="submit">CODEX'E MÜHÜRLE →</button></aside></div></form></section></div>}</>}

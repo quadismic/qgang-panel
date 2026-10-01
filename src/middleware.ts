@@ -1,8 +1,8 @@
 import {createServerClient} from "@supabase/ssr";
 import {NextResponse,type NextRequest} from "next/server";
 
-const canonical:Record<string,string>={"/rules":"/kodeks","/publications":"/yayinlar","/members":"/topluluk","/penalties":"/disiplin","/control":"/yonetim","/budget":"/butce","/profile":"/profil","/announcements":"/duyurular"};
-const internal:Record<string,string>={"/kodeks":"/rules","/duyurular":"/announcements","/yayinlar":"/publications","/topluluk":"/members","/disiplin":"/penalties","/yonetim":"/control","/butce":"/budget","/profil":"/profile"};
+const canonical:Record<string,string>={"/control/community":"/yonetim/uyelik","/control/access":"/yonetim/erisim","/control/system":"/yonetim/sistem","/control/design":"/yonetim/tasarim","/control/publications":"/yonetim/yayinlar","/control/moderation":"/yonetim/moderasyon","/rules":"/kodeks","/publications":"/yayinlar","/members":"/topluluk","/penalties":"/disiplin","/control":"/yonetim","/budget":"/butce","/profile":"/profil","/announcements":"/duyurular","/maintenance":"/bakim"};
+const internal:Record<string,string>={"/yonetim/uyelik":"/control/community","/yonetim/erisim":"/control/access","/yonetim/sistem":"/control/system","/yonetim/tasarim":"/control/design","/yonetim/yayinlar":"/control/publications","/yonetim/moderasyon":"/control/moderation","/kodeks":"/rules","/duyurular":"/announcements","/yayinlar":"/publications","/topluluk":"/members","/disiplin":"/penalties","/yonetim":"/control","/butce":"/budget","/profil":"/profile","/bakim":"/maintenance"};
 function remap(path:string,map:Record<string,string>){for(const [from,to] of Object.entries(map))if(path===from||path.startsWith(from+"/"))return to+path.slice(from.length);return null}
 export async function middleware(request:NextRequest){
  const path=request.nextUrl.pathname;
@@ -13,7 +13,7 @@ export async function middleware(request:NextRequest){
  if(!url||!key)return response;
  const supabase=createServerClient(url,key,{cookies:{getAll(){return request.cookies.getAll()},setAll(items){items.forEach(({name,value})=>request.cookies.set(name,value));response=makeResponse();items.forEach(({name,value,options})=>response.cookies.set(name,value,options))}}});
  const {data:{user}}=await supabase.auth.getUser();
- const exempt=path==="/login"||path.startsWith("/auth/")||path==="/onboarding"||path==="/api/onboarding"||path==="/bakim";
+ const exempt=path==="/login"||path.startsWith("/auth/")||path==="/bakim";
  const {data:maintenance}=await supabase.from("system_settings").select("value").eq("key","maintenance").maybeSingle();
  const maintenanceOn=Boolean((maintenance?.value as any)?.enabled);
  if(maintenanceOn&&!exempt){
