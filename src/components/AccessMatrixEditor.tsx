@@ -15,7 +15,7 @@ const DEFAULTS:Record<AppRole,string[]>={
 function unavailable(role:AppRole,p:string){return role==="founder"||p==="maintenance.access"||(p==="access.manage"&&role!=="founder"&&role!=="admin")||(p==="discipline.issue"&&(role==="creator"||role==="member"||role==="guest"))||(p==="discipline.review"&&(role==="moderator"||role==="creator"||role==="member"||role==="guest"))}
 export function AccessMatrixEditor({rows}:{rows:Row[]}){
  const initial=useMemo(()=>{const s=new Set<string>();rows.filter(x=>x.enabled).forEach(x=>s.add(x.role+":"+x.permission));PERMISSIONS.forEach(([p])=>s.add("founder:"+p));return s},[rows]);
- const[state,setState]=useState(new Set(initial)),[saved,setSaved]=useState(new Set(initial)),[notice,setNotice]=useState(""),[pending,start]=useTransition();
+ const[state,setState]=useState<Set<string>>(()=>new Set(initial)),[saved,setSaved]=useState<Set<string>>(()=>new Set(initial)),[notice,setNotice]=useState(""),[pending,start]=useTransition();
  const dirty=useMemo(()=>state.size!==saved.size||[...state].some(x=>!saved.has(x)),[state,saved]);
  function toggle(role:AppRole,p:string){if(unavailable(role,p))return;setNotice("");setState(prev=>{const n=new Set(prev),k=role+":"+p;n.has(k)?n.delete(k):n.add(k);return n})}
  function resetSaved(){setState(new Set(saved));setNotice("")}
