@@ -2,3 +2,18 @@
 
 .qaeConsole{margin-top:14px;border:1px solid rgba(255,255,255,.09);background:#09090a;padding:24px}.qaeConsole h2{margin:6px 0 18px}.qaeConsole form{display:grid;gap:10px}.qaeConsole input,.qaeConsole textarea{width:100%;box-sizing:border-box;background:#050506;border:1px solid rgba(255,255,255,.1);color:#eee;padding:13px 14px;font:inherit}.qaeConsole textarea{min-height:120px;resize:vertical}.qaeConsole form>div{display:grid;grid-template-columns:1fr 1fr;gap:10px}.qaeConsole button,.qaeReview button{background:#e7e3dc;color:#111;border:0;padding:11px 16px;font-weight:700;letter-spacing:.08em;cursor:pointer}.qaeReview{display:flex;gap:7px;margin-top:10px}.qaeReview button:last-child{background:#1b1b1d;color:#bbb;border:1px solid rgba(255,255,255,.1)}@media(max-width:650px){.qaeConsole form>div{grid-template-columns:1fr}.qaeConsole{padding:18px}}
 .qaeTasks{margin-top:14px;border:1px solid rgba(255,255,255,.08);background:#09090a;padding:20px}.qaeTasks>header{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:12px;margin-bottom:8px}.qaeTask{display:grid;grid-template-columns:1fr auto;gap:5px 16px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.055)}.qaeTask strong{font-size:13px}.qaeTask span{font-size:10px;letter-spacing:.12em;color:#bbb}.qaeTask small{grid-column:1/-1;color:#707070}
+/* ASTER visual presence */
+.qaeHero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.7fr);gap:38px;align-items:end;padding:34px;min-height:560px}
+.qaeHeroCopy{position:relative;z-index:2;padding:30px}
+.qaePresence{position:relative;z-index:1;align-self:stretch;min-height:490px;display:flex;flex-direction:column;justify-content:flex-end}
+.qaePortrait{position:absolute;inset:0;overflow:hidden;border:1px solid rgba(205,170,112,.15);background:#050506}
+.qaePortrait:after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 70px 20px #050506;pointer-events:none}
+.qaePortrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transform:scale(1.002);transition:opacity .2s ease}
+.qaePortrait img.is-active{opacity:1}
+.qaePresenceState{position:relative;z-index:3;margin:0 16px 16px;padding:10px 12px;background:rgba(5,5,6,.82);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08);font-size:10px;letter-spacing:.18em;color:#c9c0b1;display:flex;align-items:center;gap:8px;width:max-content}
+.qaePresenceState span{width:6px;height:6px;border-radius:50%;background:#756a5b;box-shadow:0 0 12px rgba(205,170,112,.25)}
+.qaePresence[data-state="awakening"] .qaePresenceState span,.qaePresence[data-state="processing"] .qaePresenceState span,.qaePresence[data-state="responding"] .qaePresenceState span{background:#d5b77f;box-shadow:0 0 14px rgba(213,183,127,.75)}
+.qaeConsole button:disabled{opacity:.72;cursor:wait}
+@media(max-width:850px){.qaeHero{grid-template-columns:1fr;padding:14px;min-height:auto;gap:0}.qaePresence{min-height:520px;order:0}.qaeHeroCopy{order:1;padding:24px 10px 18px}.qaeHero:after{display:none}}
+@media(max-width:520px){.qaePresence{min-height:430px}.qaePortrait{inset:0}.qaeHeroCopy{padding-top:20px}}
+@media(prefers-reduced-motion:reduce){.qaePortrait img{transition:none}}
