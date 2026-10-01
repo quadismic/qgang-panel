@@ -17,3 +17,17 @@
 @media(max-width:850px){.qaeHero{grid-template-columns:1fr;padding:14px;min-height:auto;gap:0}.qaePresence{min-height:520px;order:0}.qaeHeroCopy{order:1;padding:24px 10px 18px}.qaeHero:after{display:none}}
 @media(max-width:520px){.qaePresence{min-height:430px}.qaePortrait{inset:0}.qaeHeroCopy{padding-top:20px}}
 @media(prefers-reduced-motion:reduce){.qaePortrait img{transition:none}}
+
+/* ASTER consultation room */
+.qaeConsult{margin-top:14px;border:1px solid rgba(205,170,112,.16);background:linear-gradient(180deg,#0b0b0c,#070708);overflow:hidden}
+.qaeConsultHead{display:flex;justify-content:space-between;align-items:flex-end;padding:22px 24px;border-bottom:1px solid rgba(255,255,255,.07)}
+.qaeConsultHead h2{margin:5px 0 0;font-size:24px}.qaeConsultHead small,.qaeConsultHead>span{font-size:10px;letter-spacing:.16em;color:#8f877b}.qaeConsultHead>span{border:1px solid rgba(205,170,112,.18);padding:7px 9px}
+.qaeTranscript{height:min(52vh,570px);min-height:300px;overflow:auto;padding:26px 24px;scrollbar-width:thin}
+.qaeWelcome{max-width:570px;margin:50px auto;text-align:center;color:#817b72}.qaeWelcome strong{display:block;color:#cfc7bb;font-size:16px;margin-bottom:8px}.qaeWelcome p{font-size:13px;line-height:1.7}
+.qaeMessage{max-width:78%;margin:0 0 20px;padding:16px 18px;border:1px solid rgba(255,255,255,.07);background:#0e0e0f}
+.qaeMessage.is-human{margin-left:auto;background:#121214}.qaeMessage.is-aster{border-color:rgba(205,170,112,.17);box-shadow:inset 2px 0 0 rgba(205,170,112,.38)}
+.qaeMessageMeta{display:flex;justify-content:space-between;gap:20px;margin-bottom:9px;font-size:9px;letter-spacing:.15em;color:#777}.qaeMessage.is-aster .qaeMessageMeta b{color:#c9ae7d}
+.qaeMessageBody{white-space:pre-wrap;font-size:14px;line-height:1.72;color:#d0cdca}
+.qaeSources{margin-top:14px;border-top:1px solid rgba(255,255,255,.06);padding-top:11px}.qaeSources summary{cursor:pointer;font-size:9px;letter-spacing:.14em;color:#938a7c}.qaeSources>div{display:grid;grid-template-columns:30px 1fr;gap:3px 8px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px}.qaeSources>div b{grid-row:1/3;color:#c9ae7d}.qaeSources>div small{color:#716c65}
+.qaeComposer{border-top:1px solid rgba(255,255,255,.07);padding:16px 18px;background:#09090a}.qaeComposer textarea{width:100%;box-sizing:border-box;resize:none;border:0;outline:0;background:transparent;color:#eee;font:inherit;font-size:14px;line-height:1.55;padding:8px}.qaeComposerFoot{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:7px 8px 0}.qaeComposerFoot small{color:#68645e;font-size:10px}.qaeAskButton{border:1px solid rgba(205,170,112,.35);background:#c9ae7d;color:#0a0908;padding:10px 16px;font-size:10px;font-weight:800;letter-spacing:.12em;cursor:pointer}.qaeAskButton:disabled{opacity:.6;cursor:wait}
+@media(max-width:650px){.qaeConsultHead{padding:18px 16px}.qaeTranscript{height:52vh;padding:18px 12px}.qaeMessage{max-width:91%;padding:14px}.qaeComposer{padding:12px}.qaeComposerFoot{align-items:flex-end}.qaeComposerFoot small{max-width:52%}}
