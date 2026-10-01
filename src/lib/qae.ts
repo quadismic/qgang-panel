@@ -17,8 +17,4 @@ export async function getAsterSnapshot(){
  ]);
  return {entity,memories:memories??[],proposals:proposals??[],activity:activity??[],tasks:tasks??[]};
 }
-export async function currentQaeManager(){
- const s=await createClient(); const user=await getCurrentUser(); if(!user)return null;
- const {data}=await s.from("profiles").select("id,role").eq("id",user.id).single();
- return data?.role==="founder"?user:null;
-}
+export async function currentQaeManager(){\n const s=await createClient(); const user=await getCurrentUser(); if(!user)return null;\n const {data}=await s.rpc("qae_is_manager");\n return data===true?user:null;\n}\nexport async function currentQaeInvoker(){\n const s=await createClient(); const user=await getCurrentUser(); if(!user)return null;\n const {data}=await s.rpc("qae_can_invoke");\n return data===true?user:null;\n}
