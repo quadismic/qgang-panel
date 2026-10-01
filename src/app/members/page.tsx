@@ -14,7 +14,7 @@ export default async function Members(){
  const [{data},{data:birthdays}]=await Promise.all([s.rpc("list_active_community_members"),s.rpc("list_today_community_birthdays")]);
  const people=data??[];const order=["founder","admin","moderator","creator","member"];const levels=order.map(role=>({role,people:people.filter((p:any)=>p.role===role)})).filter(x=>x.people.length);
  return <AppShell right={false}>
-  <section className="registryHero roomScene orgHero" style={{backgroundImage:`linear-gradient(90deg,rgba(4,3,2,.76),rgba(4,3,2,.32) 48%,rgba(4,3,2,.14)),url(${brandTheme.rooms.registry})`}}>
+  <section className="registryHero roomScene orgHero unifiedPageHero" style={{backgroundImage:`linear-gradient(90deg,rgba(4,3,2,.76),rgba(4,3,2,.32) 48%,rgba(4,3,2,.14)),url(${brandTheme.rooms.registry})`}}>
    <h1>Topluluk</h1><p>Q-GANG üyeleri ve topluluk kimlikleri.</p>
    <div><b>{people.length}<small>TOPLAM ÜYE</small></b></div>
   </section>
