@@ -3,6 +3,7 @@ import {createClient} from "@/lib/supabase/server";
 import {defaultDesign,normalizeDesign} from "@/lib/design";
 import {brandTheme} from "@/config/brand-theme";
 
+export const metadata={title:"Giriş"};
 export default async function Login({searchParams}:{searchParams:Promise<{error?:string}>}){
   const s=await createClient();
   const {data}=await s.from("design_settings").select("settings").eq("key","active").maybeSingle();

@@ -3,7 +3,7 @@ import {AppShell} from "@/components/AppShell";
 import {DesignEditor} from "@/components/DesignEditor";
 import {createClient,getCurrentUser} from "@/lib/supabase/server";
 import {defaultDesign,normalizeDesign} from "@/lib/design";import {hasPermission} from "@/lib/access";
-export const dynamic="force-dynamic";export const metadata={title:"Tasarım Merkezi · Q-GANG",description:"Q-GANG tasarım ve görünüm merkezi"};
+export const dynamic="force-dynamic";export const metadata={title:"Tasarım Merkezi",description:"Q-GANG tasarım ve görünüm merkezi"};
 export default async function DesignPage(){
  const s=await createClient();const user=await getCurrentUser();if(!user)redirect("/login?next=/yonetim/tasarim");
  const {data:p}=await s.from("profiles").select("role").eq("id",user.id).maybeSingle();if(!p||!await hasPermission(user.id,"design.manage"))redirect("/");
