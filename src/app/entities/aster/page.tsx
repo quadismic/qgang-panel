@@ -4,6 +4,7 @@ import {AppShell} from "@/components/AppShell";
 import {createClient} from "@/lib/supabase/server";
 import {currentQaeManager,getAsterSnapshot} from "@/lib/qae";
 import {awakenAster} from "./actions";
+import {AsterPresence,AsterSubmit} from "./AsterPresence";
 export const dynamic="force-dynamic";
 export const metadata={title:"ASTER · QAE-001"};
 
@@ -13,9 +14,9 @@ async function review(formData:FormData){"use server";if(!await currentQaeManage
 export default async function AsterPage({searchParams}:{searchParams:Promise<{error?:string;ok?:string}>}){
  const q=await searchParams;const [{entity,memories,proposals,activity,tasks},manager]=await Promise.all([getAsterSnapshot(),currentQaeManager()]);
  return <AppShell right={false}><main className="qaePage">
-  <section className="qaeHero"><div className="qaeEyebrow">Q-GANG ARTIFICIAL ENTITY · {entity?.code??"QAE-001"}</div><h1>{entity?.name??"ASTER"}</h1><p className="qaeRole">{entity?.function_title??"Institutional Memory / Keeper of Records"}</p><p className="qaePurpose">{entity?.purpose??"Q-GANG'in kurumsal hafızasını korur."}</p><div className="qaeState"><span/> UYKUDA</div></section>
+  <section className="qaeHero"><AsterPresence responding={q.ok==="awakened"}/><div className="qaeHeroCopy"><div className="qaeEyebrow">Q-GANG ARTIFICIAL ENTITY · {entity?.code??"QAE-001"}</div><h1>{entity?.name??"ASTER"}</h1><p className="qaeRole">{entity?.function_title??"Institutional Memory / Keeper of Records"}</p><p className="qaePurpose">{entity?.purpose??"Q-GANG'in kurumsal hafızasını korur."}</p></div></section>
   {q.error&&<p className="notice" role="alert">Aster işlemi tamamlanamadı. Yetkiyi ve alanları kontrol edin.</p>}
-  {manager&&<section className="qaeConsole"><header><small>QAE-001 · YÖNETİCİ TETİKLEMESİ</small><h2>Aster'i uyandır</h2></header><form action={awakenAster}><input name="title" required minLength={2} placeholder="Hafıza başlığı"/><textarea name="body" required minLength={2} placeholder="Aster'in korumasını istediğiniz olay, karar veya bağlam"/><div><input name="source_type" defaultValue="manual" placeholder="Kaynak türü"/><input name="source_ref" placeholder="Kaynak referansı (opsiyonel)"/></div><button type="submit">ASTER'İ UYANDIR</button></form></section>}
+  {manager&&<section className="qaeConsole"><header><small>QAE-001 · YÖNETİCİ TETİKLEMESİ</small><h2>Aster'i uyandır</h2></header><form action={awakenAster}><input name="title" required minLength={2} placeholder="Hafıza başlığı"/><textarea name="body" required minLength={2} placeholder="Aster'in korumasını istediğiniz olay, karar veya bağlam"/><div><input name="source_type" defaultValue="manual" placeholder="Kaynak türü"/><input name="source_ref" placeholder="Kaynak referansı (opsiyonel)"/></div><AsterSubmit/></form></section>}
   <section className="qaeTasks"><header><small>SON GÖREVLER</small><b>{tasks.length}</b></header>{tasks.length?tasks.map((t:any)=><div className="qaeTask" key={t.id}><strong>{t.title}</strong><span>{String(t.status).toUpperCase()}</span><small>{t.provider&&t.model?t.provider+" · "+t.model:t.error_message||"QAE Core"}</small></div>):<p className="qaeEmpty">Aster henüz uyandırılmadı.</p>}</section>
   <section className="qaeGrid">
    <article><header><small>KALICI HAFIZA</small><b>{memories.length}</b></header>{memories.length?memories.map((m:any)=><div className="qaeRecord" key={m.id}><strong>{m.title}</strong><p>{m.body}</p><small>{m.source_type}{m.source_ref?` · ${m.source_ref}`:""}</small></div>):<p className="qaeEmpty">Aster'in onaylanmış hafıza kaydı henüz yok.</p>}</article>
