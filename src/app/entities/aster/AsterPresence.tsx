@@ -15,7 +15,8 @@ const label:Record<State,string>={
 
 export function AsterPresence({responding=false}:{responding?:boolean}){
  const [state,setState]=useState<State>(responding?"responding":"sleeping");
- useEffect(()=>{if(!responding)return;setState("responding");const id=setTimeout(()=>setState("sleeping"),12000);return()=>clearTimeout(id)},[responding]);\n useEffect(()=>{const fn=(e:Event)=>{const s=(e as CustomEvent).detail;if(s==="awakening"||s==="processing")setState(s)};window.addEventListener("aster-state",fn);return()=>window.removeEventListener("aster-state",fn)},[]);
+ useEffect(()=>{if(!responding)return;setState("responding");const id=setTimeout(()=>setState("sleeping"),12000);return()=>clearTimeout(id)},[responding]);
+ useEffect(()=>{const fn=(e:Event)=>{const s=(e as CustomEvent).detail;if(s==="awakening"||s==="processing")setState(s)};window.addEventListener("aster-state",fn);return()=>window.removeEventListener("aster-state",fn)},[]);
  return <div className="qaePresence" data-state={state}>
   <div className="qaePortrait" aria-hidden="true">{(Object.keys(asset) as State[]).map(s=><img key={s} src={asset[s]} alt="" className={state===s?"is-active":""}/>)}</div>
   <div className="qaePresenceState"><span/>{label[state]}</div>
