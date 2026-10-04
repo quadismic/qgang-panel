@@ -100,3 +100,14 @@
 .profileHeroSeal{font-size:11px!important;letter-spacing:.16em!important;color:#c49a68!important;text-shadow:0 0 18px rgba(181,132,76,.2)}
 .profileInlineRank{gap:8px!important;padding-left:10px!important;border-left-color:rgba(181,132,76,.34)!important}.profileInlineRank .rankInsignia{width:36px!important;height:36px!important}.profileInlineRank b{font-size:11px!important;letter-spacing:.12em!important;color:#c7a579!important}
 @media(max-width:760px){.profileInlineRank .rankInsignia{width:28px!important;height:28px!important}.profileInlineRank b{font-size:9px!important}.profileHeroSeal{font-size:9px!important}}
+
+/* Animate the image layer only; identity text stays still. */
+.profileV2Hero.hasBanner{background-image:none!important;isolation:isolate}
+.profileV2Hero.hasBanner::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(90deg,rgba(8,5,4,.94),rgba(8,5,4,.58)),var(--profile-banner)!important;background-size:cover!important;background-position:center!important;mask-image:none!important;transform-origin:center}
+.profileV2Hero.hasBanner[data-banner-motion="zoom-in"]::before{animation:profileBannerZoom 18s ease-in-out infinite alternate}
+.profileV2Hero.hasBanner[data-banner-motion="zoom-out"]::before{animation:profileBannerZoom 18s ease-in-out infinite alternate-reverse}
+.profileV2Hero.hasBanner[data-banner-motion="pan-left"]::before{animation:profileBannerPan 18s ease-in-out infinite alternate}
+.profileV2Hero.hasBanner[data-banner-motion="pan-right"]::before{animation:profileBannerPan 18s ease-in-out infinite alternate-reverse}
+@keyframes profileBannerZoom{from{transform:scale(1)}to{transform:scale(1.12)}}
+@keyframes profileBannerPan{from{transform:scale(1.1) translateX(-3%)}to{transform:scale(1.1) translateX(3%)}}
+@media(prefers-reduced-motion:reduce){.profileV2Hero.hasBanner::before{animation:none!important;transform:none!important}}

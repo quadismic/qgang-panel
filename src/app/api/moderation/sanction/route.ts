@@ -1,3 +1,5 @@
+import {hasPermission} from "@/lib/access";
+import {isEffective} from "@/lib/codex";
 import {normalizeRich,validRich} from "@/lib/rich-text";
 import { NextResponse } from "next/server";
 import { canModerate } from "@/lib/roles";
@@ -18,7 +20,7 @@ export async function POST(req: Request) {
     .select("role")
     .eq("id", user.id)
     .maybeSingle();
-  if (!canModerate(me?.role))
+  if (!canModerate(me?.role) || !await hasPermission(user.id,"discipline.issue"))
     return NextResponse.redirect(
       new URL("/penalties?error=permission", req.url),
       303,
@@ -27,13 +29,11 @@ export async function POST(req: Request) {
     target = String(form.get("target_id") || ""),
     action = String(form.get("action") || ""),
     reason = normalizeRich(String(form.get("reason") || "")),
-    rule = String(form.get("rule_ref") || "")
-      .trim()
-      .slice(0, 120),
+    rule = String(form.get("regulation_id") || ""),
     evidence = normalizeRich(String(form.get("evidence") || "")),
     hours = Math.max(0, Number(form.get("hours") || 0));
   if (
-    !target ||
+    !target || !rule || !Number.isFinite(hours) || hours > 87600 ||
     !["warning", "restriction", "mute", "suspension", "ban"].includes(action) ||
     !validRich(reason,500,5) || !validRich(evidence,2000)
   )
@@ -46,6 +46,8 @@ export async function POST(req: Request) {
       new URL("/penalties?error=permission", req.url),
       303,
     );
+  const {data:basis}=await s.from("regulations").select("id,kind,status,effective_at").eq("id",rule).maybeSingle();
+  if(!basis || !["KURAL","YÖNERGE"].includes(basis.kind) || !isEffective(basis)) return NextResponse.redirect(new URL("/penalties?error=basis",req.url),303);
   const expires = hours
     ? new Date(Date.now() + hours * 3600000).toISOString()
     : null;
@@ -56,7 +58,7 @@ export async function POST(req: Request) {
       target_user_id: target,
       action,
       reason,
-      rule_ref: rule || null,
+      regulation_id: rule,
       evidence: evidence || null,
       expires_at: expires,
       status: "active",

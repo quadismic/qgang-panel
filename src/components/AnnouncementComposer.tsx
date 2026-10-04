@@ -2,34 +2,23 @@
 import {RichTextEditor} from "@/components/RichTextEditor";
 
 
-import { useState } from "react";
+
 
 export function AnnouncementComposer({
   action,
 }: {
   action: (formData: FormData) => void | Promise<void>;
 }) {
-  const [category, setCategory] = useState<"DUYURU" | "KARAR">("DUYURU");
+
 
   return (
     <aside className="decreeEditor">
       <span>YÖNETİM // YENİ YAYIN</span>
       <h2>Duyuru yayımla</h2>
       <form action={action}>
-        <label>
-          Tür
-          <select
-            name="category"
-            value={category}
-            onChange={(event) =>
-              setCategory(event.target.value as "DUYURU" | "KARAR")
-            }
-          >
-            <option value="DUYURU">Duyuru</option>
-            <option value="KARAR">Karar</option>
-          </select>
-        </label>
-        {category === "DUYURU" ? (
+        <input type="hidden" name="category" value="DUYURU" />
+        <p className="decreeDecisionLink">İcra kararları <a href="/kodeks?tab=decisions">Kodeks'ten yayımlanır</a> ve burada otomatik görünür.</p>
+        {(
           <label>
             Önem
             <select name="priority" defaultValue="normal">
@@ -38,8 +27,6 @@ export function AnnouncementComposer({
               <option value="critical">Kritik</option>
             </select>
           </label>
-        ) : (
-          <input type="hidden" name="priority" value="normal" />
         )}
         <label>
           Başlık

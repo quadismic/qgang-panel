@@ -1,4 +1,6 @@
 "use client";
+import {DisciplineBasisPicker} from "@/components/DisciplineBasisPicker";
+import type {CodexRule} from "@/lib/codex";
 import {RichTextEditor} from "@/components/RichTextEditor";
 
 
@@ -14,8 +16,10 @@ type Person = {
 export function DisciplineComposer({
   people,
   allowEscalation,
+  rules,
 }: {
   people: Person[];
+  rules: CodexRule[];
   allowEscalation: boolean;
 }) {
   const [query, setQuery] = useState("");
@@ -100,10 +104,7 @@ export function DisciplineComposer({
           placeholder="Süresiz için 0"
         />
       </label>
-      <label>
-        Dayanak
-        <input name="rule_ref" placeholder="Örn. Topluluk Kuralı 4.2" />
-      </label>
+      <DisciplineBasisPicker rules={rules}/>
       <label>
         Gerekçe
         <RichTextEditor name="reason" maxLength={500} minLength={5} required rows={5} />

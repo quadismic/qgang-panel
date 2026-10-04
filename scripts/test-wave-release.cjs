@@ -18,6 +18,7 @@ function load(file, mocks = {}) {
 const roles = load('src/lib/roles.ts');
 const rich = load('src/lib/rich-text.ts');
 const client = {
+  auth: { async getUser() { return { data: { user: state.signedIn ? { id: actorId } : null } }; } },
   from(table) {
     let updating = false;
     return {
@@ -48,6 +49,7 @@ const mocks = {
 };
 const access = load('src/app/api/control/access/route.ts', mocks);
 const profile = load('src/app/api/admin/profile/route.ts', mocks);
+const ownProfile = load('src/app/api/profile/route.ts', mocks);
 function reset(extra = {}) {
   state = { signedIn: true, permission: true, actorRole: 'founder', targetRole: 'member', profileReads: 0,
     rpc: [], updates: [], uploads: [], removed: [], rows: [{ role: 'member', permission: 'members.view', enabled: true }], ...extra };
@@ -91,5 +93,12 @@ function profileRequest(extra = {}) {
   assert.match(failed.headers.get('location'), /error=save$/); assert.equal(state.removed.length, 1, 'Failed profile update must clean up the uploaded image');
   reset({ uploadError: true }); const uploadFailed = await profile.POST(profileRequest({ avatar: new File(['image'], 'avatar.webp', { type: 'image/webp' }) }));
   assert.match(uploadFailed.headers.get('location'), /error=image$/); assert.equal(state.updates.length, 0);
+  for (const motion of ['none','zoom-in','zoom-out','pan-left','pan-right']) {
+    reset(); const response = await ownProfile.POST(profileRequest({banner_motion:motion}));
+    assert.match(response.headers.get('location'),/saved=1$/);
+    assert.equal(state.updates[0].banner_motion,motion);
+  }
+  reset(); const badMotion = await ownProfile.POST(profileRequest({banner_motion:'invalid'}));
+  assert.match(badMotion.headers.get('location'),/error=validation$/); assert.equal(state.updates.length,0);
   console.log('PASS: matrix authentication, founder/maintenance/discipline locks, whole-package validation, saved-state refresh; profile hierarchy, validation, storage RLS paths, error reporting and cleanup.');
 })().catch(error => { console.error(error); process.exitCode = 1; });
