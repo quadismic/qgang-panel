@@ -1,6 +1,6 @@
 import PDFDocument from "pdfkit";
 import path from "node:path";
-import {richPlain} from "@/lib/rich-text";
+import {documentBlocks} from "@/lib/rich-text";
 import type {CodexRule} from "@/lib/codex";
 export type Compilation={id:string;created_at:string;snapshot:CodexRule[];include_decisions:boolean};
 export async function renderCodex(compilation:Compilation):Promise<Buffer>{
@@ -27,7 +27,23 @@ export async function renderCodex(compilation:Compilation):Promise<Buffer>{
  const format=(d:string|null)=>d?new Date(d).toLocaleDateString("tr-TR",{timeZone:"Europe/Istanbul"}):"—";
  doc.font("meta").fontSize(8).fillColor("#6f6960").text("Yürürlük: "+format(r.effective_at)+" · Son değişiklik: "+format(r.updated_at)+" · Sürüm: "+r.revision,{width});
  const basis=ordered.find(x=>x.id===r.basis_rule_id);if(basis)doc.text("Dayanak: § "+basis.number,{goTo:basis.id});if(r.kind==="KARAR")doc.text("Durum: "+(r.status==="yururlukten_kaldirildi"?"Yürürlükten kaldırıldı":"Yayımlanmış karar"));doc.moveDown(1.5);
- doc.font("body").fontSize(11).fillColor("#252420").text(richPlain((r.body||"").replace(/<\/t[dh]>/gi," | ")),{width,align:"left",lineGap:4,paragraphGap:8});
+ for(const block of documentBlocks((r.body||"").replace(/<\/t[dh]>/gi," | "))){
+   if(block.kind==="text"){if(block.text)doc.font("body").fontSize(11).fillColor("#252420").text(block.text,{width,align:"left",lineGap:4,paragraphGap:8});continue;}
+   let rendered=false;
+   // Fetch only our public storage host and path: no arbitrary server-side requests.
+   try{const url=new URL(block.src||""),base=new URL(process.env.NEXT_PUBLIC_SUPABASE_URL||"https://kttebbvinfmauthmayqp.supabase.co");
+     if(block.kind==="image"&&url.protocol==="https:"&&url.origin===base.origin&&url.pathname.startsWith("/storage/v1/object/public/qgang-publications/")){
+       const response=await fetch(url,{redirect:"error",signal:AbortSignal.timeout(5000)});
+       if(response.ok&&["image/png","image/jpeg"].includes(response.headers.get("content-type")?.split(";")[0]||"")){
+         const reader=response.body?.getReader(),parts:Uint8Array[]=[];let bytes=0;
+         if(reader){try{while(true){const item=await reader.read();if(item.done)break;bytes+=item.value.length;if(bytes>8388608)throw new Error("size");parts.push(item.value);}}finally{await reader.cancel();}}
+         if(bytes){if(doc.y>doc.page.height-300)doc.addPage();const y=doc.y;doc.image(Buffer.concat(parts),54,y,{fit:[width,220],align:"center"});doc.y=y+230;rendered=true;}
+       }
+     }
+   }catch{/* A missing media file must never prevent a codex compilation. */}
+   doc.font("meta").fontSize(9).fillColor("#6f6960").text((block.kind==="video"?"Video: ":"Görsel: ")+block.text,{width});
+   if(!rendered&&block.src)doc.text(block.src,{width,link:block.src});doc.moveDown();
+ }
  const last=doc.bufferedPageRange().count-1;for(let page=start;page<=last;page++)pageRules.set(page,{title:"§ "+r.number+" · "+r.title,start});
  }
  for(const row of toc){doc.switchToPage(row.page);doc.font("meta").fontSize(9).fillColor("#493e32").text(String((starts.get(row.id)??0)+1),doc.page.width-83,row.y,{width:29,align:"right",lineBreak:false,goTo:row.id});}

@@ -401,3 +401,7 @@
     min-width: 0;
   }
 }
+/* Shared editorial blocks: constrained to the reading column on every screen. */
+.qgProse figure{margin:1.5em 0;max-width:100%}.qgProse figure img{display:block;width:100%;height:auto;max-height:720px;object-fit:contain}.qgProse figcaption{font-size:.85em;color:#b39b7e;text-align:center;margin-top:.6em}.qgProse iframe{display:block;width:100%;aspect-ratio:16/9;height:auto;border:1px solid #493524;margin:1.5em 0}.qgProse aside[data-tone]{padding:16px 20px;border-left:3px solid #638aaa;background:#638aaa12;margin:1.4em 0}.qgProse aside[data-tone=warning]{border-color:#bea05b;background:#bea05b12}.qgProse aside[data-tone=important]{border-color:#b75a4f;background:#b75a4f12}.qgProse [data-divider]{display:flex;align-items:center;gap:16px;margin:2em 0;color:#c4a175;font-size:.85em}.qgProse [data-divider]:before,.qgProse [data-divider]:after{content:"";height:1px;background:#725237;flex:1}.qgBlockComposer{padding:16px;display:flex;gap:12px;flex-wrap:wrap;border-bottom:1px solid #493524}.qgBlockComposer label{display:grid;gap:6px;flex:1 1 180px;min-width:0}.qgBlockComposer input,.qgBlockComposer select{width:100%;min-width:0;padding:10px;background:#100c08;color:#dfd1be;border:1px solid #493524}.qgBlockComposer p{width:100%}
+.qgMobilePreview{max-width:390px;margin:0 auto;padding:16px;border-inline:1px solid #493524;overflow-wrap:anywhere}.qgPreviewTools{display:flex;gap:8px;padding:10px 16px}
+.qgProse figure[data-width=text]{max-width:680px;margin-inline:auto}.qgProse figure[data-width=full]{max-width:100%}

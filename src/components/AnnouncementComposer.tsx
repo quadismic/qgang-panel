@@ -13,11 +13,11 @@ export function AnnouncementComposer({
 
   return (
     <aside className="decreeEditor">
-      <span>YÖNETİM // YENİ YAYIN</span>
+
       <h2>Duyuru yayımla</h2>
       <form action={action}>
         <input type="hidden" name="category" value="DUYURU" />
-        <p className="decreeDecisionLink">İcra kararları <a href="/kodeks?tab=decisions">Kodeks'ten yayımlanır</a> ve burada otomatik görünür.</p>
+        <p className="decreeDecisionLink">İcra kararları <a href="/kodeks?tab=decisions" className="qgAction">Kodeks'ten yayımlanır</a> ve burada otomatik görünür.</p>
         {(
           <label>
             Önem

@@ -22,7 +22,7 @@ export default async function Members({searchParams}:{searchParams:Promise<{mana
    <h1>Topluluk</h1><p>Q-GANG üyeleri ve topluluk kimlikleri.</p>
    <div><b>{people.length}<small>TOPLAM ÜYE</small></b></div>
   </section>
-  {canViewManagement&&<nav className="sectionTools" aria-label="Topluluk işlemleri"><Link className="qgAction" href="/topluluk">Üyeler</Link><Link className="qgAction" href="/topluluk?manage=1">Üyelik, rütbe ve rozet yönetimi</Link></nav>}
+  {canViewManagement&&<nav className="sectionTools" aria-label="Topluluk işlemleri"><Link className="qgAction" href="/topluluk">Üyeler</Link><Link className="qgAction" href="/topluluk?manage=1">Üye Yönetimi</Link></nav>}
  {canViewManagement&&q.manage?(q.edit?<MemberProfileEditor params={Promise.resolve({id:q.edit})} searchParams={Promise.resolve(q)}/>:<CommunityManagement searchParams={Promise.resolve(q)}/>):<>
   {(birthdays??[]).length>0&&<section className="birthdayBanner"><span className="birthdaySigil">✦</span><div><small>BUGÜN TOPLULUKTA</small><h2>{(birthdays??[]).map((b:any)=>b.display_name).join(" · ")}</h2><p>{(birthdays??[]).length===1?"Bugün doğum günü. Nice yıllara!":"Bugün doğum günlerini kutluyoruz. Nice yıllara!"}</p></div></section>}<section className="orgChart" aria-label="Q-GANG topluluk üyeleri">
    <header><span>TOPLULUK</span><b>ÜYE KAYITLARI</b></header>

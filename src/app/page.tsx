@@ -30,7 +30,7 @@ export default async function Headquarters(){
    <div className="commandAtmosphere" aria-hidden="true"/>
    <div className="commandCouncil commandCouncilPoster" aria-hidden="true">{design.council.filter(m=>m.enabled).map((slot,i,all)=>{const left=i%2===0,depth=Math.floor(i/2),side=left?"left":"right";return <img key={slot.id} className={`councilMember councilPortrait ${side} depth-${Math.min(depth,2)} ${slot.id}`} src={slot.src} alt="" style={{"--council-scale":slot.scale/100,"--poster-depth":depth,"--council-spread":Math.max(0,all.length-4)} as CSSProperties}/>})}</div>
    <div className="commandPortrait commandQuadPoster" aria-hidden="true"><img src={design.quadSrc} alt=""/></div>
-   <div className="commandTitle commandTitleMinimal">{!user&&<Link href="/login">KİMLİĞİNİ DOĞRULA</Link>}</div>
+   <div className="commandTitle commandTitleMinimal">{!user&&<Link href="/login" className="qgAction">KİMLİĞİNİ DOĞRULA</Link>}</div>
   </section>
 
   {(birthdays??[]).length>0&&<section className="birthdayBanner birthdayBannerHome"><span className="birthdaySigil">✦</span><div><small>BUGÜN TOPLULUKTA</small><h2>{(birthdays??[]).map((b:any)=>b.display_name).join(" · ")}</h2><p>{(birthdays??[]).length===1?"Bugün doğum günü. Nice yıllara!":"Bugün doğum günlerini kutluyoruz. Nice yıllara!"}</p></div></section>}

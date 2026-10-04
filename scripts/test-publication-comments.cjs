@@ -1,0 +1,26 @@
+const {PGlite}=require('@electric-sql/pglite');
+const fs=require('node:fs');const assert=require('node:assert/strict');
+(async()=>{const db=new PGlite();await db.exec(`
+create role anon;create role authenticated;create schema auth;create schema private;
+create function auth.uid() returns uuid language sql as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+grant usage on schema auth,public to anon,authenticated;grant execute on function auth.uid() to anon,authenticated;
+create table profiles(id uuid primary key,role text);
+create table community_memberships(user_id uuid,status text);
+create table publications(id uuid primary key,author_id uuid,status text);
+grant select on profiles,community_memberships,publications to anon,authenticated;
+create function public.qg_content_length(text) returns integer language sql immutable as $$select length(regexp_replace($1,'<[^>]*>','','g'))$$;
+insert into profiles values('00000000-0000-0000-0000-000000000001','member'),('00000000-0000-0000-0000-000000000002','member'),('00000000-0000-0000-0000-000000000003','admin');
+insert into community_memberships values('00000000-0000-0000-0000-000000000001','active');
+insert into publications values('10000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000002','published'),('10000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000002','draft');
+`);await db.exec(fs.readFileSync('supabase/migrations/20261004174439_publication_comments.sql','utf8'));
+const actor=async(n)=>db.exec(`reset role;select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-${String(n).padStart(12,'0')}',false);set role authenticated;`);
+const insert=(pub=1,author=1)=>db.exec(`insert into publication_comments(publication_id,author_id,body) values('10000000-0000-0000-0000-${String(pub).padStart(12,'0')}','00000000-0000-0000-0000-${String(author).padStart(12,'0')}','<p>Bir yorum</p>')`);
+await actor(1);await insert();await assert.rejects(insert(),/comment_rate_limit/);
+await assert.rejects(insert(1,2),/row-level security/);
+await db.exec("reset role;update publication_comments set created_at=now()-interval '1 minute';set role authenticated");
+await assert.rejects(insert(2),/row-level security/);
+await actor(2);await assert.rejects(insert(1,2),/row-level security/);
+await db.exec('reset role;set role anon');assert.equal((await db.query('select * from publication_comments')).rows.length,1);await assert.rejects(insert(),/permission denied/);
+await actor(2);assert.equal((await db.query('delete from publication_comments returning id')).rows.length,1);
+await db.exec("reset role;update publications set status='draft'");await db.exec('set role anon');assert.equal((await db.query('select * from publication_comments')).rows.length,0);
+await db.close();console.log('PASS publication comment RLS: active member, forged author, draft, visitor, rate limit, publication-owner moderation');})().catch(e=>{console.error(e);process.exit(1)});

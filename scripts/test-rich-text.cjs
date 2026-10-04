@@ -5,7 +5,7 @@ const ts = require("typescript");
 const path = require("node:path");
 const filename = path.resolve("src/lib/rich-text.ts");
 const compiled = ts.transpileModule(fs.readFileSync(filename, "utf8"), {
-  compilerOptions: { module: ts.ModuleKind.CommonJS, esModuleInterop: true },
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
 }).outputText;
 const m = new Module(filename, module);
 m.filename = filename;
@@ -65,3 +65,19 @@ assert(
 console.log(
   "PASS: legacy content, formatting, entity decoding, links, XSS, limits and save/reopen serialization.",
 );
+// Editorial media must survive save/reopen while arbitrary embeds stay blocked.
+const media = P+'<figure data-width="text"><img src="https://example.org/picture.png" alt="Örnek"/><figcaption>Açıklama</figcaption></figure><aside data-tone="warning"><p>Uyarı</p></aside><div data-divider="true">Bölüm</div><iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" title="Video"></iframe>';
+const savedMedia = normalizeRich(media);
+assert.equal(normalizeRich(savedMedia),savedMedia);
+assert(richHtml(savedMedia).includes('<figure'));
+assert(richHtml(savedMedia).includes('data-tone="warning"'));
+assert(richHtml(savedMedia).includes('youtube-nocookie.com/embed/dQw4w9WgXcQ'));
+assert(!cleanHtml('<iframe src="https://evil.test/embed/anything"></iframe>').includes('<iframe'));
+assert(!cleanHtml('<img src="data:image/svg+xml,evil" onerror="evil()"/>').includes('<img'));
+assert.equal(m.exports.videoEmbed('https://youtu.be/dQw4w9WgXcQ'),'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ');
+assert.equal(m.exports.videoEmbed('https://youtube.com.evil.test/watch?v=dQw4w9WgXcQ'),'');
+assert.equal(m.exports.mediaUrl('https://user:secret@example.org/a'),'');
+console.log('PASS: media persistence, callouts, dividers and restricted video embeds.');
+const blocks=m.exports.documentBlocks(P+'<p>Önce</p><figure><img src="https://example.org/a.png" alt="Resim"/><figcaption>Görsel açıklaması</figcaption></figure><iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" title="Tanıtım"></iframe><p>Sonra</p>');
+assert.deepEqual(blocks.map(b=>[b.kind,b.text]),[['text','Önce'],['image','Görsel açıklaması'],['video','Tanıtım'],['text','Sonra']]);
+console.log('PASS: PDF media/text order and descriptions.');

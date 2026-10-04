@@ -1,12 +1,16 @@
 "use client";
 import { useEffect, useId, useRef, useState, useMemo } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
+import {createClient} from "@/lib/supabase/client";
+import {ContentFigure,ContentVideo,ContentCallout,ContentDivider} from "./ContentBlocks";
+import {mediaUrl,videoEmbed} from "@/lib/rich-text";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
 import { TableKit } from "@tiptap/extension-table";
 import { RICH_PREFIX, richHtml, richPlain, safeHref } from "@/lib/rich-text";
 import { RichText } from "./RichText";
 export type RichTextEditorProps = {
+  compact?: boolean;
   name?: string;
   defaultValue?: string;
   value?: string;
@@ -19,6 +23,7 @@ export type RichTextEditorProps = {
 };
 export function RichTextEditor({
   name,
+  compact = false,
   defaultValue = "",
   value,
   onValueChange,
@@ -35,6 +40,8 @@ export function RichTextEditor({
     [linkOpen, setLinkOpen] = useState(false),
     [url, setUrl] = useState(""),
     [linkError, setLinkError] = useState("");
+  const [uploading,setUploading]=useState(false), [previewSize,setPreviewSize]=useState("desktop"), [imageWidth,setImageWidth]=useState("text");
+  const [blockOpen,setBlockOpen]=useState(false), [blockType,setBlockType]=useState("divider"), [blockUrl,setBlockUrl]=useState(""), [blockText,setBlockText]=useState(""), [blockAlt,setBlockAlt]=useState(""), [blockError,setBlockError]=useState("");
   const wrapper = useRef<HTMLDivElement>(null),
     validator = useRef<HTMLTextAreaElement>(null),
     dirty = useRef(false);
@@ -47,7 +54,7 @@ export function RichTextEditor({
         link: { openOnClick: false, protocols: ["https", "http", "mailto"] },
       }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
-      TableKit,
+      TableKit, ContentFigure, ContentVideo, ContentCallout, ContentDivider,
     ],
     content: richHtml(initial),
     editorProps: {
@@ -147,6 +154,24 @@ export function RichTextEditor({
       {label}
     </button>
   );
+  async function uploadImage(file:File){
+    setBlockError("");if(file.size>8388608||!["image/png","image/jpeg","image/webp"].includes(file.type)){setBlockError("PNG, JPEG veya WebP seç; en fazla 8 MB.");return;}
+    setUploading(true);
+    try{const bitmap=await createImageBitmap(file);bitmap.close();const client=createClient();const {data:{user}}=await client.auth.getUser();if(!user)throw new Error("Görsel yüklemek için giriş yapmalısın.");
+      const ext=file.type==="image/png"?"png":file.type==="image/webp"?"webp":"jpg",path=`${user.id}/content-${crypto.randomUUID()}.${ext}`;
+      const {error}=await client.storage.from("qgang-publications").upload(path,file,{contentType:file.type,upsert:false});if(error)throw new Error("Görsel yüklenemedi; tekrar dene.");
+      setBlockUrl(client.storage.from("qgang-publications").getPublicUrl(path).data.publicUrl);
+    }catch(error){setBlockError(error instanceof Error?error.message:"Görsel okunamadı.");}finally{setUploading(false);}
+  }
+  function insertBlock(){
+    const text=blockText.trim(); let block;
+    if(blockType==="image") {const src=mediaUrl(blockUrl);if(!src||!blockAlt.trim()){setBlockError("HTTPS görsel adresi ve alternatif metin gerekli.");return;}block={type:"contentFigure",attrs:{src,alt:blockAlt.trim(),width:imageWidth},content:text?[{type:"text",text}]:[]};}
+    else if(blockType==="video"){const src=videoEmbed(blockUrl);if(!src){setBlockError("Geçerli bir YouTube bağlantısı gir.");return;}block={type:"contentVideo",attrs:{src,title:text||"Video"}};}
+    else if(blockType==="divider") block=text?{type:"contentDivider",content:[{type:"text",text}]}:{type:"horizontalRule"};
+    else if(blockType==="quote") block={type:"blockquote",content:[{type:"paragraph",content:[{type:"text",text:text||"Alıntı metni"}]}]};
+    else block={type:"contentCallout",attrs:{tone:blockType},content:[{type:"paragraph",content:[{type:"text",text:text||"Açıklama"}]}]};
+    editor?.chain().focus().insertContent([block,{type:"paragraph"}]).run();setBlockOpen(false);setBlockError("");setBlockUrl("");setBlockText("");setBlockAlt("");
+  }
   function applyLink() {
     const href = safeHref(url);
     if (!href) {
@@ -194,6 +219,7 @@ export function RichTextEditor({
         role="toolbar"
         aria-label="Metin biçimlendirme"
       >
+        {!compact&&button("+ İçerik", "İçerik bloğu ekle",()=>setBlockOpen(!blockOpen))}
         {button(
           "B",
           "Kalın (Ctrl/Cmd+B)",
@@ -323,6 +349,15 @@ export function RichTextEditor({
           {preview ? "Yaz" : "Önizle"}
         </button>
       </div>
+      {blockOpen && <div className="qgBlockComposer" role="group" aria-label="İçerik bloğu ekle">
+        <label>İçerik türü<select value={blockType} onChange={e=>{setBlockType(e.target.value);setBlockError("");}}>{[["divider","Ayırıcı şerit"],["info","Bilgi alanı"],["warning","Uyarı alanı"],["important","Önemli açıklama"],["image","Görsel"],["video","YouTube videosu"],["quote","Alıntı"]].map(([v,t])=><option key={v} value={v}>{t}</option>)}</select></label>
+        {["image","video"].includes(blockType)&&<label>HTTPS adresi<input value={blockUrl} onChange={e=>setBlockUrl(e.target.value)} placeholder="https://…"/></label>}
+        {blockType==="image"&&<label>Görsel yükle (en fazla 8 MB)<input type="file" accept="image/png,image/jpeg,image/webp" disabled={uploading} onChange={e=>{const file=e.target.files?.[0];if(file)void uploadImage(file);e.target.value="";}}/>{uploading&&<span role="status">Yükleniyor…</span>}</label>}
+        {blockType==="image"&&<label>Görsel genişliği<select value={imageWidth} onChange={e=>setImageWidth(e.target.value)}><option value="text">Metin genişliği</option><option value="full">Tam genişlik</option></select></label>}
+        {blockType==="image"&&<label>Alternatif metin<input value={blockAlt} onChange={e=>setBlockAlt(e.target.value)}/></label>}
+        <label>{blockType==="image"?"Görsel açıklaması":blockType==="video"?"Video başlığı":"Metin / başlık"}<input value={blockText} onChange={e=>setBlockText(e.target.value)}/></label>
+        <button type="button" disabled={uploading} onClick={insertBlock}>Ekle</button><button type="button" onClick={()=>setBlockOpen(false)}>Vazgeç</button>{blockError&&<p role="alert">{blockError}</p>}
+      </div>}
       {linkOpen && (
         <div className="qgEditorLink" role="group" aria-label="Bağlantı ekle">
           <input
@@ -352,7 +387,7 @@ export function RichTextEditor({
         <EditorContent editor={editor} />
         {!editor && <p>Yazı alanı hazırlanıyor…</p>}
       </div>
-      {preview && <RichText value={html} />}
+      {preview && <><div className="qgPreviewTools"><button type="button" aria-pressed={previewSize==="desktop"} onClick={()=>setPreviewSize("desktop")}>Masaüstü</button><button type="button" aria-pressed={previewSize==="mobile"} onClick={()=>setPreviewSize("mobile")}>Mobil</button></div><div className={previewSize==="mobile"?"qgMobilePreview":""}><RichText value={html} /></div></>}
       <footer id={id}>
         <span>
           {plain.trim() ? plain.trim().split(/\s+/).length : 0} kelime · {count}

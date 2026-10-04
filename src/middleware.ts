@@ -12,6 +12,7 @@ export async function middleware(request:NextRequest){
  const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
  if(!url||!key)return response;
  const supabase=createServerClient(url,key,{cookies:{getAll(){return request.cookies.getAll()},setAll(items){items.forEach(({name,value})=>request.cookies.set(name,value));response=makeResponse();items.forEach(({name,value,options})=>response.cookies.set(name,value,options))}}});
+ const redirectWithSession=(target:URL)=>{const redirected=NextResponse.redirect(target);response.cookies.getAll().forEach(cookie=>redirected.cookies.set(cookie));return redirected};
  const {data:{user}}=await supabase.auth.getUser();
  const exempt=path==="/login"||path.startsWith("/auth/")||path==="/bakim";
  const {data:maintenance}=await supabase.from("system_settings").select("value").eq("key","maintenance").maybeSingle();
@@ -23,14 +24,14 @@ export async function middleware(request:NextRequest){
    if(mp?.role==="founder"||mp?.role==="admin")allowed=true;
    else if(mp?.role==="moderator"||mp?.role==="creator"){const {data:grant}=await supabase.from("maintenance_access").select("user_id").eq("user_id",user.id).maybeSingle();allowed=Boolean(grant)}
   }
-  if(!allowed){const target=request.nextUrl.clone();target.pathname="/bakim";target.search="";return NextResponse.redirect(target)}
+  if(!allowed){const target=request.nextUrl.clone();target.pathname="/bakim";target.search="";return redirectWithSession(target)}
  }
- if(!maintenanceOn&&path==="/bakim"){const target=request.nextUrl.clone();target.pathname="/";target.search="";return NextResponse.redirect(target)}
- if(user&&!exempt){
+ if(!maintenanceOn&&path==="/bakim"){const target=request.nextUrl.clone();target.pathname="/";target.search="";return redirectWithSession(target)}
+ if(user&&!exempt&&path!=="/onboarding"&&path!=="/api/onboarding"&&path!=="/api/logout"){
   const {data:p}=await supabase.from("profiles").select("onboarding_completed_at").eq("id",user.id).maybeSingle();
   if(!p?.onboarding_completed_at){
    const target=request.nextUrl.clone();target.pathname="/onboarding";target.search="";target.searchParams.set("next",path+request.nextUrl.search);
-   return NextResponse.redirect(target);
+   return redirectWithSession(target);
   }
  }
  return response;
