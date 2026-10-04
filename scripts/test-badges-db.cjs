@@ -28,4 +28,27 @@ await actor(leader);await db.query('select retire_badge($1,$2)',[id('mimar'),'Ka
 await actor(leader);await db.query('select set_badge_condition($1,$2,$3)',[id('kidem-nisani'),{kind:'membership-tenure',days:730},'Yönerge doğrulaması']);await assert.rejects(()=>db.query('select set_badge_condition($1,$2,$3)',[id('kidem-nisani'),{kind:'membership-tenure'},'Eksik koşul']),/invalid_badge_condition/);
 await db.exec('reset role');const boundary='44444444-4444-4444-8444-444444444444';await db.query("insert into profiles values($1,'member')",[boundary]);await db.query("insert into community_memberships values($1,'active','2026-12-31T21:00:00Z')",[boundary]);assert.equal((await db.query('select id from profile_badges where user_id=$1',[boundary])).rows.length,0);await db.query("update community_memberships set joined_at=now()+interval '1 hour' where user_id=$1",[boundary]);assert.equal((await db.query('select id from profile_badges where user_id=$1',[boundary])).rows.length,0);await db.query("update community_memberships set joined_at='2025-12-31T21:00:00Z' where user_id=$1",[boundary]);assert.equal((await db.query('select id from profile_badges where user_id=$1',[boundary])).rows.length,1);await db.query('delete from membership_periods where user_id=$1',[boundary]);await db.query("insert into membership_periods(user_id,started_at,ended_at,source) values($1,now()-interval '1000 days',now()-interval '635 days','verified'),($1,now()-interval '365 days',null,'verified')",[boundary]);await db.query('select qgang_sync_automatic_badges($1)',[boundary]);assert.equal((await db.query('select id from profile_badges where user_id=$1 and badge_id=$2',[boundary,id('kidem-nisani')])).rows.length,1);
 await db.exec('reset role');assert.ok((await db.query('select count(*)::int n from badge_events')).rows[0].n>=8);await assert.rejects(()=>db.query("delete from badge_events"),/immutable_badge_history/);
+// Current policy: historical authenticated login + active membership, manual tenure.
+await db.exec('reset role; create table auth.users(id uuid primary key,last_sign_in_at timestamptz);');
+await db.exec("insert into auth.users select id,now() from profiles;");
+const policyFile=process.argv[2]||'supabase/migrations/'+fs.readdirSync('supabase/migrations').find(f=>f.endsWith('_badge_login_manual_tenure.sql'));
+await db.exec(fs.readFileSync(policyFile,'utf8'));
+await db.exec("update badges set active=true where slug in ('ilk-halka','kidem-nisani');");
+const ancient='55555555-5555-4555-8555-555555555555',noLogin='66666666-6666-4666-8666-666666666666',late='77777777-7777-4777-8777-777777777777',visitor='88888888-8888-4888-8888-888888888888';
+for(const uid of [ancient,noLogin,late,visitor]) await db.query("insert into profiles values($1,'member')",[uid]);
+await db.query("insert into auth.users values($1,now()),($2,null),($3,'2026-12-31T21:00:00Z'),($4,now())",[ancient,noLogin,late,visitor]);
+for(const uid of [ancient,noLogin,late]) await db.query("insert into community_memberships values($1,'active','2008-01-01')",[uid]);
+const awards=async(uid,slug)=>(await db.query('select count(*)::int n from profile_badges where user_id=$1 and badge_id=$2 and revoked_at is null',[uid,id(slug)])).rows[0].n;
+assert.equal(await awards(ancient,'ilk-halka'),1);assert.equal(await awards(noLogin,'ilk-halka'),0);assert.equal(await awards(late,'ilk-halka'),0);assert.equal(await awards(visitor,'ilk-halka'),0);
+await db.query("update auth.users set last_sign_in_at=now() where id=$1",[noLogin]);assert.equal(await awards(noLogin,'ilk-halka'),1);
+const observed=(await db.query('select first_login_at from private.badge_site_logins where user_id=$1',[ancient])).rows[0].first_login_at;
+await db.query("update auth.users set last_sign_in_at='2027-02-01' where id=$1",[ancient]);assert.deepEqual((await db.query('select first_login_at from private.badge_site_logins where user_id=$1',[ancient])).rows[0].first_login_at,observed);
+await db.query("update community_memberships set status='inactive' where user_id=$1",[ancient]);assert.equal(await awards(ancient,'ilk-halka'),1);
+await db.query("update community_memberships set status='active' where user_id=$1",[ancient]);
+await db.query("update membership_periods set started_at=now()-interval '1000 days' where user_id=$1",[ancient]);await db.query('select qgang_sync_automatic_badges($1)',[ancient]);assert.equal(await awards(ancient,'kidem-nisani'),0);
+await actor(admin);await db.query("select manage_badge('recognize',$1,$2,null,'Geçmiş süre yönetimce doğrulandı','Aktiflik kayıtları incelendi')",[ancient,id('kidem-nisani')]);
+await assert.rejects(()=>db.query("select manage_badge('recognize',$1,$2,null,'Tanıma denemesi','Kayıt doğrulaması')",[visitor,id('ilk-halka')]),/badge_recognition_forbidden/);
+await actor(member);await assert.rejects(()=>db.query("select manage_badge('recognize',$1,$2,null,'Yetkisiz deneme','Kayıtlar')",[noLogin,id('kidem-nisani')]),/badge_forbidden/);
+await db.exec('reset role');assert.equal(await awards(ancient,'kidem-nisani'),1);
+console.log('PASS: pre-2026 members, no login, Turkey cutoff, non-members, login trigger, preserved login history, manual tenure and deputy permissions.');
 console.log('PASS: badge RLS, permissions, founder-only honor, issuer protection, regrant history, private reasons, automatic conditions, correction suppression, immutable audit.');await db.close();})().catch(e=>{console.error(e);process.exit(1)});
