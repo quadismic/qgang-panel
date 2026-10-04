@@ -1,0 +1,25 @@
+const fs=require('fs'),ts=require('typescript'),assert=require('node:assert/strict');
+const {NextRequest}=require('next/server');
+let role='member',complete=true,maintenance=false,grant=false,signedIn=true,profileReads=0;
+process.env.NEXT_PUBLIC_SUPABASE_URL='https://example.supabase.co';
+process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY='test-only';
+const moduleResult={exports:{}};
+const code=ts.transpileModule(fs.readFileSync('src/middleware.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+const mock={createServerClient(){return {auth:{async getUser(){return {data:{user:signedIn?{id:'test-user'}:null}}}},from(table){return {select(){return this},eq(){return this},async maybeSingle(){if(table==='profiles')profileReads++;return {data:table==='system_settings'?{value:{enabled:maintenance}}:table==='maintenance_access'?(grant?{user_id:'test-user'}:null):{role,onboarding_completed_at:complete?'date':null}}}}}}}};
+new Function('require','module','exports',code)(name=>name==='@supabase/ssr'?mock:require(name),moduleResult,moduleResult.exports);
+const request=async(path='/profil')=>{profileReads=0;return moduleResult.exports.middleware(new NextRequest('https://q-gang.com'+path));};
+(async()=>{
+ process.env.VERCEL_ENV='preview';
+ let r=await request();assert.equal(profileReads,1);assert(!r.headers.get('location'));assert.match(r.headers.get('server-timing'),/auth;dur=.*maintenance;dur=|maintenance;dur=.*auth;dur=/);
+ maintenance=true;role='founder';r=await request();assert.equal(profileReads,1);assert(!r.headers.get('location'));
+ role='admin';r=await request();assert.equal(profileReads,1);assert(!r.headers.get('location'));
+ role='moderator';grant=false;r=await request();assert.equal(new URL(r.headers.get('location')).pathname,'/bakim');
+ grant=true;r=await request();assert(!r.headers.get('location'));assert.equal(profileReads,1);
+ role='creator';r=await request();assert(!r.headers.get('location'));
+ role='member';r=await request();assert.equal(new URL(r.headers.get('location')).pathname,'/bakim');
+ signedIn=false;r=await request();assert.equal(profileReads,0);assert.equal(new URL(r.headers.get('location')).pathname,'/bakim');
+ maintenance=false;signedIn=true;complete=false;r=await request();assert.equal(new URL(r.headers.get('location')).pathname,'/onboarding');
+ r=await request('/onboarding');assert.equal(profileReads,0);assert(!r.headers.get('location'));
+ process.env.VERCEL_ENV='production';complete=true;r=await request();assert.equal(r.headers.get('server-timing'),null);
+ console.log('PASS one profile query, maintenance role/grant matrix, onboarding, preview-only timing');
+})().catch(error=>{console.error(error);process.exitCode=1});

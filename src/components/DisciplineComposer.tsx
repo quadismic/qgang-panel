@@ -1,88 +1,21 @@
 "use client";
+import {MemberPicker,type MemberChoice} from "@/components/MemberPicker";
 import {DisciplineBasisPicker} from "@/components/DisciplineBasisPicker";
 import type {CodexRule} from "@/lib/codex";
 import {RichTextEditor} from "@/components/RichTextEditor";
 
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
-type Person = {
-  id: string;
-  display_name: string;
-  handle: string;
-  role: string;
-};
-
-export function DisciplineComposer({
-  people,
-  allowEscalation,
-  rules,
-}: {
-  people: Person[];
-  rules: CodexRule[];
-  allowEscalation: boolean;
-}) {
-  const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState<Person | null>(null);
-  const results = useMemo(() => {
-    const needle = query.trim().toLocaleLowerCase("tr-TR");
-    if (!needle) return people.slice(0, 6);
-    return people
-      .filter((person) =>
-        `${person.display_name} ${person.handle}`
-          .toLocaleLowerCase("tr-TR")
-          .includes(needle),
-      )
-      .slice(0, 6);
-  }, [people, query]);
+export function DisciplineComposer({allowEscalation,rules}:{rules:CodexRule[];allowEscalation:boolean}) {
+ const [selected,setSelected]=useState<MemberChoice|null>(null);
   return (
     <form
       className="disciplineComposer"
       action="/api/moderation/sanction"
       method="post"
     >
-      <input type="hidden" name="target_id" value={selected?.id ?? ""} />
-      <label>
-        Kişi ara
-        <input
-          value={query}
-          onChange={(event) => {
-            setQuery(event.target.value);
-            setSelected(null);
-          }}
-          placeholder="İsim veya @kullanıcı adı"
-          autoComplete="off"
-          required={!selected}
-        />
-      </label>
-      <div className="disciplineSuggestions" aria-live="polite">
-        {selected ? (
-          <div className="disciplineSelected">
-            <span>
-              {selected.display_name} · @{selected.handle}
-            </span>
-            <button type="button" onClick={() => setSelected(null)}>
-              Değiştir
-            </button>
-          </div>
-        ) : results.length ? (
-          results.map((person) => (
-            <button
-              type="button"
-              key={person.id}
-              onClick={() => {
-                setSelected(person);
-                setQuery(person.display_name);
-              }}
-            >
-              <b>{person.display_name}</b>
-              <span>@{person.handle}</span>
-            </button>
-          ))
-        ) : (
-          <span className="disciplineNoResult">Eşleşen üye yok.</span>
-        )}
-      </div>
+      <MemberPicker name="target_id" label="Kararın uygulanacağı kişi" scope="discipline" onChange={setSelected}/>
       <label>
         Yaptırım
         <select name="action" defaultValue="warning">
@@ -117,7 +50,8 @@ export function DisciplineComposer({
           placeholder="Bağlantı, ekran kaydı veya olay notu"
         />
       </label>
-      <button type="submit">KARARI KAYDET →</button>
+      {selected&&<p className="disciplineTargetConfirm">Karar: <strong>{selected.display_name} · @{selected.handle}</strong> için kaydedilecek.</p>}
+      <button type="submit" disabled={!selected}>KARARI KAYDET</button>
     </form>
   );
 }

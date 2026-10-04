@@ -1,0 +1,21 @@
+const fs=require('fs'),vm=require('vm'),ts=require('typescript'),assert=require('node:assert/strict');
+let user={id:'actor'},permission=true,role='founder',calls=[];
+const rows=[{id:'target',display_name:'Üye',handle:'uye',role:'member'}];
+const chain={select(v){calls.push(['select',v]);return this},eq(...v){calls.push(['eq',...v]);return this},neq(...v){calls.push(['neq',...v]);return this},or(v){calls.push(['or',v]);return this},order(){return this},limit(n){calls.push(['limit',n]);return this},then(resolve,reject){return Promise.resolve({data:rows}).then(resolve,reject)},maybeSingle(){return Promise.resolve({data:{role}})}};
+const client={auth:{getUser:async()=>({data:{user}})},from(){return chain},rpc:async()=>({data:Array.from({length:20},(_,i)=>({id:i,nickname:'EskiÜye '+i,joined_at:'2018-01-01'}))})};
+const m={exports:{}};const code=ts.transpileModule(fs.readFileSync('src/app/api/member-search/route.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+vm.runInThisContext(`(function(require,module,exports){${code}\n})`)(name=>name==='@/lib/supabase/server'?{createClient:async()=>client}:name==='@/lib/access'?{hasPermission:async()=>permission}:name==='@/lib/roles'?{canModerate:r=>['founder','admin','moderator'].includes(r)}:require(name),m,m.exports);
+const get=(scope,q='Üye')=>m.exports.GET(new Request('https://q-gang.com/api/member-search?'+new URLSearchParams({scope,q})));
+(async()=>{
+ user=null;assert.equal((await get('discipline')).status,401);user={id:'actor'};
+ permission=false;assert.equal((await get('accounts')).status,403);permission=true;
+ assert.equal((await get('unknown')).status,400);assert.equal((await get('accounts','a'.repeat(81))).status,400);
+ calls=[];assert.deepEqual((await (await get('accounts','a')).json()).items,[]);assert(!calls.some(x=>x[0]==='limit'));
+ calls=[];let r=await get('discipline');assert.equal(r.headers.get('cache-control'),'private, no-store');assert(calls.some(x=>x[0]==='limit'&&x[1]===8));assert(calls.some(x=>x[0]==='neq'&&x[1]==='id'));assert(calls.some(x=>x[0]==='neq'&&x[2]==='founder'));
+ calls=[];await get('active');assert(calls.some(x=>x[0]==='eq'&&x[1]==='membership.status'&&x[2]==='active'));assert(calls.some(x=>x[0]==='select'&&x[1].includes('!inner')));
+ calls=[];await get('captains');assert(calls.some(x=>x[0]==='eq'&&x[2]==='moderator'));
+ role='moderator';assert.equal((await get('badges')).status,403);assert.equal((await get('discipline')).status,200);role='founder';
+ calls=[];await get('accounts','x%,role.eq.founder');assert(!calls.find(x=>x[0]==='or')[1].includes('role.eq.founder'));
+ assert.equal((await (await get('legacy','Eski')).json()).items.length,8);
+ console.log('PASS member search: authentication, permission scopes, short query, 8-result cap, active membership, captain filter, self/founder exclusion, filter injection and private cache');
+})().catch(e=>{console.error(e);process.exit(1)});
