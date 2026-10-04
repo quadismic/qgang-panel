@@ -6,7 +6,8 @@ export function DesignPreviewBridge(){
  const hero=document.querySelector<HTMLElement>(".commandHero");if(hero&&d.commandBackground)hero.style.setProperty("--command-bg",`url("${String(d.commandBackground).replace(/["\\]/g,"")}")`);
  const quad=document.querySelector<HTMLImageElement>(".commandPortrait img");if(quad&&d.quadSrc)quad.src=d.quadSrc;
  const emblem=document.querySelector<HTMLImageElement>(".mottoEmblem img");if(emblem&&d.emblemSrc)emblem.src=d.emblemSrc;
- (d.council||[]).forEach((m:any)=>{const img=document.querySelector<HTMLImageElement>(".councilMember."+CSS.escape(m.id));if(img){if(m.src)img.src=m.src;img.style.display=m.enabled?"":"none";img.style.setProperty("--council-scale",String((m.scale||100)/100))}});
+ const council=document.querySelector<HTMLElement>(".commandCouncilPoster");
+ if(council){const active=(d.council||[]).filter((m:any)=>m.enabled);council.replaceChildren(...active.map((m:any,i:number)=>{const img=document.createElement("img"),depth=Math.floor(i/2);img.className=`councilMember councilPortrait ${i%2===0?"left":"right"} depth-${Math.min(depth,2)} ${m.id}`;img.src=m.src;img.alt="";img.style.setProperty("--council-scale",String((m.scale||100)/100));img.style.setProperty("--poster-depth",String(depth));img.style.setProperty("--council-spread",String(Math.max(0,active.length-4)));return img}));}
  };
  window.addEventListener("message",fn);return()=>window.removeEventListener("message",fn)},[]);return null;
 }

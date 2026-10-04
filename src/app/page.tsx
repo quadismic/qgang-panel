@@ -28,7 +28,7 @@ export default async function Headquarters(){
  return <AppShell right={false}><div className="commandHQ homeV2">
   <section className="commandHero commandPoster" style={{"--command-bg":`url(${design.commandBackground})`} as CSSProperties}>
    <div className="commandAtmosphere" aria-hidden="true"/>
-   <div className="commandCouncil commandCouncilPoster" aria-hidden="true">{design.council.filter(m=>m.enabled).map((slot,i,all)=>{const left=i%2===0,depth=Math.floor(i/2),side=left?"left":"right";return <img key={slot.id} className={`councilMember councilPortrait ${side} depth-${Math.min(depth,2)} ${slot.id}`} src={slot.src} alt="" style={{"--council-scale":slot.scale/100,"--poster-depth":depth} as CSSProperties}/>})}</div>
+   <div className="commandCouncil commandCouncilPoster" aria-hidden="true">{design.council.filter(m=>m.enabled).map((slot,i,all)=>{const left=i%2===0,depth=Math.floor(i/2),side=left?"left":"right";return <img key={slot.id} className={`councilMember councilPortrait ${side} depth-${Math.min(depth,2)} ${slot.id}`} src={slot.src} alt="" style={{"--council-scale":slot.scale/100,"--poster-depth":depth,"--council-spread":Math.max(0,all.length-4)} as CSSProperties}/>})}</div>
    <div className="commandPortrait commandQuadPoster" aria-hidden="true"><img src={design.quadSrc} alt=""/></div>
    <div className="commandTitle commandTitleMinimal">{!user&&<Link href="/login">KİMLİĞİNİ DOĞRULA</Link>}</div>
   </section>

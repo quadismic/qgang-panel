@@ -24,8 +24,9 @@ export function normalizeDesign(v:any):DesignSettings{
  const n=(x:any,d:number,min:number,max:number)=>Math.min(max,Math.max(min,Number.isFinite(Number(x))?Number(x):d));
  const color=(x:any,d:string)=>/^#[0-9a-f]{6}$/i.test(String(x||""))?String(x):d;
  const path=(x:any,d:string)=>{const s=String(x||"");return (s.startsWith("/")||s.startsWith("https://"))?s.slice(0,1000):d};
- const oldScale=n(v?.quadWidth,560,280,850)/560*100,rawCouncil=Array.isArray(v?.council)?v.council:[];
- const council=councilIds.map(id=>{const x=rawCouncil.find((z:any)=>z?.id===id);return {id,enabled:Boolean(x?.enabled),scale:n(x?.scale,100,50,160),x:n(x?.x,0,-30,30),y:n(x?.y,0,-30,30),src:path(x?.src,councilDefaultSrc[id])}});
+ const oldScale=n(v?.quadWidth,560,280,850)/560*100,rawCouncil=Array.isArray(v?.council)?v.council:defaultCouncil;
+ const seen=new Set<string>();
+ const council:CouncilSlot[]=rawCouncil.filter((x:any)=>x&&typeof x.id==="string"&&/^[a-zA-Z0-9_-]{1,80}$/.test(x.id)&&!seen.has(x.id)&&(seen.add(x.id),true)).map((x:any)=>({id:x.id,enabled:Boolean(x.enabled),scale:n(x.scale,100,50,160),x:n(x.x,0,-30,30),y:n(x.y,0,-30,30),src:path(x.src,councilDefaultSrc[x.id]||councilDefaultSrc["left-1"])}));
  return {
   primary:color(v?.primary,defaultDesign.primary),bone:color(v?.bone,defaultDesign.bone),bronze:color(v?.bronze,defaultDesign.bronze),
   sidebarWidth:n(v?.sidebarWidth,182,160,260),sidebarEmblem:n(v?.sidebarEmblem,58,36,100),

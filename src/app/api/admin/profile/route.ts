@@ -17,8 +17,8 @@ export async function POST(req: Request) {
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
     return NextResponse.json({ error: "Geçersiz üye." }, { status: 400 });
   }
-  const location = `/yonetim/uyelik/${id}`;
-  const fail = (error: string) => NextResponse.redirect(new URL(`${location}?error=${error}`, req.url), 303);
+  const location = `/topluluk?manage=1&edit=${id}`;
+  const fail = (error: string) => NextResponse.redirect(new URL(`${location}&error=${error}`, req.url), 303);
   const { data: target } = await s.from("profiles").select("id,role").eq("id", id).maybeSingle();
   if (!target || (id !== user.id && !canAssign(actor?.role, target.role))) {
     return NextResponse.json({ error: "Bu üyenin profilini düzenleyemezsin." }, { status: 403 });
@@ -53,5 +53,5 @@ export async function POST(req: Request) {
   }
   const { data: updated, error } = await s.from("profiles").update(changes).eq("id", id).select("id").maybeSingle();
   if (error || !updated) { await cleanup(); return fail("save"); }
-  return NextResponse.redirect(new URL(`${location}?saved=1`, req.url), 303);
+  return NextResponse.redirect(new URL(`${location}&saved=1`, req.url), 303);
 }

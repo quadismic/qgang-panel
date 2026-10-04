@@ -1,4 +1,3 @@
-import {CodexCompilation} from "@/components/CodexCompilation";
 import {hasPermission} from "@/lib/access";
 import {normalizeRich,validRich} from "@/lib/rich-text";
 import {CodexWorkspace} from "@/components/CodexWorkspace";
@@ -62,5 +61,5 @@ export default async function Rules({searchParams}:{searchParams:Promise<{rule?:
  s.from("regulation_revisions").select("id,regulation_id,revision,title,body,change_reason,changed_at").order("revision",{ascending:false}).limit(1000)]);
  const canPublishDecision=["founder","admin","moderator"].includes(me?.role||"")&&await hasPermission(user?.id,"announcements.publish");
  const messages:Record<string,string>={conflict:"Bu hüküm başka bir oturumda değişti. Sayfayı yenileyip yeniden düzenle.",basis:"Yürürlükte bir dayanak kural seç.",schedule:"Mevcut hükmün düzenlemesi derhal uygulanır. İleri tarih için yeni bir hüküm yayımla.",permission:"Bu hükmü düzenleme yetkin yok."};
- return <AppShell right={false}><main className="codexV3">{(q.error||error)&&<p className="notice" role="alert">{error?"Kodeks yüklenemedi. Tekrar dene.":messages[q.error||""]||"Hüküm kaydedilemedi. Alanları kontrol edip tekrar dene."}</p>}<CodexCompilation canCompile={["founder","admin"].includes(me?.role||"")&&await hasPermission(user?.id,"members.manage")}/><CodexWorkspace rules={rules??[]} sections={SECTIONS} initialRule={q.rule} initialSection={q.section} heroImage={brandTheme.rooms.codex} actorRole={me?.role} actorId={user?.id} issuers={issuers??[]} revisions={history??[]} action={saveRule} initialTab={q.tab} canPublishDecision={canPublishDecision}/></main></AppShell>;
+ return <AppShell right={false}><main className="codexV3">{(q.error||error)&&<p className="notice" role="alert">{error?"Kodeks yüklenemedi. Tekrar dene.":messages[q.error||""]||"Hüküm kaydedilemedi. Alanları kontrol edip tekrar dene."}</p>}<CodexWorkspace canCompile={["founder","admin"].includes(me?.role||"")&&await hasPermission(user?.id,"members.manage")} rules={rules??[]} sections={SECTIONS} initialRule={q.rule} initialSection={q.section} heroImage={brandTheme.rooms.codex} actorRole={me?.role} actorId={user?.id} issuers={issuers??[]} revisions={history??[]} action={saveRule} initialTab={q.tab} canPublishDecision={canPublishDecision}/></main></AppShell>;
 }

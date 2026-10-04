@@ -85,6 +85,11 @@ function profileRequest(extra = {}) {
   }
   reset(); const saved = await profile.POST(profileRequest({ banner: new File(['image'], 'banner.webp', { type: 'image/webp' }) }));
   assert.equal(saved.status, 303); assert.match(saved.headers.get('location'), /saved=1$/);
+  const savedLocation = new URL(saved.headers.get('location'));
+  assert.equal(savedLocation.pathname, '/topluluk');
+  assert.equal(savedLocation.searchParams.get('manage'), '1');
+  assert.equal(savedLocation.searchParams.get('edit'), targetId);
+  assert.equal(savedLocation.searchParams.get('saved'), '1');
   assert.equal(state.uploads[0].bucket, 'qgang-banners'); assert.ok(state.uploads[0].path.startsWith(actorId + '/'));
   assert.equal(state.updates[0].role, undefined, 'Public profile edit must not update authority fields');
   reset(); const invalidProfile = await profile.POST(profileRequest({ display_name: 'x'.repeat(51) }));

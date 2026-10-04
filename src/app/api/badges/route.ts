@@ -9,5 +9,5 @@ export async function POST(req:Request){
  if(!["award","recognize","revoke","correct"].includes(action)||!uuid.test(target)||reason.length<3||reason.length>2000||evidence.length>2000||(badge&&!uuid.test(badge))||(award&&!uuid.test(award))||(proposer&&!uuid.test(proposer)))return NextResponse.json({error:"Üye, işlem ve gerekçeyi kontrol et."},{status:400});
  const {error}=await s.rpc("manage_badge",{p_action:action,p_user:target,p_badge:badge||null,p_award:award||null,p_reason:reason,p_evidence:evidence||null,p_proposer:proposer||null});
  if(error)return NextResponse.json({error:"Rozet işlemi tamamlanamadı. Yetki, kazanım koşulları veya kayıt durumunu kontrol et."},{status:400});
- return NextResponse.redirect(new URL("/yonetim/uyelik",req.url),303);
+ return NextResponse.redirect(new URL("/topluluk?manage=1",req.url),303);
 }
