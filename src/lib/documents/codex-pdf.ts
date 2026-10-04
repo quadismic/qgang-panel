@@ -4,7 +4,7 @@ import {richPlain} from "@/lib/rich-text";
 import type {CodexRule} from "@/lib/codex";
 export type Compilation={id:string;created_at:string;snapshot:CodexRule[];include_decisions:boolean};
 export async function renderCodex(compilation:Compilation):Promise<Buffer>{
- const doc=new PDFDocument({size:"A4",margin:54,bufferPages:true,info:{Title:"Q-GANG Kodeksi",Author:"Q-GANG",CreationDate:new Date(compilation.created_at),Subject:compilation.id}});
+ const doc=new PDFDocument({font:path.join(process.cwd(),"assets/fonts/DejaVuSerif.ttf"),size:"A4",margin:54,bufferPages:true,info:{Title:"Q-GANG Kodeksi",Author:"Q-GANG",CreationDate:new Date(compilation.created_at),Subject:compilation.id}});
  const chunks:Buffer[]=[];const result=new Promise<Buffer>((resolve,reject)=>{doc.on("data",chunk=>chunks.push(chunk));doc.on("end",()=>resolve(Buffer.concat(chunks)));doc.on("error",reject)});
  const root=process.cwd();doc.registerFont("body",path.join(root,"assets/fonts/DejaVuSerif.ttf"));doc.registerFont("head",path.join(root,"assets/fonts/DejaVuSerif-Bold.ttf"));doc.registerFont("meta",path.join(root,"assets/fonts/DejaVuSans.ttf"));
  const width=doc.page.width-108,date=new Date(compilation.created_at).toLocaleString("tr-TR",{timeZone:"Europe/Istanbul"});
