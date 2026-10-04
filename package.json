@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint .",
     "test:rich-text": "node scripts/test-rich-text.cjs && node scripts/test-rich-text-db.cjs",
-    "test:editor-ui": "node scripts/test-editor-ui.cjs"
+    "test:editor-ui": "node scripts/test-editor-ui.cjs",
+    "test:badges": "node scripts/test-badges-db.cjs",
+    "test:documents": "node scripts/test-document-db.cjs && node scripts/test-badge-document-routes.cjs && node scripts/test-codex-pdf.cjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.7.0",
@@ -20,6 +22,7 @@
     "@tiptap/starter-kit": "^3.31.3",
     "entities": "^6.0.1",
     "next": "15.5.24",
+    "pdfkit": "0.20.2",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "sanitize-html": "^2.17.7"
@@ -27,6 +30,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@types/node": "24.3.1",
+    "@types/pdfkit": "0.17.6",
     "@types/react": "19.1.12",
     "@types/react-dom": "19.1.9",
     "@types/sanitize-html": "^2.16.2",

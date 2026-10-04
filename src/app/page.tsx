@@ -1,4 +1,5 @@
-import {announcementType,announcementTypeLabel,announcementLink} from "@/lib/announcements";
+import {NormBadge} from "@/components/NormBadge";
+import {announcementType,announcementLink} from "@/lib/announcements";
 import Link from "next/link";
 import type {CSSProperties} from "react";
 import {AppShell} from "@/components/AppShell";
@@ -36,7 +37,7 @@ export default async function Headquarters(){
 
   <div className="homeEditorialGrid">
    <section className="homeFeedSection homeNotices"><header className="homeSectionHead"><div><span><QGIcon name="announcements"/></span><div><h2>DUYURULAR</h2><p>Topluluğa ilişkin resmî açıklamalar, kararlar ve önemli gelişmeler.</p></div></div><Link href="/duyurular">TÜM DUYURULAR <QGIcon name="chevron"/></Link></header>
-    <div className="homeNoticeList">{notices.length?notices.map((a:any)=><Link href={announcementLink(a)} className={"homeNotice "+(a.is_pinned?"isPinned ":"")+a.priority} key={a.id}><div className={"homeNoticeVisual noticeCover noticeCover-"+a.category.toLowerCase()+" noticePriority-"+a.priority}><span><QGIcon name={a.category==="KARAR"?"seal":"announcements"}/></span></div><div className="homeNoticeContent"><span className="homeNoticeKind">{announcementTypeLabel(a.category)}</span><h3>{a.title}</h3><p>{richPlain(a.body).slice(0,115)||"Ayrıntılar için duyuruyu aç."}</p><footer><time>{shortDate(a.published_at)}</time>{a.is_pinned&&<b>SABİT</b>}</footer></div><QGIcon name="chevron"/></Link>):<div className="homeFeedEmpty"><b>Henüz duyuru yok.</b><span>İlk resmî kayıt yayımlandığında burada görünecek.</span></div>}</div>
+    <div className="homeNoticeList">{notices.length?notices.map((a:any)=><Link href={announcementLink(a)} className={"homeNotice "+(a.is_pinned?"isPinned ":"")+a.priority} key={a.id}><div className={"homeNoticeVisual noticeCover noticeCover-"+a.category.toLowerCase()+" noticePriority-"+a.priority}><span><QGIcon name={a.category==="KARAR"?"seal":"announcements"}/></span></div><div className="homeNoticeContent"><div className="normBadges"><NormBadge kind={a.category}/><NormBadge priority={a.priority}/></div><h3>{a.title}</h3><p>{richPlain(a.body).slice(0,115)||"Ayrıntılar için duyuruyu aç."}</p><footer><time>{shortDate(a.published_at)}</time>{a.is_pinned&&<b>SABİT</b>}</footer></div><QGIcon name="chevron"/></Link>):<div className="homeFeedEmpty"><b>Henüz duyuru yok.</b><span>İlk resmî kayıt yayımlandığında burada görünecek.</span></div>}</div>
    </section>
 
    <section className="homeFeedSection homePublications"><header className="homeSectionHead"><div><span><QGIcon name="document"/></span><div><h2>SON YAYINLAR</h2><p>Araştırmalar, incelemeler, düşünceler, oyun, teknoloji ve daha fazlası.</p></div></div><Link href="/yayinlar">TÜM YAYINLAR <QGIcon name="chevron"/></Link></header>

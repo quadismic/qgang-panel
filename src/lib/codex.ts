@@ -1,5 +1,5 @@
 export type CodexRule = {
-  id: string; title: string; body: string | null; kind: string | null;
+  parent_rule_id?:string|null; id: string; title: string; body: string | null; kind: string | null;
   number: string | null; section_number: string | null; status: string | null;
   published_at: string | null; effective_at: string | null; revision: number | null;
   updated_at: string | null; created_by: string | null; basis_rule_id: string | null;

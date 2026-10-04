@@ -3,7 +3,9 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 function destination(raw: string, req: Request) {
-  return new URL(raw.startsWith("/") && !raw.startsWith("//") ? raw : "/", req.url);
+  const base=new URL(req.url);
+  const target=new URL(raw.startsWith("/") && !raw.startsWith("//") ? raw : "/",base);
+  return target.origin===base.origin?target:new URL("/",base);
 }
 
 function respond(
@@ -25,7 +27,10 @@ export async function POST(req: Request) {
   if (!user) return NextResponse.redirect(new URL("/login", req.url), 303);
 
   const form = await req.formData();
-  const profileId = String(form.get("profile_id") ?? "").trim();
+  if(form.get("action")==="delete"){
+ const id=String(form.get("comment_id")||"");const {data,error}=await s.from("profile_comments").delete().eq("id",id).select("id");return respond(String(form.get("return_to")||"/"),req,error||!data?.length?"comment_error":"commented",error||!data?.length?"delete":"1");
+ }
+ const profileId = String(form.get("profile_id") ?? "").trim();
   const body = normalizeRich(String(form.get("body") ?? ""));
   const returnTo = String(form.get("return_to") ?? "/");
 

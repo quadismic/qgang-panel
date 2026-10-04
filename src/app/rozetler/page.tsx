@@ -1,0 +1,5 @@
+import {AppShell} from "@/components/AppShell";
+import {createClient} from "@/lib/supabase/server";
+export const dynamic="force-dynamic";
+const labels:Record<string,string>={historical:"Tarihsel nişan",achievement:"Kazanım nişanı",discretionary:"Takdir nişanı",high_honor:"Yüksek onur nişanı"};
+export default async function Badges(){const s=await createClient();const {data,error}=await s.from("badges").select("id,name,description,image_url,active,norm_type").order("sort_order");return <AppShell right={false}><section className="managementPanel badgeManagement"><h1>Rozet Kataloğu</h1><p>Katkı ve kazanım nişanlarıdır; rütbe, görev veya erişim sağlamaz.</p>{error?<p>Rozetler yüklenemedi.</p>:(data??[]).map(b=><article className="badgeCatalogRow" key={b.id}>{b.image_url&&<img src={b.image_url} alt=""/>}<div><h2>{b.name}</h2><small>{labels[b.norm_type]}</small><p>{b.description}</p>{!b.active&&<small>Yeni atamalara kapalı · Kazanılmış nişanlar korunur</small>}</div></article>)}</section></AppShell>}
