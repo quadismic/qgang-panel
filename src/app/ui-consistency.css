@@ -7,3 +7,33 @@
 .qgComment{padding:20px 0;border-bottom:1px solid #49352466;font-family:var(--qg-ui-font);min-width:0}.qgComment .qgCommentHeader{display:flex;align-items:center;justify-content:space-between;gap:14px;border:0;padding:0;margin:0}.qgCommentAuthor{display:flex;align-items:center;gap:12px;color:#dfcdb5;text-decoration:none;min-width:0}.qgCommentAuthor:hover strong{color:#f2dfbf}.qgCommentAvatar{display:grid;place-items:center;width:40px;height:40px;flex-shrink:0;border:1px solid #665036;border-radius:5px;background:#23190f;color:#c5a276;font-size:18px;overflow:hidden}.qgCommentAvatar img{display:block;width:100%;height:100%;object-fit:cover}.qgCommentAuthorCopy{display:grid;gap:3px;min-width:0}.qgCommentAuthorCopy strong{font-family:var(--qg-ui-font);font-size:13px;font-weight:600;line-height:1.4;overflow-wrap:anywhere}.qgCommentAuthorCopy small{color:#9b8873;font-size:11px;line-height:1.4;overflow-wrap:anywhere}.qgCommentHeader time{flex-shrink:0;font-size:11px;color:#9b8873;line-height:1.5}.qgComment .qgCommentBody{margin-top:14px;font-size:14px;line-height:1.75;overflow-wrap:anywhere}.qgCommentActions{display:flex;margin-top:12px;padding:0;border:0}.qgCommentActions form{margin:0!important}.qgCommentActions .qgActionQuiet{min-height:32px;padding:6px 10px;font-size:11px!important;background:transparent;color:#b29a7e;border-color:#493524}.profileComments .profileCommentComposer{margin-top:20px}.profileComments .qgComment p{margin:8px 0}.profileComments .qgComment p:first-child{margin-top:0}@media(max-width:600px){.qgComment .qgCommentHeader{align-items:flex-start;flex-wrap:wrap;gap:8px}.qgCommentHeader time{flex-basis:100%;padding-left:52px}.qgComment .qgCommentBody{margin-top:12px}}
 
 .qgRouteLoading{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;gap:12px;background:#090705;color:#c4a77d;font:14px/1.5 var(--qg-ui-font,system-ui)}.qgRouteLoading>span{width:18px;height:18px;border:2px solid #4b3420;border-top-color:#c4a77d;border-radius:50%;animation:qgRouteSpin .8s linear infinite}@keyframes qgRouteSpin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.qgRouteLoading>span{animation:none}}
+/* Keep publication cover artwork and embedded titles visible on phones. */
+@media(max-width:760px){
+  .pubCard .pubMedia{height:auto;aspect-ratio:16/9}
+  .pubCard .pubMedia img{display:block;min-width:0;min-height:0;object-fit:contain}
+}
+
+/* Mobile council: one focused portrait with two recessed silhouettes. */
+.qgCouncilDesktop{display:contents}.qgCouncilScene{display:none}
+@media(max-width:760px){
+  .homeV2 .commandHero.commandPoster{height:clamp(320px,50svh,440px)!important;min-height:320px!important;container-type:normal}
+  .qgCouncilDesktop{display:none}
+  .qgCouncilScene{display:block;position:absolute;inset:0;z-index:3;touch-action:pan-y;outline-offset:-4px}
+  .qgCouncilLayers{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+  .qgCouncilLayers:after{content:"";position:absolute;inset:0;z-index:5;background:linear-gradient(180deg,transparent 50%,#090705 92%)}
+  .qgCouncilFigure{position:absolute;left:50%;top:3%;width:78%;height:91%;object-fit:contain;object-position:center top;transform-origin:center top;transition:transform .4s ease,filter .4s ease,opacity .4s ease;filter:brightness(.95) saturate(.92) drop-shadow(0 12px 20px #000);user-select:none}
+  .qgCouncilFigure-center{z-index:3;opacity:1;transform:translateX(-50%) scale(var(--portrait-scale,1))}
+  .qgCouncilFigure-left,.qgCouncilFigure-right{z-index:1;opacity:.64;filter:brightness(.48) saturate(.65);transform:translateX(-88%) translateY(7%) scale(calc(var(--portrait-scale,1) * .8))}
+  .qgCouncilFigure-right{transform:translateX(-12%) translateY(7%) scale(calc(var(--portrait-scale,1) * .8))}
+  .qgCouncilFigure-away{opacity:0;visibility:hidden;transform:translateX(-50%) scale(.7)}
+  .qgCouncilNavigation{position:absolute;bottom:12px;left:20px;right:20px;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#ad906d;font:10px/1.4 var(--qg-ui-font);letter-spacing:.08em;z-index:6}
+  .qgCouncilNavigation>div{display:flex;justify-content:center;flex-wrap:wrap;max-width:70%}
+  .qgCouncilNavigation button{display:grid;place-items:center;width:28px;height:28px;padding:0;border:0;background:transparent;cursor:pointer}
+  .qgCouncilNavigation button span{width:10px;height:2px;background:#685039;transition:background .2s,width .2s}
+  .qgCouncilNavigation button[aria-pressed=true] span{width:18px;background:#d1ae79}
+  .qgCouncilNavigation button:focus-visible{outline:1px solid #d1ae79;outline-offset:-2px}
+  .homeV2 .commandPoster:after{display:none}
+  .homeV2 .commandTitleMinimal{bottom:54px!important;z-index:7!important}
+  .qgCouncilCounter{letter-spacing:0;white-space:nowrap}
+}
+@media(prefers-reduced-motion:reduce){.qgCouncilFigure,.qgCouncilNavigation button span{transition:none}}
