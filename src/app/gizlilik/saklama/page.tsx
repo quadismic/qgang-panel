@@ -1,0 +1,3 @@
+import {getPublishedPrivacyDocument,defaultPrivacyBodies} from "@/lib/privacy-governance";import {PublishedPrivacyDocument} from "@/components/PublishedPrivacyDocument";import {RichText} from "@/components/RichText";import Link from "next/link";import "../privacy.css";
+export const metadata={title:"Saklama ve İmha Düzeni"};
+export default async function Retention(){const document=await getPublishedPrivacyDocument("saklama");if(document)return <PublishedPrivacyDocument document={document}/>;return <main className="privacyPage"><header><h1>Saklama ve İmha Düzeni</h1><p>Yayım öncesi taslak</p><Link className="qgAction" href="/gizlilik">Aydınlatma metni</Link></header><section><RichText value={defaultPrivacyBodies.saklama}/></section></main>}

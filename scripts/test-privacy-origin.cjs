@@ -1,0 +1,10 @@
+const fs=require('fs'),ts=require('typescript'),assert=require('node:assert/strict');
+const m={exports:{}};new Function('exports',ts.transpile(fs.readFileSync('src/lib/privacy.ts','utf8'),{module:ts.ModuleKind.CommonJS}))(m.exports);
+const {sameOrigin}=m.exports;
+assert(sameOrigin(new Request('http://localhost:3106/api/privacy/request',{headers:{host:'127.0.0.1:3106',origin:'http://127.0.0.1:3106'}})));
+assert(sameOrigin(new Request('http://internal/api/privacy/request',{headers:{host:'q-gang.com','x-forwarded-proto':'https',origin:'https://q-gang.com'}})));
+assert(!sameOrigin(new Request('https://q-gang.com/api/privacy/request',{headers:{host:'q-gang.com',origin:'https://attacker.example'}})));
+assert(!sameOrigin(new Request('https://q-gang.com/api/privacy/request',{headers:{host:'q-gang.com'}})));
+assert(!sameOrigin(new Request('https://q-gang.com/api/privacy/request',{headers:{host:'q-gang.com',origin:'null'}})));
+assert(!sameOrigin(new Request('https://q-gang.com/api/privacy/request',{headers:{host:'q-gang.com',origin:'http://q-gang.com'}})));
+console.log('PASS: same-origin requests across local and HTTPS proxy hosts; foreign, missing, null and cross-scheme origins rejected.');

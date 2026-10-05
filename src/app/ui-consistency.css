@@ -64,3 +64,5 @@
 .qgProfileActivity a:hover{color:#f2dfbf;text-decoration:underline;text-underline-offset:3px}
 .qgActivityMore{margin-top:12px}.qgActivityLimit{font:12px/1.6 var(--qg-ui-font);color:#a08d76}
 #publication-comments{scroll-margin-top:90px}
+
+.qgExternalContent{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:20px;border:1px solid #775b3a55;border-radius:10px;background:#100e0b;color:#c4b6a5;font-size:14px;line-height:1.65}.qgExternalContent a{color:#b99d79}

@@ -18,7 +18,7 @@ export async function middleware(request:NextRequest){
  const timed=async<T>(name:string,work:PromiseLike<T>):Promise<T>=>{const start=performance.now();try{return await work}finally{timings.push(`${name};dur=${(performance.now()-start).toFixed(1)}`)}};
  const [authResult,maintenanceResult]=await Promise.all([timed("auth",supabase.auth.getUser()),timed("maintenance",supabase.from("system_settings").select("value").eq("key","maintenance").maybeSingle())]);
  const user=authResult.data.user;const maintenance=maintenanceResult.data;
- const exempt=path==="/login"||path.startsWith("/auth/")||path==="/bakim";
+ const privacyPublic=path==="/gizlilik"||path==="/gizlilik/cerezler"||path==="/gizlilik/saklama";const exempt=privacyPublic||path==="/login"||path.startsWith("/auth/")||path==="/bakim";
  const maintenanceOn=Boolean((maintenance?.value as any)?.enabled);
  const needsOnboarding=Boolean(user&&!exempt&&path!=="/onboarding"&&path!=="/api/onboarding"&&path!=="/api/logout");
  const {data:profile}=user&&!exempt&&(maintenanceOn||needsOnboarding)?await timed("profile",supabase.from("profiles").select("role,onboarding_completed_at").eq("id",user.id).maybeSingle()):{data:null};
