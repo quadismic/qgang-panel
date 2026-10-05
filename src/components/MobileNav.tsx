@@ -1,2 +1,2 @@
 import {MobileNavClient} from "./MobileNavClient";
-export function MobileNav({user=false}:{user?:boolean}){return <MobileNavClient user={user}/>}
+export function MobileNav(props:{user?:boolean;manage?:boolean;canViewBudget?:boolean}){return <MobileNavClient {...props}/>;}
