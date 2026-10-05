@@ -4,7 +4,7 @@ import {useRef, useState, type CSSProperties} from "react";
 
 type Portrait = {id: string; src: string; scale: number};
 
-export function MobileCouncilScene({portraits}: {portraits: Portrait[]}) {
+export function CouncilScene({portraits}: {portraits: Portrait[]}) {
   const [active, setActive] = useState(0);
   const start = useRef<{x: number; y: number} | null>(null);
   const count = portraits.length;
@@ -18,7 +18,11 @@ export function MobileCouncilScene({portraits}: {portraits: Portrait[]}) {
         event.preventDefault(); move(event.key === "ArrowRight" ? 1 : -1);
       }
     }}
-    onPointerDown={event => {start.current = {x: event.clientX, y: event.clientY};}}
+    onPointerDown={event => {
+      if (!event.isPrimary || event.button !== 0) return;
+      start.current = {x: event.clientX, y: event.clientY};
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }}
     onPointerCancel={() => {start.current = null;}}
     onPointerUp={event => {
       const origin = start.current; start.current = null;
@@ -35,11 +39,11 @@ export function MobileCouncilScene({portraits}: {portraits: Portrait[]}) {
           style={{"--portrait-scale": portrait.scale / 100} as CSSProperties}/>;
       })}
     </div>
-    {count > 1 && <div className="qgCouncilNavigation"><span>Konsey</span>
+    {count > 1 && <div className="qgCouncilNavigation">
       <div role="group" aria-label="Portre seçimi">{portraits.map((portrait, index) =>
         <button key={portrait.id} type="button" aria-label={index === 0 ? "Quad portresi" : `Konsey portresi ${index + 1}`}
           aria-pressed={active === index} onClick={() => setActive(index)}><span/></button>)}</div>
-      <span className="qgCouncilCounter" aria-live="polite">{active + 1} / {count}</span>
+      <span className="qgCouncilStatus" aria-live="polite">Portre {active + 1} / {count}</span>
     </div>}
   </div>;
 }
