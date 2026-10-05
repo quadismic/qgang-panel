@@ -40,3 +40,15 @@
   .qgCouncilFigure-right{transform:translateX(-12%) translateY(7%) scale(calc(var(--portrait-scale,1) * .8))}
 }
 @media(prefers-reduced-motion:reduce){.qgCouncilFigure,.qgCouncilNavigation button span{transition:none}}
+
+/* Mobile profile identity shares one axis; reading panels keep their alignment. */
+@media(max-width:600px){
+  .profileV2Hero .playerIdentityMain{grid-template-columns:minmax(0,1fr)!important;justify-items:center;align-items:center!important;text-align:center}
+  .profileV2Hero .playerIdentityCopy{width:100%;min-width:0;text-align:center}
+  .profileV2Hero .profileNameRank{flex-direction:column;align-items:center;justify-content:center;gap:12px}
+  .profileV2Hero .playerIdentityCopy h1{width:100%;margin-inline:0!important;font-size:clamp(26px,7vw,32px)!important;line-height:1.15!important;overflow-wrap:anywhere}
+  .profileV2Hero .profileInlineRank{justify-content:center;border-left:0!important;padding:0!important}
+  .profileV2Hero .playerIdentityCopy>span{display:block;margin-top:10px;overflow-wrap:anywhere}
+  .profileV2Hero .playerIdentityBadges{justify-content:center}
+  .profileV2Hero .playerConnect{width:100%}
+}
