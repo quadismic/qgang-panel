@@ -52,3 +52,15 @@
   .profileV2Hero .playerIdentityBadges{justify-content:center}
   .profileV2Hero .playerConnect{width:100%}
 }
+
+/* Compact profile activity timeline. */
+.qgProfileActivity{list-style:none;padding:0;margin:0;font-family:var(--qg-ui-font)}
+.qgProfileActivity li{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #49352466}
+.qgProfileActivity li:first-child{padding-top:0}.qgProfileActivity li:last-child{border-bottom:0}
+.qgActivityMark{flex:0 0 24px;color:#c7a579;font-size:18px;line-height:1.5;text-align:center}
+.qgProfileActivity li>div{display:grid;gap:5px;min-width:0}
+.qgProfileActivity small,.qgProfileActivity time{color:#a08d76;font-size:11px;line-height:1.5}
+.qgProfileActivity a{color:#ddc8a9;font-size:13px;line-height:1.6;text-decoration:none;overflow-wrap:anywhere}
+.qgProfileActivity a:hover{color:#f2dfbf;text-decoration:underline;text-underline-offset:3px}
+.qgActivityMore{margin-top:12px}.qgActivityLimit{font:12px/1.6 var(--qg-ui-font);color:#a08d76}
+#publication-comments{scroll-margin-top:90px}
