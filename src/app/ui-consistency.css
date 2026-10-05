@@ -101,7 +101,7 @@ html{scrollbar-color:#75583a #090807;scrollbar-width:thin}
 
 /* Publication reading typography, independent of interface controls. */
 .publicationArticle .publicationBody.qgProse{
- font-family:Cambria,"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+ font-family:var(--qg-reading-font),Georgia,serif;
  font-size:18px;line-height:1.85;letter-spacing:.005em;
  color:#d8cec0;text-transform:none;
 }
@@ -114,3 +114,9 @@ html{scrollbar-color:#75583a #090807;scrollbar-width:thin}
 @media(max-width:760px){
  .publicationArticle .publicationBody.qgProse{font-size:17px;line-height:1.8;letter-spacing:normal}
 }
+
+.publicationArticle>header h1{font-family:var(--font-qgang),Georgia,serif;font-weight:500;font-size:clamp(28px,3.5vw,44px);line-height:1.25;letter-spacing:normal;color:#eee2d1;text-transform:none;overflow-wrap:break-word}
+.publicationArticle>header>.qgProse{font-family:var(--qg-reading-font),Georgia,serif;font-size:18px;line-height:1.75;color:#cbbda9;letter-spacing:normal;text-transform:none;margin-top:18px}
+.publicationArticle .publicationBody.qgProse h2{font-size:1.35em!important}
+.publicationArticle .publicationBody.qgProse h3{font-size:1.2em!important}
+@media(max-width:760px){.publicationArticle>header>.qgProse{font-size:17px}.publicationArticle>header h1{font-size:clamp(26px,7vw,34px)}}

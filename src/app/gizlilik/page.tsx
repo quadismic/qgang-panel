@@ -5,7 +5,7 @@ const categories=[
  ["Profil","Biyografi, avatar, banner ve görünürlük tercihi","Profil sunumu; yüklenen görsellerin bağlantısı herkese açık olabilir."],
  ["Üyelik","Kabul tarihi, rütbe, görev, mühür ve eski üye eşleşmesi","Üyelik ve topluluk işleyişi; doğrulama dayanakları yetkili alanlarda tutulur."],
  ["Doğum bilgisi","Doğum tarihi ve görünürlük tercihi","Profil ve doğum günü hatırlatmaları; diğer kişilere tercih kadar bilgi gösterilir."],
- ["Yayın ve yorum","Metin, yazar ve yayın tarihi","İçerik yayımlama ve etkileşim; yayımlanan içerik ziyaretçilerce görülebilir."],
+ ["Yayın ve yorum","Metin, yazar ve yayın tarihi","İçerik yayımlama ve etkileşim; yayımlanmış yayınlar, duyurular ve icra kararlarının metinleri ziyaretçilerce görülebilir. Taslaklar, özel profiller ve yönetim kayıtları bu kapsamda açılmaz."],
  ["Rozet","Kazanım, atama ve düzeltme kayıtları","Kazanımların gösterimi ve atama denetimi; ayrıntılı gerekçeler yetkililerle sınırlıdır."],
  ["Disiplin ve başvuru","Karar, savunma, delil, itiraz ve talepler","Topluluk düzeni, hakların korunması ve başvuru değerlendirmesi; gerekli kişilerle sınırlı erişim."],
  ["Bütçe","Katkı ve mali işlem kayıtları","Bütçe takibi ve hesap verilebilirlik; anonimlik tercihi gözetilir."],
