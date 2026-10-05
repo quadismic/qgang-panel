@@ -81,3 +81,20 @@
  .mobileNavIndicators button:hover{transform:none}
  .mobileNavIndicators button:focus-visible{outline:1px solid #d0af82;outline-offset:-3px}
 }
+
+/* Hero grid alignment must not leak into its mobile flex layout. */
+@media(max-width:760px){
+ .registryHero.unifiedPageHero>h1,.tribunalHero.unifiedPageHero>h1,.treasuryHero.unifiedPageHero>h1{align-self:flex-start!important;text-align:left!important;max-width:100%;overflow-wrap:anywhere}
+ .registryHero.unifiedPageHero>p,.tribunalHero.unifiedPageHero>p,.treasuryHero.unifiedPageHero>p{align-self:stretch!important;min-width:0}
+ .treasuryHero.unifiedPageHero>div{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:0!important;min-width:0;align-self:stretch!important}
+ .treasuryHero.unifiedPageHero>div>b{display:flex;flex-direction:column;gap:5px;min-width:0;padding:12px 0;border-top:1px solid #a47c4938;font-size:clamp(22px,6.5vw,30px);line-height:1.2;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+ .treasuryHero.unifiedPageHero>div>b small{font:11px/1.5 var(--qg-ui-font);letter-spacing:.08em;color:#baa58b}
+}
+
+/* Keep scroll affordances quiet and consistent with the bronze interface. */
+html{scrollbar-color:#75583a #090807;scrollbar-width:thin}
+@supports selector(::-webkit-scrollbar){
+ html::-webkit-scrollbar{width:8px;height:8px}
+ html::-webkit-scrollbar-track{background:#090807}
+ html::-webkit-scrollbar-thumb{background:#75583a;border:2px solid #090807;border-radius:8px}
+}
