@@ -98,3 +98,19 @@ html{scrollbar-color:#75583a #090807;scrollbar-width:thin}
  html::-webkit-scrollbar-track{background:#090807}
  html::-webkit-scrollbar-thumb{background:#75583a;border:2px solid #090807;border-radius:8px}
 }
+
+/* Publication reading typography, independent of interface controls. */
+.publicationArticle .publicationBody.qgProse{
+ font-family:Cambria,"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+ font-size:18px;line-height:1.85;letter-spacing:.005em;
+ color:#d8cec0;text-transform:none;
+}
+.publicationArticle .publicationBody.qgProse p{margin:0 0 1.05em!important}
+.publicationArticle .publicationBody.qgProse strong{font-weight:700;color:#f2e7d7}
+.publicationArticle .publicationBody.qgProse h2,
+.publicationArticle .publicationBody.qgProse h3,
+.publicationArticle .publicationBody.qgProse h4{font-family:inherit;color:#f2e7d7;text-transform:none}
+.publicationArticle .publicationBody.qgProse li+li{margin-top:.35em}
+@media(max-width:760px){
+ .publicationArticle .publicationBody.qgProse{font-size:17px;line-height:1.8;letter-spacing:normal}
+}

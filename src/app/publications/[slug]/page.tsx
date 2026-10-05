@@ -12,7 +12,8 @@ import {previousPublicationSlug} from "@/lib/publication-slug-aliases";
 export const dynamic = "force-dynamic";
 const getPublishedPublication=cache(async(slug:string)=>{
   const s=await createClient();
-  const {data}=await s.from("publications").select("id,author_id,title,excerpt,body,cover_url,content_type,published_at,reading_minutes,youtube_url,author:profiles!publications_author_id_fkey(display_name,handle)").in("slug",[slug,previousPublicationSlug(slug)].filter((v):v is string=>Boolean(v))).eq("status","published").maybeSingle();
+  const {data,error}=await s.from("publications").select("id,author_id,title,excerpt,body,cover_url,content_type,published_at,reading_minutes,youtube_url").in("slug",[slug,previousPublicationSlug(slug)].filter((v):v is string=>Boolean(v))).eq("status","published").maybeSingle();
+  if(error)throw error;
   return data;
 });
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{
@@ -29,8 +30,10 @@ function videoId(url?: string | null) { if (!url) return null; try { const u = n
 export default async function Publication({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{comments_page?:string;commented?:string;comment_error?:string}> }) {
   const [{ slug }, query] = await Promise.all([params,searchParams]); const s = await createClient();
   const p=await getPublishedPublication(slug);
-  if (!p) notFound(); const author = Array.isArray((p as any).author) ? (p as any).author[0] : (p as any).author; const id = videoId((p as any).youtube_url);
+  if (!p) notFound(); const id = videoId(p.youtube_url);
   const {data:{user}}=await s.auth.getUser();
+  // Public publication metadata must not depend on member-only profile access.
+  const author=user?(await s.from("profiles").select("display_name,handle").eq("id",p.author_id).maybeSingle()).data:null;
   const page=Math.max(1,Math.min(10000,Number.parseInt(query.comments_page||"1",10)||1));
   const feedback=query.comment_error?(query.comment_error==="rate"?"Yeni yorum için 30 saniye bekleyin.":"Yorum işlemi tamamlanamadı. Üyeliğinizi ve yorumunuzu kontrol edin."):query.commented?"Yorum işlemi tamamlandı.":undefined;
   return <AppShell right={false}><article className="publicationArticle">{p.cover_url && <img className="publicationArticleCover" src={p.cover_url} alt="" />}<header><small>{labels[p.content_type] || "Yayın"}</small><h1>{p.title}</h1><RichText value={p.excerpt}/><div>{author?.display_name || "Q-GANG"} · {p.reading_minutes} dk · {p.published_at ? new Date(p.published_at).toLocaleDateString("tr-TR") : ""}</div></header>{id && <div className="publicationVideo"><iframe src={`https://www.youtube-nocookie.com/embed/${id}`} title={p.title} allowFullScreen /></div>}<RichText className="publicationBody" value={p.body}/><Suspense fallback={<p className="muted" role="status">Yorumlar yükleniyor…</p>}><PublicationComments publicationId={p.id} slug={slug} authorId={p.author_id} viewerId={user?.id} page={page} feedback={feedback}/></Suspense><Link href="/yayinlar" className="publicationBack qgAction">Yayınlara dön</Link></article></AppShell>;
