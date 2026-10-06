@@ -1,4 +1,6 @@
 "use client";
+import {Select,Input,Button} from "@/components/ui/Primitives";
+
 import {MemberPicker,type MemberChoice} from "@/components/MemberPicker";
 import {DisciplineBasisPicker} from "@/components/DisciplineBasisPicker";
 import type {CodexRule} from "@/lib/codex";
@@ -18,7 +20,7 @@ export function DisciplineComposer({allowEscalation,rules}:{rules:CodexRule[];al
       <MemberPicker name="target_id" label="Kararın uygulanacağı kişi" scope="discipline" onChange={setSelected}/>
       <label>
         Yaptırım
-        <select name="action" defaultValue="warning">
+        <Select name="action" defaultValue="warning">
           <option value="warning">Uyarı</option>
           <option value="restriction">Kısıtlama</option>
           <option value="mute">Susturma</option>
@@ -26,11 +28,11 @@ export function DisciplineComposer({allowEscalation,rules}:{rules:CodexRule[];al
             <option value="suspension">Geçici uzaklaştırma</option>
           )}
           {allowEscalation && <option value="ban">Uzaklaştırma</option>}
-        </select>
+        </Select>
       </label>
       <label>
         Süre (saat)
-        <input
+        <Input
           type="number"
           name="hours"
           min="0"
@@ -51,7 +53,7 @@ export function DisciplineComposer({allowEscalation,rules}:{rules:CodexRule[];al
         />
       </label>
       {selected&&<p className="disciplineTargetConfirm">Karar: <strong>{selected.display_name} · @{selected.handle}</strong> için kaydedilecek.</p>}
-      <button type="submit" disabled={!selected}>KARARI KAYDET</button>
+      <Button level="secondary" type="submit" disabled={!selected}>KARARI KAYDET</Button>
     </form>
   );
 }

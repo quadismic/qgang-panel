@@ -1,3 +1,5 @@
+
+import {Input,Select,Button} from "@/components/ui/Primitives";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { hasPermission } from "@/lib/access";
@@ -22,19 +24,19 @@ export async function MemberProfileEditor({ params, searchParams }: {
   const q = await searchParams;
   return <section className="memberProfileEditor">
     <section className="utilityHero"><span className="kicker">Q-GANG · YETKİLİ DÜZENLEME</span><h2>{p.display_name}</h2><p>@{p.handle} üyesinin herkese açık kimlik alanlarını düzenle.</p></section>
-    {q.error && <p className="notice" role="alert">{q.error === "image" ? "Görsel yüklenemedi. Dosya türünü ve boyutunu kontrol et." : q.error === "validation" ? "İsim, rumuz veya metin sınırını kontrol et." : "Profil kaydedilemedi. Rumuzun kullanılabilirliğini ve yetkini kontrol et."}</p>}
+    {q.error && <p className="notice" role="alert">{q.error === "image" ? "Görsel yüklenemedi. Dosya türünü ve boyutunu kontrol et." : q.error === "validation" ? "Kullanıcı adı, rumuz veya metin sınırını kontrol et." : "Profil kaydedilemedi. Rumuzun kullanılabilirliğini ve yetkini kontrol et."}</p>}
     {q.saved && <p className="notice success" role="status">Üye profili kaydedildi.</p>}
     <form className="panel identitySettingsForm" action="/api/admin/profile" method="post" encType="multipart/form-data">
       <input type="hidden" name="target_id" value={p.id}/>
       <div className="identityFieldGrid">
-        <label>İsim<input name="display_name" defaultValue={p.display_name} minLength={2} maxLength={50} required/></label>
-        <label>Rumuz<input name="handle" defaultValue={p.handle} minLength={3} maxLength={24} required pattern="[a-z0-9_]{3,24}"/></label>
-        <div className="full qgEditorField"><span>Hakkında</span><RichTextEditor name="bio" defaultValue={p.bio || ""} maxLength={280}/></div>
-        <label>Avatar (en fazla 3 MB)<input type="file" name="avatar" accept="image/png,image/jpeg,image/webp"/></label>
-        <label>Banner (en fazla 6 MB)<input type="file" name="banner" accept="image/png,image/jpeg,image/webp"/></label>
-        <label>Banner hareketi<select name="banner_motion" defaultValue={p.banner_motion || "none"}><option value="none">Sabit</option><option value="pan-left">Soldan sağa</option><option value="pan-right">Sağdan sola</option><option value="zoom-in">Yakınlaş</option><option value="zoom-out">Uzaklaş</option></select></label>
+        <label>Kullanıcı Adı<Input name="display_name" defaultValue={p.display_name} minLength={2} maxLength={50} required/></label>
+        <label>Rumuz<Input name="handle" defaultValue={p.handle} minLength={3} maxLength={24} required pattern="[a-z0-9_]{3,24}"/></label>
+        <div className="full qgEditorField"><span>Hakkında</span><RichTextEditor label="Hakkında" density="compact" rows={2} name="bio" defaultValue={p.bio || ""} maxLength={280}/></div>
+        <label>Avatar (en fazla 3 MB)<Input type="file" name="avatar" accept="image/png,image/jpeg,image/webp"/></label>
+        <label>Banner (en fazla 6 MB)<Input type="file" name="banner" accept="image/png,image/jpeg,image/webp"/></label>
+        <label>Banner hareketi<Select name="banner_motion" defaultValue={p.banner_motion || "none"}><option value="none">Sabit</option><option value="pan-left">Soldan sağa</option><option value="pan-right">Sağdan sola</option><option value="zoom-in">Yakınlaş</option><option value="zoom-out">Uzaklaş</option></Select></label>
       </div>
-      <button className="primary">ÜYE PROFİLİNİ KAYDET</button> <a href="/topluluk?manage=1" className="qgAction">Topluluk yönetimine dön</a>
+      <Button type="submit" level="primary" className="">ÜYE PROFİLİNİ KAYDET</Button> <a href="/topluluk?manage=1" className="qgAction">Topluluk yönetimine dön</a>
     </form>
   </section>;
 }

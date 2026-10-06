@@ -12,6 +12,8 @@ import { RICH_PREFIX, richHtml, richPlain, safeHref } from "@/lib/rich-text";
 import { RichText } from "./RichText";
 export type RichTextEditorProps = {
   compact?: boolean;
+  density?: "compact" | "standard" | "editorial";
+  label?: string;
   footnotes?: boolean;
   name?: string;
   defaultValue?: string;
@@ -26,6 +28,8 @@ export type RichTextEditorProps = {
 export function RichTextEditor({
   name,
   compact = false,
+  density,
+  label,
   footnotes = false,
   defaultValue = "",
   value,
@@ -67,7 +71,7 @@ export function RichTextEditor({
       attributes: {
         class: "qgProse qgWritingArea",
         role: "textbox",
-        "aria-label": placeholder,
+        "aria-label": label || placeholder,
         "aria-multiline": "true",
         "data-placeholder": placeholder,
         "aria-describedby": id,
@@ -232,7 +236,7 @@ export function RichTextEditor({
   return (
     <div
       ref={wrapper}
-      className={"qgEditor"+(compact?" qgCommentEditor":"")}
+      className={"qgEditor qgEditor-"+(density || (compact || maxLength <= 500 ? "compact" : rows >= 12 ? "editorial" : "standard"))+(compact?" qgCommentEditor":"")}
       style={{ "--editor-lines": rows } as React.CSSProperties}
     >
       <input type="hidden" name={name} value={html} />

@@ -26,8 +26,8 @@
 .qgEditor .qgEditorToolbar button,
 .qgEditor .qgEditorLink button {
   width: auto !important;
-  min-width: 34px;
-  min-height: 36px;
+  min-width: 44px;
+  min-height: 44px;
   margin: 0 !important;
   padding: 6px 8px !important;
   border: 1px solid transparent !important;
@@ -98,7 +98,7 @@
   padding: 7px 10px !important;
   margin: 0 !important;
   border-top: 1px solid #392c22;
-  font: 400 10px/1.5 system-ui !important;
+  font: 400 12px/1.5 var(--qg-ui-font, system-ui);
   color: #a28c74;
   letter-spacing: normal !important;
 }

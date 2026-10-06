@@ -1,4 +1,6 @@
 "use client";
+import {Button,Textarea} from "@/components/ui/Primitives";
+
 import {useEffect,useRef} from "react";
 import {useFormStatus} from "react-dom";
 import {consult} from "./chat-actions";
@@ -6,7 +8,7 @@ import {consult} from "./chat-actions";
 function SendButton(){
  const {pending}=useFormStatus();
  useEffect(()=>{if(!pending)return;window.dispatchEvent(new CustomEvent("aster-state",{detail:"awakening"}));const t=setTimeout(()=>window.dispatchEvent(new CustomEvent("aster-state",{detail:"processing"})),650);return()=>clearTimeout(t)},[pending]);
- return <button className="qaeAskButton" disabled={pending}>{pending?"HAFIZADA ARIYOR…":"ASTER'E DANIŞ"}</button>
+ return <Button type="submit" level="secondary" className="qaeAskButton" disabled={pending}>{pending?"HAFIZADA ARIYOR…":"ASTER'E DANIŞ"}</Button>
 }
 export function AsterConsultation({conversationId,messages}:{conversationId?:string;messages:any[]}){
  const end=useRef<HTMLDivElement>(null);
@@ -22,6 +24,6 @@ export function AsterConsultation({conversationId,messages}:{conversationId?:str
    </article>)}
    <div ref={end}/>
   </div>
-  <form action={consult} className="qaeComposer">{conversationId&&<input type="hidden" name="conversation_id" value={conversationId}/>}<textarea name="question" required minLength={2} maxLength={4000} placeholder="Aster'e bir kayıt sorun…" rows={3}/><div className="qaeComposerFoot"><small>Yanıtlar onaylanmış Q-GANG kayıtlarıyla kaynaklandırılır.</small><SendButton/></div></form>
+  <form action={consult} className="qaeComposer">{conversationId&&<input type="hidden" name="conversation_id" value={conversationId}/>}<Textarea aria-label="Aster’e sorunuz" name="question" required minLength={2} maxLength={4000} placeholder="Aster'e bir kayıt sorun…" rows={3}/><div className="qaeComposerFoot"><small>Yanıtlar onaylanmış Q-GANG kayıtlarıyla kaynaklandırılır.</small><SendButton/></div></form>
  </section>
 }

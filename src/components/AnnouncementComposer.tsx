@@ -1,4 +1,6 @@
 "use client";
+import {Select,Input,Button} from "@/components/ui/Primitives";
+
 import {RichTextEditor} from "@/components/RichTextEditor";
 
 
@@ -21,16 +23,16 @@ export function AnnouncementComposer({
         {(
           <label>
             Önem
-            <select name="priority" defaultValue="normal">
+            <Select name="priority" defaultValue="normal">
               <option value="normal">Normal</option>
               <option value="important">Önemli</option>
               <option value="critical">Kritik</option>
-            </select>
+            </Select>
           </label>
         )}
         <label>
           Başlık
-          <input name="title" required />
+          <Input name="title" required />
         </label>
         <label>
           Metin
@@ -39,7 +41,7 @@ export function AnnouncementComposer({
         <label className="decreeCheck">
           <input type="checkbox" name="pinned" /> Sabitle
         </label>
-        <button>YAYIMLA →</button>
+        <Button type="submit" level="secondary">YAYIMLA →</Button>
       </form>
     </aside>
   );
