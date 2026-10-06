@@ -17,6 +17,7 @@ export function cleanHtml(html: string) {
   return sanitizeHtml(html, {
     allowedTags: [
       "p",
+      "sup",
       "br",
       "strong",
       "em",
@@ -42,6 +43,7 @@ export function cleanHtml(html: string) {
     ],
     allowedAttributes: {
       a: ["href", "target", "rel"],
+      sup: ["data-footnote", "data-note", "data-source"],
       figure: ["data-width"], img: ["src", "alt", "loading"], iframe: ["src", "title", "loading", "allowfullscreen", "referrerpolicy"], aside: ["data-tone"], div: ["data-divider"],
       p: ["style"],
       h2: ["style"],
@@ -55,6 +57,10 @@ export function cleanHtml(html: string) {
     allowedSchemes: ["https", "http", "mailto"],
     allowProtocolRelative: false,
     transformTags: {
+      sup: (_tag, attrs) => ({ tagName: "sup", attribs: attrs["data-footnote"] === "true" ? {
+        "data-footnote": "true", "data-note": (attrs["data-note"] || "").slice(0, 4000),
+        "data-source": safeHref(attrs["data-source"] || ""),
+      } : {} as Record<string, string> }),
       img: (_tag, attrs) => ({tagName:"img", attribs:{src:mediaUrl(attrs.src||""),alt:attrs.alt||"",loading:"lazy"}}),
       iframe: (_tag, attrs) => ({tagName:"iframe",attribs:{src:videoEmbed(attrs.src||""),title:attrs.title||"Video",loading:"lazy",allowfullscreen:"",referrerpolicy:"strict-origin-when-cross-origin"}}),
       aside: (_tag, attrs) => ({tagName:"aside",attribs:{"data-tone":["info","warning","important"].includes(attrs["data-tone"])?attrs["data-tone"]:"info"}}),
@@ -142,4 +148,18 @@ export function documentBlocks(value:string):Array<{kind:"text"|"image"|"video";
     cursor=match.index!+markup.length;
   }
   if(cursor<html.length)result.push({kind:"text",text:richPlain(RICH_PREFIX+html.slice(cursor))});return result;
+}
+
+/** Footnote text is escaped as text, never interpreted as markup. */
+export function footnoteHtml(html: string, prefix: string) {
+  const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const notes: string[] = [];
+  const body = html.replace(/<sup\b([^>]*)>([\s\S]*?)<\/sup>/gi, (whole, attrs: string) => {
+    const attribute = (name: string) => decodeHTML(attrs.match(new RegExp(name + '="([^"]*)"'))?.[1] || "");
+    if (attribute("data-footnote") !== "true") return whole;
+    const n = notes.length + 1, note = attribute("data-note"), href = safeHref(attribute("data-source"));
+    notes.push(`<li id="${prefix}-note-${n}" tabindex="-1"><span>${escape(note).replace(/\n/g, "<br>")}</span>${href ? ` <a href="${escape(href)}" target="_blank" rel="noopener noreferrer">Kaynağı aç</a>` : ""} <a href="#${prefix}-ref-${n}" aria-label="${n}. dipnottan metne dön">Metne dön</a></li>`);
+    return `<sup><a id="${prefix}-ref-${n}" href="#${prefix}-note-${n}" aria-label="${n}. dipnot">${n}</a></sup>`;
+  });
+  return body + (notes.length ? `<section class="qgFootnotes" aria-label="Notlar ve Kaynaklar"><h2>Notlar ve Kaynaklar</h2><ol>${notes.join("")}</ol></section>` : "");
 }

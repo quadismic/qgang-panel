@@ -81,3 +81,16 @@ console.log('PASS: media persistence, callouts, dividers and restricted video em
 const blocks=m.exports.documentBlocks(P+'<p>Önce</p><figure><img src="https://example.org/a.png" alt="Resim"/><figcaption>Görsel açıklaması</figcaption></figure><iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" title="Tanıtım"></iframe><p>Sonra</p>');
 assert.deepEqual(blocks.map(b=>[b.kind,b.text]),[['text','Önce'],['image','Görsel açıklaması'],['video','Tanıtım'],['text','Sonra']]);
 console.log('PASS: PDF media/text order and descriptions.');
+const {footnoteHtml}=m.exports;
+const footnotes = normalizeRich(P+'<p>Bir<sup data-footnote="true" data-note="Kaynak &quot;eser&quot; &lt;script&gt;" data-source="https://example.com">9</sup> iki<sup data-footnote="true" data-note="İkinci" data-source="javascript:alert(1)">42</sup></p>');
+assert(footnotes.includes('data-note='));
+assert.equal(normalizeRich(footnotes),footnotes);
+const rendered=footnoteHtml(richHtml(footnotes),'test');
+assert(rendered.includes('href="#test-note-1"'));
+assert(rendered.includes('href="#test-ref-2"'));
+assert(rendered.includes('Kaynak &quot;eser&quot; &lt;script&gt;'));
+assert(!rendered.includes('javascript:'));
+assert(!rendered.includes('>42<'));
+assert.equal(footnoteHtml(richHtml(P+'<p>Not yok</p>'),'test'),'<p>Not yok</p>');
+assert(!footnoteHtml(richHtml(P+'<p>Bir</p>'),'test').includes('qgFootnotes'));
+console.log('Footnote roundtrip, numbering, navigation and escaping passed');

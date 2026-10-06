@@ -120,3 +120,29 @@ html{scrollbar-color:#75583a #090807;scrollbar-width:thin}
 .publicationArticle .publicationBody.qgProse h2{font-size:1.35em!important}
 .publicationArticle .publicationBody.qgProse h3{font-size:1.2em!important}
 @media(max-width:760px){.publicationArticle>header>.qgProse{font-size:17px}.publicationArticle>header h1{font-size:clamp(26px,7vw,34px)}}
+
+/* Profile editing uses the page scroll, outside the identity card. */
+.profileEditPageContainer{width:100%;max-width:960px;min-width:0;margin:0 auto;padding:12px 20px 100px}
+.profileEditPage .profileEditSheet{width:100%;max-height:none;overflow:visible;box-shadow:none}
+.profileEditPage .profileEditSheet>header{gap:16px;flex-wrap:wrap}
+.profileEditPage .profileEditSheet>header h2{font-family:var(--font-qgang),Georgia,serif;font-weight:500}
+.profileEditPage .profileEditSheet>header small{font-size:11px}
+.profileEditPage .profileEditGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.profileEditPage .profileEditGrid>*{min-width:0}
+.profileEditPage .profileEditGrid label,.profileEditPage .qgEditorField>span{font-size:14px;line-height:1.5}
+.profileEditPage .profileEditGrid input,.profileEditPage .profileEditGrid select{min-width:0;min-height:44px;box-sizing:border-box;font-size:16px}
+.profileEditPage .profileImageField>div{flex-wrap:wrap}
+.profileEditPage .profileImageField button{min-height:44px;font-size:12px}
+.profileEditPage .profileEditSheet footer{flex-wrap:wrap;align-items:center;gap:12px}
+.profileEditPage .profileEditSheet footer button{min-height:44px;font-size:12px}
+@media(max-width:700px){.profileEditPageContainer{padding:8px 12px 110px}.profileEditPage .profileEditGrid{grid-template-columns:minmax(0,1fr)}.profileEditPage .profileEditSheet>header,.profileEditPage .profileEditSheet form{padding:18px 16px}.profileEditPage .profileEditSheet footer>*{flex:1;text-align:center}.profileEditPage .profileEditWide{grid-column:1/-1}}
+
+/* Publication footnotes */
+.qgProse sup[data-footnote], .qgProse sup a { color: #c7a46c; cursor: pointer; font-size: .8em; }
+.qgProse sup a { padding: .25rem; text-decoration: none; }
+.qgFootnotes { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid #66533c; font-size: 1rem; line-height: 1.8; }
+.qgFootnotes li { margin-bottom: 1rem; overflow-wrap: anywhere; scroll-margin-top: 7rem; }
+.qgProse sup a[id] { scroll-margin-top: 7rem; }
+.qgFootnotes li:target { background: #c7a46c15; outline: 1px solid #c7a46666; }
+.qgNoteComposer label { display: grid; gap: .5rem; width: 100%; font-size: 1rem; }
+.qgNoteComposer textarea, .qgNoteComposer input { width: 100%; min-width: 0; font: inherit; }

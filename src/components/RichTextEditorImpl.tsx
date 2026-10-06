@@ -4,6 +4,7 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import {createClient} from "@/lib/supabase/client";
 import {ContentFigure,ContentVideo,ContentCallout,ContentDivider} from "./ContentBlocks";
 import {mediaUrl,videoEmbed} from "@/lib/rich-text";
+import {Footnote} from "./Footnote";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
 import { TableKit } from "@tiptap/extension-table";
@@ -11,6 +12,7 @@ import { RICH_PREFIX, richHtml, richPlain, safeHref } from "@/lib/rich-text";
 import { RichText } from "./RichText";
 export type RichTextEditorProps = {
   compact?: boolean;
+  footnotes?: boolean;
   name?: string;
   defaultValue?: string;
   value?: string;
@@ -24,6 +26,7 @@ export type RichTextEditorProps = {
 export function RichTextEditor({
   name,
   compact = false,
+  footnotes = false,
   defaultValue = "",
   value,
   onValueChange,
@@ -42,6 +45,8 @@ export function RichTextEditor({
     [linkError, setLinkError] = useState("");
   const [uploading,setUploading]=useState(false), [previewSize,setPreviewSize]=useState("desktop"), [imageWidth,setImageWidth]=useState("text");
   const [blockOpen,setBlockOpen]=useState(false), [blockType,setBlockType]=useState("divider"), [blockUrl,setBlockUrl]=useState(""), [blockText,setBlockText]=useState(""), [blockAlt,setBlockAlt]=useState(""), [blockError,setBlockError]=useState("");
+  const [noteOpen,setNoteOpen]=useState(false), [noteText,setNoteText]=useState(""), [noteSource,setNoteSource]=useState(""), [noteError,setNoteError]=useState("");
+  const notePosition=useRef<number|null>(null);
   const wrapper = useRef<HTMLDivElement>(null),
     validator = useRef<HTMLTextAreaElement>(null),
     dirty = useRef(false);
@@ -54,7 +59,7 @@ export function RichTextEditor({
         link: { openOnClick: false, protocols: ["https", "http", "mailto"] },
       }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
-      TableKit, ContentFigure, ContentVideo, ContentCallout, ContentDivider,
+      Footnote, TableKit, ContentFigure, ContentVideo, ContentCallout, ContentDivider,
     ],
     content: richHtml(initial),
     editorProps: {
@@ -66,6 +71,10 @@ export function RichTextEditor({
         "aria-describedby": id,
         spellcheck: "true",
         lang: "tr",
+      },
+      handleClickOn: (_view, pos, node) => {
+        if (!footnotes || node.type.name !== "footnote") return false;
+        notePosition.current=pos; setNoteText(node.attrs.note); setNoteSource(node.attrs.source); setNoteError(""); setNoteOpen(true); return true;
       },
       handleKeyDown: (view, event) => {
         if (
@@ -172,6 +181,17 @@ export function RichTextEditor({
     else block={type:"contentCallout",attrs:{tone:blockType},content:[{type:"paragraph",content:[{type:"text",text:text||"Açıklama"}]}]};
     editor?.chain().focus().insertContent([block,{type:"paragraph"}]).run();setBlockOpen(false);setBlockError("");setBlockUrl("");setBlockText("");setBlockAlt("");
   }
+  function saveNote() {
+    if(!noteText.trim()){setNoteError("Dipnot açıklamasını veya kaynak künyesini yaz.");return;}
+    const source=noteSource.trim()?safeHref(noteSource):"";
+    if(noteSource.trim()&&!source){setNoteError("Geçerli bir kaynak bağlantısı gir.");return;}
+    if(!editor)return;
+    const attrs={note:noteText.trim(),source};
+    const pos=notePosition.current;
+    if(pos!==null&&editor.state.doc.nodeAt(pos)?.type.name==="footnote") editor.view.dispatch(editor.state.tr.setNodeMarkup(pos,undefined,attrs));
+    else editor.chain().focus().insertContent({type:"footnote",attrs}).run();
+    setNoteOpen(false); editor.commands.focus();
+  }
   function applyLink() {
     const href = safeHref(url);
     if (!href) {
@@ -219,6 +239,7 @@ export function RichTextEditor({
         role="toolbar"
         aria-label="Metin biçimlendirme"
       >
+        {footnotes&&button("Dipnot", "Dipnot ekle",()=>{const selected=editor?.state.doc.nodeAt(editor.state.selection.from);const editing=selected?.type.name==="footnote";notePosition.current=editing?editor!.state.selection.from:null;setNoteText(editing?selected.attrs.note:"");setNoteSource(editing?selected.attrs.source:"");setNoteError("");setNoteOpen(true);})}
         {!compact&&button("+ İçerik", "İçerik bloğu ekle",()=>setBlockOpen(!blockOpen))}
         {button(
           "B",
@@ -349,6 +370,14 @@ export function RichTextEditor({
           {preview ? "Yaz" : "Önizle"}
         </button>
       </div>
+      {noteOpen&&<div className="qgBlockComposer qgNoteComposer" role="group" aria-label="Dipnot düzenle">
+        <label>Açıklama / kaynak künyesi<textarea autoFocus maxLength={4000} rows={4} value={noteText} onChange={e=>setNoteText(e.target.value)} placeholder="Yazar, eser, yıl, sayfa veya açıklayıcı not…"/></label>
+        <label>Kaynak bağlantısı (isteğe bağlı)<input value={noteSource} onChange={e=>setNoteSource(e.target.value)} placeholder="https://…"/></label>
+        <button type="button" onClick={saveNote}>Dipnotu kaydet</button>
+        <button type="button" onClick={()=>setNoteOpen(false)}>Vazgeç</button>
+        {notePosition.current!==null&&<button type="button" onClick={()=>{const pos=notePosition.current;if(editor&&pos!==null&&editor.state.doc.nodeAt(pos)?.type.name==="footnote")editor.view.dispatch(editor.state.tr.delete(pos,pos+1));setNoteOpen(false);}}>Dipnotu sil</button>}
+        {noteError&&<p role="alert">{noteError}</p>}
+      </div>}
       {blockOpen && <div className="qgBlockComposer" role="group" aria-label="İçerik bloğu ekle">
         <label>İçerik türü<select value={blockType} onChange={e=>{setBlockType(e.target.value);setBlockError("");}}>{[["divider","Ayırıcı şerit"],["info","Bilgi alanı"],["warning","Uyarı alanı"],["important","Önemli açıklama"],["image","Görsel"],["video","YouTube videosu"],["quote","Alıntı"]].map(([v,t])=><option key={v} value={v}>{t}</option>)}</select></label>
         {["image","video"].includes(blockType)&&<label>HTTPS adresi<input value={blockUrl} onChange={e=>setBlockUrl(e.target.value)} placeholder="https://…"/></label>}
