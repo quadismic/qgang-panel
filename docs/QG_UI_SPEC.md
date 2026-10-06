@@ -50,3 +50,16 @@ EmptyState kısa; ErrorState hatayı boş içerikten ayırır. LoadingState role
 ## Doğrulama sınırı
 
 Bu standardın tüm ekranlara görsel uygunluğu 1440 ve 390px tarayıcı regresyonu ile ayrıca doğrulanmalıdır. Kod incelemesi ölçülmüş kontrast veya tamamlanmış görsel doğrulama değildir.
+
+
+## 6 Ekim düzeltme paketi
+
+- Kodeks üst navigasyonu: oturumlu üye ve üzeri için dört eşit blok; mobil 2×2. Disiplin bağlantısının mevcut guest engeli korunur. PDF ayrı yardımcı aksiyondur.
+- Topluluk şeması hero ile aynı tam içerik genişliğini kullanır; tekrar eden üst şerit yoktur. Rütbe başlıklarının çizgileri kısa, lider/vekilharç ve sarılan üye kartları merkezlidir.
+- Duyuruların arama/filtre ve açılır yayımlama formu hero altındadır; defter ikinci hero başlığı üretmez.
+- Silme dialogu doğrulamada rumuzu kullanır. Beklenen @rumuz ayrı ve kalıcı metindir. Tek baştaki @, dış boşluk ve büyük/küçük harf istemci ve sunucuda aynı normalizasyonu kullanır; iç boşluk ve başka kimlik reddedilir.
+- Yayın yorumunda tek Yayınlara dön kontrolü, bronz primary gönderim, dipnot düğmesi/kısayolu ve ortak içerik panelleri vardır. Görsel seçili metnin sonuna eklenir; metni silmez.
+- Mali defter PDF yardımcı aksiyonu ayrı açılır kapsam formudur. Tüm hareketler/gelir/gider ve İstanbul tarih aralığı seçilir. Çıktı Kodeks ailesinin koyu kapak, bronz çizgi, serif gövde, açık okuma sayfaları ve künyesini kullanır. Toplamlar kuruş bazında hesaplanır; çıktı kapsam toplamıdır, tam bakiye değildir.
+- DİĞER ve Diğer gösterimde Diğer etiketine dönüşür; kayıtların kategori değerleri değişmez. Liste ve PDF 100 kayıtla kesilmez; sayfalı sunucu okuması kullanılır.
+- Profil overflow bağlantıları üst üste konumlanmaz; yetkili Üyeyi düzenle, Üyeyi bildir üzerinde gösterilir.
+- Navbar aktif durumu ince accent, aktif ikon ve hafif yüzeydir. Nokta markup ve pseudo-elementleri kaldırılır; glow yoktur.

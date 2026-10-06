@@ -36,7 +36,7 @@ export async function MemberProfileEditor({ params, searchParams }: {
         <label>Banner (en fazla 6 MB)<Input type="file" name="banner" accept="image/png,image/jpeg,image/webp"/></label>
         <label>Banner hareketi<Select name="banner_motion" defaultValue={p.banner_motion || "none"}><option value="none">Sabit</option><option value="pan-left">Soldan sağa</option><option value="pan-right">Sağdan sola</option><option value="zoom-in">Yakınlaş</option><option value="zoom-out">Uzaklaş</option></Select></label>
       </div>
-      <Button type="submit" level="primary" className="">ÜYE PROFİLİNİ KAYDET</Button> <a href="/topluluk?manage=1" className="qgAction">Topluluk yönetimine dön</a>
+      <Button type="submit" level="primary" className="">Üye Profilini Kaydet</Button> <a href="/topluluk?manage=1" className="qgAction">Topluluk Yönetimine Dön</a>
     </form>
   </section>;
 }

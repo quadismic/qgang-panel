@@ -80,3 +80,27 @@ TypeScript (`tsc --noEmit`), repository lint (`npm run lint`), production build 
 Geçen testler: rich-text + rich-text-db; auth-onboarding; guest-identity; member-search; discipline-requests; public-codex; public-announcements; community-directory; publication-comments; test:documents (document-db, badge-document-routes, codex-pdf).
 
 Tarayıcı testleri: ui-convergence Chromium socket kısıtı nedeniyle başlayamadı; access-ui varsayılan Playwright browser binary bulunamadığı için başlayamadı. Bunlar başarılı test olarak sayılmadı. UI test harness artık hatalı route/status/overflow/clipping/etiket sonuçlarında başarısız çıkış verir; eski script yalnız sonuç kaydederek başarı izlenimi verebiliyordu. Push, merge ve deploy yapılmadı. Görsel kontrol engeli çözülmeden paket tam doğrulanmış deploy-ready olarak sunulmaz.
+
+
+## Ek düzeltme paketi — 23:20 talebi
+
+Bu bölüm önceki paketin durumundan ayrıdır. Yeni paket henüz yayımlanmadı.
+
+| Madde | Uygulama | Doğrulama |
+|---|---|---|
+| Kullanıcı silme | Ortak rumuz normalizasyonu, kalıcı beklenen rumuz, dialog spacing | Client helper ve gerçek POST handler mock testleri; tüm eski auth/yetki/hiyerarşi/tarihçe engelleri |
+| Yayın yorumları | Tek dönüş, compact dipnot düğmesi ve Ctrl+Alt+F/KeyF, ortak panel, seçimin sonuna görsel, bronz gönder | Seçim sonu/atıf testleri, numaralandırma ve kayıt roundtrip; tarayıcı görsel kontrolü engelli |
+| Topluluk | Tek içerik genişliği, kısa çizgiler, merkez/sarılan kartlar, tekrar şeridi kaldırıldı | CSS/kod incelemesi; 1440/390 tarayıcı kontrolü engelli |
+| Duyurular | Hero altı arama/filtre ve yayımlama formu; ikinci başlık yok | Kod incelemesi ve mevcut public erişim testi |
+| Kodeks | Dört üst blok, mobil 2×2, bağımsız PDF; misafir Disiplin göremez | Kodeks render testleri ve guest/member dördüncü bağlantı kontrolü |
+| Bütçe | Kompakt mobil hero/toolbar, sarılan sıralama, alt navigasyon payı, Diğer gösterimi | Kategori ve mali helper testleri; görsel kontrol engelli |
+| Mali PDF | GET /api/budget/pdf; tarih/kind kapsamı; tüm aktif kayıtlar; kuruş toplamları; anonimlik | 1101 satır/3 batch; PDF uzun açıklama/son kayıt/Türkçe/toplamlar; auth/permission/invalid scope/private-no-store |
+| Profil menüsü | Yetkili Üyeyi düzenle bağlantısı mevcut ekrana gider; linkler normal akışta | Aynı canManage/canAssign/members.manage koşulları; server kapıları korunur |
+| Navbar | Nokta markup/pseudo ve glow kaldırıldı | Kod/CSS incelemesi |
+| Yetkili düzenleme | Üye Profilini Kaydet / Topluluk Yönetimine Dön | Kaynak metin ve ortak text-transform:none |
+
+Yeni backend eklemesi PDF GET endpointidir; mevcut endpointlerin sözleşmesi korunur. Silme endpointinde yalnız rumuz girdi normalizasyonu değişir; yetkilendirme değişmez. Bütçe liste sorgusundaki 100 satır sınırı kaldırılıp PDF ile ortak sayfalı, deterministik sıralı okuma kullanılır. Database/schema/migration yok; kategori kayıtları birleştirilmez. Görünürlük/anonimlik korunur.
+
+PDF isteği oluşturma anını üst tarih sınırı kullanır; sunucu çıktı dosyasını kaydetmez. Bu dosya değişmez bir veritabanı snapshot arşivi değildir. Aydınlatma varsayılan taslağı ve kategori özeti indirilebilir çıktı açıklamasıyla güncellendi; mevcut DB taslağı/yayımlanmış belgeye yazılmadı. İlgili etki kaydı docs/privacy/BUDGET_PDF_REVIEW_20261006.md.
+
+Son doğrulama: TypeScript, tüm depo lint’i, production build ve git diff --check geçti. test-purge-confirmation, test-budget-pdf, test-footnote-shortcut, test-footnote-editor, test:rich-text, test-codex-layout, test-publication-comments, test-public-announcements ve test-guest-identity geçti. Chromium yine socket() Operation not permitted nedeniyle açılamadı. Bu nedenle 1440/390 görsel kontrolü ve görsel panelin gerçek tarayıcıdaki davranışı onaylanmış değildir. Sorunu tekrar oluşturamayan ortamda kesin görsel çözüm iddiası yoktur.

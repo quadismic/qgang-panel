@@ -17,3 +17,5 @@ html=render({initialTab:'directives'});assert(html.includes('§ 03.12/03'));asse
 html=render({initialRule:'directive'});assert(html.includes('codexLayout-directives hasSelection'));assert(html.includes('Listeye dön'));assert(html.includes('DAYANAK § 03.12 — Temel kural'));
 html=render({initialTab:'primary'});assert(html.includes('codexV3Section'));assert(!html.includes('codexDocumentList'));assert.equal((html.match(/aria-pressed=/g)||[]).length,3);
 console.log('PASS Codex: three modes, newest-first decisions, standalone document lists, long provision number, basis link, deep-linked reader and back control');
+
+assert(!render({actorRole:"guest",actorId:"guest"}).includes("DİSİPLİN KARARLARI"));assert(render({actorRole:"member",actorId:"member"}).includes("DİSİPLİN KARARLARI"));console.log("PASS fourth Codex navigation retains guest exclusion");

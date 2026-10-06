@@ -9,6 +9,7 @@ import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
 import { TableKit } from "@tiptap/extension-table";
 import { RICH_PREFIX, richHtml, richPlain, safeHref } from "@/lib/rich-text";
+import {Button,Input,Select,Textarea} from "./ui/Primitives";
 import { RichText } from "./RichText";
 export type RichTextEditorProps = {
   compact?: boolean;
@@ -50,6 +51,7 @@ export function RichTextEditor({
   const [uploading,setUploading]=useState(false), [previewSize,setPreviewSize]=useState("desktop"), [imageWidth,setImageWidth]=useState("text");
   const [blockOpen,setBlockOpen]=useState(false), [blockType,setBlockType]=useState("divider"), [blockUrl,setBlockUrl]=useState(""), [blockText,setBlockText]=useState(""), [blockAlt,setBlockAlt]=useState(""), [blockError,setBlockError]=useState("");
   const [noteOpen,setNoteOpen]=useState(false), [noteText,setNoteText]=useState(""), [noteSource,setNoteSource]=useState(""), [noteError,setNoteError]=useState("");
+  const blockInsertion=useRef<number|null>(null);
   const notePosition=useRef<number|null>(null);
   const noteInsertion=useRef<number|null>(null);
   const wrapper = useRef<HTMLDivElement>(null),
@@ -83,7 +85,7 @@ export function RichTextEditor({
         notePosition.current=pos; noteInsertion.current=null; setNoteText(node.attrs.note); setNoteSource(node.attrs.source); setNoteError(""); setNoteOpen(true); return true;
       },
       handleKeyDown: (view, event) => {
-        if (footnotes && (event.ctrlKey || event.metaKey) && event.altKey && !event.shiftKey && event.key.toLowerCase() === "f") {
+        if (footnotes && (event.ctrlKey || event.metaKey) && event.altKey && !event.shiftKey && (event.key.toLowerCase() === "f" || event.code === "KeyF")) {
           event.preventDefault();
           openNote(view.state);
           return true;
@@ -183,6 +185,7 @@ export function RichTextEditor({
       setBlockUrl(client.storage.from("qgang-publications").getPublicUrl(path).data.publicUrl);
     }catch(error){setBlockError(error instanceof Error?error.message:"Görsel okunamadı.");}finally{setUploading(false);}
   }
+  function openBlock(type=blockType){blockInsertion.current=editor?.state.selection.to??null;setBlockType(type);setBlockOpen(true);setBlockError("");}
   function insertBlock(){
     const text=blockText.trim(); let block;
     if(blockType==="image") {const src=mediaUrl(blockUrl);if(!src||!blockAlt.trim()){setBlockError("HTTPS görsel adresi ve alternatif metin gerekli.");return;}block={type:"contentFigure",attrs:{src,alt:blockAlt.trim(),width:imageWidth},content:text?[{type:"text",text}]:[]};}
@@ -190,7 +193,7 @@ export function RichTextEditor({
     else if(blockType==="divider") block=text?{type:"contentDivider",content:[{type:"text",text}]}:{type:"horizontalRule"};
     else if(blockType==="quote") block={type:"blockquote",content:[{type:"paragraph",content:[{type:"text",text:text||"Alıntı metni"}]}]};
     else block={type:"contentCallout",attrs:{tone:blockType},content:[{type:"paragraph",content:[{type:"text",text:text||"Açıklama"}]}]};
-    editor?.chain().focus().insertContent([block,{type:"paragraph"}]).run();setBlockOpen(false);setBlockError("");setBlockUrl("");setBlockText("");setBlockAlt("");
+    if(!editor)return;editor.chain().focus().insertContentAt(blockInsertion.current??editor.state.selection.to,[block,{type:"paragraph"}]).run();setBlockOpen(false);setBlockError("");setBlockUrl("");setBlockText("");setBlockAlt("");
   }
   function openNote(state=editor?.state) {
     if(!state)return;
@@ -257,7 +260,7 @@ export function RichTextEditor({
         role="toolbar"
         aria-label="Metin biçimlendirme"
       >
-        {!compact&&footnotes&&button("Dipnot", "Dipnot ekle (Ctrl+Alt+F)",()=>openNote())}
+        {footnotes&&button("Dipnot", "Dipnot ekle (Ctrl+Alt+F)",()=>openNote())}
         {compact?<>
           <div className="qgToolbarGroup" role="group" aria-label="Temel biçimlendirme">
             {button("B","Kalın (Ctrl/Cmd+B)",()=>editor?.chain().focus().toggleBold().run(),editor?.isActive("bold"))}
@@ -266,7 +269,7 @@ export function RichTextEditor({
             {button("S̶","Üstü çizili",()=>editor?.chain().focus().toggleStrike().run(),editor?.isActive("strike"))}
             {button("</>","Satır içi kod",()=>editor?.chain().focus().toggleCode().run(),editor?.isActive("code"))}
           </div>
-          <div className="qgToolbarGroup" role="group" aria-label="Başlıklar">{([2,3,4] as const).map((level)=> <span key={level}>{button("H"+(level-1),"Başlık "+(level-1),()=>editor?.chain().focus().toggleHeading({level}).run(),editor?.isActive("heading",{level}))}</span>)}</div>
+          <div className="qgToolbarGroup qgToolbarAdvanced" role="group" aria-label="Başlıklar">{([2,3,4] as const).map((level)=> <span key={level}>{button("H"+(level-1),"Başlık "+(level-1),()=>editor?.chain().focus().toggleHeading({level}).run(),editor?.isActive("heading",{level}))}</span>)}</div>
           <div className="qgToolbarGroup" role="group" aria-label="Listeler ve alıntı">
             {button("☷","Madde listesi",()=>editor?.chain().focus().toggleBulletList().run(),editor?.isActive("bulletList"))}
             {button("1≡","Numaralı liste",()=>editor?.chain().focus().toggleOrderedList().run(),editor?.isActive("orderedList"))}
@@ -274,12 +277,14 @@ export function RichTextEditor({
           </div>
           <div className="qgToolbarGroup" role="group" aria-label="Bağlantı ve içerik">
             {button("↗","Bağlantı (Ctrl/Cmd+K)",()=>{setUrl(editor?.getAttributes("link").href||"");setLinkError("");setLinkOpen(true);})}
-            {button("▧","Görsel ekle",()=>{setBlockType("image");setBlockOpen(!blockOpen);})}
+            {button("▧","Görsel ekle",()=>openBlock("image"))}
             {button("▦","3 × 3 tablo ekle",()=>editor?.chain().focus().insertTable({rows:3,cols:3,withHeaderRow:true}).run())}
           </div>
           <div className="qgToolbarGroup qgToolbarOptions">
             <button type="button" aria-pressed={preview} onClick={()=>setPreview(!preview)}>{preview?"Yaz":"◉ Önizle"}</button>
             <details><summary aria-label="Diğer biçimlendirme seçenekleri">•••</summary><div className="qgEditorMore">
+              {button("Liste","Madde listesi",()=>editor?.chain().focus().toggleBulletList().run())}{button("1. Liste","Numaralı liste",()=>editor?.chain().focus().toggleOrderedList().run())}{button("Alıntı","Alıntı",()=>editor?.chain().focus().toggleBlockquote().run())}
+              {([2,3,4] as const).map(level=><span className="qgMobileHeading" key={level}>{button("H"+(level-1),"Başlık "+(level-1),()=>editor?.chain().focus().toggleHeading({level}).run())}</span>)}
               {button("↶","Geri al",()=>editor?.chain().focus().undo().run())}{button("↷","İleri al",()=>editor?.chain().focus().redo().run())}
               {(["left","center","right","justify"] as const).map((align,i)=><span key={align}>{button(["Sol","Orta","Sağ","İki yana"][i],"Hizala: "+align,()=>editor?.chain().focus().setTextAlign(align).run())}</span>)}
               {button("Bağı kaldır","Bağlantıyı kaldır",()=>editor?.chain().focus().unsetLink().run())}
@@ -287,7 +292,7 @@ export function RichTextEditor({
               {editor?.isActive("table")&&<>{button("+ Satır","Satır ekle",()=>editor.chain().focus().addRowAfter().run())}{button("+ Sütun","Sütun ekle",()=>editor.chain().focus().addColumnAfter().run())}{button("− Satır","Satırı sil",()=>editor.chain().focus().deleteRow().run())}{button("− Sütun","Sütunu sil",()=>editor.chain().focus().deleteColumn().run())}{button("Tabloyu sil","Tabloyu sil",()=>editor.chain().focus().deleteTable().run())}</>}
             </div></details>
           </div>
-        </>:<>        {!compact&&button("+ İçerik", "İçerik bloğu ekle",()=>setBlockOpen(!blockOpen))}
+        </>:<>        {!compact&&button("+ İçerik", "İçerik bloğu ekle",()=>openBlock())}
         {button(
           "B",
           "Kalın (Ctrl/Cmd+B)",
@@ -418,25 +423,25 @@ export function RichTextEditor({
         </button></>}
       </div>
       {noteOpen&&<div className="qgBlockComposer qgNoteComposer" role="group" aria-label="Dipnot düzenle">
-        <label>Açıklama / kaynak künyesi<textarea autoFocus maxLength={4000} rows={4} value={noteText} onChange={e=>setNoteText(e.target.value)} placeholder="Yazar, eser, yıl, sayfa veya açıklayıcı not…"/></label>
-        <label>Kaynak bağlantısı (isteğe bağlı)<input value={noteSource} onChange={e=>setNoteSource(e.target.value)} placeholder="https://…"/></label>
-        <button type="button" onClick={saveNote}>Dipnotu kaydet</button>
-        <button type="button" onClick={()=>setNoteOpen(false)}>Vazgeç</button>
-        {notePosition.current!==null&&<button type="button" onClick={()=>{const pos=notePosition.current;if(editor&&pos!==null&&editor.state.doc.nodeAt(pos)?.type.name==="footnote")editor.view.dispatch(editor.state.tr.delete(pos,pos+1));setNoteOpen(false);}}>Dipnotu sil</button>}
+        <label>Açıklama / kaynak künyesi<Textarea autoFocus maxLength={4000} rows={4} value={noteText} onChange={e=>setNoteText(e.target.value)} placeholder="Yazar, eser, yıl, sayfa veya açıklayıcı not…"/></label>
+        <label>Kaynak bağlantısı (isteğe bağlı)<Input value={noteSource} onChange={e=>setNoteSource(e.target.value)} placeholder="https://…"/></label>
+        <Button level="primary" type="button" onClick={saveNote}>Dipnotu kaydet</Button>
+        <Button type="button" onClick={()=>setNoteOpen(false)}>Vazgeç</Button>
+        {notePosition.current!==null&&<Button type="button" onClick={()=>{const pos=notePosition.current;if(editor&&pos!==null&&editor.state.doc.nodeAt(pos)?.type.name==="footnote")editor.view.dispatch(editor.state.tr.delete(pos,pos+1));setNoteOpen(false);}}>Dipnotu sil</Button>}
         {noteError&&<p role="alert">{noteError}</p>}
       </div>}
       {blockOpen && <div className="qgBlockComposer" role="group" aria-label="İçerik bloğu ekle">
-        <label>İçerik türü<select value={blockType} onChange={e=>{setBlockType(e.target.value);setBlockError("");}}>{[["divider","Ayırıcı şerit"],["info","Bilgi alanı"],["warning","Uyarı alanı"],["important","Önemli açıklama"],["image","Görsel"],["video","YouTube videosu"],["quote","Alıntı"]].map(([v,t])=><option key={v} value={v}>{t}</option>)}</select></label>
-        {["image","video"].includes(blockType)&&<label>HTTPS adresi<input value={blockUrl} onChange={e=>setBlockUrl(e.target.value)} placeholder="https://…"/></label>}
-        {blockType==="image"&&<label>Görsel yükle (en fazla 8 MB)<input type="file" accept="image/png,image/jpeg,image/webp" disabled={uploading} onChange={e=>{const file=e.target.files?.[0];if(file)void uploadImage(file);e.target.value="";}}/>{uploading&&<span role="status">Yükleniyor…</span>}</label>}
-        {blockType==="image"&&<label>Görsel genişliği<select value={imageWidth} onChange={e=>setImageWidth(e.target.value)}><option value="text">Metin genişliği</option><option value="full">Tam genişlik</option></select></label>}
-        {blockType==="image"&&<label>Alternatif metin<input value={blockAlt} onChange={e=>setBlockAlt(e.target.value)}/></label>}
-        <label>{blockType==="image"?"Görsel açıklaması":blockType==="video"?"Video başlığı":"Metin / başlık"}<input value={blockText} onChange={e=>setBlockText(e.target.value)}/></label>
-        <button type="button" disabled={uploading} onClick={insertBlock}>Ekle</button><button type="button" onClick={()=>setBlockOpen(false)}>Vazgeç</button>{blockError&&<p role="alert">{blockError}</p>}
+        <label>İçerik türü<Select value={blockType} onChange={e=>{setBlockType(e.target.value);setBlockError("");}}>{[["divider","Ayırıcı şerit"],["info","Bilgi alanı"],["warning","Uyarı alanı"],["important","Önemli açıklama"],["image","Görsel"],["video","YouTube videosu"],["quote","Alıntı"]].map(([v,t])=><option key={v} value={v}>{t}</option>)}</Select></label>
+        {["image","video"].includes(blockType)&&<label>HTTPS adresi<Input value={blockUrl} onChange={e=>setBlockUrl(e.target.value)} placeholder="https://…"/></label>}
+        {blockType==="image"&&<label>Görsel yükle (en fazla 8 MB)<Input type="file" accept="image/png,image/jpeg,image/webp" disabled={uploading} onChange={e=>{const file=e.target.files?.[0];if(file)void uploadImage(file);e.target.value="";}}/>{uploading&&<span role="status">Yükleniyor…</span>}</label>}
+        {blockType==="image"&&<label>Görsel genişliği<Select value={imageWidth} onChange={e=>setImageWidth(e.target.value)}><option value="text">Metin genişliği</option><option value="full">Tam genişlik</option></Select></label>}
+        {blockType==="image"&&<label>Alternatif metin<Input value={blockAlt} onChange={e=>setBlockAlt(e.target.value)}/></label>}
+        <label>{blockType==="image"?"Görsel açıklaması":blockType==="video"?"Video başlığı":"Metin / başlık"}<Input value={blockText} onChange={e=>setBlockText(e.target.value)}/></label>
+        <Button level="primary" type="button" disabled={uploading} onClick={insertBlock}>Ekle</Button><Button type="button" onClick={()=>setBlockOpen(false)}>Vazgeç</Button>{blockError&&<p role="alert">{blockError}</p>}
       </div>}
       {linkOpen && (
         <div className="qgEditorLink" role="group" aria-label="Bağlantı ekle">
-          <input
+          <Input
             autoFocus
             aria-label="Bağlantı adresi"
             value={url}
@@ -450,12 +455,12 @@ export function RichTextEditor({
               if (e.key === "Escape") setLinkOpen(false);
             }}
           />
-          <button type="button" onClick={applyLink}>
+          <Button type="button" onClick={applyLink}>
             Uygula
-          </button>
-          <button type="button" onClick={() => setLinkOpen(false)}>
+          </Button>
+          <Button type="button" onClick={() => setLinkOpen(false)}>
             Vazgeç
-          </button>
+          </Button>
           {linkError && <span role="alert">{linkError}</span>}
         </div>
       )}

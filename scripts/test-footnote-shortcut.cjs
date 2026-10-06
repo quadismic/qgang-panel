@@ -9,10 +9,11 @@ vm.runInThisContext(`(function(require,module,exports){${code}\n})`)(name=>{
  if(name==='react')return hooks;
  if(name==='@tiptap/react')return {useEditor:input=>{options=input;return editor},EditorContent:()=>null};
  if(name==='@/lib/supabase/client')return {createClient(){throw Error('unexpected network')}};
+ if(name==='./ui/Primitives')return {Button:'button',Input:'input',Select:'select',Textarea:'textarea'};
  if(name==='./RichText')return {RichText:()=>null};
  if(name==='./ContentBlocks')return {};
  if(name==='./Footnote')return {};
- if(name==='@/lib/rich-text')return {RICH_PREFIX:'<!--qgang-rich:v1-->',richHtml:v=>v,richPlain:v=>v,safeHref:v=>/^https:\/\//.test(v)?v:null};
+ if(name==='@/lib/rich-text')return {RICH_PREFIX:'<!--qgang-rich:v1-->',richHtml:v=>v,richPlain:v=>v,mediaUrl:v=>/^https:\/\//.test(v)?v:null,videoEmbed:()=>null,safeHref:v=>/^https:\/\//.test(v)?v:null};
  return require(name);
 },m,m.exports);
 const render=props=>{cursor=0;return m.exports.RichTextEditor(props)};
@@ -25,3 +26,11 @@ slots=[];tree=render({footnotes:true});find(tree,n=>n.type==='button'&&n.props.t
 slots=[];render({footnotes:false});assert.equal(options.editorProps.handleKeyDown({state},{key:'f',ctrlKey:true,altKey:true}),false);
 slots=[];tree=render({compact:true});assert(find(tree,n=>n.props?.['aria-label']==='Temel biçimlendirme'));assert(find(tree,n=>n.props?.['aria-label']==='Başlıklar'));assert(find(tree,n=>n.props?.title==='Görsel ekle'));assert(find(tree,n=>n.props?.['aria-label']==='Diğer biçimlendirme seçenekleri'));assert(!find(tree,n=>n.props?.title==='Dipnot ekle (Ctrl+Alt+F)'));
 console.log('PASS button/shortcut equivalence, captured selection end without replacing text, note data, shortcut scope and grouped compact toolbar');
+
+slots=[];tree=render({compact:true,footnotes:true});assert(find(tree,n=>n.props?.title==='Dipnot ekle (Ctrl+Alt+F)'));
+find(tree,n=>n.props?.title==='Görsel ekle').props.onClick();tree=render({compact:true,footnotes:true});
+const panel=find(tree,n=>n.props?.['aria-label']==='İçerik bloğu ekle');assert(panel);
+const inputs=[];function collect(n){if(!n)return;if(Array.isArray(n)){n.forEach(collect);return}if(typeof n!=='object')return;if(n.type==='input')inputs.push(n);collect(n.props?.children)}collect(panel);
+inputs[0].props.onChange({target:{value:'https://example.invalid/image.png'}});inputs[2].props.onChange({target:{value:'Görsel'}});
+tree=render({compact:true,footnotes:true});find(tree,n=>n.type==='button'&&n.props.children==='Ekle').props.onClick();
+assert.equal(inserted.pos,8);assert.equal(inserted.node[0].type,'contentFigure');assert.equal(state.selection.from,2);console.log('PASS compact footnotes and image insertion at captured selection end');

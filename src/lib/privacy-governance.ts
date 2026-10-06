@@ -14,7 +14,7 @@ Doğum bilgisi: Tam tarih kullanıcıya özeldir; diğer kişilere yalnız gör�
 Yayın ve yorum: Yayımlanan içerik ziyaretçiler tarafından görülebilir; taslaklar yetkiye tabidir.
 Rozet: Aktif kazanımlar gösterilir; ayrıntılı atama ve düzeltme gerekçeleri yetkili alanlarda tutulur.
 Disiplin: Karar, savunma, delil ve itirazlara işlem için gerekli kişiler erişir. Başvuran kendi şikâyet ve itirazının durumunu, kendi itirazına verilen yanıtı görebilir; diğer başvuranların kayıtları kişisel başvuru ekranında gösterilmez.
-Bütçe: Mali takip için işlem kayıtları tutulur; anonimlik tercihi gözetilir.
+Bütçe: Mali takip için işlem kayıtları tutulur; anonimlik tercihi gözetilir. Bütçe okuma veya yönetim yetkisi bulunan kişiler seçilen kapsamın mali defter PDF çıktısını indirebilir. Anonim destekçi adları çıktıda gösterilmez; çıktı sitede ayrıca saklanmaz.
 Aster ve güvenlik: Talep edilen yardım ve güvenli işletim için konuşma/teknik kayıtlar işlenir. Özel üye verileri genel bilgi kaynağına dönüştürülmez.
 
 Veriler giriş sağlayıcısından, formlardan, içeriklerden ve topluluk işlemlerinden elektronik ortamda elde edilir. Her işleme faaliyeti için uygun hukuki sebep ayrıca belirlenir. Bu metni görmek veya giriş yapmak açık rıza yerine geçmez.

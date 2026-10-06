@@ -1,4 +1,5 @@
 "use client";
+import {budgetCategory} from "@/lib/budget";
 import {LoadMore} from "./ui/LoadMore";
 import {OverflowMenu} from "./ui/OverflowMenu";
 import {Select,Button,EmptyState} from "./ui/Primitives";
@@ -29,7 +30,7 @@ export function BudgetLedger({entries,canDelete}:{entries:BudgetEntry[];canDelet
       const date=dateParts(entry.created_at),income=entry.kind==="support",open=expanded===entry.id;
       return <article className={"budgetEntry "+(income?"income":"expense")} key={entry.id}>
         <div className="budgetEntryLine"><time dateTime={entry.created_at}><strong>{date.day}</strong><small>{date.year}</small></time>
-          <span className="budgetCategory"><QGIcon name={entry.category==="DESTEK"?"income":"record"}/>{entry.category||"GENEL"}</span>
+          <span className="budgetCategory"><QGIcon name={entry.category==="DESTEK"?"income":"record"}/>{budgetCategory(entry.category)}</span>
           <div className="budgetEntryCopy"><h3>{entry.title}</h3>{entry.description&&<p>{richPlain(entry.description)}</p>}{entry.supporter_name&&!entry.is_anonymous&&<small>Destekçi · {entry.supporter_name}</small>}</div>
           <strong className="budgetAmount"><span aria-label={income?"Gelir":"Gider"}>{income?"+":"−"}</span> {money(Number(entry.amount))}</strong>
           <OverflowMenu label={entry.title+" işlem seçenekleri"}>
