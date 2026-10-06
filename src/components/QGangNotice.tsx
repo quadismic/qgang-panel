@@ -1,1 +1,2 @@
-export function QGangNotice({kind="error",title,message}:{kind?:"error"|"success"|"warning";title:string;message:string}){return <div className={`qgangNotice ${kind}`} role={kind==="error"?"alert":"status"}><small>{title}</small><p>{message}</p></div>}
+import {ErrorState} from "./ui/Primitives";
+export function QGangNotice({kind="error",title,message}:{kind?:"error"|"success"|"warning";title:string;message:string}){if(kind==="error")return <ErrorState title={title} message={message}/>;return <div className={`qgangNotice ${kind}`} role="status"><small>{title}</small><p>{message}</p></div>}

@@ -26,6 +26,8 @@ export async function POST(req: Request) {
   if (!user)
     return NextResponse.redirect(new URL("/login", req.url), 303);
 
+  const {data:actor}=await s.from("profiles").select("role").eq("id",user.id).maybeSingle();
+  if(!actor||actor.role==="guest")return redirectWith("/disiplin",req,"report_error","permission");
   const form = await req.formData();
   const target = String(form.get("target_id") ?? "").trim();
   const reason = normalizeRich(String(form.get("reason") ?? ""));

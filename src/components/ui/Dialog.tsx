@@ -1,0 +1,8 @@
+"use client";
+import {useEffect,useId,useRef,type ReactNode} from "react";
+export function Dialog({open,onClose,title,children,className="",labelledBy}:{open:boolean;onClose:()=>void;title?:string;labelledBy?:string;children:ReactNode;className?:string}){
+ const ref=useRef<HTMLDialogElement>(null),titleId=useId(),close=useRef(onClose);close.current=onClose;
+ useEffect(()=>{const dialog=ref.current;if(!dialog||!open)return;const trigger=document.activeElement instanceof HTMLElement?document.activeElement:null;const body=document.body,locks=Number(body.dataset.qgDialogLocks||0);if(!locks)body.dataset.qgDialogOverflow=body.style.overflow;body.dataset.qgDialogLocks=String(locks+1);body.style.overflow="hidden";dialog.showModal();
+ return()=>{dialog.close();const left=Math.max(0,Number(body.dataset.qgDialogLocks||1)-1);if(left)body.dataset.qgDialogLocks=String(left);else{body.style.overflow=body.dataset.qgDialogOverflow||"";delete body.dataset.qgDialogLocks;delete body.dataset.qgDialogOverflow;}if(trigger?.isConnected){const target=trigger.getClientRects().length?trigger:trigger.closest("details")?.querySelector("summary");if(target instanceof HTMLElement)target.focus();}};},[open]);
+ return <dialog ref={ref} className={`qgDialog ${className}`} aria-labelledby={labelledBy||(!title?undefined:titleId)} aria-modal="true" onCancel={e=>{e.preventDefault();e.stopPropagation();close.current();}} onClick={e=>{if(e.target===e.currentTarget){const r=e.currentTarget.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)close.current();}}}>{title&&<h2 id={titleId} className="sr-only">{title}</h2>}{open?children:null}</dialog>;
+}

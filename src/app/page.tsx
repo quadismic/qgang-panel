@@ -20,7 +20,7 @@ export default async function Headquarters(){
   user?s.from("profiles").select("role").eq("id",user.id).maybeSingle():Promise.resolve({data:null}),
   user?s.from("community_memberships").select("status").eq("user_id",user.id).eq("status","active").maybeSingle():Promise.resolve({data:null}),
   s.from("announcement_feed").select("id,title,body,category,priority,is_pinned,published_at,regulation_id,status,effective_at").order("is_pinned",{ascending:false}).order("published_at",{ascending:false}).limit(12),
-  s.from("publications").select("title,slug,excerpt,cover_url,content_type,published_at,youtube_url,author:profiles!publications_author_id_fkey(display_name,handle)").eq("status","published").order("published_at",{ascending:false}).limit(4),user?s.rpc("list_today_community_birthdays"):Promise.resolve({data:[]})
+  s.from("publications").select(user?"title,slug,excerpt,cover_url,content_type,published_at,youtube_url,author:profiles!publications_author_id_fkey(display_name,handle)":"title,slug,excerpt,cover_url,content_type,published_at,youtube_url").eq("status","published").order("published_at",{ascending:false}).limit(4),user?s.rpc("list_today_community_birthdays"):Promise.resolve({data:[]})
  ]);
  const manage=!!viewerProfile&&["founder","admin"].includes(viewerProfile.role);
  const priorityRank:Record<string,number>={critical:3,important:2,normal:1};

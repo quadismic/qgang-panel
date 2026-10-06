@@ -47,6 +47,7 @@ export function RichTextEditor({
   const [blockOpen,setBlockOpen]=useState(false), [blockType,setBlockType]=useState("divider"), [blockUrl,setBlockUrl]=useState(""), [blockText,setBlockText]=useState(""), [blockAlt,setBlockAlt]=useState(""), [blockError,setBlockError]=useState("");
   const [noteOpen,setNoteOpen]=useState(false), [noteText,setNoteText]=useState(""), [noteSource,setNoteSource]=useState(""), [noteError,setNoteError]=useState("");
   const notePosition=useRef<number|null>(null);
+  const noteInsertion=useRef<number|null>(null);
   const wrapper = useRef<HTMLDivElement>(null),
     validator = useRef<HTMLTextAreaElement>(null),
     dirty = useRef(false);
@@ -68,15 +69,21 @@ export function RichTextEditor({
         role: "textbox",
         "aria-label": placeholder,
         "aria-multiline": "true",
+        "data-placeholder": placeholder,
         "aria-describedby": id,
         spellcheck: "true",
         lang: "tr",
       },
       handleClickOn: (_view, pos, node) => {
         if (!footnotes || node.type.name !== "footnote") return false;
-        notePosition.current=pos; setNoteText(node.attrs.note); setNoteSource(node.attrs.source); setNoteError(""); setNoteOpen(true); return true;
+        notePosition.current=pos; noteInsertion.current=null; setNoteText(node.attrs.note); setNoteSource(node.attrs.source); setNoteError(""); setNoteOpen(true); return true;
       },
       handleKeyDown: (view, event) => {
+        if (footnotes && (event.ctrlKey || event.metaKey) && event.altKey && !event.shiftKey && event.key.toLowerCase() === "f") {
+          event.preventDefault();
+          openNote(view.state);
+          return true;
+        }
         if (
           (event.ctrlKey || event.metaKey) &&
           event.key.toLowerCase() === "k"
@@ -181,6 +188,13 @@ export function RichTextEditor({
     else block={type:"contentCallout",attrs:{tone:blockType},content:[{type:"paragraph",content:[{type:"text",text:text||"Açıklama"}]}]};
     editor?.chain().focus().insertContent([block,{type:"paragraph"}]).run();setBlockOpen(false);setBlockError("");setBlockUrl("");setBlockText("");setBlockAlt("");
   }
+  function openNote(state=editor?.state) {
+    if(!state)return;
+    const pos=state.selection.from,node=state.doc.nodeAt(pos),editing=node?.type.name==="footnote";
+    notePosition.current=editing?pos:null;
+    noteInsertion.current=editing?null:state.selection.to;
+    setNoteText(editing?node.attrs.note:"");setNoteSource(editing?node.attrs.source:"");setNoteError("");setNoteOpen(true);
+  }
   function saveNote() {
     if(!noteText.trim()){setNoteError("Dipnot açıklamasını veya kaynak künyesini yaz.");return;}
     const source=noteSource.trim()?safeHref(noteSource):"";
@@ -189,7 +203,7 @@ export function RichTextEditor({
     const attrs={note:noteText.trim(),source};
     const pos=notePosition.current;
     if(pos!==null&&editor.state.doc.nodeAt(pos)?.type.name==="footnote") editor.view.dispatch(editor.state.tr.setNodeMarkup(pos,undefined,attrs));
-    else editor.chain().focus().insertContent({type:"footnote",attrs}).run();
+    else editor.chain().focus().insertContentAt(noteInsertion.current??editor.state.selection.to,{type:"footnote",attrs}).run();
     setNoteOpen(false); editor.commands.focus();
   }
   function applyLink() {
@@ -218,7 +232,7 @@ export function RichTextEditor({
   return (
     <div
       ref={wrapper}
-      className="qgEditor"
+      className={"qgEditor"+(compact?" qgCommentEditor":"")}
       style={{ "--editor-lines": rows } as React.CSSProperties}
     >
       <input type="hidden" name={name} value={html} />
@@ -239,8 +253,37 @@ export function RichTextEditor({
         role="toolbar"
         aria-label="Metin biçimlendirme"
       >
-        {footnotes&&button("Dipnot", "Dipnot ekle",()=>{const selected=editor?.state.doc.nodeAt(editor.state.selection.from);const editing=selected?.type.name==="footnote";notePosition.current=editing?editor!.state.selection.from:null;setNoteText(editing?selected.attrs.note:"");setNoteSource(editing?selected.attrs.source:"");setNoteError("");setNoteOpen(true);})}
-        {!compact&&button("+ İçerik", "İçerik bloğu ekle",()=>setBlockOpen(!blockOpen))}
+        {!compact&&footnotes&&button("Dipnot", "Dipnot ekle (Ctrl+Alt+F)",()=>openNote())}
+        {compact?<>
+          <div className="qgToolbarGroup" role="group" aria-label="Temel biçimlendirme">
+            {button("B","Kalın (Ctrl/Cmd+B)",()=>editor?.chain().focus().toggleBold().run(),editor?.isActive("bold"))}
+            {button("I","İtalik (Ctrl/Cmd+I)",()=>editor?.chain().focus().toggleItalic().run(),editor?.isActive("italic"))}
+            {button("U","Altı çizili",()=>editor?.chain().focus().toggleUnderline().run(),editor?.isActive("underline"))}
+            {button("S̶","Üstü çizili",()=>editor?.chain().focus().toggleStrike().run(),editor?.isActive("strike"))}
+            {button("</>","Satır içi kod",()=>editor?.chain().focus().toggleCode().run(),editor?.isActive("code"))}
+          </div>
+          <div className="qgToolbarGroup" role="group" aria-label="Başlıklar">{([2,3,4] as const).map((level)=> <span key={level}>{button("H"+(level-1),"Başlık "+(level-1),()=>editor?.chain().focus().toggleHeading({level}).run(),editor?.isActive("heading",{level}))}</span>)}</div>
+          <div className="qgToolbarGroup" role="group" aria-label="Listeler ve alıntı">
+            {button("☷","Madde listesi",()=>editor?.chain().focus().toggleBulletList().run(),editor?.isActive("bulletList"))}
+            {button("1≡","Numaralı liste",()=>editor?.chain().focus().toggleOrderedList().run(),editor?.isActive("orderedList"))}
+            {button("❞","Alıntı",()=>editor?.chain().focus().toggleBlockquote().run(),editor?.isActive("blockquote"))}
+          </div>
+          <div className="qgToolbarGroup" role="group" aria-label="Bağlantı ve içerik">
+            {button("↗","Bağlantı (Ctrl/Cmd+K)",()=>{setUrl(editor?.getAttributes("link").href||"");setLinkError("");setLinkOpen(true);})}
+            {button("▧","Görsel ekle",()=>{setBlockType("image");setBlockOpen(!blockOpen);})}
+            {button("▦","3 × 3 tablo ekle",()=>editor?.chain().focus().insertTable({rows:3,cols:3,withHeaderRow:true}).run())}
+          </div>
+          <div className="qgToolbarGroup qgToolbarOptions">
+            <button type="button" aria-pressed={preview} onClick={()=>setPreview(!preview)}>{preview?"Yaz":"◉ Önizle"}</button>
+            <details><summary aria-label="Diğer biçimlendirme seçenekleri">•••</summary><div className="qgEditorMore">
+              {button("↶","Geri al",()=>editor?.chain().focus().undo().run())}{button("↷","İleri al",()=>editor?.chain().focus().redo().run())}
+              {(["left","center","right","justify"] as const).map((align,i)=><span key={align}>{button(["Sol","Orta","Sağ","İki yana"][i],"Hizala: "+align,()=>editor?.chain().focus().setTextAlign(align).run())}</span>)}
+              {button("Bağı kaldır","Bağlantıyı kaldır",()=>editor?.chain().focus().unsetLink().run())}
+              {button("Temizle","Biçimi temizle",()=>editor?.chain().focus().unsetAllMarks().clearNodes().run())}
+              {editor?.isActive("table")&&<>{button("+ Satır","Satır ekle",()=>editor.chain().focus().addRowAfter().run())}{button("+ Sütun","Sütun ekle",()=>editor.chain().focus().addColumnAfter().run())}{button("− Satır","Satırı sil",()=>editor.chain().focus().deleteRow().run())}{button("− Sütun","Sütunu sil",()=>editor.chain().focus().deleteColumn().run())}{button("Tabloyu sil","Tabloyu sil",()=>editor.chain().focus().deleteTable().run())}</>}
+            </div></details>
+          </div>
+        </>:<>        {!compact&&button("+ İçerik", "İçerik bloğu ekle",()=>setBlockOpen(!blockOpen))}
         {button(
           "B",
           "Kalın (Ctrl/Cmd+B)",
@@ -368,7 +411,7 @@ export function RichTextEditor({
           onClick={() => setPreview(!preview)}
         >
           {preview ? "Yaz" : "Önizle"}
-        </button>
+        </button></>}
       </div>
       {noteOpen&&<div className="qgBlockComposer qgNoteComposer" role="group" aria-label="Dipnot düzenle">
         <label>Açıklama / kaynak künyesi<textarea autoFocus maxLength={4000} rows={4} value={noteText} onChange={e=>setNoteText(e.target.value)} placeholder="Yazar, eser, yıl, sayfa veya açıklayıcı not…"/></label>

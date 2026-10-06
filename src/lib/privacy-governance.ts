@@ -7,13 +7,13 @@ export const defaultPrivacyBodies:Record<string,string>={
 
 Yayım öncesi taslak: Kategori bazlı hukuki sebepler, sağlayıcı aktarım güvenceleri ve başvuru usulü doğrulanmalıdır.
 
-Hesap ve kimlik: Rumuz, ad, e-posta ve sağlayıcı kimliği giriş ve hesap eşleştirme için işlenir. E-posta genel profilde yayımlanmaz.
+Hesap ve kimlik: Kullanıcının seçtiği kullanıcı adı, rumuz, e-posta ve sağlayıcı kimliği giriş ve hesap eşleştirme için işlenir. Gerçek ad ve soyadı talep edilmez. Google oturum/kimlik verilerinde ad bilgisi iletebilir; uygulama bu bilgiyi profil kullanıcı adı veya Google bağlı hesap etiketi olarak kopyalamaz. Önceki hesap/sağlayıcı kayıtlarında bu bilgi bulunabilir. E-posta genel profilde yayımlanmaz.
 Profil: Avatar, banner ve biyografi profil sunumuna hizmet eder. Görsel bağlantıları herkese açık olabilir.
 Üyelik: Kabul tarihi, rütbe, görev ve eski üye eşleşmesi topluluk işleyişi için kullanılır. Doğrulama dayanakları yetkili alanlarla sınırlıdır.
 Doğum bilgisi: Tam tarih kullanıcıya özeldir; diğer kişilere yalnız görünürlük tercihi kadar bilgi gösterilir.
 Yayın ve yorum: Yayımlanan içerik ziyaretçiler tarafından görülebilir; taslaklar yetkiye tabidir.
 Rozet: Aktif kazanımlar gösterilir; ayrıntılı atama ve düzeltme gerekçeleri yetkili alanlarda tutulur.
-Disiplin: Karar, savunma, delil ve itirazlara işlem için gerekli kişiler erişir.
+Disiplin: Karar, savunma, delil ve itirazlara işlem için gerekli kişiler erişir. Başvuran kendi şikâyet ve itirazının durumunu, kendi itirazına verilen yanıtı görebilir; diğer başvuranların kayıtları kişisel başvuru ekranında gösterilmez.
 Bütçe: Mali takip için işlem kayıtları tutulur; anonimlik tercihi gözetilir.
 Aster ve güvenlik: Talep edilen yardım ve güvenli işletim için konuşma/teknik kayıtlar işlenir. Özel üye verileri genel bilgi kaynağına dönüştürülmez.
 

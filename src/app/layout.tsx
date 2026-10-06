@@ -10,6 +10,7 @@ import "./one-surface.css";
 import "./editor-portrait.css";
 import "./aster.css";
 import "./ui-consistency.css";
+import "./ui-primitives.css";
 import {getActiveDesign} from "@/lib/design-server";
 
 import {EmberStage} from "@/components/EmberStage";

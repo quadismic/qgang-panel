@@ -21,7 +21,7 @@ export default async function Login({searchParams}:{searchParams:Promise<{error?
       <div className="loginDividerV5" aria-hidden="true"><i/><span>◇</span><i/></div>
       <div className="loginCard loginCardV5">
         {q.error&&<div className="qgangInlineError" role="alert"><span>GİRİŞ BAŞARISIZ</span><p>Google oturumu tamamlanamadı. Lütfen yeniden deneyin.</p></div>}
-        <AuthButtons/><p className="muted"><a href="/gizlilik">Kişisel verilerin işlenmesi hakkında bilgi</a></p>
+        <AuthButtons/><p className="loginPrivacy"><a href="/gizlilik">Kişisel verilerin işlenmesi hakkında bilgi</a></p>
       </div>
     </section>
   </main>

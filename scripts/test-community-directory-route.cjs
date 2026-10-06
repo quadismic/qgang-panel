@@ -1,0 +1,13 @@
+const fs=require('fs'),vm=require('vm'),ts=require('typescript'),assert=require('node:assert/strict');
+let user={id:'actor'},allowed=true,args,error=null;const rows=Array.from({length:21},(_,i)=>({id:String(i)}));
+const client={auth:{getUser:async()=>({data:{user}})},rpc:async(name,input)=>{assert.equal(name,'list_community_directory');args=input;return {data:rows,error};}};
+const moduleObject={exports:{}};
+const code=ts.transpileModule(fs.readFileSync('src/app/api/community-directory/route.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+vm.runInThisContext(`(function(require,module,exports){${code}\n})`)(name=>name==='@/lib/supabase/server'?{createClient:async()=>client}:name==='@/lib/access'?{hasPermission:async(id,permission)=>{assert.equal(permission,'members.view');return allowed;}}:require(name),moduleObject,moduleObject.exports);
+const get=query=>moduleObject.exports.GET(new Request('https://q-gang.com/api/community-directory?'+query));
+(async()=>{user=null;assert.equal((await get('')).status,401);user={id:'actor'};allowed=false;assert.equal((await get('')).status,403);allowed=true;
+for(const query of ['page=0','page=NaN','page=1.2','role=unknown','status=unknown','suspended=unknown','q='+ 'x'.repeat(81)])assert.equal((await get(query)).status,400);
+let response=await get('page=7&status=none&suspended=yes&q=%23125');assert.equal(response.headers.get('cache-control'),'private, no-store');let body=await response.json();assert.equal(body.items.length,20);assert.equal(body.hasNext,true);assert.equal(args.page_number,7);assert.equal(args.search_term,'#125');assert.equal(args.membership_filter,'none');assert.equal(args.suspended_filter,'yes');
+error={message:'private database detail'};response=await get('');assert.equal(response.status,500);assert(!(await response.text()).includes('private database detail'));
+console.log('PASS directory API: auth, members.view, validation, RPC filters, 20-row page, continuation, private cache and opaque errors');
+})().catch(e=>{console.error(e);process.exit(1)});
