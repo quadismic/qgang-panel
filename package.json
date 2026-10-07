@@ -13,6 +13,7 @@
     "test:documents": "node scripts/test-document-db.cjs && node scripts/test-badge-document-routes.cjs && node scripts/test-codex-pdf.cjs",
     "test:events": "node scripts/test-events.cjs && node scripts/test-events-routes.cjs && node scripts/test-events-db.cjs && node scripts/test-events-presentation.cjs",
     "test:codex-ui": "node scripts/test-codex-composer-ui.cjs",
+    "test:events-detail-ui": "node scripts/test-events-detail-ui.cjs",
     "test:events-ui": "node scripts/test-events-ui.cjs",
     "test:auth": "node scripts/test-auth-onboarding.cjs && node scripts/test-auth-callback.cjs && node scripts/test-community-repairs.cjs && node scripts/test-guest-identity.cjs"
   },

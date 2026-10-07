@@ -150,5 +150,27 @@
  .qgDialog.eventOperationsDialog{width:calc(100vw - 20px);max-width:calc(100vw - 20px);max-height:calc(100dvh - 20px - env(safe-area-inset-bottom))}.eventOperationsDialog>header{padding:12px 14px}.eventOperationsDialog>header h2{font-size:21px}.eventOperationsBody{padding:0 14px calc(18px + env(safe-area-inset-bottom))}.eventOperationsBody .eventForm{grid-template-columns:minmax(0,1fr)}
  .homeUpcomingEvents{padding:0 14px;margin:16px 0}.homeUpcomingEvents .homeSectionHead{padding:10px 0}.homeUpcomingEvents .homeSectionHead h2{font-size:15px}
 }
-/* Event tab navigation acknowledges a pending server transition without hiding the current ledger. */
-.eventTabs .qgButton:has(.eventTabPending){flex-wrap:wrap}.eventTabPending{font:11px/1.3 var(--qg-ui-font);color:var(--qg-muted)}
+
+/* Center the shared rule/directive/decision dates within the document footer. */
+.codexV3Paper>footer{width:100%;box-sizing:border-box;margin-inline:auto;text-align:center}
+.codexV3Paper>footer>div{min-width:0;justify-content:center;padding-inline:0;border-right:0}
+.codexV3Paper>footer strong{overflow-wrap:anywhere}
+
+/* Event detail: shared content edges, compact metadata and top-layer operations. */
+.eventsPage>.eventLedger{border-top:0}
+.eventBackLink{align-self:flex-start;min-height:44px}
+.eventDetailHero{height:auto!important;min-width:0}
+.eventDetailHero h1{max-width:100%;overflow-wrap:anywhere}
+.eventDetailMetadata{flex-wrap:wrap;gap:10px 14px;min-width:0}
+.eventDetailMetadata time{overflow-wrap:anywhere}
+.eventDetailActions{display:flex;justify-content:flex-end;align-items:center;gap:10px;position:relative;z-index:5;isolation:isolate}
+.eventManagementMenu{display:flex;align-items:center;gap:4px;min-height:44px}
+.eventDetailActions .qgOverflowContent{min-width:230px;max-width:calc(100vw - 32px)}
+.eventDetailActions .qgOverflowContent .qgButton{width:100%;justify-content:flex-start;white-space:normal;min-height:44px}
+.eventDetail,.eventAttendancePanel{min-height:0!important;padding:20px;gap:12px}
+.eventDetail>p,.eventAttendancePanel>p,.eventAttendancePanel>h2{margin:0}
+.eventAttendancePanel .eventAttendance{margin:0;padding-left:20px;gap:10px 24px;overflow-wrap:anywhere}
+.eventResponseCounts{font-size:14px;color:var(--muted)}
+@media(max-width:600px){.eventDetailHero{padding:24px 20px!important}.eventDetailHero h1{font-size:clamp(26px,7vw,36px)}.eventDetailActions{flex-wrap:wrap}.eventDetail,.eventAttendancePanel{padding:16px}.eventResponse{display:flex;flex-direction:column;align-items:stretch;gap:10px}.eventResponse label{width:100%}}
+.eventsPage>.eventBackLink{justify-self:start;justify-content:flex-start;width:fit-content;padding-left:0}
+@media(max-width:600px){.eventsPage .eventDetailHero h1{font-size:28px!important;line-height:1.15}}

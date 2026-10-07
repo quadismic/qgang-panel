@@ -129,3 +129,23 @@ Typecheck, lint, dipnot kısayol/seçim/görsel ekleme ve numaralandırma testle
 - İcra kararında Tür ve Bölüm görünür kontrolleri kaldırılır; tür sabittir ve bölüm seçilen dayanağın bölümünden alınır. Diğer hüküm türlerinin seçim akışı korunur.
 - Başlık, Dayanak Hüküm ve Uygulama Kapsamı öncesinde aynı tam genişlik alan biçimini kullanır. Placeholder: Arşivleme kolaylığı için "Kişi/Konu · İşlem" başlık biçimini kullan.
 - Kodeks yayımlama/düzenleme paneli dışına tıklamak paneli kapatmaz. Sağ üst kapatma ve Escape korunur; diğer dialogların dış tıklama davranışı değişmez.
+
+## Kodeks tarih bilgileri — 2026-10-07
+
+- Kural, yönerge ve icra kararının ortak belge footer'ı içerik içinde ortalanır. Yürürlük/Son Değişiklik etiketleri ve tarihleri kendi sütunlarında ortalıdır; tek taraflı ayırıcı/padding kaldırılır. Mobil tek sütun düzeni ve tarih değerleri korunur.
+
+## Etkinlik sekmesi geri bildirimi — 2026-10-07
+
+- Kullanıcı tercihiyle sekmelerdeki “Yükleniyor…” metni kaldırılmıştır. Bağımsız sorguların paralel yüklenmesi korunur.
+
+## Etkinlik banner ayarı — 2026-10-07
+
+- Tasarım Merkezi / Görsel Kütüphanesi içinde bağımsız Etkinlikler yükleme alanı vardır. roomEvents mevcut tasarım JSON kaydetme/geçmiş/geri alma ve design.manage yetkisiyle yönetilir. Eski ayarlarda mevcut registry.webp varsayılanına döner; Topluluk bannerından bağımsızdır. Etkinlik hero mevcut ortak CSS değişkeni mekanizmasıyla bu ayarı kullanır.
+
+## Etkinlik detayı — 2026-10-07
+
+- Hero üstünde sola hizalı “← Etkinlikler”; liste satırları view/type/from/to/member bağlamını returnTo ile taşır. Dönüş yalnız izin verilen liste yolu ve filtre anahtarlarına normalize edilir; tamamlanmış doğrudan kayıt bağlantısının varsayılan dönüşü arşivdir. Yönetim/yanıt kaydı sonrasında bağlam korunur.
+- Başlık veritabanındaki gerçek başlıktır; tür, İstanbul tarih/saat ve tek durum rozeti altında yer alır. Ayrı durum kutusu ve alttaki dönüş kaldırılmıştır. Katılım yanıtı sayısı kompakt bilgi satırıdır; yanıt gerçek yoklama yerine geçmez.
+- Katılım Arşivi ortak panel boşluklarını kullanır; yalnız doğrulanmış katılımlar gösterilir. Boş arşiv tek kısa mesajdır.
+- Düzenle ve Yönetim ⋯ hero dışında üstte. Mevcut düzenleme, yayın/durum, yoklama ve tarihsel kimlik eşleştirme formları ortak native dialog içinde açılır. Bağımsız events.manage / events.publish / events.attendance / events.archive koşulları ve kritik işlem onayları korunur.
+- Menü hero dışında kendi katmanındadır; formlar native dialog top layer kullanır. Mobil kontroller en az 44px; uzun başlık ve bilgiler sarılır. Liste filtrelerinin altında tek ayırıcı kullanılır.

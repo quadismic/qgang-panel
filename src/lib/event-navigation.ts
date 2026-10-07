@@ -1,0 +1,3 @@
+const keys=["view","type","from","to","member"] as const;
+export function eventListHref(filters:Partial<Record<typeof keys[number],string>>){const q=new URLSearchParams();for(const key of keys){const value=filters[key];if(value&&value.length<=100)q.set(key,value);}return "/etkinlikler"+(q.size?"?"+q.toString():"");}
+export function eventReturnHref(value:string|undefined,archive=false){if(!value)return archive?"/etkinlikler?view=archive":"/etkinlikler";try{const u=new URL(value,"https://q-gang.com");if(!value.startsWith("/etkinlikler")||u.origin!=="https://q-gang.com"||u.pathname!=="/etkinlikler")return eventReturnHref(undefined,archive);return eventListHref(Object.fromEntries(u.searchParams));}catch{return eventReturnHref(undefined,archive);}}

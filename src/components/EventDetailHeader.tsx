@@ -1,0 +1,5 @@
+import Link from "next/link";
+import {Badge,Metadata} from "@/components/ui/Primitives";
+import {eventDate} from "@/lib/events";
+const statuses:Record<string,string>={draft:"Taslak",published:"Yayımlandı",completed:"Tamamlandı",cancelled:"İptal edildi"};
+export function EventDetailHeader({event,typeName,returnHref}:{event:{title:string;status:string;starts_at:string;ends_at:string;date_only:boolean};typeName:string;returnHref:string}){return <><Link href={returnHref} className="qgButton qgButton-tertiary eventBackLink">← Etkinlikler</Link><section className="roomScene eventHero eventDetailHero unifiedPageHero" style={{backgroundImage:'linear-gradient(90deg,rgba(4,3,2,.82),rgba(4,3,2,.38)),var(--qg-room-events,url(/brand/rooms/registry.webp))'}}><span className="kicker">Q-GANG · BİR ARADA</span><h1>{event.title}</h1><Metadata className="eventDetailMetadata"><Badge className="eventTypeBadge">{typeName}</Badge><time dateTime={event.starts_at}>{eventDate(event.starts_at,event.date_only)}{!event.date_only&&event.ends_at!==event.starts_at&&` — ${eventDate(event.ends_at)}`}</time><Badge>{statuses[event.status]||event.status}</Badge></Metadata></section></>;}

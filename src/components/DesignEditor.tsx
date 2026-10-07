@@ -6,7 +6,7 @@ import type {DesignSettings} from "@/lib/design";
 import {resetDesign,restoreDesign,saveDesign} from "@/app/control/design/actions";
 import {createClient} from "@/lib/supabase/client";
 const Range=({label,value,min,max,onChange}:{label:string,value:number,min:number,max:number,onChange:(n:number)=>void})=><label className="designField"><span>{label}<b>{value}</b></span><input type="range" min={min} max={max} value={value} onChange={e=>onChange(Number(e.target.value))}/></label>;
-const targets=[["emblemSrc","Ana arma"],["commandBackground","Karargâh arka plan"],["quadSrc","Quad"],["loginBackground","Login arka plan"],["roomCodex","Kurallar"],["roomRegistry","Topluluk"],["roomDecrees","Duyurular"],["roomTribunal","Cezalar"],["roomTreasury","Bütçe"]] as const;
+const targets=[["emblemSrc","Ana arma"],["commandBackground","Karargâh arka plan"],["quadSrc","Quad"],["loginBackground","Login arka plan"],["roomCodex","Kurallar"],["roomRegistry","Topluluk"],["roomDecrees","Duyurular"],["roomTribunal","Cezalar"],["roomTreasury","Bütçe"],["roomEvents","Etkinlikler"]] as const;
 export function DesignEditor({initial,history}:{initial:DesignSettings,history:{id:number,created_at:string}[]}){
  const [d,setD]=useState(initial),[pending,start]=useTransition(),[saved,setSaved]=useState(false),[uploading,setUploading]=useState(""),frame=useRef<HTMLIFrameElement>(null);
  const set=(k:keyof DesignSettings,v:any)=>{setSaved(false);setD(x=>({...x,[k]:v}))};

@@ -160,3 +160,7 @@ Son kontroller: typecheck/lint/build ve etkinlik domain/API/DB/sunucu sunum/gör
 ## 2026-10-07 — Eşleşmiş üyelerde giriş/kimlik oluşturma döngüsü
 
 Google girişi başarılı iken doğrulanmış üç legacy hesabın `onboarding_completed_at` alanı boş kalmıştı. Bilgileri tamamlanmış ve aktif üyeliği yönetimce doğrulanmış bu üç hesabın marker'ı canlıda onarıldı; sonraki legacy link işlemlerine private invoker trigger eklendi. Yeni/eksik hesap onboarding akışında kalır. Rol, üyelik, özel bilgi ve legacy bağlantıları önce/sonra aynı; eşleşmiş eksik profil 0. Auth/DB/guest testleri, typecheck/lint/build geçti. Yerel onboarding formu mevcut isim/rumuzu korur; web deploy yapılmadı. Ayrıntılar AUTH_IDENTITY_LOOP_REPORT_20261007.md.
+
+## Ek doğrulama — Etkinlik detayı, 2026-10-07
+
+Etkinlik detayında gerçek başlık ve tek meta/durum satırı, hero üstünde bağlamı koruyan dönüş, kompakt katılım arşivi ve üst yönetim menüsü uygulandı. Alt yönetim şeritleri ve çift liste ayırıcı kaldırıldı. 390/1440px gerçek Chromium, uzun başlık, boş/dolu ve yetkili/yetkisiz fixture doğrulaması; bağımsız izin koşulları sunucu sunum testinde kontrol edildi. Ayrıntılar: EVENTS_DETAIL_UI_REPORT_20261007.md. Deploy yapılmadı.
