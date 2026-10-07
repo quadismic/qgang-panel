@@ -150,3 +150,13 @@ Başlıklar: İK-2026-001 → Renovich · Vekilharçlığa Atama; İK-2026-002 �
 Etkinliklerin ana sayfa/öneri bileşenleri de gerçek 390/1440px tarayıcı testinde doğrulandı; taşma yok, mobil tek sütun/masaüstü planlanan sütunlar ve 44px kontroller. Reddedilen gönderim alanları koruyor. Önceki tarayıcı kurulumu engeli alternatif yerel Chromium ile aşıldı. Fixture’lar gerçek bileşenleri kullanır; canlı auth/yönetim/import uçtan uca QA ayrı kalır.
 
 Kişisel veri etki kontrolü: bu Kodeks düzeltmesinde yeni kategori/amaç/alıcı/sağlayıcı/çerez/saklama/erişim değişikliği yok; altı FEATURE_REVIEW sorusu olumsuz. Etkinlik paketinin ayrı gizlilik taslağı ve inceleme ihtiyacı devam eder. Production deploy veya migration yapılmadı. Yayın planı: DEPLOY_READINESS_20261007.md.
+
+## 2026-10-07 — Etkinlikler sunum güncellemesi
+
+Önceki üç sütunlu etkinlik ana sayfası sözleşmesi değiştirildi: en yakın iki yayımlanmış kayıt yatay Yaklaşan Etkinlik alanında; Yayınlar/Duyurular iki sütun. Tarihli defter, ortak genişlikte mevcut asset'li hero, üst öner/oluştur aksiyonları ve izinli ••• aktarım/ayar menüsü uygulandı. Mobil tek sütun ve 44px hedefler; tarih filtresi yalnız arşiv. İş mantığı, Erişim Merkezi ve RLS korunur. 390/1440px gerçek bileşen testleri, uzun başlık, tam/boş ve üye/yetkili varyasyonlarında hizalama/taşma/dialog doğrulamasını kapsar. Ayrıntılar: EVENTS_UI_REPORT_20261007.md. Deploy yok.
+
+Son kontroller: typecheck/lint/build ve etkinlik domain/API/DB/sunucu sunum/görsel testleri geçti. Mevcut CSS autoprefixer uyarıları build'i engellemiyor. Canlı auth/aktarım uçtan uca doğrulaması bu yerel çalışma kapsamında yapılmadı.
+
+## 2026-10-07 — Eşleşmiş üyelerde giriş/kimlik oluşturma döngüsü
+
+Google girişi başarılı iken doğrulanmış üç legacy hesabın `onboarding_completed_at` alanı boş kalmıştı. Bilgileri tamamlanmış ve aktif üyeliği yönetimce doğrulanmış bu üç hesabın marker'ı canlıda onarıldı; sonraki legacy link işlemlerine private invoker trigger eklendi. Yeni/eksik hesap onboarding akışında kalır. Rol, üyelik, özel bilgi ve legacy bağlantıları önce/sonra aynı; eşleşmiş eksik profil 0. Auth/DB/guest testleri, typecheck/lint/build geçti. Yerel onboarding formu mevcut isim/rumuzu korur; web deploy yapılmadı. Ayrıntılar AUTH_IDENTITY_LOOP_REPORT_20261007.md.

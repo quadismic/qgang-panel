@@ -1,4 +1,6 @@
-# Q-GANG — bekleyen yayın hazırlığı
+# Q-GANG — yayın hazırlığı kaydı
+
+**Güncel durum:** Kullanıcının sonraki Deploy talimatıyla yayın tamamlandı. Production sonucu ve kalan işler: `DEPLOY_EVENTS_CODEX_20261007.md`. Aşağıdaki metin yayın öncesi durumu kaydeder.
 
 Production deploy, GitHub push ve canlı migration yapılmadı. Yerel paket incelemeye hazır; aşağıdaki canlı kontroller bitmeden yayına hazır olduğu varsayılmaz.
 

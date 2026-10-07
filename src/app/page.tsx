@@ -1,4 +1,4 @@
-import {homeEventData,UpcomingEvents,RecentEvents} from "@/components/HomeEvents";
+import {homeEventData,UpcomingEvents} from "@/components/HomeEvents";
 import {CouncilScene} from "@/components/CouncilScene";
 import {NormBadge} from "@/components/NormBadge";
 import {announcementType,announcementLink} from "@/lib/announcements";
@@ -38,7 +38,7 @@ export default async function Headquarters(){
   {(birthdays??[]).length>0&&<section className="birthdayBanner birthdayBannerHome"><span className="birthdaySigil">✦</span><div><small>BUGÜN TOPLULUKTA</small><h2>{(birthdays??[]).map((b:any)=>b.display_name).join(" · ")}</h2><p>{(birthdays??[]).length===1?"Bugün doğum günü. Nice yıllara!":"Bugün doğum günlerini kutluyoruz. Nice yıllara!"}</p></div></section>}
 
   {eventData&&<UpcomingEvents data={eventData}/>}
-  <div className={"homeEditorialGrid"+(eventData?" homeWithEvents":"")}>
+  <div className="homeEditorialGrid">
    <section className="homeFeedSection homeNotices"><header className="homeSectionHead"><div><span><QGIcon name="announcements"/></span><div><h2>DUYURULAR</h2><p>Topluluğa ilişkin resmî açıklamalar, kararlar ve önemli gelişmeler.</p></div></div><Link href="/duyurular">TÜM DUYURULAR <QGIcon name="chevron"/></Link></header>
     <div className="homeNoticeList">{notices.length?notices.map((a:any)=><Link href={announcementLink(a)} className={"homeNotice "+(a.is_pinned?"isPinned ":"")+a.priority} key={a.id}><div className={"homeNoticeVisual noticeCover noticeCover-"+a.category.toLowerCase()+" noticePriority-"+a.priority}><span><QGIcon name={a.category==="KARAR"?"seal":"announcements"}/></span></div><div className="homeNoticeContent"><div className="normBadges"><NormBadge kind={a.category}/><NormBadge priority={a.priority}/></div><h3>{a.title}</h3><p>{richPlain(a.body).slice(0,115)||"Ayrıntılar için duyuruyu aç."}</p><footer><time>{shortDate(a.published_at)}</time>{a.is_pinned&&<b>SABİT</b>}</footer></div><QGIcon name="chevron"/></Link>):<div className="homeFeedEmpty"><b>Henüz duyuru yok.</b><span>İlk resmî kayıt yayımlandığında burada görünecek.</span></div>}</div>
    </section>
@@ -46,7 +46,7 @@ export default async function Headquarters(){
    <section className="homeFeedSection homePublications"><header className="homeSectionHead"><div><span><QGIcon name="document"/></span><div><h2>SON YAYINLAR</h2><p>Araştırmalar, incelemeler, düşünceler, oyun, teknoloji ve daha fazlası.</p></div></div><Link href="/yayinlar">TÜM YAYINLAR <QGIcon name="chevron"/></Link></header>
     <div className="homePubList">{pubs.length?pubs.map((p:any)=><Link href={"/yayinlar/"+p.slug} className="homePubRow" key={p.slug}><div className="homePubThumb">{p.cover_url?<img src={p.cover_url} alt=""/>:<span><QGIcon name="document"/></span>}</div><div className="homePubRowBody"><b className={"pubBadge pubBadge-"+p.kind}>{kindLabel[p.kind]||"YAYIN"}</b><h3>{p.title}</h3><p>{richPlain(p.excerpt||"").slice(0,115)||"Bu yayın için henüz özet eklenmedi."}</p><footer><span>{p.authorName}</span><time>{shortDate(p.published_at)}</time></footer></div><QGIcon name="chevron"/></Link>):<div className="homeFeedEmpty"><b>Arşiv hazırlanıyor.</b><span>İlk yayın yayımlandığında burada görünecek.</span></div>}</div>
    </section>
-   {eventData&&<RecentEvents data={eventData}/>}
+
   </div>
  </div></AppShell>
 }

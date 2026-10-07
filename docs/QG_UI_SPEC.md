@@ -89,8 +89,8 @@ Typecheck, lint, dipnot kısayol/seçim/görsel ekleme ve numaralandırma testle
 - Ortak AppShell içerik genişliği, managementHero/managementPanel yüzeyleri ve bronze primary primitive'leri kullanılır.
 - Menü yalnız etkinlik görüntüleme yetkisi ve topluluk erişimi olan kişide görünür. Etkinlikler: Yaklaşan Etkinlikler / Etkinlik Arşivi.
 - Türlerin başlangıç sırası GANG-UP, OP-NIGHT, BBQ-GANG, Q-NITY; sabit kimlikler korunur, ad/açıklama/sıra yetkili ayarıdır.
-- Ana sayfa: varsa üç yaklaşan etkinlik, ilki geniş; altında Son Yayınlar / Duyurular / Son Etkinlikler. 760px altında etkinlik kartları/form tek sütun; 1000px altında üçlü ana sayfa akışı tek sütun. 44px form kontrolü ve ortak düğme hedefleri.
-- Etkinlik hero'su kimlik/tarih taşır; formlar kendi panel/details alanındadır. Öneri/düzenleme, durum, yoklama ve tarihsel eşleştirme ayrı bölümlerdir. Kritik durum/yoklama/eşleştirme/aktarımı açık onay gerektirir.
+- Ana sayfa: Yayınlar/Duyuruların üzerinde içerikle büyüyen yatay Yaklaşan Etkinlik alanı; en yakın 1–2 yayımlanmış kayıt. Alt akış iki eşit sütun; 1000px altında tek sütun. Üçüncü Son Etkinlikler sütunu ve carousel yok. Etkinlikler mobilde alt alta akar; 44px hedefler korunur.
+- Etkinlik hero'su ortak içerik genişliğinde mevcut sicil salonu asset'iyle kimlik/açıklama taşır; operasyon hero dışında. Yaklaşan/Arşiv sekmelerinin yanında mevcut izinlerle öner/oluştur; tarihsel aktarım ve tür/sıralama yetkili ••• menüsünde. Ortak native Dialog ve form kontrolleri kullanılır. Kritik durum/yoklama/eşleştirme/aktarımı açık onay gerektirir.
 - Form bağlantı/yetki hataları alanları silmeden form içinde gösterilir. Katılım yanıtı gerçek yoklama değildir; kapasite dolduğunda bekleme sırası ayrı gösterilir.
 - Tarihsel kayıtlar tarih hassasiyetini korur: yalnız tarihi bilinen etkinliğe saat uydurulmaz. Bilinmeyen eski türün etiketi saklanır. Eşleşmeyen rumuz ve doğrulanmamış katılım Faaliyetler'e eklenmez.
 - Faaliyetler yalnız tamamlanmış etkinlikte doğrulanmış katılımı etkinlik tarihiyle gösterir; Katılım Arşivi bağlantısı üye filtresini açar.
@@ -103,3 +103,12 @@ Typecheck, lint, dipnot kısayol/seçim/görsel ekleme ve numaralandırma testle
 - İcra kararı başlığı: `Kişi/Konu · İşlem`. Karar türü ayrı gösterildiği için başlığa “Karar/Emir” eklenmez. Bu bir editoryal yönlendirmedir; metin otomatik dönüştürülmez ve mevcut kayıt/yetki kuralları değişmez.
 - 390/1440px gerçek Chromium bileşen testi: mobil dialog ve drawer 390px, masaüstü dialog 1120px; yatay taşma yok. Kapatma ve Escape sonrası scroll kilidi kaldırılır.
 - Etkinlik ana sayfa kartları/öneri formu gerçek Chromium’da 390/1440px doğrulandı: mobil tek sütun, masaüstü üç ana sayfa sütunu ve iki form sütunu; 44px hedefler. Bu yerel fixture doğrulaması, canlı kimlik doğrulamalı uçtan uca kontrol yerine geçmez.
+
+
+## Etkinlikler UI güncellemesi — 2026-10-07
+
+- Navbar aynı konum ve sade aktif durumla QGIcon outline takvim kullanır.
+- Tarihli defter satırı: tarih / tür, başlık, yer veya oyun ve İstanbul saat bilgisi / mevcut durum, kendi katılım yanıtı veya yoklama ve detay. <=760px tek sütun; uzun başlık/yer taşmadan sarılır. Yalnız tarihi bilinen kayda saat eklenmez.
+- Tür filtresi her görünümde; tarih aralığı ve katılımcı filtresi yalnız arşivde. Tür kimlikleri, başlangıç sırası ve yetkilinin sıralama ayarı korunur.
+- Ana sayfa sorgusu yalnız yayımlanmış, bitişi geçmemiş en yakın iki etkinliği getirir. events.view ve mevcut RLS görünürlüğü korunur; görünür boş durumda kısa bilgi/arşiv bağlantısı. Erişimi olmayana boş blok da gösterilmez.
+- 390/1440px gerçek Chromium: tam/boş, üye/yetkili, uzun başlık, aynı hero/liste kenarı, 44px kontroller, dialog/Escape ve hata sonrası form değerlerinin korunması doğrulandı. Gerçek bileşenlerle yerel fixture; canlı kimlik doğrulamalı yönetim/aktarımı uçtan uca kapsamaz. Sonuçlar EVENTS_UI_REPORT_20261007.md içinde.

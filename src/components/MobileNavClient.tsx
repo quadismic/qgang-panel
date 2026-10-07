@@ -8,7 +8,7 @@ const content:Item[]=[["/","headquarters","Ana Sayfa"],["/kodeks","rules","Kodek
 const aliases:Record<string,string>={"/profil":"/profile","/yonetim":"/control","/kodeks":"/rules","/duyurular":"/announcements","/yayinlar":"/publications","/topluluk":"/members","/disiplin":"/penalties","/butce":"/budget"};
 export function MobileNavClient({user=false,manage=false,canViewBudget=false,canViewDiscipline=false,canViewEvents=false}:{user?:boolean;canViewEvents?:boolean;manage?:boolean;canViewBudget?:boolean;canViewDiscipline?:boolean}){
  const path=usePathname(),track=useRef<HTMLDivElement>(null);
- const groups:Item[][]=[content,[...(canViewEvents?[["/etkinlikler","community","Etkinlikler"] as Item]:[]),["/topluluk","community","Topluluk"],...(canViewDiscipline?[["/disiplin","discipline","Disiplin"] as Item]:[]),...(canViewBudget?[["/butce","treasury","Bütçe"] as Item]:[]),...(manage?[["/yonetim","control","Yönetim"] as Item]:[]),[user?"/profil":"/login","identity",user?"Profil":"Giriş"]]];
+ const groups:Item[][]=[content,[...(canViewEvents?[["/etkinlikler","calendar","Etkinlikler"] as Item]:[]),["/topluluk","community","Topluluk"],...(canViewDiscipline?[["/disiplin","discipline","Disiplin"] as Item]:[]),...(canViewBudget?[["/butce","treasury","Bütçe"] as Item]:[]),...(manage?[["/yonetim","control","Yönetim"] as Item]:[]),[user?"/profil":"/login","identity",user?"Profil":"Giriş"]]];
  const active=(href:string)=>href==="/"?path==="/":path.startsWith(href)||!!(aliases[href]&&path.startsWith(aliases[href]));
  const selected=Math.max(0,groups.findIndex(group=>group.some(([href])=>active(href))));
  const [page,setPage]=useState(selected);

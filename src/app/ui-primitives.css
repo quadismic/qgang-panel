@@ -105,3 +105,49 @@
  .qgDialog.codexComposerOverlay .codexComposerDrawer>header h2{font-size:24px;overflow-wrap:anywhere}
  .qgDialog.codexComposerOverlay .codexComposerDrawer>header .qgIconButton{flex-shrink:0;width:44px;height:44px}
 }
+
+/* Events: shared-width hero, dated ledger, sparse operational controls. */
+.eventsPage{width:100%;min-width:0;gap:16px}
+.eventsPage .eventHero{background-size:cover;background-position:center;min-width:0;display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:flex-end}
+.eventHero .kicker{position:relative;z-index:1;color:#c5a67e;margin-bottom:8px}
+.eventPageToolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;border-bottom:1px solid var(--qg-divider);padding-bottom:10px;min-width:0}
+.eventPageToolbar .eventTabs{gap:6px}
+.eventTabs .qgButton{border-radius:0;border:0;border-bottom:2px solid transparent;min-height:44px;background:transparent}
+.eventTabs .qgButton[aria-current=page]{color:#ead0af;border-bottom-color:var(--qg-focus);background:#21170d}
+.eventPageActions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0}
+.eventPageActions .qgOverflowContent{min-width:224px}
+.eventsPage .eventFilters{align-items:end;gap:12px;padding:0 0 12px;border-bottom:1px solid var(--qg-divider)}
+.eventFilters>label{flex:0 1 190px}.eventFilters .qgMemberPicker{flex:1 1 220px}
+.eventResponseError{margin:0;color:var(--qg-muted);font:13px/1.5 var(--qg-ui-font)}
+.eventLedger{min-width:0;border-top:1px solid var(--qg-divider)}
+.eventLedgerRow{display:grid;grid-template-columns:84px minmax(0,1fr) minmax(150px,220px);align-items:center;gap:22px;min-width:0;padding:22px 0;border-bottom:1px solid var(--qg-divider)}
+.eventDateStamp{display:grid;gap:3px;text-align:center;padding-right:20px;border-right:1px solid var(--qg-divider);color:#c4a578;align-self:stretch;align-content:center}
+.eventDateStamp b{font:34px/1.1 var(--qg-display-font,Georgia,serif);color:#e3cfaf}
+.eventDateStamp span{font:12px/1.5 var(--qg-ui-font);letter-spacing:.08em}
+.eventDateStamp small{font:11px/1.5 var(--qg-ui-font);color:var(--qg-muted)}
+.eventLedgerContent{min-width:0}.eventLedgerContent h2,.eventLedgerContent h3{margin:9px 0 10px;color:#e3d3bd;font:24px/1.35 var(--qg-display-font,Georgia,serif);overflow-wrap:anywhere}
+.eventTypeBadge{padding:4px 9px;border:1px solid #775335;border-radius:20px;background:#281c10;color:#d6b98f;font:11px/1.4 var(--qg-ui-font)}
+.eventTypeBadge-gang-up{background:#2d1711;border-color:#704234}.eventTypeBadge-op-night{background:#15212a;border-color:#405564}.eventTypeBadge-bbq-gang{background:#2b200e;border-color:#77592b}.eventTypeBadge-q-nity{background:#18241b;border-color:#455c40}
+.eventLedgerMeta{display:grid;gap:6px}.eventLedgerMeta>time{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.eventLedgerMeta .qgIcon{width:17px;height:17px;flex-shrink:0}.eventLocation{overflow-wrap:anywhere;white-space:pre-wrap}
+.eventLedgerActions{display:grid;justify-items:end;gap:7px;min-width:0;text-align:right;color:var(--qg-muted);font:12px/1.5 var(--qg-ui-font)}
+.eventRecordStatus{color:#c4a578}.eventParticipation{overflow-wrap:anywhere}.eventLedgerActions .eventDetailLink{padding:8px 0;white-space:normal;text-align:right;min-height:44px}.eventDetailLink .qgIcon{flex-shrink:0}
+.eventCompactEmpty{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0}.eventCompactEmpty .qgEmptyState{display:flex;align-items:center;gap:10px;padding:0}.eventCompactEmpty .qgEmptyState h3{font:14px/1.5 var(--qg-ui-font);margin:0}.eventCompactEmpty .qgEmptyState>.qgIcon{width:18px;height:18px}
+.qgDialog.eventOperationsDialog{box-sizing:border-box;inset:0;margin:auto;width:min(760px,calc(100vw - 32px));max-width:calc(100vw - 32px);height:fit-content;max-height:calc(100dvh - 32px);border-radius:6px;padding:0;overscroll-behavior:contain}
+.eventOperationsDialog>header{position:sticky;top:0;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--qg-divider);background:#100c08}
+.eventOperationsDialog>header h2{margin:0;font:24px/1.3 var(--qg-display-font,Georgia,serif);overflow-wrap:anywhere;min-width:0}.eventOperationsDialog .qgIconButton{flex-shrink:0}
+.eventOperationsBody{padding:4px 20px 20px;min-width:0}.eventTypeSettings>.eventForm+.eventForm{margin-top:20px;padding-top:20px;border-top:1px solid var(--qg-divider)}
+.eventOperationsBody .eventForm{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.eventOperationsBody .eventUpload{min-width:0}.eventOperationsBody p{line-height:1.6;overflow-wrap:anywhere}
+.homeUpcomingEvents{height:auto;min-height:0;margin:20px 0;border:1px solid var(--qg-divider);background:linear-gradient(120deg,#100c08,#080605);padding:0 20px}
+.homeUpcomingEvents .homeSectionHead{padding:16px 0;margin:0;border-bottom:1px solid var(--qg-divider);flex-wrap:wrap;gap:10px}
+.homeUpcomingEvents .homeSectionHead>a{display:inline-flex;align-items:center;gap:6px;min-height:44px;white-space:normal}
+.homeUpcomingList{min-width:0}.homeUpcomingList .eventLedgerRow{padding:18px 0}.homeUpcomingList .eventLedgerRow:last-child{border-bottom:0}
+.homeUpcomingEmpty{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:12px 0;color:var(--qg-muted);font:13px/1.5 var(--qg-ui-font)}.homeUpcomingEmpty p{margin:0}
+@media(max-width:760px){
+ .eventPageToolbar{align-items:stretch;gap:10px}.eventPageToolbar .eventTabs{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.eventTabs .qgButton{font-size:12px;white-space:normal;min-width:0;padding:10px 6px}
+ .eventPageActions{width:100%}.eventPageActions>.qgButton{flex:1 1 130px}.eventPageActions>.qgOverflow{margin-left:auto}
+ .eventsPage .eventFilters{display:flex;flex-wrap:wrap}.eventFilters>label{flex:1 1 130px}.eventFilters>.qgButton{flex:0 1 auto}
+ .eventLedgerRow{grid-template-columns:minmax(0,1fr);gap:12px;padding:18px 0}.eventDateStamp{display:flex;align-items:baseline;gap:8px;justify-content:flex-start;border-right:0;padding:0;text-align:left}.eventDateStamp b{font-size:26px}.eventDateStamp small{margin-left:3px}
+ .eventLedgerContent h2,.eventLedgerContent h3{font-size:21px}.eventLedgerActions{justify-items:start;text-align:left;gap:5px}.eventLedgerActions .eventDetailLink{text-align:left}
+ .qgDialog.eventOperationsDialog{width:calc(100vw - 20px);max-width:calc(100vw - 20px);max-height:calc(100dvh - 20px - env(safe-area-inset-bottom))}.eventOperationsDialog>header{padding:12px 14px}.eventOperationsDialog>header h2{font-size:21px}.eventOperationsBody{padding:0 14px calc(18px + env(safe-area-inset-bottom))}.eventOperationsBody .eventForm{grid-template-columns:minmax(0,1fr)}
+ .homeUpcomingEvents{padding:0 14px;margin:16px 0}.homeUpcomingEvents .homeSectionHead{padding:10px 0}.homeUpcomingEvents .homeSectionHead h2{font-size:15px}
+}
