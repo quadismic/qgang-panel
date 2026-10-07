@@ -10,7 +10,10 @@
     "test:rich-text": "node scripts/test-rich-text.cjs && node scripts/test-rich-text-db.cjs",
     "test:editor-ui": "node scripts/test-editor-ui.cjs",
     "test:badges": "node scripts/test-badges-db.cjs",
-    "test:documents": "node scripts/test-document-db.cjs && node scripts/test-badge-document-routes.cjs && node scripts/test-codex-pdf.cjs"
+    "test:documents": "node scripts/test-document-db.cjs && node scripts/test-badge-document-routes.cjs && node scripts/test-codex-pdf.cjs",
+    "test:events": "node scripts/test-events.cjs && node scripts/test-events-routes.cjs && node scripts/test-events-db.cjs",
+    "test:codex-ui": "node scripts/test-codex-composer-ui.cjs",
+    "test:events-ui": "node scripts/test-events-ui.cjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.7.0",

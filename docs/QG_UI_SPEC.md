@@ -73,3 +73,33 @@ Hero, işlem düğmeleri, doğum günü bandı ve orgchart `communityPage` kapsa
 ### Mobil yayın yorum editörü — 2026-10-07
 Yalnız yayın yorumlarında mobil toolbar temel kalın/italik, madde/numaralı liste, bağlantı, kompakt önizleme ve mevcut ••• menüsünü gösterir. Dipnot, kod, görsel, tablo ve ek biçimler menüde korunur. Grup ayırıcıları kaldırılır; 44px hedefler ve grup sarılması korunur. Tam genişlik bronz gönder düğmesinin altında tek sade dönüş bağlantısı bulunur. Sayaç/bilgi ve form boşlukları kompaktlaştırılır. Masaüstü araçları korunur.
 Typecheck, lint, dipnot kısayol/seçim/görsel ekleme ve numaralandırma testleri geçti. 390px gerçek görünüm doğrulaması bu oturumda Chromium yürütülebilir dosyası bulunmadığından tamamlanamadı. Deploy yapılmadı.
+
+
+### Topluluk / Profil / Disiplin — 2026-10-07
+- Topluluk üye kartları yalnız <=760px breakpointte tek sütun ve kullanılabilir tam genişlik; masaüstü kart kuralları korunur.
+- Profil işlemleri native auto popover top layer kullanır. Escape/dış tıklama ve odak davranışı tarayıcıya aittir; fixed panel ölçümü viewport içine sınırlandırılır. Hero, avatar stacking context veya overflow sınırları paneli kapatamaz.
+- Yetkili üye editöründe kişisel form sonrası Üyelik ve Yetki / Rozetler bölümleri. Mevcut rol, üyelik ve rozet API/RPC denetimleri yeniden kullanılır; server component ayrıca members.manage, founder/admin ve hedef hiyerarşisini denetler. Kendine/üstüne rütbe ve üyelik işlemi açılmaz; yalnız aktif üyeye rol ve rozet tevzihi. Rol/üyelik ve rozet geri alma için açık checkbox onayı. Mevcut upload formu değişmedi.
+- Disiplin hero CTA kaldırıldı. Denetim kutuları → karar defteri → gömülü şikâyet/itiraz başvuruları → yetkili kayıt formu sırası uygulanır. Başvurular details içinde aynı sayfada açılır. Profil bildirimi hedef seçimini ve başvuru anchor’ını korur. Misafir kapısı, own-decision/finality/issuer itiraz kuralları ve staff issue kapıları korunur.
+- Typecheck, lint ve production build geçti. test-member-authority-ui, test-member-authority-routes, test-discipline-requests ve test-badges-db geçti. React incelemesi: hooks koşulsuz, panel native erişilebilir popover, sorgular session/RLS ile, bağımsız sorgular paralel.
+- 390/1440px gerçek görünüm, yatay taşma ve hit-test doğrulaması tamamlanamadı. Yerel Chromium yok; Playwright kurulumu bozuk/eksik zip indirmesiyle başarısız. Top layer mimarisi görsel test sonucu olarak sunulmaz.
+- Veritabanı migration, yeni veri amacı/izin veya deploy yok.
+
+## Etkinlikler — 2026-10-07 geliştirme eki
+
+- Ortak AppShell içerik genişliği, managementHero/managementPanel yüzeyleri ve bronze primary primitive'leri kullanılır.
+- Menü yalnız etkinlik görüntüleme yetkisi ve topluluk erişimi olan kişide görünür. Etkinlikler: Yaklaşan Etkinlikler / Etkinlik Arşivi.
+- Türlerin başlangıç sırası GANG-UP, OP-NIGHT, BBQ-GANG, Q-NITY; sabit kimlikler korunur, ad/açıklama/sıra yetkili ayarıdır.
+- Ana sayfa: varsa üç yaklaşan etkinlik, ilki geniş; altında Son Yayınlar / Duyurular / Son Etkinlikler. 760px altında etkinlik kartları/form tek sütun; 1000px altında üçlü ana sayfa akışı tek sütun. 44px form kontrolü ve ortak düğme hedefleri.
+- Etkinlik hero'su kimlik/tarih taşır; formlar kendi panel/details alanındadır. Öneri/düzenleme, durum, yoklama ve tarihsel eşleştirme ayrı bölümlerdir. Kritik durum/yoklama/eşleştirme/aktarımı açık onay gerektirir.
+- Form bağlantı/yetki hataları alanları silmeden form içinde gösterilir. Katılım yanıtı gerçek yoklama değildir; kapasite dolduğunda bekleme sırası ayrı gösterilir.
+- Tarihsel kayıtlar tarih hassasiyetini korur: yalnız tarihi bilinen etkinliğe saat uydurulmaz. Bilinmeyen eski türün etiketi saklanır. Eşleşmeyen rumuz ve doğrulanmamış katılım Faaliyetler'e eklenmez.
+- Faaliyetler yalnız tamamlanmış etkinlikte doğrulanmış katılımı etkinlik tarihiyle gösterir; Katılım Arşivi bağlantısı üye filtresini açar.
+- Topluluk yönetimi: doğum günü alanından sonra 7 günlük etkinlik uyarıları, BUGÜN etiketi ve ayrı tamamlanma bekleyenler listesi.
+- 390/1440px gerçek tarayıcı QA henüz tamamlanmamıştır; kurulum engeli geliştirme raporunda kayıtlıdır.
+
+## Kodeks dialog ve başlık standardı — 2026-10-07
+
+- Kodeks dialog’unun ekran okuyucu başlığı görsel yerleşime katılmaz. Mobilde dialog/drawer viewport genişliğini birlikte kullanır; tek sütun, safe-area alt payı ve 44px kapatma/alan hedefleri. Masaüstünde sağa bağlı 1120px panel korunur. Düzeltme yalnız Kodeks dialog’una kapsamlıdır.
+- İcra kararı başlığı: `Kişi/Konu · İşlem`. Karar türü ayrı gösterildiği için başlığa “Karar/Emir” eklenmez. Bu bir editoryal yönlendirmedir; metin otomatik dönüştürülmez ve mevcut kayıt/yetki kuralları değişmez.
+- 390/1440px gerçek Chromium bileşen testi: mobil dialog ve drawer 390px, masaüstü dialog 1120px; yatay taşma yok. Kapatma ve Escape sonrası scroll kilidi kaldırılır.
+- Etkinlik ana sayfa kartları/öneri formu gerçek Chromium’da 390/1440px doğrulandı: mobil tek sütun, masaüstü üç ana sayfa sütunu ve iki form sütunu; 44px hedefler. Bu yerel fixture doğrulaması, canlı kimlik doğrulamalı uçtan uca kontrol yerine geçmez.

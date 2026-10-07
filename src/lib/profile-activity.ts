@@ -1,6 +1,6 @@
 export type ProfileActivityEntry = {
   id: string;
-  kind: "publication" | "comment" | "badge";
+  kind: "publication" | "comment" | "badge" | "event";
   title: string;
   href: string;
   date: string;

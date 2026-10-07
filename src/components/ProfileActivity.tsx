@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {createClient} from "@/lib/supabase/server";
 import {sortProfileActivity, type ProfileActivityEntry} from "@/lib/profile-activity";
 import {publicationSlugAliases} from "@/lib/publication-slug-aliases";
@@ -24,5 +25,7 @@ export async function ProfileActivity({userId}: {userId: string}) {
     const badge = Array.isArray(award.badges) ? award.badges[0] : award.badges;
     if (badge) entries.push({id: `badge:${award.id}`, kind: "badge", title: badge.name, date: award.granted_at, href: "/rozetler"});
   }
-  return <ProfileActivityList entries={sortProfileActivity(entries)}/>;
+  const {data:events,error:eventError}=await s.rpc("list_profile_event_activity",{p_user:userId});
+  for(const event of events??[]) entries.push({id:`event:${event.id}`,kind:"event",title:event.title,date:event.starts_at,href:`/etkinlikler/${event.id}`});
+  return <>{eventError&&<p className="qgActivityLimit" role="status">Etkinlik faaliyetleri şu anda yüklenemedi.</p>}<ProfileActivityList entries={sortProfileActivity(entries)}/>{!!events?.length&&<Link className="qgButton qgButton-tertiary" href={`/etkinlikler?view=archive&member=${userId}`}>Katılım Arşivi →</Link>}</>;
 }

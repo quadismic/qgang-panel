@@ -2,15 +2,19 @@ import {NextResponse} from "next/server";
 import {createClient} from "@/lib/supabase/server";
 import {hasPermission} from "@/lib/access";
 import {canModerate} from "@/lib/roles";
-const scopes=new Set(["report","discipline","accounts","badges","active","captains","legacy","management"]);
+const scopes=new Set(["report","discipline","accounts","badges","active","captains","legacy","management","events","event-filter"]);
 export async function GET(req:Request){
  const reply=(body:unknown,status=200)=>NextResponse.json(body,{status,headers:{"Cache-Control":"private, no-store"}});
  const s=await createClient();const {data:{user}}=await s.auth.getUser();if(!user)return reply({error:"unauthorized"},401);
  const url=new URL(req.url),scope=url.searchParams.get("scope")||"",q=(url.searchParams.get("q")||"").trim().replace(/^@/,"");
  if(!scopes.has(scope)||q.length>80)return reply({error:"validation"},400);
  const {data:actor}=await s.from("profiles").select("role").eq("id",user.id).maybeSingle();
- if(scope==="report"?(!actor||actor.role==="guest"):scope==="discipline"?(!canModerate(actor?.role)||!await hasPermission(user.id,"discipline.issue")):!await hasPermission(user.id,scope==="management"?"members.view":"members.manage"))return reply({error:"forbidden"},403);
+ if(scope==="event-filter"?(!await hasPermission(user.id,"events.view")):scope==="events"?(!await hasPermission(user.id,"events.attendance")&&!await hasPermission(user.id,"events.archive")):scope==="report"?(!actor||actor.role==="guest"):scope==="discipline"?(!canModerate(actor?.role)||!await hasPermission(user.id,"discipline.issue")):!await hasPermission(user.id,scope==="management"?"members.view":"members.manage"))return reply({error:"forbidden"},403);
  if(["badges","active","captains"].includes(scope)&&!["founder","admin"].includes(actor?.role||""))return reply({error:"forbidden"},403);
+ if(scope==="events"||scope==="event-filter"){
+  const {data:membership}=await s.from("community_memberships").select("status").eq("user_id",user.id).eq("status","active").maybeSingle();
+  if(!membership&&!["founder","admin"].includes(actor?.role||""))return reply({error:"forbidden"},403);
+ }
  if(q.length<2)return reply({items:[]});
  if(scope==="legacy"){
   const {data,error}=await s.rpc("list_unclaimed_legacy_members");if(error)return reply({error:"search_failed"},500);

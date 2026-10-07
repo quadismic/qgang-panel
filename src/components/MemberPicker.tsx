@@ -4,7 +4,7 @@ import {Button,Input} from "@/components/ui/Primitives";
 import {useEffect,useId,useRef,useState} from "react";
 import {roleLabel} from "@/lib/roles";
 export type MemberChoice={id:string;display_name:string;handle:string;role:string;avatar_url?:string|null;detail?:string};
-export function MemberPicker({name,label="Üye seç",scope="accounts",required=true,onChange,initialMember}:{name:string;label?:string;scope?:"report"|"discipline"|"accounts"|"badges"|"active"|"captains"|"legacy"|"management";initialMember?:MemberChoice|null;required?:boolean;onChange?:(member:MemberChoice|null)=>void}){
+export function MemberPicker({name,label="Üye seç",scope="accounts",required=true,onChange,initialMember}:{name:string;label?:string;scope?:"report"|"discipline"|"accounts"|"badges"|"active"|"captains"|"legacy"|"management"|"events"|"event-filter";initialMember?:MemberChoice|null;required?:boolean;onChange?:(member:MemberChoice|null)=>void}){
  const id=useId(),input=useRef<HTMLInputElement>(null),[query,setQuery]=useState(""),[selected,setSelected]=useState<MemberChoice|null>(initialMember??null),[items,setItems]=useState<MemberChoice[]>([]),[busy,setBusy]=useState(false),[error,setError]=useState(""),[open,setOpen]=useState(false),[cursor,setCursor]=useState(-1);
  useEffect(()=>{input.current?.setCustomValidity(required&&!selected?"Listeden bir kişi seçin.":"");},[required,selected]);
  useEffect(()=>{

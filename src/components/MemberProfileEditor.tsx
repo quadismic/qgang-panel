@@ -1,3 +1,4 @@
+import {MemberAuthorityControls} from "@/components/MemberAuthorityControls";
 
 import {Input,Select,Button} from "@/components/ui/Primitives";
 import { RichTextEditor } from "@/components/RichTextEditor";
@@ -38,5 +39,6 @@ export async function MemberProfileEditor({ params, searchParams }: {
       </div>
       <Button type="submit" level="primary" className="">Üye Profilini Kaydet</Button> <a href="/topluluk?manage=1" className="qgAction">Topluluk Yönetimine Dön</a>
     </form>
+    <MemberAuthorityControls targetId={p.id}/>
   </section>;
 }

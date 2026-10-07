@@ -1,0 +1,6 @@
+import {UpcomingEvents,RecentEvents} from '@/components/HomeEvents';
+import {EventForm} from '@/components/EventForm';
+const types=[{id:'gang-up',name:'GANG-UP'},{id:'op-night',name:'OP-NIGHT'},{id:'bbq-gang',name:'BBQ-GANG'},{id:'q-nity',name:'Q-NITY'}];
+const upcoming=types.slice(0,3).map((t,i)=>({id:String(i),title:'Toplulukla uzun başlıklı örnek etkinlik '+(i+1),type_id:t.id,legacy_type:null,starts_at:'2026-10-10T17:00:00Z',ends_at:'2026-10-10T20:00:00Z',date_only:false}));
+const data={types,upcoming,recent:upcoming.map(e=>({...e,cover_url:null,event_attendance:[{attended:true}]}))};
+export default function QA(){return <main className="eventsPage" style={{maxWidth:1100,margin:'0 auto',padding:16}}><UpcomingEvents data={data}/><div className="homeEditorialGrid homeWithEvents"><section className="homeFeedSection homePublications"><h2>Son Yayınlar</h2></section><section className="homeFeedSection homeNotices"><h2>Duyurular</h2></section><RecentEvents data={data}/></div><section className="managementPanel"><h2>Etkinlik önerisi</h2><EventForm types={types} proposal/></section></main>}

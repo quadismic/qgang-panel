@@ -118,3 +118,35 @@ Yalnız yayın yorumlarında mobil toolbar temel kalın/italik, madde/numaralı 
 Typecheck, lint, dipnot kısayol/seçim/görsel ekleme ve numaralandırma testleri geçti. 390px gerçek görünüm doğrulaması bu oturumda Chromium yürütülebilir dosyası bulunmadığından tamamlanamadı. Deploy yapılmadı.
 
 Production build ve zengin metin kayıt/yeniden açma, dipnot roundtrip ve medya kalıcılık testleri de geçti.
+
+
+### Topluluk / Profil / Disiplin — 2026-10-07
+- Topluluk üye kartları yalnız <=760px breakpointte tek sütun ve kullanılabilir tam genişlik; masaüstü kart kuralları korunur.
+- Profil işlemleri native auto popover top layer kullanır. Escape/dış tıklama ve odak davranışı tarayıcıya aittir; fixed panel ölçümü viewport içine sınırlandırılır. Hero, avatar stacking context veya overflow sınırları paneli kapatamaz.
+- Yetkili üye editöründe kişisel form sonrası Üyelik ve Yetki / Rozetler bölümleri. Mevcut rol, üyelik ve rozet API/RPC denetimleri yeniden kullanılır; server component ayrıca members.manage, founder/admin ve hedef hiyerarşisini denetler. Kendine/üstüne rütbe ve üyelik işlemi açılmaz; yalnız aktif üyeye rol ve rozet tevzihi. Rol/üyelik ve rozet geri alma için açık checkbox onayı. Mevcut upload formu değişmedi.
+- Disiplin hero CTA kaldırıldı. Denetim kutuları → karar defteri → gömülü şikâyet/itiraz başvuruları → yetkili kayıt formu sırası uygulanır. Başvurular details içinde aynı sayfada açılır. Profil bildirimi hedef seçimini ve başvuru anchor’ını korur. Misafir kapısı, own-decision/finality/issuer itiraz kuralları ve staff issue kapıları korunur.
+- Typecheck, lint ve production build geçti. test-member-authority-ui, test-member-authority-routes, test-discipline-requests ve test-badges-db geçti. React incelemesi: hooks koşulsuz, panel native erişilebilir popover, sorgular session/RLS ile, bağımsız sorgular paralel.
+- 390/1440px gerçek görünüm, yatay taşma ve hit-test doğrulaması tamamlanamadı. Yerel Chromium yok; Playwright kurulumu bozuk/eksik zip indirmesiyle başarısız. Top layer mimarisi görsel test sonucu olarak sunulmaz.
+- Veritabanı migration, yeni veri amacı/izin veya deploy yok.
+
+## Etkinlik sistemi geliştirme eki — 2026-10-07
+
+Ortak primitive'lerle Etkinlikler liste/arşiv/detay, öneri ve yönetim formları, ana sayfa yaklaşan etkinlik alanı/üçüncü sütun, yönetim 7 günlük uyarısı ve profil katılım faaliyeti eklendi. Erişim Merkezi'ne yedi ayrı etkinlik yetkisi ve varsayılanları bağlandı; sunucu/RLS/RPC ayrımları uygulandı. Arşiv önizleme ve açık onaylı tekrarsız aktarım, tarihsel kimlik eşleştirmesi, ayrı yoklama ve kapasite kuyruğu bulunur.
+
+Kaynak incelemesi: Wix QEvents 27 kayıt, 6 silinmiş, 21 tamamlanmış; 165 katılımcı kaydında 119 doğrulanmış eski kimlik bağlantısı, 46 eşleşme bekleyen kayıt. 6 açık yoklama katılımı, 159 yoklama doğrulaması bekleyen kayıt. Puanlar yeniden işlenmez; iki eski tür etiketi korunur. Canlı aktarım yapılmadı.
+
+Ayrıntılar: `docs/EVENTS_IMPLEMENTATION_20261007.md`; veri/metin incelemesi: `docs/privacy/EVENTS_REVIEW_20261007.md`. Gerçek 390/1440px görsel doğrulama tarayıcı indirmesi bozuk ZIP döndürdüğü için tamamlanmadı. Migration ve deploy uygulanmadı; mevcut Kodeks yayımları değiştirilmedi.
+
+Etkinlik eki doğrulaması: typecheck, lint, build; event domain/API/PostgreSQL testleri; mevcut üye yetki API ve disiplin başvuru regresyon testleri geçti. Build önceki CSS satırlarında autoprefixer uyarıları içeriyor.
+
+## 2026-10-07 — Kodeks kök neden ve deploy hazırlığı
+
+Gerçek 390px testinde dialog 390px iken drawer yalnız 255.14px idi. Dialog içindeki erişilebilirlik başlığı `.sr-only` sınıfının stil tanımı bulunmadığından flex sütunu olarak alan tüketiyordu. Yalnız Kodeks dialog’undaki bu başlık görsel akıştan çıkarıldı; erişilebilir adı korundu. Mobil dış sınırlar/tek sütun/safe-area payı açıkça tanımlandı. Son ölçüm: dialog/drawer 390px, taşma 0; 1440px’de dialog 1120px, taşma 0. Gerçek editör yükleme, başlık alanı, 44px kapatma, Escape ve yeniden açma geçti.
+
+Üç tarihsel kararın tek kaynak alanı `public.regulations.title`; duyuru akışı bu kaynaktan görünümle üretilir. Normal UPDATE revizyon/değişiklik tarihini yeniler. Bekleyen `20261007023442_codex_historical_decision_titles.sql`, tablo kilidi altında yalnız başlıkları değiştirir, revision trigger’ını işlem içinde geçici durdurup geri açar; kimlik/numara doğrulaması çalışmaya devam eder. Her diğer sütunun ve eski duyuru/revizyonların aynı kalması SQL içinde doğrulanır. Beklenmeyen kayıt/başlık veya yan etki tüm işlemi geri alır. Eski PDF snapshot’ları değiştirilmez. Canlı veritabanında uygulanmadı.
+
+Başlıklar: İK-2026-001 → Renovich · Vekilharçlığa Atama; İK-2026-002 → JUSTilknur & Gaspare · Statü Düzenlemesi; İK-2026-003 → Schizo · Teğmenliğe Atama. İçerikteki Emir ifadeleri korunur. Yeni kararlarda biçim önerisi eklendi; otomatik metin değiştirme yok.
+
+Etkinliklerin ana sayfa/öneri bileşenleri de gerçek 390/1440px tarayıcı testinde doğrulandı; taşma yok, mobil tek sütun/masaüstü planlanan sütunlar ve 44px kontroller. Reddedilen gönderim alanları koruyor. Önceki tarayıcı kurulumu engeli alternatif yerel Chromium ile aşıldı. Fixture’lar gerçek bileşenleri kullanır; canlı auth/yönetim/import uçtan uca QA ayrı kalır.
+
+Kişisel veri etki kontrolü: bu Kodeks düzeltmesinde yeni kategori/amaç/alıcı/sağlayıcı/çerez/saklama/erişim değişikliği yok; altı FEATURE_REVIEW sorusu olumsuz. Etkinlik paketinin ayrı gizlilik taslağı ve inceleme ihtiyacı devam eder. Production deploy veya migration yapılmadı. Yayın planı: DEPLOY_READINESS_20261007.md.

@@ -1,0 +1,4 @@
+'use client';
+import {CodexComposer} from '@/components/CodexComposer';
+import {useState} from 'react';
+export default function QA(){const [saved,setSaved]=useState('');return <main style={{padding:20}}><CodexComposer founder canPublishDecision sections={[{number:'03',title:'Yönetim'}]} rules={[]} rule={{id:'fixture',number:'İK-2026-001',title:'Renovich · Vekilharçlığa Atama',kind:'KARAR',section_number:'03',body:'Mevcut metin ve Emir ifadesi korunur.',status:'yururlukte',revision:1,effective_at:'2026-06-02T11:48:19Z',updated_at:'2026-10-04T08:40:04Z',created_by:null,basis_rule_id:null,basis_revision:null}} action={async data=>setSaved(String(data.get('body')))}/><output data-testid="saved">{saved}</output></main>}
