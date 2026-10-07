@@ -93,7 +93,6 @@
 /* Dialog accessibility label must not consume a flex column beside the drawer. */
 .qgDialog.codexComposerOverlay>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
 /* Mobile Codex composer owns the full dialog viewport; desktop drawer is unchanged. */
-.codexTitleHint{color:var(--qg-muted);font:12px/1.5 var(--qg-ui-font);letter-spacing:0}
 @media(max-width:760px){
  .qgDialog.codexComposerOverlay{inset:0;margin:0;box-sizing:border-box;width:100%;max-width:100%;height:100dvh;max-height:100dvh;border:0;overflow:hidden}
  .qgDialog.codexComposerOverlay .codexComposerDrawer{box-sizing:border-box;width:100%;max-width:100%;min-width:0;height:100%;border-left:0;overscroll-behavior:contain}
@@ -151,3 +150,5 @@
  .qgDialog.eventOperationsDialog{width:calc(100vw - 20px);max-width:calc(100vw - 20px);max-height:calc(100dvh - 20px - env(safe-area-inset-bottom))}.eventOperationsDialog>header{padding:12px 14px}.eventOperationsDialog>header h2{font-size:21px}.eventOperationsBody{padding:0 14px calc(18px + env(safe-area-inset-bottom))}.eventOperationsBody .eventForm{grid-template-columns:minmax(0,1fr)}
  .homeUpcomingEvents{padding:0 14px;margin:16px 0}.homeUpcomingEvents .homeSectionHead{padding:10px 0}.homeUpcomingEvents .homeSectionHead h2{font-size:15px}
 }
+/* Event tab navigation acknowledges a pending server transition without hiding the current ledger. */
+.eventTabs .qgButton:has(.eventTabPending){flex-wrap:wrap}.eventTabPending{font:11px/1.3 var(--qg-ui-font);color:var(--qg-muted)}

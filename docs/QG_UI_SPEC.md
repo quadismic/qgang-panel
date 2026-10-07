@@ -112,3 +112,20 @@ Typecheck, lint, dipnot kısayol/seçim/görsel ekleme ve numaralandırma testle
 - Tür filtresi her görünümde; tarih aralığı ve katılımcı filtresi yalnız arşivde. Tür kimlikleri, başlangıç sırası ve yetkilinin sıralama ayarı korunur.
 - Ana sayfa sorgusu yalnız yayımlanmış, bitişi geçmemiş en yakın iki etkinliği getirir. events.view ve mevcut RLS görünürlüğü korunur; görünür boş durumda kısa bilgi/arşiv bağlantısı. Erişimi olmayana boş blok da gösterilmez.
 - 390/1440px gerçek Chromium: tam/boş, üye/yetkili, uzun başlık, aynı hero/liste kenarı, 44px kontroller, dialog/Escape ve hata sonrası form değerlerinin korunması doğrulandı. Gerçek bileşenlerle yerel fixture; canlı kimlik doğrulamalı yönetim/aktarımı uçtan uca kapsamaz. Sonuçlar EVENTS_UI_REPORT_20261007.md içinde.
+
+## Etkinlik sekmesi performansı — 2026-10-07
+
+- Etkinlik türleri, kayıtlar, öneriler ve kendi katılım yanıtları mevcut izin kontrolünden sonra paralel yüklenir. Katılımcı profil sorgusu yalnız arşiv filtresinde çalışır.
+- Sekmeler bekleyen sunucu geçişini erişilebilir “Yükleniyor…” metniyle bildirir; mevcut defter geçiş tamamlanana kadar görünür kalır. Yetkiler ve filtre davranışı korunur; kullanıcıya özel sonuçlara paylaşılan cache eklenmez.
+- Regresyon ve ölçüm sınırları EVENTS_PERFORMANCE_REPORT_20261007.md içinde.
+
+## Kodeks başlık alanı — 2026-10-07
+
+- Hüküm formunda Bölüm, Tür ve Başlık masaüstünde üç eşit sütun kullanır; eski dört sütunlu şablon kaldırılmıştır. Mevcut mobil tek sütun düzeni korunur.
+- Başlık altındaki Kişi/Konu · İşlem yönlendirme metni kaldırılmıştır; mevcut placeholder ve kayıt davranışı korunur.
+
+## İcra kararı formu sadeleştirmesi — 2026-10-07
+
+- İcra kararında Tür ve Bölüm görünür kontrolleri kaldırılır; tür sabittir ve bölüm seçilen dayanağın bölümünden alınır. Diğer hüküm türlerinin seçim akışı korunur.
+- Başlık, Dayanak Hüküm ve Uygulama Kapsamı öncesinde aynı tam genişlik alan biçimini kullanır. Placeholder: Arşivleme kolaylığı için "Kişi/Konu · İşlem" başlık biçimini kullan.
+- Kodeks yayımlama/düzenleme paneli dışına tıklamak paneli kapatmaz. Sağ üst kapatma ve Escape korunur; diğer dialogların dış tıklama davranışı değişmez.
