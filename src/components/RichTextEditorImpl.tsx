@@ -260,29 +260,29 @@ export function RichTextEditor({
         role="toolbar"
         aria-label="Metin biçimlendirme"
       >
-        {footnotes&&button("Dipnot", "Dipnot ekle (Ctrl+Alt+F)",()=>openNote())}
+        {footnotes&&<span className={compact?"qgCompactExtra":""}>{button("Dipnot", "Dipnot ekle (Ctrl+Alt+F)",()=>openNote())}</span>}
         {compact?<>
           <div className="qgToolbarGroup" role="group" aria-label="Temel biçimlendirme">
             {button("B","Kalın (Ctrl/Cmd+B)",()=>editor?.chain().focus().toggleBold().run(),editor?.isActive("bold"))}
             {button("I","İtalik (Ctrl/Cmd+I)",()=>editor?.chain().focus().toggleItalic().run(),editor?.isActive("italic"))}
-            {button("U","Altı çizili",()=>editor?.chain().focus().toggleUnderline().run(),editor?.isActive("underline"))}
-            {button("S̶","Üstü çizili",()=>editor?.chain().focus().toggleStrike().run(),editor?.isActive("strike"))}
-            {button("</>","Satır içi kod",()=>editor?.chain().focus().toggleCode().run(),editor?.isActive("code"))}
+            <span className="qgCompactExtra">{button("U","Altı çizili",()=>editor?.chain().focus().toggleUnderline().run(),editor?.isActive("underline"))}</span>
+            <span className="qgCompactExtra">{button("S̶","Üstü çizili",()=>editor?.chain().focus().toggleStrike().run(),editor?.isActive("strike"))}</span>
+            <span className="qgCompactExtra">{button("</>","Satır içi kod",()=>editor?.chain().focus().toggleCode().run(),editor?.isActive("code"))}</span>
           </div>
           <div className="qgToolbarGroup qgToolbarAdvanced" role="group" aria-label="Başlıklar">{([2,3,4] as const).map((level)=> <span key={level}>{button("H"+(level-1),"Başlık "+(level-1),()=>editor?.chain().focus().toggleHeading({level}).run(),editor?.isActive("heading",{level}))}</span>)}</div>
           <div className="qgToolbarGroup" role="group" aria-label="Listeler ve alıntı">
             {button("☷","Madde listesi",()=>editor?.chain().focus().toggleBulletList().run(),editor?.isActive("bulletList"))}
             {button("1≡","Numaralı liste",()=>editor?.chain().focus().toggleOrderedList().run(),editor?.isActive("orderedList"))}
-            {button("❞","Alıntı",()=>editor?.chain().focus().toggleBlockquote().run(),editor?.isActive("blockquote"))}
+            <span className="qgCompactExtra">{button("❞","Alıntı",()=>editor?.chain().focus().toggleBlockquote().run(),editor?.isActive("blockquote"))}</span>
           </div>
           <div className="qgToolbarGroup" role="group" aria-label="Bağlantı ve içerik">
             {button("↗","Bağlantı (Ctrl/Cmd+K)",()=>{setUrl(editor?.getAttributes("link").href||"");setLinkError("");setLinkOpen(true);})}
-            {button("▧","Görsel ekle",()=>openBlock("image"))}
-            {button("▦","3 × 3 tablo ekle",()=>editor?.chain().focus().insertTable({rows:3,cols:3,withHeaderRow:true}).run())}
+            <span className="qgCompactExtra">{button("▧","Görsel ekle",()=>openBlock("image"))}</span>
+            <span className="qgCompactExtra">{button("▦","3 × 3 tablo ekle",()=>editor?.chain().focus().insertTable({rows:3,cols:3,withHeaderRow:true}).run())}</span>
           </div>
           <div className="qgToolbarGroup qgToolbarOptions">
-            <button type="button" aria-pressed={preview} onClick={()=>setPreview(!preview)}>{preview?"Yaz":"◉ Önizle"}</button>
-            <details><summary aria-label="Diğer biçimlendirme seçenekleri">•••</summary><div className="qgEditorMore">
+            <button type="button" aria-pressed={preview} onClick={()=>setPreview(!preview)}>{preview?"Yaz":"Önizle"}</button>
+            <details><summary aria-label="Diğer biçimlendirme seçenekleri">•••</summary><div className="qgEditorMore"><div className="qgCompactMobileExtras">{footnotes&&button("Dipnot", "Dipnot ekle (Ctrl+Alt+F)",()=>openNote())}{button("U","Altı çizili",()=>editor?.chain().focus().toggleUnderline().run(),editor?.isActive("underline"))}{button("S̶","Üstü çizili",()=>editor?.chain().focus().toggleStrike().run(),editor?.isActive("strike"))}{button("</>","Satır içi kod",()=>editor?.chain().focus().toggleCode().run(),editor?.isActive("code"))}{button("❞","Alıntı",()=>editor?.chain().focus().toggleBlockquote().run(),editor?.isActive("blockquote"))}{button("▧","Görsel ekle",()=>openBlock("image"))}{button("▦","3 × 3 tablo ekle",()=>editor?.chain().focus().insertTable({rows:3,cols:3,withHeaderRow:true}).run())}</div>
               {button("Liste","Madde listesi",()=>editor?.chain().focus().toggleBulletList().run())}{button("1. Liste","Numaralı liste",()=>editor?.chain().focus().toggleOrderedList().run())}{button("Alıntı","Alıntı",()=>editor?.chain().focus().toggleBlockquote().run())}
               {([2,3,4] as const).map(level=><span className="qgMobileHeading" key={level}>{button("H"+(level-1),"Başlık "+(level-1),()=>editor?.chain().focus().toggleHeading({level}).run())}</span>)}
               {button("↶","Geri al",()=>editor?.chain().focus().undo().run())}{button("↷","İleri al",()=>editor?.chain().focus().redo().run())}

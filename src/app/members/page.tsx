@@ -14,7 +14,7 @@ export default async function Members({searchParams}:{searchParams:Promise<{mana
  const s=await createClient();
  const [{data},{data:birthdays}]=await Promise.all([s.rpc("list_active_community_members"),s.rpc("list_today_community_birthdays")]);
  const people=data??[];
- return <AppShell right={false}>
+ return <AppShell right={false}><div className="communityPage">
   <section className="registryHero roomScene orgHero unifiedPageHero" style={{backgroundImage:`linear-gradient(90deg,rgba(4,3,2,.76),rgba(4,3,2,.32) 48%,rgba(4,3,2,.14)),url(${brandTheme.rooms.registry})`}}>
    <h1>Topluluk</h1><p>Q-GANG üyeleri ve topluluk kimlikleri.</p>
    <div><b>{people.length}<small>TOPLAM ÜYE</small></b></div>
@@ -23,5 +23,5 @@ export default async function Members({searchParams}:{searchParams:Promise<{mana
  {canViewManagement&&q.manage?(q.edit?<MemberProfileEditor params={Promise.resolve({id:q.edit})} searchParams={Promise.resolve(q)}/>:<CommunityManagement searchParams={Promise.resolve(q)}/>):<>
   {(birthdays??[]).length>0&&<section className="birthdayBanner"><span className="birthdaySigil">✦</span><div><small>BUGÜN TOPLULUKTA</small><h2>{(birthdays??[]).map((b:any)=>b.display_name).join(" · ")}</h2><p>{(birthdays??[]).length===1?"Bugün doğum günü. Nice yıllara!":"Bugün doğum günlerini kutluyoruz. Nice yıllara!"}</p></div></section>}<CommunityOrgChart people={people}/>
  </>}
- </AppShell>
+ </div></AppShell>
 }

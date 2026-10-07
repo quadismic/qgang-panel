@@ -104,3 +104,17 @@ Yeni backend eklemesi PDF GET endpointidir; mevcut endpointlerin sözleşmesi ko
 PDF isteği oluşturma anını üst tarih sınırı kullanır; sunucu çıktı dosyasını kaydetmez. Bu dosya değişmez bir veritabanı snapshot arşivi değildir. Aydınlatma varsayılan taslağı ve kategori özeti indirilebilir çıktı açıklamasıyla güncellendi; mevcut DB taslağı/yayımlanmış belgeye yazılmadı. İlgili etki kaydı docs/privacy/BUDGET_PDF_REVIEW_20261006.md.
 
 Son doğrulama: TypeScript, tüm depo lint’i, production build ve git diff --check geçti. test-purge-confirmation, test-budget-pdf, test-footnote-shortcut, test-footnote-editor, test:rich-text, test-codex-layout, test-publication-comments, test-public-announcements ve test-guest-identity geçti. Chromium yine socket() Operation not permitted nedeniyle açılamadı. Bu nedenle 1440/390 görsel kontrolü ve görsel panelin gerçek tarayıcıdaki davranışı onaylanmış değildir. Sorunu tekrar oluşturamayan ortamda kesin görsel çözüm iddiası yoktur.
+
+
+### Topluluk dış hizalama düzeltmesi — 2026-10-06
+Hero, işlem düğmeleri, doğum günü bandı ve orgchart `communityPage` kapsayıcısında ortak `.content > *` genişlik ve auto margin sözleşmesini kullanır. Orgchart dış `max-width:100%`, `width:100%` ve `margin-inline:0` override’ları kaldırıldı. Kart/rütbe stilleri ve yetki koşulları değiştirilmedi. Diğer sayfalara yeni kural uygulanmaz.
+1440/390px tarayıcı kenar eşitliği ve kart sarılma ölçümü Chromium `socket() failed: Operation not permitted` engeli nedeniyle tamamlanamadı; görsel doğrulama bekliyor. Deploy yapılmadı.
+
+Bu düzeltmede `npx tsc --noEmit`, `npm run lint`, `npm run build` ve `git diff --check` geçti. Build mevcut autoprefixer start/end uyumluluk uyarılarıyla tamamlandı.
+
+
+### Mobil yayın yorum editörü — 2026-10-07
+Yalnız yayın yorumlarında mobil toolbar temel kalın/italik, madde/numaralı liste, bağlantı, kompakt önizleme ve mevcut ••• menüsünü gösterir. Dipnot, kod, görsel, tablo ve ek biçimler menüde korunur. Grup ayırıcıları kaldırılır; 44px hedefler ve grup sarılması korunur. Tam genişlik bronz gönder düğmesinin altında tek sade dönüş bağlantısı bulunur. Sayaç/bilgi ve form boşlukları kompaktlaştırılır. Masaüstü araçları korunur.
+Typecheck, lint, dipnot kısayol/seçim/görsel ekleme ve numaralandırma testleri geçti. 390px gerçek görünüm doğrulaması bu oturumda Chromium yürütülebilir dosyası bulunmadığından tamamlanamadı. Deploy yapılmadı.
+
+Production build ve zengin metin kayıt/yeniden açma, dipnot roundtrip ve medya kalıcılık testleri de geçti.

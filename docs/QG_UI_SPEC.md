@@ -63,3 +63,13 @@ Bu standardın tüm ekranlara görsel uygunluğu 1440 ve 390px tarayıcı regres
 - DİĞER ve Diğer gösterimde Diğer etiketine dönüşür; kayıtların kategori değerleri değişmez. Liste ve PDF 100 kayıtla kesilmez; sayfalı sunucu okuması kullanılır.
 - Profil overflow bağlantıları üst üste konumlanmaz; yetkili Üyeyi düzenle, Üyeyi bildir üzerinde gösterilir.
 - Navbar aktif durumu ince accent, aktif ikon ve hafif yüzeydir. Nokta markup ve pseudo-elementleri kaldırılır; glow yoktur.
+
+
+### Topluluk dış hizalama düzeltmesi — 2026-10-06
+Hero, işlem düğmeleri, doğum günü bandı ve orgchart `communityPage` kapsayıcısında ortak `.content > *` genişlik ve auto margin sözleşmesini kullanır. Orgchart dış `max-width:100%`, `width:100%` ve `margin-inline:0` override’ları kaldırıldı. Kart/rütbe stilleri ve yetki koşulları değiştirilmedi. Diğer sayfalara yeni kural uygulanmaz.
+1440/390px tarayıcı kenar eşitliği ve kart sarılma ölçümü Chromium `socket() failed: Operation not permitted` engeli nedeniyle tamamlanamadı; görsel doğrulama bekliyor. Deploy yapılmadı.
+
+
+### Mobil yayın yorum editörü — 2026-10-07
+Yalnız yayın yorumlarında mobil toolbar temel kalın/italik, madde/numaralı liste, bağlantı, kompakt önizleme ve mevcut ••• menüsünü gösterir. Dipnot, kod, görsel, tablo ve ek biçimler menüde korunur. Grup ayırıcıları kaldırılır; 44px hedefler ve grup sarılması korunur. Tam genişlik bronz gönder düğmesinin altında tek sade dönüş bağlantısı bulunur. Sayaç/bilgi ve form boşlukları kompaktlaştırılır. Masaüstü araçları korunur.
+Typecheck, lint, dipnot kısayol/seçim/görsel ekleme ve numaralandırma testleri geçti. 390px gerçek görünüm doğrulaması bu oturumda Chromium yürütülebilir dosyası bulunmadığından tamamlanamadı. Deploy yapılmadı.
