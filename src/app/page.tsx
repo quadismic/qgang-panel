@@ -1,3 +1,4 @@
+import {PUBLICATION_BADGE_LABELS,publicationKind} from "@/lib/publication-types";
 import {homeEventData,UpcomingEvents} from "@/components/HomeEvents";
 import {CouncilScene} from "@/components/CouncilScene";
 import {NormBadge} from "@/components/NormBadge";
@@ -12,7 +13,7 @@ import {richPlain} from "@/lib/rich-text";
 export const dynamic="force-dynamic";
 export const metadata=pageMeta.home;
 
-const kindLabel:Record<string,string>={research:"ARAŞTIRMA",review:"İNCELEME",thought:"DÜŞÜNCE",game:"OYUN",technology:"TEKNOLOJİ",video:"VİDEO"};
+const kindLabel=PUBLICATION_BADGE_LABELS;
 const shortDate=(v:string|null)=>v?new Date(v).toLocaleDateString("tr-TR",{day:"2-digit",month:"short",year:"numeric"}):"";
 export default async function Headquarters(){
  const s=await createClient();const user=await getCurrentUser();
@@ -27,7 +28,7 @@ export default async function Headquarters(){
  const manage=!!viewerProfile&&["founder","admin"].includes(viewerProfile.role);
  const priorityRank:Record<string,number>={critical:3,important:2,normal:1};
  const notices=(announcements??[]).map(a=>({...a,category:announcementType(a.category)})).sort((a:any,b:any)=>Number(b.is_pinned)-Number(a.is_pinned)||(priorityRank[b.priority]||0)-(priorityRank[a.priority]||0)||new Date(b.published_at||0).getTime()-new Date(a.published_at||0).getTime()).slice(0,3);
- const pubs=(publications??[]).map((p:any)=>{const author=Array.isArray(p.author)?p.author[0]:p.author;return{...p,kind:p.youtube_url?"video":p.content_type,authorName:author?.display_name||author?.handle||"Q-GANG"}});
+ const pubs=(publications??[]).map((p:any)=>{const author=Array.isArray(p.author)?p.author[0]:p.author;return{...p,kind:publicationKind(p.content_type,p.youtube_url),authorName:author?.display_name||author?.handle||"Q-GANG"}});
  return <AppShell right={false}><div className="commandHQ homeV2">
   <section className="commandHero commandPoster" style={{"--command-bg":`url(${design.commandBackground})`} as CSSProperties}>
    <div className="commandAtmosphere" aria-hidden="true"/>

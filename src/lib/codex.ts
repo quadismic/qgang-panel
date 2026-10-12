@@ -3,6 +3,7 @@ export type CodexRule = {
   number: string | null; section_number: string | null; status: string | null;
   published_at: string | null; effective_at: string | null; revision: number | null;
   updated_at: string | null; created_by: string | null; basis_rule_id: string | null;
+  complementary_bases?: {id:string;revision:number}[];
   basis_revision: number | null; change_reason: string | null;
   application_scope?: string | null; decision_priority?: string; decision_pinned?: boolean; legacy_announcement_id?: string | null;
 };
@@ -19,3 +20,5 @@ export function canEditRule(role: string | null | undefined, userId: string | un
 
 export const codexKindLabel = (kind?: string | null) => kind === "KARAR" ? "İCRA KARARI" : kind || "KURAL";
 export const codexTab = (rule: Pick<CodexRule,"kind">) => rule.kind === "KARAR" ? "decisions" : rule.kind === "YÖNERGE" ? "directives" : "primary";
+
+export function complementaryNeedsReview(rule:CodexRule,rules:CodexRule[]){return (rule.complementary_bases||[]).some(ref=>{const basis=rules.find(r=>r.id===ref.id);return !basis||!isEffective(basis)||basis.revision!==ref.revision;});}

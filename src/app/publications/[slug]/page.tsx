@@ -1,3 +1,4 @@
+import {PUBLICATION_LABELS} from "@/lib/publication-types";
 import {cache,Suspense} from "react";
 import {Lora} from "next/font/google";
 const readingFont=Lora({subsets:["latin","latin-ext"],weight:["400","600","700"],style:["normal","italic"],variable:"--qg-reading-font",display:"swap"});
@@ -27,7 +28,7 @@ export async function generateMetadata({params}:{params:Promise<{slug:string}>})
   const image=new URL(p.cover_url||"/brand/qgang-mark.png","https://q-gang.com").href;
   return {title:p.title,description,alternates:{canonical:url},openGraph:{type:"article",locale:"tr_TR",siteName:"Q-GANG",url,title:p.title,description,images:[{url:image,alt:p.title}],...(p.published_at?{publishedTime:p.published_at}:{})},twitter:{card:"summary_large_image",title:p.title,description,images:[image]}};
 }
-const labels: Record<string, string> = { research: "Araştırma", review: "İnceleme", thought: "Düşünce", game: "Oyun", technology: "Teknoloji", video: "Video" };
+const labels=PUBLICATION_LABELS;
 function videoId(url?: string | null) { if (!url) return null; try { const u = new URL(url); return u.hostname.includes("youtu.be") ? u.pathname.slice(1) : u.searchParams.get("v"); } catch { return null; } }
 export default async function Publication({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{comments_page?:string;commented?:string;comment_error?:string}> }) {
   const [{ slug }, query] = await Promise.all([params,searchParams]); const s = await createClient();

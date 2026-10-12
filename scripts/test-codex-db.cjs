@@ -127,5 +127,34 @@ const founder='11111111-1111-4111-8111-111111111111',admin='22222222-2222-4222-8
  assert.deepEqual((await historical()).rows,intervening,'Unexpected title aborts without partial correction');
  assert.equal((await db.query("select tgenabled from pg_trigger where tgrelid='regulations'::regclass and tgname='archive_regulation_revision'")).rows[0].tgenabled,'O');
  console.log('PASS historical title correction: exact names, every other field/history/source preserved, feed follows source, idempotence, mismatch rollback, revision trigger restored.');
+
+ {
+ await db.exec('create schema if not exists private;alter table regulations add column if not exists parent_rule_id uuid;');
+ await db.exec(fs.readFileSync('supabase/migrations/20261011073047_directive_complementary_bases.sql','utf8'));
+ await db.exec('create trigger codex_00_number before insert or update on regulations for each row execute function private.codex_number_allocate();');
+ await db.exec(`set role authenticated;select set_config('request.jwt.claim.sub','${founder}',false);`);
+ const primary=(await db.query("insert into regulations(title,body,kind,status,section_number,number,created_by,change_reason) values('Primary','Body','KURAL','yururlukte','04','04.99',$1,'test') returning id,revision",[founder])).rows[0];
+ const extra=(await db.query("insert into regulations(title,body,kind,status,section_number,number,created_by,change_reason) values('Extra','Body','KURAL','yururlukte','02','02.99',$1,'test') returning id,revision",[founder])).rows[0];
+ const draft=(await db.query("insert into regulations(title,body,kind,status,section_number,created_by,change_reason,basis_rule_id,basis_revision) values('Draft','Body','YÖNERGE','taslak','04',$1,'test',$2,$3) returning id,number",[founder,primary.id,primary.revision])).rows[0];
+ assert.match(draft.number,/^04\.99\//);
+ await db.query('update regulations set basis_rule_id=$1,basis_revision=$2 where id=$3',[extra.id,extra.revision,draft.id]);
+ assert.match((await db.query('select number from regulations where id=$1',[draft.id])).rows[0].number,/^02\.99\//);
+ const refs=JSON.stringify([{id:extra.id,revision:extra.revision}]);
+ const directive=(await db.query("insert into regulations(title,body,kind,status,section_number,number,created_by,change_reason,basis_rule_id,basis_revision,complementary_bases) values('Directive','Body','YÖNERGE','yururlukte','01','04.99/99',$1,'test',$2,$3,$4) returning id,revision,section_number",[founder,primary.id,primary.revision,refs])).rows[0];
+ assert.equal(directive.section_number,'04');
+ await db.exec('reset role');
+ await assert.rejects(()=>db.query('delete from regulations where id=$1',[extra.id]),/referenced_complementary_basis/);
+ await db.exec('set role authenticated');
+ await assert.rejects(()=>db.query('update regulations set basis_rule_id=$1 where id=$2',[extra.id,directive.id]),/immutable_directive_primary_basis/);
+ await assert.rejects(()=>db.query('update regulations set complementary_bases=$1 where id=$2',[JSON.stringify([{id:primary.id,revision:primary.revision}]),directive.id]),/invalid_complementary_basis/);
+ await assert.rejects(()=>db.query('update regulations set complementary_bases=$1 where id=$2',[JSON.stringify([{id:extra.id,revision:extra.revision},{id:extra.id,revision:extra.revision}]),directive.id]),/invalid_complementary_basis/);
+ await db.query("update regulations set complementary_bases='[]',change_reason='Remove extra' where id=$1",[directive.id]);
+ assert.deepEqual((await db.query('select complementary_bases from regulation_revisions where regulation_id=$1 and revision=$2',[directive.id,directive.revision])).rows[0].complementary_bases,JSON.parse(refs));
+ assert.equal((await db.query('select qg_complementary_current($1) as current',[refs])).rows[0].current,true);
+ await db.query("update regulations set body='Changed',change_reason='revision' where id=$1",[extra.id]);
+ assert.equal((await db.query('select qg_complementary_current($1) as current',[refs])).rows[0].current,false);
+ await assert.rejects(()=>db.query('update regulations set complementary_bases=$1 where id=$2',[refs,directive.id]),/complementary_revision_conflict/);
+ console.log('PASS complementary bases: primary immutability, derived section, duplicate rejection, archived snapshots and stale revision detection.');
+ }
  await db.close();
 })().catch(e=>{console.error(e);process.exit(1)});

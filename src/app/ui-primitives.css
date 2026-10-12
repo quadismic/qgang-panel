@@ -174,3 +174,7 @@
 @media(max-width:600px){.eventDetailHero{padding:24px 20px!important}.eventDetailHero h1{font-size:clamp(26px,7vw,36px)}.eventDetailActions{flex-wrap:wrap}.eventDetail,.eventAttendancePanel{padding:16px}.eventResponse{display:flex;flex-direction:column;align-items:stretch;gap:10px}.eventResponse label{width:100%}}
 .eventsPage>.eventBackLink{justify-self:start;justify-content:flex-start;width:fit-content;padding-left:0}
 @media(max-width:600px){.eventsPage .eventDetailHero h1{font-size:28px!important;line-height:1.15}}
+/* Publication genre: copper-orange, preserving the requested title case. */
+.pubBadge-cinema{color:#e58b57!important;text-transform:none!important}
+
+.codexComplementary{min-width:0;border:1px solid var(--qg-action-border);padding:14px}.codexComplementary label{display:flex;align-items:center;gap:10px;min-height:44px}.codexComplementary input[type=checkbox]{width:20px;min-width:20px;height:20px}

@@ -149,3 +149,18 @@ Typecheck, lint, dipnot kısayol/seçim/görsel ekleme ve numaralandırma testle
 - Katılım Arşivi ortak panel boşluklarını kullanır; yalnız doğrulanmış katılımlar gösterilir. Boş arşiv tek kısa mesajdır.
 - Düzenle ve Yönetim ⋯ hero dışında üstte. Mevcut düzenleme, yayın/durum, yoklama ve tarihsel kimlik eşleştirme formları ortak native dialog içinde açılır. Bağımsız events.manage / events.publish / events.attendance / events.archive koşulları ve kritik işlem onayları korunur.
 - Menü hero dışında kendi katmanındadır; formlar native dialog top layer kullanır. Mobil kontroller en az 44px; uzun başlık ve bilgiler sarılır. Liste filtrelerinin altında tek ayırıcı kullanılır.
+# Yayın türleri ve durumları — 11.10.2026
+
+Yayın Stüdyosu durumları yalnız Taslak ve Yayında olarak sunulur. Mevcut yayımlama yetkisi korunur. Sinema türü bu yazımla gösterilir; tür rozeti bakır-turuncu `#E58B57` kullanır. Diğer tür renkleri korunur. Sinema kaydındaki YouTube bağlantısı türünü Video olarak değiştirmez. Liste filtresi, ana sayfa ve detay ortak tür tanımını kullanır.
+
+## Yayın türleri — son karar
+
+Tür sırası: Düşünce / Oyun / Teknoloji / Video / Araştırma / Sinema. İnceleme kaldırılır. Sinema film, dizi ve görsel anlatıları kapsar; bakır-turuncu renk korunur. Durumlar Taslak / Yayında kalır.
+
+## Yönerge bölüm seçimi — 11.10.2026
+
+Yönergede ayrı Bölüm seçimi gösterilmez; dayanak hükmün bölümü kullanılır. Sunucu yönerge ve icra kararlarında form bölümünü dikkate almadan doğrulanmış dayanak kaydından bölüm alır. Kural ve İlke bölüm seçimi korunur; mevcut başlıklar ve numaralar değiştirilmez.
+
+## Yönerge dayanakları — 11.10.2026
+
+Asli dayanak tek zorunlu kuraldır; bölüm ve numarayı belirler. Tamamlayıcı dayanaklar isteğe bağlı çoklu kural seçimidir; bölüm/numarayı değiştirmez. Aynı hüküm tekrarlanamaz. Yayımlanmış yönergede asli dayanak sabittir. Her dayanak sürümü kayda ve değişiklik geçmişine alınır. Değişen veya kaldırılan tamamlayıcı dayanak da inceleme uyarısı üretir; incelenmemiş yönerge disiplin/icra dayanağı olamaz.

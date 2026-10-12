@@ -1,12 +1,13 @@
 "use client";
+import {PUBLICATION_BADGE_LABELS} from "@/lib/publication-types";
 import {useMemo,useState} from "react";
 import {QGIcon,type QGIconName} from "./QGIcon";
 import {Input} from "./ui/Primitives";
 import Link from "next/link";
 
 type Entry={id:string;source:"publication";kind:string;title:string;excerpt:string;date:string|null;cover?:string|null;slug?:string|null;author:string;reading?:number|null;pinned?:boolean;priority?:string|null};
-const cats=[["all","Tümü","list"],["research","Araştırmalar","discover"],["review","İncelemeler","document"],["thought","Düşünceler","comment"],["game","Oyun","campfire"],["technology","Teknoloji","control"],["video","Video","video"]] as const;
-const labels:Record<string,string>={research:"ARAŞTIRMA",review:"İNCELEME",thought:"DÜŞÜNCE",game:"OYUN",technology:"TEKNOLOJİ",video:"VİDEO"};
+const cats=[["all","Tümü","list"],["thought","Düşünceler","comment"],["game","Oyun","campfire"],["technology","Teknoloji","control"],["video","Video","video"],["research","Araştırmalar","discover"],["cinema","Sinema","video"]] as const;
+const labels=PUBLICATION_BADGE_LABELS;
 export function PublicationsWorkspace({entries}:{entries:Entry[]}){
  const [cat,setCat]=useState("all"),[sort,setSort]=useState<"new"|"old">("new"),[q,setQ]=useState("");
  const counts=useMemo(()=>Object.fromEntries(cats.map(([k])=>[k,k==="all"?entries.length:entries.filter(x=>x.kind===k).length])),[entries]);

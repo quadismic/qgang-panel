@@ -16,8 +16,9 @@ async function saveRule(formData:FormData){
  const s=await createClient(),user=await getCurrentUser();if(!user)redirect("/login");
  const {data:me}=await s.from("profiles").select("role").eq("id",user.id).single();
  if(!["founder","admin","moderator"].includes(me?.role||""))redirect("/kodeks?error=permission");
- const id=String(formData.get("id")||""),kind=String(formData.get("kind")||""),title=String(formData.get("title")||"").trim(),body=normalizeRich(String(formData.get("body")||"")),number=String(formData.get("number")||"").trim(),section=String(formData.get("section_number")||""),reason=String(formData.get("reason")||"").trim(),scope=String(formData.get("application_scope")||"").trim(),basisId=String(formData.get("basis_rule_id")||"");
- if(!title||title.length>200||number.length>40||!SECTIONS.some(x=>x.number===section)||!validRich(body,50000,1)||!reason||reason.length>2000||scope.length>500||!["KURAL","İLKE","YÖNERGE","KARAR"].includes(kind))redirect("/kodeks?error=validation");
+ const id=String(formData.get("id")||""),kind=String(formData.get("kind")||""),title=String(formData.get("title")||"").trim(),body=normalizeRich(String(formData.get("body")||"")),number=String(formData.get("number")||"").trim(),reason=String(formData.get("reason")||"").trim(),scope=String(formData.get("application_scope")||"").trim(),basisId=String(formData.get("basis_rule_id")||"");
+ let section=String(formData.get("section_number")||"");
+ if(!title||title.length>200||number.length>40||(!["YÖNERGE","KARAR"].includes(kind)&&!SECTIONS.some(x=>x.number===section))||!validRich(body,50000,1)||!reason||reason.length>2000||scope.length>500||!["KURAL","İLKE","YÖNERGE","KARAR"].includes(kind))redirect("/kodeks?error=validation");
  if(me?.role!=="founder"&&!["YÖNERGE","KARAR"].includes(kind))redirect("/kodeks?error=permission");
  if(kind==="KARAR"&&!await hasPermission(user.id,"announcements.publish"))redirect("/kodeks?error=permission");
  if(me?.role==="moderator"&&["YÖNERGE","KARAR"].includes(kind)&&!scope)redirect("/kodeks?error=validation");
@@ -29,13 +30,22 @@ async function saveRule(formData:FormData){
  }
  const status=String(formData.get("status")||"yururlukte");if(!["taslak","yururlukte","yururlukten_kaldirildi"].includes(status))redirect("/kodeks?error=validation");
  if(kind==="YÖNERGE"||kind==="KARAR"){
-   const {data:basis}=await s.from("regulations").select("id,kind,status,effective_at,revision,basis_rule_id,basis_revision").eq("id",basisId).maybeSingle();
+   const {data:basis}=await s.from("regulations").select("id,kind,status,effective_at,revision,basis_rule_id,basis_revision,section_number").eq("id",basisId).maybeSingle();
    if(basis?.kind==="YÖNERGE"){
      const {data:parent}=await s.from("regulations").select("status,effective_at,revision").eq("id",basis.basis_rule_id).maybeSingle();
      if(!parent||!isEffective(parent)||parent.revision!==basis.basis_revision)redirect("/kodeks?error=basis");
    }
    if(basis&&basis.revision!==Number(formData.get("basis_revision")))redirect("/kodeks?error=conflict");
    if(!basis||!(kind==="KARAR"?["KURAL","YÖNERGE"].includes(basis.kind):basis.kind==="KURAL")||(status!=="yururlukten_kaldirildi"&&!isEffective(basis)))redirect("/kodeks?error=basis");
+   if(!SECTIONS.some(x=>x.number===basis.section_number))redirect("/kodeks?error=basis");
+   section=basis.section_number;
+ }
+ let complementary:{id:string;revision:number}[]=[];
+ if(kind==="YÖNERGE"){
+   if(existing?.published_at&&existing.basis_rule_id!==basisId)redirect("/kodeks?error=basis");
+   try{complementary=JSON.parse(String(formData.get("complementary_bases")||"[]"));}catch{redirect("/kodeks?error=basis");}
+   if(!Array.isArray(complementary)||complementary.length>50||complementary.some(ref=>!ref||typeof ref.id!=="string"||!Number.isInteger(ref.revision)||ref.id===basisId||ref.id===id)||new Set(complementary.map(ref=>ref.id)).size!==complementary.length)redirect("/kodeks?error=basis");
+   if(complementary.length){const {data:extra,error}=await s.from("regulations").select("id,kind,status,effective_at,revision").in("id",complementary.map(ref=>ref.id));if(error||!extra||extra.length!==complementary.length||complementary.some(ref=>!extra.some(r=>r.id===ref.id&&r.kind==="KURAL"&&r.revision===ref.revision&&(status==="yururlukten_kaldirildi"||isEffective(r)))))redirect("/kodeks?error=basis");}
  }
  const mode=String(formData.get("effective_mode")||"now");
  let effectiveAt=mode==="keep"&&existing?existing.effective_at:new Date().toISOString();
@@ -46,7 +56,7 @@ async function saveRule(formData:FormData){
  if(existing?.legacy_announcement_id&&!existing.basis_rule_id)effectiveAt=new Date().toISOString();
  const priority=String(formData.get("decision_priority")||"normal");if(!["normal","important","critical"].includes(priority))redirect("/kodeks?error=validation");
  const publishedAt=status==="taslak"?null:existing?.published_at||new Date().toISOString();
- const payload={parent_rule_id:existing?existing.parent_rule_id||null:String(formData.get("parent_rule_id")||"")||null,title,body,number:existing?.number||"",section_number:section,kind,status,effective_at:effectiveAt,change_reason:reason,published_at:publishedAt,decision_priority:priority,decision_pinned:formData.get("decision_pinned")==="on",basis_rule_id:["YÖNERGE","KARAR"].includes(kind)?basisId:null,basis_revision:["YÖNERGE","KARAR"].includes(kind)?Number(formData.get("basis_revision")):null,application_scope:scope||null};
+ const payload={complementary_bases:complementary,parent_rule_id:existing?existing.parent_rule_id||null:String(formData.get("parent_rule_id")||"")||null,title,body,number:existing?.number||"",section_number:section,kind,status,effective_at:effectiveAt,change_reason:reason,published_at:publishedAt,decision_priority:priority,decision_pinned:formData.get("decision_pinned")==="on",basis_rule_id:["YÖNERGE","KARAR"].includes(kind)?basisId:null,basis_revision:["YÖNERGE","KARAR"].includes(kind)?Number(formData.get("basis_revision")):null,application_scope:scope||null};
  const result=id?await s.from("regulations").update(payload).eq("id",id).eq("revision",existing!.revision).select("id").maybeSingle():await s.from("regulations").insert({...payload,created_by:user.id}).select("id").single();
  if(result.error||!result.data)redirect("/kodeks?error=save");
  for(const path of ["/rules","/kodeks","/penalties","/disiplin","/announcements","/duyurular","/"])revalidatePath(path);
@@ -55,11 +65,11 @@ async function saveRule(formData:FormData){
 export default async function Rules({searchParams}:{searchParams:Promise<{rule?:string;section?:string;tab?:string;error?:string}>}){
  const q=await searchParams,s=await createClient(),user=await getCurrentUser();
  const [{data:rules,error},{data:me},{data:issuers},{data:history}]=await Promise.all([
- s.from("regulations").select(user?"id,title,body,kind,number,parent_rule_id,section_number,status,published_at,effective_at,revision,updated_at,created_by,basis_rule_id,basis_revision,change_reason,application_scope,decision_priority,decision_pinned,legacy_announcement_id":"id,title,body,kind,number,parent_rule_id,section_number,status,published_at,effective_at,revision,updated_at,basis_rule_id,basis_revision,decision_priority,decision_pinned,legacy_announcement_id").order("number").limit(1000),
+ s.from("regulations").select(user?"id,title,body,kind,number,parent_rule_id,section_number,status,published_at,effective_at,revision,updated_at,created_by,basis_rule_id,basis_revision,complementary_bases,change_reason,application_scope,decision_priority,decision_pinned,legacy_announcement_id":"id,title,body,kind,number,parent_rule_id,section_number,status,published_at,effective_at,revision,updated_at,basis_rule_id,basis_revision,complementary_bases,decision_priority,decision_pinned,legacy_announcement_id").order("number").limit(1000),
  user?s.from("profiles").select("role").eq("id",user.id).single():Promise.resolve({data:null}),
  user?s.from("profiles").select("id,role,display_name"):Promise.resolve({data:[]}),
- user?s.from("regulation_revisions").select("id,regulation_id,revision,title,body,change_reason,changed_at").order("revision",{ascending:false}).limit(1000):Promise.resolve({data:[]})]);
+ user?s.from("regulation_revisions").select("id,regulation_id,revision,title,body,change_reason,changed_at,basis_rule_id,basis_revision,complementary_bases").order("revision",{ascending:false}).limit(1000):Promise.resolve({data:[]})]);
  const canPublishDecision=["founder","admin","moderator"].includes(me?.role||"")&&await hasPermission(user?.id,"announcements.publish");
- const messages:Record<string,string>={conflict:"Bu hüküm başka bir oturumda değişti. Sayfayı yenileyip yeniden düzenle.",basis:"Yürürlükte bir dayanak kural seç.",schedule:"Mevcut hükmün düzenlemesi derhal uygulanır. İleri tarih için yeni bir hüküm yayımla.",permission:"Bu hükmü düzenleme yetkin yok."};
+ const messages:Record<string,string>={conflict:"Bu hüküm başka bir oturumda değişti. Sayfayı yenileyip yeniden düzenle.",basis:"Dayanakları ve sürümlerini kontrol et. Yayımlanmış yönergenin asli dayanağı değiştirilemez.",schedule:"Mevcut hükmün düzenlemesi derhal uygulanır. İleri tarih için yeni bir hüküm yayımla.",permission:"Bu hükmü düzenleme yetkin yok."};
  return <AppShell right={false}><main className="codexV3">{(q.error||error)&&<p className="notice" role="alert">{error?"Kodeks yüklenemedi. Tekrar dene.":messages[q.error||""]||"Hüküm kaydedilemedi. Alanları kontrol edip tekrar dene."}</p>}<CodexWorkspace canCompile={["founder","admin"].includes(me?.role||"")&&await hasPermission(user?.id,"members.manage")} rules={(rules??[]) as unknown as CodexRule[]} sections={SECTIONS} initialRule={q.rule} initialSection={q.section} heroImage={brandTheme.rooms.codex} actorRole={me?.role} actorId={user?.id} issuers={issuers??[]} revisions={history??[]} action={saveRule} initialTab={q.tab} canPublishDecision={canPublishDecision}/></main></AppShell>;
 }

@@ -26,7 +26,7 @@ export async function renderCodex(compilation:Compilation):Promise<Buffer>{
  doc.font("meta").fontSize(9).fillColor(color).text((r.kind==="KURAL"?"● ":r.kind==="İLKE"?"◆ ":"■ ")+(r.kind==="KARAR"?"İCRA KARARI":r.kind));doc.moveDown(.7);doc.font("head").fontSize(20).fillColor("#242320").text("§ "+r.number+" — "+r.title,{width});doc.moveDown(.5);
  const format=(d:string|null)=>d?new Date(d).toLocaleDateString("tr-TR",{timeZone:"Europe/Istanbul"}):"—";
  doc.font("meta").fontSize(8).fillColor("#6f6960").text("Yürürlük: "+format(r.effective_at)+" · Son değişiklik: "+format(r.updated_at)+" · Sürüm: "+r.revision,{width});
- const basis=ordered.find(x=>x.id===r.basis_rule_id);if(basis)doc.text("Dayanak: § "+basis.number,{goTo:basis.id});if(r.kind==="KARAR")doc.text("Durum: "+(r.status==="yururlukten_kaldirildi"?"Yürürlükten kaldırıldı":"Yayımlanmış karar"));doc.moveDown(1.5);
+ const basis=ordered.find(x=>x.id===r.basis_rule_id);if(basis)doc.text((r.kind==="YÖNERGE"?"Asli dayanak: § ":"Dayanak: § ")+basis.number,{goTo:basis.id});for(const ref of r.complementary_bases||[]){const extra=ordered.find(x=>x.id===ref.id);doc.text("Tamamlayıcı dayanak: § "+(extra?.number||ref.id)+" · sürüm "+ref.revision);}if(r.kind==="KARAR")doc.text("Durum: "+(r.status==="yururlukten_kaldirildi"?"Yürürlükten kaldırıldı":"Yayımlanmış karar"));doc.moveDown(1.5);
  for(const block of documentBlocks((r.body||"").replace(/<\/t[dh]>/gi," | "))){
    if(block.kind==="text"){if(block.text)doc.font("body").fontSize(11).fillColor("#252420").text(block.text,{width,align:"left",lineGap:4,paragraphGap:8});continue;}
    let rendered=false;
