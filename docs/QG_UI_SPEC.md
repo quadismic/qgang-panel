@@ -164,3 +164,13 @@ Yönergede ayrı Bölüm seçimi gösterilmez; dayanak hükmün bölümü kullan
 ## Yönerge dayanakları — 11.10.2026
 
 Asli dayanak tek zorunlu kuraldır; bölüm ve numarayı belirler. Tamamlayıcı dayanaklar isteğe bağlı çoklu kural seçimidir; bölüm/numarayı değiştirmez. Aynı hüküm tekrarlanamaz. Yayımlanmış yönergede asli dayanak sabittir. Her dayanak sürümü kayda ve değişiklik geçmişine alınır. Değişen veya kaldırılan tamamlayıcı dayanak da inceleme uyarısı üretir; incelenmemiş yönerge disiplin/icra dayanağı olamaz.
+
+
+## Üyelik Değerlendirmeleri — 2026-10-19
+- Topluluk işlem alanındaki yetkili bağlantısından açılır; ERA ile ilişki kurulmaz. Ortak hero, container ve bronze primary kullanılır.
+- Dönem oluşturma sırası: kayıtlı kişi seçimi ve kapsam onayı → isteğe bağlı manuel kişiler → değerlendirici kadrosu → açık onayla başlatma. PLATFORM kendiliğinden seçilmez. Kişi listesi aranabilir, 50 kayıtla sayfalanır; kapsam sınırı yoktur.
+- Masaüstünde kişi listesi ve dosya yan yana; mobilde tek sütun, listeye dönüş ve önceki/sonraki kişi. Kontroller en az 44px. Uzun adlar/başlıklar sarılır.
+- Form taslağı sunucuya kaydedilir; kişi değişiminden önce bekleyen kayıt tamamlanır. Kayıt hatasında içerik korunur. Değerlendiremiyorum yanıtı tamamlanmış sayılır. C/D için somut gerekçe zorunludur. A–D nötr gösterilir; puan/ortalama yoktur.
+- Liderlik dosyasında bireysel kanaat, görüşme ve özel nihai gerekçe ayrıdır. Paylaşılacak karar metni ayrıca hazırlanır; kesinleştirme ve erişime açma ayrı onaylardır.
+- Vekilharç varsayılan olarak hazırlık ve görüşme koordinasyonu yapar; başkalarının kanaatlerini/gizli görüşme notlarını görmez. Erişim Merkezi ayrı yetkiler sunar. Liderlik işlemleri yalnız Liderindir.
+- Değerlendirmeye açıldıktan sonra kapsam kilitlidir; gerekçeli iptal geçmişi korur. İşlem otomatik üyelik/rütbe/yaptırım değişikliği yapmaz.

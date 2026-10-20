@@ -1,7 +1,9 @@
+import {reviewPermissions} from './membership-reviews/model';
 export type AppRole="founder"|"admin"|"moderator"|"creator"|"member"|"guest";
 export const ROLE_LABEL:Record<AppRole,string>={founder:"LİDER",admin:"VEKİLHARÇ",moderator:"KAPTAN",creator:"TEĞMEN",member:"ÜYE",guest:"PLATFORM"};
 export const ROLE_LEVEL:Record<AppRole,number>={founder:50,admin:40,moderator:30,creator:20,member:10,guest:0};
 export const PERMISSIONS=[
+ ...reviewPermissions,
  ["events.view","Etkinlikleri Görüntüle"],["events.propose","Etkinlik Öner"],["events.manage","Etkinlikleri Düzenle"],["events.publish","Etkinlik Yayımla / İptal Et"],["events.attendance","Etkinlik Yoklamasını Yönet"],["events.archive","Etkinlik Arşivini Aktar / Eşleştir"],["events.settings","Etkinlik Türlerini Yönet"],
  ["members.view","Üyeleri Görüntüle"],["members.manage","Üyeleri Yönet"],["members.delete","Üyeyi Kalıcı Sil"],
  ["discipline.view","Disiplini Görüntüle"],["discipline.issue","Yaptırım Uygula"],["discipline.review","Karar / İtiraz İncele"],

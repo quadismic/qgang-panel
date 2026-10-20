@@ -1,7 +1,7 @@
 import {cache} from "react";import {createClient} from "@/lib/supabase/server";
 export const getPrivacyCapabilities=cache(async()=>{const s=await createClient();const {data}=await s.rpc("privacy_capabilities");const v=data as {requests?:boolean;documents?:boolean;founder?:boolean}|null;return {requests:v?.requests===true,documents:v?.documents===true,founder:v?.founder===true};});
 export const privacyReviewFields={categories:"Veri kategorileri",purposes:"İşleme amaçları",legal_basis:"Hukuki sebepler",recipients:"Alıcılar",transfers:"Yurt dışı aktarım",retention:"Saklama ve imha"} as const;
-export const retentionFields={security_logs_days:"Güvenlik günlükleri (gün)",notifications_days:"Okunmuş bildirimler (gün)",aster_days:"Aster sohbetleri (gün)",unused_media_days:"Kullanılmayan görseller (gün)",requests_years:"Sonuçlanmış başvurular (yıl)",destruction_audit_years:"İmha işlem kayıtları (yıl)",review_interval_days:"İmha inceleme aralığı (gün)"} as const;
+export const retentionFields={reviews_months:"Üyelik değerlendirmesi inceleme eşiği (ay)",security_logs_days:"Güvenlik günlükleri (gün)",notifications_days:"Okunmuş bildirimler (gün)",aster_days:"Aster sohbetleri (gün)",unused_media_days:"Kullanılmayan görseller (gün)",requests_years:"Sonuçlanmış başvurular (yıl)",destruction_audit_years:"İmha işlem kayıtları (yıl)",review_interval_days:"İmha inceleme aralığı (gün)"} as const;
 export const defaultPrivacyBodies:Record<string,string>={
  aydinlatma:`Veri sorumlusu: Ömer Faruk Karabul.
 

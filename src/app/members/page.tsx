@@ -19,7 +19,7 @@ export default async function Members({searchParams}:{searchParams:Promise<{mana
    <h1>Topluluk</h1><p>Q-GANG üyeleri ve topluluk kimlikleri.</p>
    <div><b>{people.length}<small>TOPLAM ÜYE</small></b></div>
   </section>
-  {canViewManagement&&<nav className="sectionTools" aria-label="Topluluk işlemleri"><Link className="qgAction" aria-current={!q.manage?"page":undefined} href="/topluluk">Üyeler</Link><Link className="qgAction" aria-current={q.manage?"page":undefined} href="/topluluk?manage=1">Üye Yönetimi</Link></nav>}
+  {(canViewManagement||allows(permissions,"reviews.view"))&&<nav className="sectionTools" aria-label="Topluluk işlemleri"><Link className="qgAction" aria-current={!q.manage?"page":undefined} href="/topluluk">Üyeler</Link>{canViewManagement&&<Link className="qgAction" aria-current={q.manage?"page":undefined} href="/topluluk?manage=1">Üye Yönetimi</Link>}{allows(permissions,"reviews.view")&&<Link className="qgAction" href="/uyelik-degerlendirmeleri">Üyelik Değerlendirmeleri</Link>}</nav>}
  {canViewManagement&&q.manage?(q.edit?<MemberProfileEditor params={Promise.resolve({id:q.edit})} searchParams={Promise.resolve(q)}/>:<CommunityManagement searchParams={Promise.resolve(q)}/>):<>
   {(birthdays??[]).length>0&&<section className="birthdayBanner"><span className="birthdaySigil">✦</span><div><small>BUGÜN TOPLULUKTA</small><h2>{(birthdays??[]).map((b:any)=>b.display_name).join(" · ")}</h2><p>{(birthdays??[]).length===1?"Bugün doğum günü. Nice yıllara!":"Bugün doğum günlerini kutluyoruz. Nice yıllara!"}</p></div></section>}<CommunityOrgChart people={people}/>
  </>}

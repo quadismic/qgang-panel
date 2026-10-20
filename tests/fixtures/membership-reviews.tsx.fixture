@@ -1,0 +1,8 @@
+'use client';
+import {useEffect,useState} from 'react';
+import {MembershipReviews} from '@/components/membership-reviews/MembershipReviews';
+import {NavClient} from '@/components/NavClient';
+import {MobileNavClient} from '@/components/MobileNavClient';
+import type {ReviewSnapshot} from '@/lib/membership-reviews/model';
+import '../uyelik-degerlendirmeleri/reviews.css';
+export default function QA(){const [data,setData]=useState<ReviewSnapshot|null>(null);useEffect(()=>{const p=new URL(window.location.href).searchParams.get('period');void fetch('/api/membership-reviews?'+new URLSearchParams(p?{period:p}:{})).then(r=>r.json()).then(setData);},[]);return <div className="appShell"><NavClient manage={false} identity={{display_name:'QA',handle:'qa',role:'creator'}}/><main className="content">{data?<MembershipReviews initial={data}/>:<p>Hazırlanıyor</p>}</main><MobileNavClient user manage={false}/></div>}

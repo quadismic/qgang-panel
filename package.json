@@ -15,7 +15,9 @@
     "test:codex-ui": "node scripts/test-codex-composer-ui.cjs",
     "test:events-detail-ui": "node scripts/test-events-detail-ui.cjs",
     "test:events-ui": "node scripts/test-events-ui.cjs",
-    "test:auth": "node scripts/test-auth-onboarding.cjs && node scripts/test-auth-callback.cjs && node scripts/test-community-repairs.cjs && node scripts/test-guest-identity.cjs"
+    "test:auth": "node scripts/test-auth-onboarding.cjs && node scripts/test-auth-callback.cjs && node scripts/test-community-repairs.cjs && node scripts/test-guest-identity.cjs",
+    "test:membership-reviews": "node scripts/test-membership-reviews-db.cjs && node scripts/test-membership-reviews-routes.cjs",
+    "test:membership-reviews-ui": "node scripts/test-membership-reviews-ui.cjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.7.0",
