@@ -14,12 +14,13 @@ Mevcut koddan çıkarılan standart; yeni tasarım dili değildir. Kaynaklar: gl
 
 ## Katmanlar ve tokenlar
 
-Kimlik katmanı serif, bronz, kontrollü kırmızı vurgu ve heraldik öğeler kullanır. Operasyonel katman sans-serif, sade yüzey, okunabilir kontroller ve divider kullanır. Her içerik grubu kart değildir; yeni yüzey yalnız görev veya etkileşim sınırında açılır.
+Marka ve operasyonel arayüz, Teko/Rajdhani/Inter tipografi rolleriyle birleşir. Bronz, kontrollü kırmızı vurgu ve mevcut amblem kimliği korunur. Her içerik grubu kart değildir; yeni yüzey yalnız görev veya etkileşim sınırında açılır.
 
 | Rol | Mevcut karşılık |
 |---|---|
-| Display / section / normatif başlık | --qg-display-font; sayfanın mevcut başlık ölçeği |
-| UI ve form | --qg-ui-font; kontrol metni 14px, mobilde 16px |
+| Q-GANG marka adı | Teko Bold; yalnız wordmark/marka başlığı |
+| Display / section / normatif başlık | Rajdhani Bold; sayfanın mevcut başlık ölçeği |
+| UI ve form | Inter; kontrol metni 14px, mobilde 16px |
 | Metadata | --qg-muted; 12px / 1.5 |
 | Body | Mevcut qgProse okuma düzeni |
 | Overline | kicker; kısa kategori/kurumsal etiket |
@@ -178,21 +179,39 @@ Mevcut konsey kompozisyonu, portre ölçekleri, rütbe çerçevesi/taç geometri
 - Ana gezinme: Lobi, erişim yetkisi varsa Oyun & Etkinlikler, Topluluk. Yetkili yönetim bağlantıları (Bütçe dahil) ayrı grupta, profil ve çıkış hesap menüsündedir. Mobil ana gezinme kaydırmasızdır. Mevcut adresler ve yetki kontrolleri korunur.
 - Lobi sırası: kısa sabit kimlik başlığı, sıradaki yayımlanmış OP-NIGHT, Biz kimiz / katılım açıklaması ve Kodeks, tek topluluk akışı. Katılım mevcut etkinlik işleminden geçer. Boş durumda yetkili üye oyun gecesi önerebilir. Yayımlanmış duyurular ve yayınlar gerçek kayıtlardan gelir; Steam paneli ikinci aşamaya bırakılmıştır.
 - Topluluk ilk açılışta üye listesidir. Yayınlar, yönetim şeması ve yetkili üye yönetimi ayrı bağlantılardan açılır. Etkinliklerde oyun gecesi filtresi, mevcut diğer türler ve arşiv korunur.
-- Sıcak siyah, ince bronz çizgi, fildişi metin. Lobiye özgü kırmızı yalnız ana katılım eylemi ve aktif menü vurgusunda. Kimlik başlıkları serif; liste ve kontroller sans serif. Mobilde Lobi tek sütundur; dokunma hedefi en az 44px.
+- Sıcak siyah, ince bronz çizgi, fildişi metin. Lobiye özgü kırmızı yalnız ana katılım eylemi ve aktif menü vurgusunda. Marka/başlık/UI tipografi rolleri güncel ana sayfa kararına göre Teko/Rajdhani/Inter'dir. Mobilde Lobi tek sütundur; dokunma hedefi en az 44px.
 - Doğrulama: tarayıcıda test verileriyle 1440/390px, misafir/üye/yetkili, dolu/boş, içerik taşması ve 390px’de ilk ekran katılım eylemi. Paket yeni veritabanı geçişi gerektirmez. Çalışma alanında önceki Kodeks/İcra Kararı ve Disiplin değişiklikleri ayrıdır; veritabanı geçişinden önce yapılacak ayrı bir Lobi yayını bunları içermemelidir.
+
+### Güncel ana sayfa ve tipografi kararı — 2026-11-09
+
+- Tipografi üç rol kullanır: Q-GANG marka adı Teko Bold, sayfa/bölüm/kart başlıkları Rajdhani Bold, gezinme/düğmeler/açıklama ve gövde Inter. Marka wordmark'ı dışında gövde serif kullanılmaz.
+- Ana sayfa hero'su Q-GANG markası, kısa “Oyun, yoldaşlık ve düzen.” tanıtımı ve topluluğa geçişi taşır. Sağ görsel alanı asker/bayrak kompozisyonu için ayrılmıştır; haricî görsel gelene kadar mevcut QG amblemi düşük vurgulu geçici görsel olarak kullanılır.
+- Ana sayfada rütbe ve ekip vitrinleri yoktur. Hero'dan sonra yaklaşan etkinlik, duyuru akışı ve sade hızlı bağlantılar gelir. Etkinlik/duyuru verileri mevcut kayıtlardan okunur.
+- Logo/favikonun yeni varyantı haricî asset geldiğinde bağlanır; bu pakette mevcut QG amblem dosyası korunur. Yeni görsel veya favicon uydurulmaz.
+- Mobil hero tek sütun hiyerarşisini korur; görsel alanı metnin okunurluğunu engellemez. Görsel alanı `--qg-home-hero-image` tema değişkeninden beslenebilir.
+- Doğrulama: Lobi erişim/boş-dolu işlev testi geçti; `npm run lint` ve `npm run build` geçti. Gerçek Chromium bu çalışma alanında yerel `socket() failed: Operation not permitted` hatası verdiğinden bu değişiklik için ekran görüntüsüyle 390/1440 görsel doğrulama yapılamadı.
 
 ## Ortak temalar ve geçici paletler
 
-- Tasarım Merkezi → Tema ve başlık yazısı, normal paleti ve geçici paleti ayrı yönetir. Geçici palet Türkiye saatiyle seçilen günün sonunda kapanır; normal palet ve diğer ayarlar değişmez. Sayfa başlıklarında sistem sans varsayılan, Trebuchet ve Georgia isteğe bağlıdır. Lobi marka adı mevcut serif kimliğini korur.
+- Tasarım Merkezi → Tema renkleri, normal paleti ve geçici paleti ayrı yönetir. Geçici palet Türkiye saatiyle seçilen günün sonunda kapanır; normal palet ve diğer ayarlar değişmez. Yazı tipi rolleri site genelinde sabittir: Teko / Rajdhani / Inter.
 - Hazır paletler: Q-GANG Klasik, GTA VI esintili Vice City gün batımı, Kış gecesi, Zeytin ve altın. Bunlar bir yayın veya oyun çıkış takvimi değildir; başlangıç ve bitiş kararını yetkili verir.
-- Görsel roller: ana zemin, yüzey, yükseltilmiş yüzey, metin, ikincil metin, ayırıcı, vurgu, ana düğme ve düğme metni. Ortak sayfa kabuğu ve kontroller bu rolleri kullanır. Marka varlıkları ile uyarı, hata ve yaptırımın anlamsal renkleri kampanya paletine bağlanmaz. Eski ekranlara özgü bütün renkler henüz ortak rollere taşınmamıştır.
+- Görsel roller: ana zemin, yüzey, yükseltilmiş yüzey, metin, ikincil metin, ayırıcı, vurgu, ana düğme ve düğme metni. Ortak sayfa kabuğu, eski temel palet değişkenleri ve temel kontroller bu rollere bağlanır. Marka varlıkları ile uyarı, hata ve yaptırımın anlamsal renkleri kampanya paletine bağlanmaz.
 - Bir isteği tekrar üretmek için Tasarım Merkezi’nden temayı JSON olarak dışa aktar. Örneğin `npm run -s theme:config -- gtaVi 2026-12-31 mevcut-tema.json` o paleti mevcut kalıcı temayı koruyarak hazırlar. Çıktıyı **Tema ayarını içe veya dışa aktar → Önizlemeye al** ile dene; yetkili **Yayınla** dediğinde etkin olur. Tarih örnektir. Komut canlı sisteme yazmaz.
 - Yeni yönetilebilir seçeneklerde aynı sözleşmeyi kullan: adı ve varsayılanı belli alan, girdi doğrulaması, önizleme, yetkili yayın ve geçmişten geri alma. Görünüm ayarları yetki, disiplin veya başka iş kurallarını değiştirmez.
 
 ## Ortak arayüz kuralları — 2026-11-09
 
 - `design-system.css` genel görsel otoritedir ve `layout.tsx` içinde tüm sayfa stillerinden sonra yüklenir. Sayfa CSS'i yerleşimi ve bileşene özgü anlamı korur; ortak yazı, yüzey, eylem ve etkileşim kuralları burada belirlenir.
-- Arayüz yazısı sistem sans ailesini kullanır; yetkilinin seçtiği başlık yazısı yalnız başlık rolünü etkiler. Q-GANG amblemi ve marka sözcüğü kendi serif kimliğini korur. Sayfa başlıkları, alt başlıklar, gövde, açıklama ve metadata ortak ölçü hiyerarşisine bağlıdır.
+- Arayüz başlıkları Rajdhani, Q-GANG marka sözcüğü Teko, UI ve gövde Inter kullanır. Tema paneli yazı tipi seçmez; logo ve haricî görsel varlıklar bağımsız kalır. Sayfa başlıkları, alt başlıklar, gövde, açıklama ve metadata ortak ölçü hiyerarşisine bağlıdır.
 - Düğme türleri: birincil eylem, ikincil eylem, metin/üçüncül eylem ve yıkıcı işlem. Renkler tema semantik rollerinden gelir; durum/uyarı/yaptırım renkleri anlamını korur. Düğme, form, odak, hover, disabled ve pressed durumları ortak kurala tabidir; dokunma hedefi en az 44px'tir.
 - Kart, dialog, açılır menü, kenar çizgisi ve gölge ölçüleri ortak token kullanır. Sayfa geçişi kısa ve düşük hareketlidir; `prefers-reduced-motion` tercihi animasyonları devre dışı bırakır.
 - Eski ortak değişkenler yeni temaya köprülenir; yeni bileşenlerde sayfaya özel renk ve ölçü sabitleri eklenmez. Kontrol dışı kalan ekranlar aynı tokenlara taşınırken işlev ve yetki kuralları değiştirilmez.
+
+## Klan sitesine sadeleşme — 2026-11-09
+
+- Ana gezinme dört ana yüzeydir: Ana Sayfa, Üyeler, Etkinlikler, Kodeks. Masaüstünde yatay üst menü; mobilde üst çubuğun ikinci sırasında 4 eşit, 44px hedefli düğme kullanılır. Hesap (profil/çıkış) ve Yönetim Paneli ana sekme değildir.
+- Ana sayfa kısa tanıtım, sıradaki oyun gecesi, üye listesine erişim, duyurular ve Kodeks/Etkinlikler hızlı bağlantılarından oluşur. Yayın akışı ve sabit örnek istatistikler kaldırılmıştır. Duyuru ve etkinlik içeriği gerçek veridir; mevcut kayıtlar ve RSVP davranışı korunur. Mobilde etkinlik kartı tanıtımın hemen ardından görünür.
+- Üyeler ekranı üye listesi, profil ve rütbeyi öne çıkarır. Yayınlar ve yönetim şeması üye ekranı üst gezinmesinden çıkarılmış, doğum günü şeridi ve profil rozeti paneli gizlenmiştir. Kayıtlar silinmemiştir. Yetkili üye işlemleri mevcut `members.manage` kapısıyla Yönetim Paneli altına alınmıştır.
+- Yönetim Paneli üyeler, etkinlikler, yönergeler/kararlar ve duyurular için yalnız mevcut sunucu izinlerinin verdiği girişleri gösterir. Gelişmiş site araçları katlanır bir bölümde kalır. Bütçe ve gelişmiş disiplin ana menüde görünmez; veri, URL ve sunucu yetkilendirmeleri değişmez.
+- Operasyonel başlıklar sans-serif olur; eski oda fotoğrafı hero'ları yeni görsel oluşturmadan tema renkli sakin yüzey gradientlerine dönüşür. Referans ekranındaki sancak görseli varlıklar arasında bulunmadığından mevcut Q-GANG vektör markası başlıkta ve hero'da soluk marka izi olarak kullanılır; 700KB raster logo yerine küçük SVG tercih edilir.
+- Ekran 1440/390px Chromium fixture testinde dolu/boş, misafir/üye/yetkili durumları, 4 bağlantı, yatay taşma ve mobil ilk ekrandaki RSVP için doğrulanır. Bu test canlı oturumlu erişim testi değildir.

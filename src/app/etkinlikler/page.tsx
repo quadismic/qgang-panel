@@ -14,7 +14,7 @@ import {EventList} from "@/components/EventList";
 import {EventPageActions} from "@/components/EventPageActions";
 import {brandTheme} from "@/config/brand-theme";
 export const dynamic="force-dynamic";
-export const metadata={title:"Oyun & Etkinlikler"};
+export const metadata={title:"Etkinlikler"};
 export default async function Events({searchParams}:{searchParams:Promise<{view?:string;type?:string;from?:string;to?:string;member?:string;page?:string;saved?:string;propose?:string}>}) {
  const {user,permissions}=await getPermissions();if(!user)redirect("/login?next=/etkinlikler");
  if(!allows(permissions,"events.view"))return <AppShell right={false}><EmptyState title="Etkinliklere erişim yetkin yok"/></AppShell>;

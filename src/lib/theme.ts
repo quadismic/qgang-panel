@@ -44,7 +44,7 @@ export function parseThemeImport(input:string):ThemeSettings{
  const parsed=record(JSON.parse(input));
  const palette=readPalette(parsed.palette);
  if(!palette||!accessiblePalette(palette)||typeof parsed.headingFont!=="string"||!Object.hasOwn(themeFonts,parsed.headingFont))
-  throw new Error("Renkleri, yazı tipi seçimini ve metin kontrastını kontrol et.");
+  throw new Error("Tema renklerini ve metin kontrastını kontrol et.");
  if(parsed.campaign!==null){
   const c=record(parsed.campaign),p=readPalette(c.palette);
   if(!p||!accessiblePalette(p)||campaignExpiry(c.endsOn)===null)throw new Error("Geçici temanın renklerini, kontrastını ve bitiş tarihini kontrol et.");

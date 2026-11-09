@@ -6,12 +6,13 @@ function load(file,deps={}){
 }
 const {lobbyNavigation,lobbyNavActive}=load("src/lib/lobby-navigation.ts");
 const base={canViewEvents:true,canViewDiscipline:true};
-assert.deepEqual(Array.from(lobbyNavigation({}).primary,x=>x[2]),["Lobi","Topluluk"]);
-assert.deepEqual(Array.from(lobbyNavigation(base).primary,x=>x[2]),["Lobi","Oyun & Etkinlikler","Topluluk"]);
+assert.deepEqual(Array.from(lobbyNavigation({}).primary,x=>x[2]),["Ana Sayfa","Üyeler","Etkinlikler","Kodeks"]);
+assert.deepEqual(Array.from(lobbyNavigation(base).primary,x=>x[2]),["Ana Sayfa","Üyeler","Etkinlikler","Kodeks"]);
 assert.equal(lobbyNavigation(base).management.length,0);
-assert.deepEqual(Array.from(lobbyNavigation({...base,canViewBudget:true,canManageDiscipline:true}).management,x=>x[0]),["/butce","/yonetim/moderasyon"]);
+assert.deepEqual(Array.from(lobbyNavigation({...base,manage:true,canViewBudget:true,canManageDiscipline:true}).management,x=>x[0]),["/yonetim"]);
 assert(lobbyNavActive("/yayinlar/bir-yayin","/topluluk"));
 assert(!lobbyNavActive("/topluluk-diger","/topluluk"));
+assert(lobbyNavActive("/rules","/kodeks"));
 const link={default:({children,...props})=>React.createElement("a",props,children)};
 const icon=load("src/components/QGIcon.tsx");
 const primitives=load("src/components/ui/Primitives.tsx",{"@/components/QGIcon":icon});
@@ -43,14 +44,15 @@ async function scenario({guest=false,member=true,event=sample,response=null,wait
  assert(filled.calls.some(c=>c.join(":")==="event_responses:eq:user_id:member"));
  assert.match((await scenario({response:"going"})).html,/Katılıyorsun/);
  assert.match((await scenario({response:"going",wait:true})).html,/Bekleme listesindesin/);
- const navDeps={"next/link":link,"next/navigation":{usePathname:()=>"/"},"@/components/QGIcon":icon,"@/components/RankInsignia":{RankInsignia:()=>null},"@/config/brand-theme":{brandTheme:{emblem:"/emblem.webp"}},"@/lib/roles":{roleLabel:x=>x},"@/lib/lobby-navigation":{lobbyNavigation,lobbyNavActive}};
+ const navDeps={"next/link":link,"next/navigation":{usePathname:()=>"/"},"@/components/QGIcon":icon,"@/components/RankInsignia":{RankInsignia:()=>null},"@/config/brand-theme":{brandTheme:{mark:"/mark.png"}},"@/lib/roles":{roleLabel:x=>x},"@/lib/lobby-navigation":{lobbyNavigation,lobbyNavActive}};
  const {NavClient}=load("src/components/NavClient.tsx",navDeps),{MobileNavClient}=load("src/components/MobileNavClient.tsx",navDeps);
  for(const component of [NavClient,MobileNavClient]){
   for(const state of [{guest:true},{guest:false},{guest:false,staff:true}]){
-   const html=renderToStaticMarkup(React.createElement(component,{user:!state.guest,identity:state.guest?null:{display_name:"Üye",role:"member"},canViewEvents:!state.guest,canViewDiscipline:!state.guest,canViewBudget:state.staff,canManageDiscipline:state.staff}));
-   assert.match(html,/Lobi/);assert.match(html,/Topluluk/);
-   assert.equal(html.includes("/etkinlikler"),!state.guest);assert.equal(html.includes("/api/logout"),!state.guest);
-   assert.equal(html.includes("/butce"),!!state.staff);assert.equal(html.includes("/yonetim/moderasyon"),!!state.staff);
+   const html=renderToStaticMarkup(React.createElement(component,{user:!state.guest,identity:state.guest?null:{display_name:"Üye",role:"member"},canViewEvents:!state.guest,manage:state.staff}));
+   assert.match(html,/Ana Sayfa/);assert.match(html,/Üyeler/);assert.match(html,/Etkinlikler/);assert.match(html,/Kodeks/);
+   assert.equal(html.includes("/etkinlikler"),true);assert.equal(html.includes("/api/logout"),component===NavClient&&!state.guest);
+   assert.equal(html.includes("/yonetim"),component===NavClient&&!!state.staff);
+   assert(!html.includes("/butce"));assert(!html.includes("/yonetim/moderasyon"));assert(!html.includes("/yayinlar"));
    assert(!html.includes("mobileNavTrack"));
   }
  }
@@ -58,50 +60,43 @@ async function scenario({guest=false,member=true,event=sample,response=null,wait
   const {chromium}=require("playwright");
   const bin=(await import(process.env.QG_LOBBY_BROWSER_MODULE)).default;
   const browser=await chromium.launch({executablePath:await bin.executablePath(),args:bin.args});
-  const {themeVariables,themePresets,defaultTheme}=load("src/lib/theme.ts");
   const css=Array.from(fs.readFileSync("src/app/layout.tsx","utf8").matchAll(/import "\.\/([^"]+\.css)"/g),m=>fs.readFileSync("src/app/"+m[1],"utf8")).join("\n");
   try{
    const page=await browser.newPage();
    for(const width of [1440,390])for(const state of ["guest","member","staff"])for(const populated of [false,true]){
     const viewport={width,height:width===390?844:1000};
     await page.setViewportSize(viewport);
-    const canViewEvents=state!=="guest",access={canViewEvents,canManageDiscipline:state==="staff",canViewBudget:state==="staff",user:canViewEvents,identity:canViewEvents?{display_name:"Üye",role:"member"}:null};
+    const canViewEvents=state!=="guest",access={canViewEvents,manage:state==="staff",user:canViewEvents,identity:canViewEvents?{display_name:"Üye",role:"member"}:null};
     const event=await scenario({guest:!canViewEvents,event:populated?sample:null});
     const lobby=load("src/app/page.tsx",{
      "next/link":link,"@/components/QGIcon":icon,
-     "@/lib/text-preview":load("src/lib/text-preview.ts"),"@/lib/presentation-image":{presentationImage:x=>x,thumbnail:x=>x},
-     "@/lib/design-server":{getActiveDesign:async()=>({quadSrc:"/brand/command/quad.webp"})},
-     "@/lib/publication-types":{PUBLICATION_BADGE_LABELS:{},publicationKind:()=>null},
+     "@/lib/text-preview":load("src/lib/text-preview.ts"),
      "@/components/LobbyEvent":{lobbyEventData:async()=>event.data,LobbyEvent:()=>React.createElement("div",{dangerouslySetInnerHTML:{__html:event.html}})},
      "@/lib/announcements":load("src/lib/announcements.ts"),
      "@/lib/rich-text":{richPlain:x=>x},
-     "@/lib/supabase/server":{createClient:async()=>({from(){const q={select:()=>q,order:()=>q,eq:()=>q,limit:async()=>({data:populated?[{id:"notice",title:"Topluluk duyurusu",slug:"yayin",published_at:"2026-11-09",body:"Deneme"}]:[]})};return q;}})},
+     "@/lib/supabase/server":{createClient:async()=>({from(){const q={select:()=>q,order:()=>q,limit:async()=>({data:populated?[{id:"notice",title:"Topluluk duyurusu",published_at:"2026-11-09",body:"Deneme",category:"DUYURU"}]:[]})};return q;}})},
      "@/components/AppShell":{AppShell:({children})=>React.createElement("div",{className:"appShell"},React.createElement(NavClient,access),React.createElement("main",{className:"content pageMotion"},children),React.createElement(MobileNavClient,access))}
     });
-    await page.setContent('<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style>'+renderToStaticMarkup(await lobby.default()));
-    assert.equal(await page.locator(".lobbyPage").evaluate(el=>el.scrollWidth<=el.clientWidth+1),true);
-    assert.match(await page.locator("body").evaluate(el=>getComputedStyle(el).fontFamily),/system-ui/);
+    await page.setContent('<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><style>:root{--font-qg-ui:Inter;--font-qg-heading:Rajdhani;--font-qg-brand:Teko}</style><style>'+css+'</style>'+renderToStaticMarkup(await lobby.default()));
+    if(process.env.QG_LOBBY_SCREENSHOTS&&state==="member"&&populated)await page.screenshot({path:`/tmp/qg-lobby-${width}.png`,fullPage:true});
+    assert.equal(await page.locator(".clanLobby").evaluate(el=>el.scrollWidth<=el.clientWidth+1),true);
+    assert.match(await page.locator("body").evaluate(el=>getComputedStyle(el).fontFamily),/Inter|system-ui/);
     assert.equal(await page.locator(".pageMotion").evaluate(el=>getComputedStyle(el).animationName),"qgPageEnter");
-    assert.equal(await page.locator(".lobbyHero h1").evaluate(el=>getComputedStyle(el).fontFamily.includes("Georgia")),true);
-    assert.equal(await page.locator(".lobbyEvent").evaluate(el=>getComputedStyle(el).borderRadius),"12px");
-    if(populated&&state==="member"){
-     await page.evaluate(vars=>Object.entries(vars).forEach(([key,value])=>document.documentElement.style.setProperty(key,value)),themeVariables({...defaultTheme,palette:themePresets.gtaVi}));
-     assert.match(await page.locator(".lobbyEvent h2").evaluate(el=>getComputedStyle(el).fontFamily),/system-ui/);
-     assert.match(await page.locator(".lobbyEvent").evaluate(el=>getComputedStyle(el).backgroundImage),/rgb\(43, 27, 56\)/);
-     await page.waitForFunction(()=>getComputedStyle(document.querySelector(".lobbyJoin")).backgroundColor==="rgb(163, 43, 105)",null,{timeout:2000});
-    }
+    assert(await page.locator(".clanHeroCopy h1").evaluate(el=>getComputedStyle(el).fontFamily.includes("Teko")));
+    assert(await page.locator(".clanHeroCopy h2").evaluate(el=>getComputedStyle(el).fontFamily.includes("Rajdhani")));
+    assert.equal(await page.locator(".qgTopbarNav").isVisible(),true);
     if(width===390){
-     assert(await page.locator(".lobbyMobileNav").isVisible());
+     assert.equal(await page.locator(".lobbyMobileNav").isVisible(),false);
      if(canViewEvents&&populated){
       const box=await page.getByRole("button",{name:"Katılacağım"}).boundingBox();
       assert(box&&box.height>=44&&box.y+box.height<viewport.height-65);
       assert.equal(await page.getByRole("button",{name:"Katılacağım"}).evaluate(el=>getComputedStyle(el).borderRadius),"9px");
      }
-    }else assert(await page.locator(".lobbyRail").isVisible());
+    }else assert(await page.locator(".qgTopbar").isVisible());
 
    }
   }finally{await browser.close();}
-  console.log("PASS browser: 1440/390, filled/empty, three access roles, no content overflow and first-screen mobile RSVP.");
+  console.log("PASS browser: 1440/390, filled/empty, three access roles, four-section navigation, no content overflow and first-screen mobile RSVP.");
  }
  console.log("PASS Lobi: permission-gated game night, empty/error, RSVP states and guest/member/staff desktop and mobile navigation.");
 })().catch(e=>{console.error(e);process.exitCode=1;});

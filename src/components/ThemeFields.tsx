@@ -1,7 +1,7 @@
 "use client";
 import {useState} from "react";
 import {Input,Select,Textarea,Button} from "@/components/ui/Primitives";
-import {accessiblePalette,campaignExpiry,parseThemeImport,themeKeys,themePresets,type HeadingFont,type ThemePalette,type ThemeSettings} from "@/lib/theme";
+import {accessiblePalette,campaignExpiry,parseThemeImport,themeKeys,themePresets,type ThemePalette,type ThemeSettings} from "@/lib/theme";
 const labels={background:"Ana zemin",surface:"Yüzey",raised:"Yükseltilmiş yüzey",text:"Metin",muted:"İkincil metin",line:"Ayırıcı",accent:"Bağlantı ve vurgu",action:"Ana düğme",actionText:"Ana düğme metni"};
 const presets={classic:"Q-GANG Klasik",gtaVi:"GTA VI · Vice City gün batımı",winter:"Yılbaşı · Kış gecesi",bayram:"Bayram · Zeytin ve altın"};
 export function validThemeDraft(value:ThemeSettings){
@@ -14,8 +14,7 @@ export function ThemeFields({value,onChange}:{value:ThemeSettings;onChange:(v:Th
   return <div className="qgThemeColors">{themeKeys.map(k=><label key={k}>{labels[k]}<Input type="color" value={palette[k]} onChange={e=>update({...palette,[k]:e.target.value})}/></label>)}</div>;
  }
  const campaign=value.campaign;
- return <details open><summary>Tema ve başlık yazısı</summary><div className="qgThemeFields">
-  <label>Sayfa başlıkları<Select value={value.headingFont} onChange={e=>change({...value,headingFont:e.target.value as HeadingFont})}><option value="system">Sade · Sistem sans</option><option value="humanist">Yumuşak · Trebuchet</option><option value="editorial">Editoryal · Georgia</option></Select></label>
+ return <details open><summary>Tema renkleri</summary><div className="qgThemeFields">
   <label>Kalıcı tema hazır paleti<Select value="" onChange={e=>{const preset=themePresets[e.target.value as keyof typeof themePresets];if(preset)change({...value,palette:{...preset}});}}><option value="">Palet seç</option>{Object.entries(presets).map(([key,label])=><option key={key} value={key}>{label}</option>)}</Select></label>
   {fields(value.palette,palette=>change({...value,palette}))}
   <label>Geçici tema hazır paleti<Select value="" onChange={e=>{const preset=themePresets[e.target.value as keyof typeof themePresets];if(preset)change({...value,campaign:{palette:{...preset},endsOn:campaign?.endsOn??""}});}}><option value="">Palet seç</option>{Object.entries(presets).map(([key,label])=><option key={key} value={key}>{label}</option>)}</Select></label>

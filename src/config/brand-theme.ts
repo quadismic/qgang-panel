@@ -1,6 +1,6 @@
 import {presentationImage} from "@/lib/presentation-image";
 export const brandTheme = {
-  mark: "/brand/qgang-mark.png",
+  mark: "/brand/qg-mark.svg",
   emblem: presentationImage("/brand/qgang-emblem.webp",480),
   seal: "/brand/quad-seal.png",
   login: "/brand/login/background.webp",
