@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 function returnUrl(raw: string, req: Request) {
-  const path = raw.startsWith("/") && !raw.startsWith("//") ? raw : "/";
+  const path = /^\/(?!\/)[^\\\x00-\x20]*$/.test(raw) ? raw : "/";
   return new URL(path, req.url);
 }
 

@@ -1,3 +1,4 @@
+export const metadata={title:"Rozetler"};
 import {AppShell} from "@/components/AppShell";
 import {createClient} from "@/lib/supabase/server";
 import {badgeAcquisition,badgeGroups} from "@/lib/badge-presentation";

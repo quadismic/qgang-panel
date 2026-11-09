@@ -168,3 +168,23 @@ Asli dayanak tek zorunlu kuraldır; bölüm ve numarayı belirler. Tamamlayıcı
 
 ## 21.10.2026 — Üyelik değerlendirmeleri kaldırıldı
 Modül ekranı, Topluluk bağlantısı, API ve Erişim Merkezi izinleri kaldırıldı. Mevcut üye yönetimi, rütbe, disiplin ve ERA akışları korunur. Kodeks hükümleri bu teknik kaldırma kapsamında değiştirilmez.
+
+## 25.10.2026 — Hızlandırma paketi
+
+Mevcut konsey kompozisyonu, portre ölçekleri, rütbe çerçevesi/taç geometrisi ve renkleri korunur. Onaylı görseller için responsive WebP türevleri ve boyuta uygun public thumbnail kullanılır; private medya dönüşüme alınmaz. Kimlik/hazine yüzeyleri yalnız açıldıklarında yüklenir. Etkinlik listesi 24'er kayıtla sayfalanır; tür/tarih/üye/sayfa bağlamı detaydan dönüşte korunur. Üye filtresi sayfalama öncesinde DB'de uygulanır; tüm katılım sayısı ve kişisel katılım ayrımı korunur. Yönetim ve üye yetki kuralları değişmez.
+
+## Klan Lobisi · İlk paket
+
+- Ana gezinme: Lobi, erişim yetkisi varsa Oyun & Etkinlikler, Topluluk. Yetkili yönetim bağlantıları (Bütçe dahil) ayrı grupta, profil ve çıkış hesap menüsündedir. Mobil ana gezinme kaydırmasızdır. Mevcut adresler ve yetki kontrolleri korunur.
+- Lobi sırası: kısa sabit kimlik başlığı, sıradaki yayımlanmış OP-NIGHT, Biz kimiz / katılım açıklaması ve Kodeks, tek topluluk akışı. Katılım mevcut etkinlik işleminden geçer. Boş durumda yetkili üye oyun gecesi önerebilir. Yayımlanmış duyurular ve yayınlar gerçek kayıtlardan gelir; Steam paneli ikinci aşamaya bırakılmıştır.
+- Topluluk ilk açılışta üye listesidir. Yayınlar, yönetim şeması ve yetkili üye yönetimi ayrı bağlantılardan açılır. Etkinliklerde oyun gecesi filtresi, mevcut diğer türler ve arşiv korunur.
+- Sıcak siyah, ince bronz çizgi, fildişi metin. Lobiye özgü kırmızı yalnız ana katılım eylemi ve aktif menü vurgusunda. Kimlik başlıkları serif; liste ve kontroller sans serif. Mobilde Lobi tek sütundur; dokunma hedefi en az 44px.
+- Doğrulama: tarayıcıda test verileriyle 1440/390px, misafir/üye/yetkili, dolu/boş, içerik taşması ve 390px’de ilk ekran katılım eylemi. Paket yeni veritabanı geçişi gerektirmez. Çalışma alanında önceki Kodeks/İcra Kararı ve Disiplin değişiklikleri ayrıdır; veritabanı geçişinden önce yapılacak ayrı bir Lobi yayını bunları içermemelidir.
+
+## Ortak temalar ve geçici paletler
+
+- Tasarım Merkezi → Tema ve başlık yazısı, normal paleti ve geçici paleti ayrı yönetir. Geçici palet Türkiye saatiyle seçilen günün sonunda kapanır; normal palet ve diğer ayarlar değişmez. Sayfa başlıklarında sistem sans varsayılan, Trebuchet ve Georgia isteğe bağlıdır. Lobi marka adı mevcut serif kimliğini korur.
+- Hazır paletler: Q-GANG Klasik, GTA VI esintili Vice City gün batımı, Kış gecesi, Zeytin ve altın. Bunlar bir yayın veya oyun çıkış takvimi değildir; başlangıç ve bitiş kararını yetkili verir.
+- Görsel roller: ana zemin, yüzey, yükseltilmiş yüzey, metin, ikincil metin, ayırıcı, vurgu, ana düğme ve düğme metni. Ortak sayfa kabuğu ve kontroller bu rolleri kullanır. Marka varlıkları ile uyarı, hata ve yaptırımın anlamsal renkleri kampanya paletine bağlanmaz. Eski ekranlara özgü bütün renkler henüz ortak rollere taşınmamıştır.
+- Bir isteği tekrar üretmek için Tasarım Merkezi’nden temayı JSON olarak dışa aktar. Örneğin `npm run -s theme:config -- gtaVi 2026-12-31 mevcut-tema.json` o paleti mevcut kalıcı temayı koruyarak hazırlar. Çıktıyı **Tema ayarını içe veya dışa aktar → Önizlemeye al** ile dene; yetkili **Yayınla** dediğinde etkin olur. Tarih örnektir. Komut canlı sisteme yazmaz.
+- Yeni yönetilebilir seçeneklerde aynı sözleşmeyi kullan: adı ve varsayılanı belli alan, girdi doğrulaması, önizleme, yetkili yayın ve geçmişten geri alma. Görünüm ayarları yetki, disiplin veya başka iş kurallarını değiştirmez.

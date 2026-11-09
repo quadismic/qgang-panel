@@ -1,0 +1,67 @@
+/* Lobi and shared navigation. Legacy page layouts retain their local rules. */
+.lobbyPage{--lobby-line:#493421;--lobby-text:#f0e2ce;--lobby-muted:#d5bea5;display:grid;gap:clamp(12px,2vw,24px);width:100%;max-width:1280px;margin-inline:auto;padding-block:clamp(10px,2vw,20px);color:var(--lobby-text);font-family:var(--qg-ui-font,system-ui)}
+.lobbyPage :is(h1,h2,h3,p){margin:0;overflow-wrap:anywhere}
+.lobbyHero{position:relative;display:flex;align-items:center;min-height:clamp(112px,14vw,192px);padding:clamp(16px,4vw,42px);overflow:hidden;border:1px solid var(--lobby-line);border-radius:8px;background:linear-gradient(100deg,#110b08,#210e0c)}
+.lobbyHero>div{z-index:1}
+.lobbyHero h1{font:500 clamp(2rem,6vw,4rem)/1.05 var(--qg-display-font,Georgia,serif);letter-spacing:.04em}
+.lobbyHero p{margin-top:6px;color:var(--lobby-muted)}
+.lobbyHero>img{position:absolute;right:clamp(-25px,3vw,70px);top:0;width:clamp(148px,28vw,420px);height:auto;opacity:.85;pointer-events:none;mask-image:linear-gradient(90deg,transparent,#000 24%)}
+.lobbyEvent{display:grid;gap:10px;justify-items:start;padding:clamp(16px,3vw,34px);border:1px solid var(--lobby-line);border-radius:8px;background:#17100a}
+.lobbyEvent:not(.lobbyEventShort){background:radial-gradient(ellipse at 85% 8%,#352014,#17100a 65%);}
+.lobbyEvent h2{font:500 clamp(1.65rem,4.6vw,3rem)/1.12 var(--qg-display-font,Georgia,serif)}
+.lobbyEventShort h2{font-size:1.25rem}
+.lobbyEvent p:not(.kicker){color:var(--lobby-muted)}
+.lobbyEvent .kicker{color:#e3b37d;letter-spacing:.06em}
+.lobbyEventMeta,.lobbyEventActions,.lobbyAboutLinks,.lobbyFeed header>div{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px}
+.lobbyPage svg,.lobbyRailMenu svg,.lobbyMobileNav svg{width:20px;height:20px;flex:none}
+.lobbyEventActions{margin-top:4px}
+.lobbyEventActions .eventFormFields{display:flex;flex-wrap:wrap;align-items:end;gap:10px;border:0;margin:0;padding:0;min-width:0}
+.lobbyEventActions label{display:grid;gap:4px}
+.lobbyPage .lobbyJoin{background:#791f17;border-color:#aa4334;color:#fff4e9}
+.lobbyAbout{display:flex;align-items:center;justify-content:space-between;gap:12px 20px;padding:12px 16px;border-block:1px solid var(--lobby-line)}
+.lobbyAbout h2,.lobbyFeed h2{font:600 1.2rem/1.3 var(--qg-ui-font,system-ui)}
+.lobbyAbout p{color:var(--lobby-muted);line-height:1.5}
+.lobbyAboutLinks>details[open]{flex-basis:100%}
+.lobbyTextLink,.lobbyPage summary{display:inline-flex;align-items:center;gap:6px;min-height:44px;color:#e5b884;cursor:pointer}
+.lobbyRsvp summary{padding-inline:10px;border:1px solid var(--lobby-line);border-radius:6px}
+.lobbyFeed header{display:flex;justify-content:space-between;gap:8px 18px;align-items:center;flex-wrap:wrap}
+.lobbyFeed ul,.lobbyMemberList{list-style:none;padding:0;margin:0}
+.lobbyFeed li>a{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center;border-bottom:1px solid var(--lobby-line);padding:10px 2px;min-height:58px}
+.lobbyFeed li:first-child>a{border-top:1px solid var(--lobby-line)}
+.lobbyFeedIcon{display:grid;place-items:center;width:44px;height:44px;color:#e5b884}
+.lobbyFeedIcon img{width:44px;height:44px;object-fit:cover;border-radius:4px}
+.lobbyFeed h3{font-size:1rem}
+.lobbyFeed li p,.lobbyFeed time{color:var(--lobby-muted);font-size:.875rem}
+.lobbyFeed li .lobbyFeedMeta{font-size:.75rem}
+.lobbyCommunityTabs{flex-wrap:wrap}
+.lobbyCommunityTabs .qgAction{min-height:44px}
+.lobbyMemberList{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,235px),1fr));gap:10px}
+.lobbyMemberList a{display:flex;gap:12px;align-items:center;min-height:56px;padding:7px 10px;border-bottom:1px solid #493421}
+.lobbyMemberList a>*:first-child{width:44px;height:44px;flex:none;overflow:hidden}
+.lobbyMemberList img{width:44px;height:44px;object-fit:cover}
+.lobbyMemberList a>span:last-child{min-width:0;overflow-wrap:anywhere}
+.lobbyMemberList small{display:block;color:#c7ac93}
+.lobbyRailMenu,.lobbyMobileAccount{position:relative;min-width:0}
+.lobbyRailMenu summary,.lobbyRailMenu a,.lobbyRailMenu button,.lobbyMobileAccount summary,.lobbyMobilePanel button{min-height:44px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.lobbyRailMenu summary{padding-inline:8px;list-style:none}
+.lobbyRailMenu summary::-webkit-details-marker,.lobbyMobileAccount summary::-webkit-details-marker{display:none}
+.lobbyRailMenu>div{background:#17100a;border:1px solid #493421;border-radius:6px;padding:4px 8px}
+.lobbyRailMenu button,.lobbyMobilePanel button{border:0;background:none;color:inherit;font:inherit}
+.lobbyRail .lobbyPrimaryNav a.active{box-shadow:none!important;background:#321612!important;border-inline-start:2px solid #df5d48}
+@media (min-width:761px) and (max-width:900px){.lobbyRailMenu>div{position:absolute;bottom:100%;left:0;width:190px;z-index:10}.lobbyRailMenu summary>span:not(.identityPlateInsignia){display:none}}
+@media(max-width:760px){
+ .lobbyPage{padding-block:8px 16px;gap:12px}
+ .lobbyAbout{align-items:start;flex-direction:column;padding-inline:4px}
+ .lobbyHero{min-height:108px}
+ .lobbyFeed li>a{grid-template-columns:32px minmax(0,1fr) auto;gap:8px}
+ .lobbyFeedIcon,.lobbyFeedIcon img{width:32px;height:32px}
+ .mobileNav.lobbyMobileNav{grid-template-columns:repeat(var(--lobby-nav-columns),minmax(0,1fr))!important;overflow:visible!important}
+ .lobbyMobileNav>a,.lobbyMobileAccount summary{min-height:44px;min-width:0;text-align:center}
+ .lobbyMobileNav>a>span,.lobbyMobileAccount summary>span{white-space:normal!important;font-size:.69rem;line-height:1.15}
+ .lobbyMobileAccount summary{display:grid;justify-items:center;align-content:center;gap:3px;list-style:none}
+ .lobbyMobilePanel{position:absolute;bottom:calc(100% + 8px);right:0;width:min(260px,calc(100vw - 24px));max-height:65vh;overflow:auto;border:1px solid #694a39;border-radius:8px;background:#17100a;padding:8px}
+ .lobbyMobileNav .lobbyMobilePanel a,.lobbyMobilePanel button{display:flex;justify-content:start;align-items:center;min-height:44px;text-align:left;padding-inline:6px}
+ .lobbyMobilePanel strong{display:block;padding:8px 6px 0;color:#e3b37d}
+ .lobbyMemberList{grid-template-columns:minmax(0,1fr)}
+}
+.lobbyMemberAvatar{display:grid;place-items:center;border:1px solid #493421;border-radius:50%;background:#17100a;color:#f0e2ce}

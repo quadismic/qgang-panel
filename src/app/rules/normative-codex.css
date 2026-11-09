@@ -1,0 +1,51 @@
+.normativeCodex{--norm-border:#392821;--norm-accent:#ff8e79;display:grid;grid-template-columns:clamp(150px,20%,225px) minmax(0,1fr);gap:clamp(12px,2vw,24px);align-items:start;width:100%;color:#eee2d5}
+.normativeNav,.normativeReader{min-width:0;border:1px solid var(--norm-border);border-radius:14px;background:#100c0a}
+.normativeNav{display:grid;gap:4px;padding:8px}
+.normativeNav a{display:flex;align-items:center;gap:9px;min-height:48px;padding:8px 11px;color:#d9c7b8;text-decoration:none;border-radius:8px;border:1px solid transparent;line-height:1.2}
+.normativeNav a:hover{background:#221713}
+.normativeNav a[aria-current]{color:#fff0e8;border-color:#703a30;border-inline-start:3px solid #e35e4b;background:#351916}
+.normativeNav svg{width:18px;height:18px;flex:none;color:#d8a291}
+.normativeReader{padding:clamp(20px,4vw,52px);background:radial-gradient(ellipse at 80% 0%,#1b100d,#100c0a 66%)}
+.normativeHeading{display:flex;align-items:center;gap:clamp(10px,2vw,24px);padding-bottom:clamp(16px,3vw,30px);border-bottom:1px solid var(--norm-border)}
+.normativeHeading img{width:clamp(38px,6vw,64px);height:auto;object-fit:contain;flex:none}
+.normativeHeading h1{font:400 clamp(1.55rem,4vw,3.15rem)/1.14 var(--qg-display-font,Georgia,serif);margin:6px 0 0;color:#faeee1;overflow-wrap:anywhere}
+.normativeHeading .kicker{color:#dcb9a5}
+.normativeParagraphs{margin:0;padding:0;counter-reset:normative}
+.normativeParagraphs>li{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:clamp(10px,2vw,22px);counter-increment:normative;padding:clamp(16px,2.3vw,28px) 0;border-bottom:1px solid var(--norm-border);list-style:none}
+.normativeParagraphs>li::before{content:counter(normative);display:grid;place-items:center;min-width:1.85rem;min-height:1.85rem;border-radius:6px;border:1px solid #90463b;background:#321815;color:var(--norm-accent);font:600 1rem Georgia,serif;margin-top:3px}
+.normativeParagraphs p{margin:0;font:400 clamp(1.04rem,1.6vw,1.32rem)/1.6 Georgia,serif}
+.normativeCodex sup a,.normativeNotes a,.normativeBack,.normativeManagement a{color:var(--norm-accent);text-decoration:underline;text-underline-offset:.2em}
+.normativeNotes{margin-top:clamp(16px,3vw,30px);padding:clamp(12px,2vw,20px);border:1px solid var(--norm-border);border-radius:10px;background:#1a120f}
+.normativeNotes h2{font-size:1rem;margin:0 0 8px}
+.normativeNotes ol{margin:0;padding-inline-start:1.3em;line-height:1.5}
+.normativeNotes li+li{margin-top:.5em}
+.normativeNotes strong{color:#ffd2bf}
+.normativeNotes li,.normativeCodex sup a{scroll-margin-block:24px}
+.normativeNotes li:target{background:#38211a}
+.normativeDocuments{list-style:none;padding:0;margin:0}
+.normativeDocuments li{border-bottom:1px solid var(--norm-border);padding:14px 0}
+.normativeDocumentLink{display:inline-flex;align-items:center;min-height:44px;font-size:1.1rem;color:#faeee1;font-weight:600;overflow-wrap:anywhere}
+.normativeDocumentLink:hover{text-decoration:underline}
+.normativeDocuments p,.normativeEmpty{color:#d8c6b6;line-height:1.55;margin:0}
+.normativeEmpty,.normativeDocument{padding-top:18px}
+.normativeDocument h2{overflow-wrap:anywhere}
+.normativeInfo{display:flex;flex-wrap:wrap;gap:8px 20px;margin:8px 0 12px;font-size:.875rem;color:#d8c6b6}
+.normativeInfo div{display:flex;flex-wrap:wrap;gap:4px 7px;min-width:0}
+.normativeInfo dt{font-weight:600;color:#e9cfbd}
+.normativeInfo dd{margin:0;overflow-wrap:anywhere}
+.normativeManagement{margin-top:12px}
+.normativeManagement a,.normativeBack{display:inline-flex;min-height:44px;align-items:center}
+@media(max-width:760px){
+ .normativeCodex{grid-template-columns:minmax(0,1fr);gap:12px}
+ .normativeNav{grid-template-columns:repeat(3,minmax(0,1fr));padding:4px}
+ .normativeNav a{justify-content:center;text-align:center;font-size:clamp(.72rem,3.4vw,.95rem);padding:6px 3px}
+ .normativeNav svg{display:none}
+ .normativeReader{padding:16px 12px}
+}
+.normativeForm,.normativeForm label{display:grid;gap:8px}
+.normativeForm{max-width:680px;gap:14px;margin-block:18px}
+.normativeForm :is(input,select,textarea,button){min-height:44px;max-width:100%}
+.normativeForm :is(input,select,textarea){background:#17110e;color:#f5e3d2;border:1px solid #694a39;border-radius:5px;padding:9px}
+.normativeForm textarea{min-height:150px;resize:vertical}
+.normativeManagementLinks{display:flex;gap:18px;flex-wrap:wrap}
+.normativeManagementLinks a{display:inline-flex;align-items:center;min-height:44px;text-decoration:underline}

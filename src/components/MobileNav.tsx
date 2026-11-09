@@ -1,2 +1,3 @@
 import {MobileNavClient} from "./MobileNavClient";
-export function MobileNav(props:{user?:boolean;canViewEvents?:boolean;manage?:boolean;canViewBudget?:boolean;canViewDiscipline?:boolean}){return <MobileNavClient {...props}/>;}
+import type {LobbyNavAccess} from "@/lib/lobby-navigation";
+export function MobileNav(props:LobbyNavAccess&{user?:boolean}){return <MobileNavClient {...props}/>;}

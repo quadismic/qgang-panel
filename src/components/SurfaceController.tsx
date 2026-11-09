@@ -1,16 +1,12 @@
 "use client";
-import {RichText} from "@/components/RichText";
-
-import Link from "next/link";
+import dynamic from "next/dynamic";
 import {useCallback,useEffect,useState} from "react";
-import {SurfaceLayer} from "./SurfaceLayer";
-import {QGIcon} from "./QGIcon";
-import {TreasuryLayer} from "./TreasuryLayer";
+const IdentityLayer=dynamic(()=>import("./IdentityLayer").then(m=>m.IdentityLayer));
+const TreasuryLayer=dynamic(()=>import("./TreasuryLayer").then(m=>m.TreasuryLayer));
 type Me={display_name?:string|null;handle?:string|null;bio?:string|null;avatar_url?:string|null;role?:string|null}|null;
 type Treasury={balance:number;support:number;expense:number;adjust:number;transactions:any[];contributors:{name:string;amount:number}[]}|null;
 export function SurfaceController({user,me,manage=false,treasury=null}:{user:boolean;me:Me;manage?:boolean;treasury?:Treasury}){
  const[layer,setLayer]=useState<"identity"|"treasury"|null>(null),close=useCallback(()=>setLayer(null),[]);
  useEffect(()=>{const identity=()=>setLayer("identity"),treasuryOpen=()=>setLayer("treasury");window.addEventListener("qgang:identity",identity);window.addEventListener("qgang:treasury",treasuryOpen);return()=>{window.removeEventListener("qgang:identity",identity);window.removeEventListener("qgang:treasury",treasuryOpen)}},[]);
- const initial=(me?.display_name||me?.handle||"Q").slice(0,1).toUpperCase();
- return <><SurfaceLayer open={layer==="identity"} onClose={close} kicker="KİMLİK" title={user?(me?.display_name||"Q-GANG kimliğin"):"Ateşe katıl"}><div className="identitySurface"><span className="identitySurfaceAvatar">{me?.avatar_url?<img src={me.avatar_url} alt="" referrerPolicy="no-referrer"/>:initial}</span>{user?<><div className="identitySurfaceCopy"><b>@{me?.handle||"kimlik"}</b><RichText value={me?.bio||"Q-GANG kimliğin, bağların ve oyun hesapların burada birleşir."}/></div><div className="identitySurfaceActions"><Link href="/profile" onClick={close}><QGIcon name="identity"/> Profilimi aç</Link><Link href="/account" onClick={close} className="qgAction">Hesap merkezi</Link>{manage&&<Link href="/yonetim" onClick={close} className="qgAction"><QGIcon name="control"/> Yönetim Merkezi</Link>}</div></>:<div className="identitySurfaceActions"><Link href="/login" onClick={close} className="qgAction">Giriş yap</Link></div>}</div></SurfaceLayer><TreasuryLayer open={layer==="treasury"} onClose={close} initial={treasury}/></>
+ return <>{layer==="identity"&&<IdentityLayer user={user} me={me} manage={manage} onClose={close}/>}{layer==="treasury"&&<TreasuryLayer open onClose={close} initial={treasury}/>}</>;
 }

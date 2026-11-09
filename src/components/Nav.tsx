@@ -1,2 +1,3 @@
-import {NavClient} from "./NavClient";
-export function Nav({manage=false,identity=null,canViewBudget=false,canViewEvents=false}:{manage?:boolean;canViewEvents?:boolean;canViewBudget?:boolean;identity?:any}){return <NavClient canViewEvents={canViewEvents} manage={manage} identity={identity} canViewBudget={canViewBudget}/>}
+import {NavClient,type LobbyIdentity} from "./NavClient";
+import type {LobbyNavAccess} from "@/lib/lobby-navigation";
+export function Nav(props:LobbyNavAccess&{identity?:LobbyIdentity|null}){return <NavClient {...props}/>;}

@@ -1,4 +1,5 @@
 "use client";
+import {presentationImage,thumbnail} from "@/lib/presentation-image";
 import { useId } from "react";
 /** Asset coordinates, shared at every size. No viewport-specific ornament offsets. */
 export function RankPortrait({
@@ -47,7 +48,7 @@ export function RankPortrait({
           <rect width={width} height={height + top} fill="#17110d" />
           {src ? (
             <image
-              href={src}
+              href={thumbnail(src,size==="card"?256:480)}
               x={decorated ? photo.x : 130}
               y={decorated ? photo.y : 130}
               width={decorated ? photo.w : 1018}
@@ -69,7 +70,7 @@ export function RankPortrait({
         </g>
         {decorated && (
           <image
-            href={`/assets/ranks/${captain ? "captain" : "leader"}-frame.png`}
+            href={presentationImage(`/assets/ranks/${captain ? "captain" : "leader"}-frame.png`,size==="card"?480:960)}
             x="0"
             y={top}
             width={width}
@@ -78,7 +79,7 @@ export function RankPortrait({
         )}
         {founder && (
           <image
-            href="/assets/ranks/leader-crown.png"
+            href={presentationImage("/assets/ranks/leader-crown.png",size==="card"?240:480)}
             x="324"
             y="0"
             width="630"

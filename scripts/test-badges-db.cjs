@@ -2,7 +2,7 @@ const {PGlite}=require('@electric-sql/pglite');const fs=require('node:fs'),asser
 const leader='11111111-1111-4111-8111-111111111111',admin='22222222-2222-4222-8222-222222222222',member='33333333-3333-4333-8333-333333333333';
 (async()=>{const db=new PGlite();await db.exec(`create role anon;create role authenticated;create role service_role;create schema auth;create schema private;
 create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
-create table profiles(id uuid primary key,role text);insert into profiles values('${leader}','founder'),('${admin}','admin'),('${member}','member');
+create type qgang_role as enum('founder','admin','moderator','creator','member','guest');create table profiles(id uuid primary key,role qgang_role);insert into profiles values('${leader}','founder'),('${admin}','admin'),('${member}','member');
 create function private.has_permission(text) returns boolean language sql stable as $$select coalesce(current_setting('test.permission',true),'true')<>'false'$$;
 create table badges(id uuid primary key default gen_random_uuid(),slug text unique,name text,description text,icon text,created_at timestamptz default now());
 create table profile_badges(id uuid primary key default gen_random_uuid(),user_id uuid references profiles(id) on delete cascade,badge_id uuid references badges(id) on delete cascade,granted_by uuid references profiles(id),granted_at timestamptz default now(),unique(user_id,badge_id));
@@ -51,4 +51,27 @@ await assert.rejects(()=>db.query("select manage_badge('recognize',$1,$2,null,'T
 await actor(member);await assert.rejects(()=>db.query("select manage_badge('recognize',$1,$2,null,'Yetkisiz deneme','Kayıtlar')",[noLogin,id('kidem-nisani')]),/badge_forbidden/);
 await db.exec('reset role');assert.equal(await awards(ancient,'kidem-nisani'),1);
 console.log('PASS: pre-2026 members, no login, Turkey cutoff, non-members, login trigger, preserved login history, manual tenure and deputy permissions.');
-console.log('PASS: badge RLS, permissions, founder-only honor, issuer protection, regrant history, private reasons, automatic conditions, correction suppression, immutable audit.');await db.close();})().catch(e=>{console.error(e);process.exit(1)});
+console.log('PASS: badge RLS, permissions, founder-only honor, issuer protection, regrant history, private reasons, automatic conditions, correction suppression, immutable audit.');if(process.env.QG_SECURITY_REGRESSION==="1"){
+ await db.exec(`reset role;select set_config('request.jwt.claim.sub','',false);
+ alter table profiles add column is_suspended boolean default false;
+ create table role_permissions(role qgang_role,permission text,enabled boolean,updated_by uuid,updated_at timestamptz,primary key(role,permission));
+ insert into role_permissions values('admin','members.manage',true,null,null);
+ alter table community_memberships add column member_no bigint,add column era int,add column seal text,add column created_at timestamptz;
+ create table qgang_identity_settings(singleton boolean,current_era int);insert into qgang_identity_settings values(true,1);
+ alter table notifications add column read_at timestamptz;
+ create schema storage;create table storage.objects(id uuid);alter table storage.objects enable row level security;create table storage.buckets(id text,file_size_limit bigint,allowed_mime_types text[]);
+ `);
+ await db.exec("create table privacy_documents(slug text primary key,draft_body text,draft_revision int,published_revision int,updated_at timestamptz);insert into privacy_documents values('cerezler','Existing draft',2,1,now());");
+ await db.exec(fs.readFileSync('supabase/migrations/20261023064726_security_boundaries.sql','utf8'));
+ assert.equal((await db.query("select published_revision from privacy_documents where slug='cerezler'")).rows[0].published_revision,1);
+ assert((await db.query("select draft_body from privacy_documents where slug='cerezler'")).rows[0].draft_body.startsWith('Existing draft')); 
+ const before=(await db.query('select count(*)::int n from notifications')).rows[0].n;await actor(admin);
+ const granted=await award('oncu');assert(granted);
+ await db.exec('reset role');assert.equal((await db.query('select count(*)::int n from notifications')).rows[0].n,before+1);
+ await actor(admin);await db.query("select manage_badge('revoke',$1,null,$2,'Güvenlik regresyon doğrulaması')",[member,granted]);
+ await db.exec(`reset role;select set_config('request.jwt.claim.sub','',false);update profiles set is_suspended=true where id='${admin}'`);
+ await actor(admin);await assert.rejects(()=>award('oncu'),/badge_forbidden|account_suspended/);
+ await db.exec(`reset role;select set_config('request.jwt.claim.sub','',false);update community_memberships set status='inactive' where user_id='${member}';update community_memberships set status='active' where user_id='${member}'`);
+ console.log('PASS security + actual badge/membership triggers: authorized award/revoke, trusted notifications after client INSERT revocation, suspended deputy denial, period worker');
+}
+await db.close();})().catch(e=>{console.error(e);process.exit(1)});

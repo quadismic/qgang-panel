@@ -1,5 +1,6 @@
 "use client";
 
+import {thumbnail,portraitSources} from "@/lib/presentation-image";
 import {useRef, useState, type CSSProperties} from "react";
 
 type Portrait = {id: string; src: string; scale: number};
@@ -34,8 +35,9 @@ export function CouncilScene({portraits}: {portraits: Portrait[]}) {
       {portraits.map((portrait, index) => {
         const offset = (index - active + count) % count;
         const position = offset === 0 ? "center" : offset === 1 ? "right" : offset === count - 1 ? "left" : "away";
+        if(position==="away")return null;
         return <img key={portrait.id} className={`qgCouncilFigure qgCouncilFigure-${position}`}
-          src={portrait.src} alt="" draggable={false} decoding="async" loading={index === 0 ? "eager" : "lazy"}
+          src={thumbnail(portrait.src,960)} srcSet={portraitSources(portrait.src)} sizes="(max-width: 600px) 90vw, 640px" alt="" draggable={false} decoding="async" loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : "low"}
           style={{"--portrait-scale": portrait.scale / 100} as CSSProperties}/>;
       })}
     </div>

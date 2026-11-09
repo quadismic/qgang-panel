@@ -1,3 +1,4 @@
+import {presentationImage} from "@/lib/presentation-image";
 import type {Metadata} from "next";
 import {Cinzel} from "next/font/google";
 import "./globals.css";
@@ -11,6 +12,8 @@ import "./editor-portrait.css";
 import "./aster.css";
 import "./ui-consistency.css";
 import "./ui-primitives.css";
+import "./lobby.css";
+import "./theme.css";
 import {getActiveDesign} from "@/lib/design-server";
 
 import {EmberStage} from "@/components/EmberStage";
@@ -19,7 +22,7 @@ import {DesignPreviewBridge} from "@/components/DesignPreviewBridge";
 
 const cinzel=Cinzel({subsets:["latin"],weight:["400","500","600","700"],variable:"--font-qgang",display:"swap"});
 
-export async function generateMetadata():Promise<Metadata>{const d=await getActiveDesign();return {title:{default:"Anasayfa",template:"%s"},description:d.siteDescription,icons:{icon:d.favicon,shortcut:d.favicon,apple:d.favicon}}}
+export async function generateMetadata():Promise<Metadata>{const d=await getActiveDesign();return {title:{default:"Anasayfa · Q-GANG",template:"%s · Q-GANG"},description:d.siteDescription,icons:{icon:presentationImage(d.favicon,240),shortcut:presentationImage(d.favicon,240),apple:presentationImage(d.favicon,240)}}}
 
 export default function RootLayout({children}:Readonly<{children:React.ReactNode}>){
   return <html lang="tr" className={cinzel.variable}><body><DesignRuntime/><DesignPreviewBridge/><EmberStage>{children}</EmberStage></body></html>

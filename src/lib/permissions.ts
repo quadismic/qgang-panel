@@ -1,15 +1,15 @@
+import {getViewerProfile,getRolePermissions} from "@/lib/viewer";
 import {cache} from "react";
-import { createClient, getCurrentUser } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
 
 export const getPermissions = cache(async function getPermissions() {
-  const s = await createClient();
   const user = await getCurrentUser();
   if (!user) return { user: null, role: "guest", permissions: new Set<string>() };
-  const { data: profile } = await s.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  const profile=await getViewerProfile(user.id);
+  if(profile?.is_suspended)return {user,role:"guest",permissions:new Set<string>()};
   const role = profile?.role ?? "guest";
   if (role === "founder") return { user, role, permissions: new Set(["*"]) };
-  const { data } = await s.from("role_permissions").select("permission,enabled").eq("role", role).eq("enabled", true);
-  return { user, role, permissions: new Set((data ?? []).map((item: any) => item.permission)) };
+  return { user, role, permissions: await getRolePermissions(role) };
 });
 
 export function allows(permissions: Set<string>, permission: string) {

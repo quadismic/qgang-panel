@@ -1,13 +1,10 @@
 import {AuthButtons} from "@/components/AuthButtons";
-import {createClient} from "@/lib/supabase/server";
-import {defaultDesign,normalizeDesign} from "@/lib/design";
+import {getActiveDesign} from "@/lib/design-server";
 import {brandTheme} from "@/config/brand-theme";
 
 export const metadata={title:"Giriş"};
 export default async function Login({searchParams}:{searchParams:Promise<{error?:string}>}){
-  const s=await createClient();
-  const {data}=await s.from("design_settings").select("settings").eq("key","active").maybeSingle();
-  const design=normalizeDesign(data?.settings??defaultDesign);
+  const design=await getActiveDesign();
   const q=await searchParams;
   return <main className="login loginV3 loginV4 loginV5">
     <div className="loginMotionBg" aria-hidden="true"/>

@@ -1,10 +1,12 @@
 "use client";
+import {normalizeDesign} from "@/lib/design";
+import {themeVariables} from "@/lib/theme";
 import {useEffect} from "react";
 export function DesignPreviewBridge(){
- useEffect(()=>{const fn=(e:MessageEvent)=>{if(e.origin!==location.origin||e.data?.type!=="qgang-design-preview")return;const d=e.data.design||{},r=document.documentElement.style;
- const vars:any={"--qg-primary":d.primary,"--qg-bone":d.bone,"--qg-bronze":d.bronze,"--qg-sidebar-width":d.sidebarWidth+"px","--qg-sidebar-emblem":d.sidebarEmblem+"px","--qg-hero-overlay":d.heroOverlay/100,"--qg-quad-scale":d.quadScale/100,"--qg-quad-y":d.quadY,"--qg-login-width":d.loginPanelWidth+"px","--qg-login-emblem":d.loginEmblem+"px","--qg-login-overlay":d.loginOverlay/100};Object.entries(vars).forEach(([k,v])=>r.setProperty(k,String(v)));
+ useEffect(()=>{const fn=(e:MessageEvent)=>{if(e.origin!==location.origin||e.source!==window.parent||window.parent===window||e.data?.type!=="qgang-design-preview")return;const d=normalizeDesign(e.data.design),r=document.documentElement.style;
+ const vars={...themeVariables(d.theme),"--qg-primary":d.primary,"--qg-bone":d.bone,"--qg-bronze":d.bronze,"--qg-sidebar-width":d.sidebarWidth+"px","--qg-sidebar-emblem":d.sidebarEmblem+"px","--qg-hero-overlay":d.heroOverlay/100,"--qg-quad-scale":d.quadScale/100,"--qg-quad-y":d.quadY,"--qg-login-width":d.loginPanelWidth+"px","--qg-login-emblem":d.loginEmblem+"px","--qg-login-overlay":d.loginOverlay/100};Object.entries(vars).forEach(([k,v])=>r.setProperty(k,String(v)));
  const hero=document.querySelector<HTMLElement>(".commandHero");if(hero&&d.commandBackground)hero.style.setProperty("--command-bg",`url("${String(d.commandBackground).replace(/["\\]/g,"")}")`);
- const quad=document.querySelector<HTMLImageElement>(".commandPortrait img");if(quad&&d.quadSrc)quad.src=d.quadSrc;
+ const quad=document.querySelector<HTMLImageElement>(".lobbyHero img, .commandPortrait img");if(quad&&d.quadSrc)quad.src=d.quadSrc;
  const emblem=document.querySelector<HTMLImageElement>(".mottoEmblem img");if(emblem&&d.emblemSrc)emblem.src=d.emblemSrc;
  const council=document.querySelector<HTMLElement>(".commandCouncilPoster");
  if(council){const active=(d.council||[]).filter((m:any)=>m.enabled);council.replaceChildren(...active.map((m:any,i:number)=>{const img=document.createElement("img"),depth=Math.floor(i/2);img.className=`councilMember councilPortrait ${i%2===0?"left":"right"} depth-${Math.min(depth,2)} ${m.id}`;img.src=m.src;img.alt="";img.style.setProperty("--council-scale",String((m.scale||100)/100));img.style.setProperty("--poster-depth",String(depth));img.style.setProperty("--council-spread",String(Math.max(0,active.length-4)));return img}));}

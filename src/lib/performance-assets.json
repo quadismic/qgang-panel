@@ -1,0 +1,138 @@
+{
+  "https://kttebbvinfmauthmayqp.supabase.co/storage/v1/object/public/qgang-design/council/left-1-1790771323157.png": [
+    {
+      "width": 480,
+      "src": "/perf/qg-3c41afc7ac99-480.webp",
+      "bytes": 103498
+    },
+    {
+      "width": 960,
+      "src": "/perf/qg-a479cf9d46ef-960.webp",
+      "bytes": 324618
+    },
+    {
+      "width": 1136,
+      "src": "/perf/qg-6aac022abace-1440.webp",
+      "bytes": 414312
+    }
+  ],
+  "https://kttebbvinfmauthmayqp.supabase.co/storage/v1/object/public/qgang-design/council/left-2-1791137385436.png": [
+    {
+      "width": 480,
+      "src": "/perf/qg-362baaedab8f-480.webp",
+      "bytes": 99116
+    },
+    {
+      "width": 960,
+      "src": "/perf/qg-365faaeb9271-960.webp",
+      "bytes": 279202
+    },
+    {
+      "width": 1136,
+      "src": "/perf/qg-1944dcefbee4-1440.webp",
+      "bytes": 349788
+    }
+  ],
+  "https://kttebbvinfmauthmayqp.supabase.co/storage/v1/object/public/qgang-design/council/portrait-625d51bd-7fec-4863-aeba-d22488f48f60-1791137398751.png": [
+    {
+      "width": 480,
+      "src": "/perf/qg-23fd8f06942d-480.webp",
+      "bytes": 110876
+    },
+    {
+      "width": 960,
+      "src": "/perf/qg-eae4186e53a9-960.webp",
+      "bytes": 325428
+    },
+    {
+      "width": 1024,
+      "src": "/perf/qg-c384ea0af7a3-1440.webp",
+      "bytes": 354338
+    }
+  ],
+  "https://kttebbvinfmauthmayqp.supabase.co/storage/v1/object/public/qgang-design/quadSrc/1790792948008-21eb571c-1e6f-4119-8ded-020cd4815500.png": [
+    {
+      "width": 480,
+      "src": "/perf/qg-186755bfcb48-480.webp",
+      "bytes": 100050
+    },
+    {
+      "width": 960,
+      "src": "/perf/qg-e1e68ee1d65d-960.webp",
+      "bytes": 326692
+    },
+    {
+      "width": 1136,
+      "src": "/perf/qg-55e1529bbe07-1440.webp",
+      "bytes": 425056
+    }
+  ],
+  "/assets/ranks/leader-crown.png": [
+    {
+      "width": 240,
+      "src": "/perf/qg-bbff66cd2211-240.webp",
+      "bytes": 12728
+    },
+    {
+      "width": 480,
+      "src": "/perf/qg-47225665bb5b-480.webp",
+      "bytes": 32474
+    },
+    {
+      "width": 960,
+      "src": "/perf/qg-89401a08ceaa-960.webp",
+      "bytes": 87710
+    }
+  ],
+  "/assets/ranks/captain-frame.png": [
+    {
+      "width": 240,
+      "src": "/perf/qg-c5b4db9d00c6-240.webp",
+      "bytes": 17002
+    },
+    {
+      "width": 480,
+      "src": "/perf/qg-80da62833469-480.webp",
+      "bytes": 45908
+    },
+    {
+      "width": 960,
+      "src": "/perf/qg-7c995f4b06e0-960.webp",
+      "bytes": 141820
+    }
+  ],
+  "/assets/ranks/leader-frame.png": [
+    {
+      "width": 240,
+      "src": "/perf/qg-514e37ed7376-240.webp",
+      "bytes": 20176
+    },
+    {
+      "width": 480,
+      "src": "/perf/qg-ce036699990c-480.webp",
+      "bytes": 53050
+    },
+    {
+      "width": 960,
+      "src": "/perf/qg-cd2ae678b6a0-960.webp",
+      "bytes": 153012
+    }
+  ],
+  "/brand/qgang-emblem.webp": [
+    {
+      "width": 240,
+      "src": "/perf/qg-fa426e36e244-240.webp",
+      "bytes": 20134
+    },
+    {
+      "width": 480,
+      "src": "/perf/qg-33cb640006ee-480.webp",
+      "bytes": 62300
+    },
+    {
+      "width": 960,
+      "src": "/perf/qg-9b66f9f1905c-960.webp",
+      "bytes": 188528
+    }
+  ]
+}

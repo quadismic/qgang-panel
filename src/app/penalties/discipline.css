@@ -1,0 +1,17 @@
+.disciplineDesk{width:min(100%,960px);margin-inline:auto;display:grid;gap:16px}
+.disciplineDesk :is(h1,h2,h3,p){margin-block:.3em}
+.disciplineDesk header,.disciplineDesk section,.disciplineDesk details{border:1px solid #493229;background:#100c0a;padding:clamp(12px,2.5vw,24px);border-radius:10px;min-width:0}
+.disciplineDesk section details{margin-top:10px}
+.disciplineDesk summary{min-height:44px;cursor:pointer;padding-block:10px;overflow-wrap:anywhere}
+.disciplineDesk form,.disciplineDesk form label{display:grid;gap:8px}
+.disciplineDesk form{margin-block:14px;gap:12px}
+.disciplineDesk :is(input,select,textarea,button){max-width:100%;min-height:44px}
+.disciplineDesk :is(textarea,select){background:#17110e;border:1px solid #694a39;color:#f5e3d2;padding:9px;border-radius:5px}
+.disciplineDesk textarea{width:100%;min-height:88px;resize:vertical}
+.disciplineDesk .disciplineCheck{display:flex;align-items:center;gap:8px}
+.disciplineDesk .disciplineCheck input{width:20px}
+.disciplineDesk .disciplineStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 0}
+.disciplineStats div{display:grid;gap:5px;min-width:0}
+.disciplineStats dd{margin:0;font-size:1.5rem;color:#f3c5a6}
+.disciplineDesk .disciplineMeta{color:#d4b6a4;font-size:.9rem}
+.disciplineDesk .disciplineText{white-space:pre-wrap;overflow-wrap:anywhere}

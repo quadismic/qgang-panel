@@ -8,6 +8,14 @@ export async function middleware(request:NextRequest){
  const started=performance.now();const timings:string[]=[];
  const finish=(result:NextResponse)=>{if(process.env.VERCEL_ENV==="preview")result.headers.set("Server-Timing",[...timings,`middleware;dur=${(performance.now()-started).toFixed(1)}`].join(", "));return result};
  const path=request.nextUrl.pathname;
+ // Route handlers do not inherit the Server Action origin protection.
+ if(!["GET","HEAD","OPTIONS"].includes(request.method)){
+  const origin=request.headers.get("origin");
+  const expected=process.env.NEXT_PUBLIC_SITE_URL?new URL(process.env.NEXT_PUBLIC_SITE_URL).origin:request.nextUrl.origin;
+  if(origin!==expected&&origin!==request.nextUrl.origin)return finish(NextResponse.json({error:"forbidden_origin"},{status:403}));
+  if(!origin||request.headers.get("sec-fetch-site")==="cross-site")return finish(NextResponse.json({error:"forbidden_origin"},{status:403}));
+ }
+
  const publicPath=remap(path,canonical);if(publicPath){const target=request.nextUrl.clone();target.pathname=publicPath;return finish(NextResponse.redirect(target,308))}
  const sourcePath=remap(path,internal);const makeResponse=()=>sourcePath?NextResponse.rewrite(new URL(sourcePath+request.nextUrl.search,request.url),{request}):NextResponse.next({request});let response=makeResponse();
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -21,7 +29,8 @@ export async function middleware(request:NextRequest){
  const privacyPublic=path==="/gizlilik"||path==="/gizlilik/cerezler"||path==="/gizlilik/saklama";const exempt=privacyPublic||path==="/login"||path.startsWith("/auth/")||path==="/bakim";
  const maintenanceOn=Boolean((maintenance?.value as any)?.enabled);
  const needsOnboarding=Boolean(user&&!exempt&&path!=="/onboarding"&&path!=="/api/onboarding"&&path!=="/api/logout");
- const {data:profile}=user&&!exempt&&(maintenanceOn||needsOnboarding)?await timed("profile",supabase.from("profiles").select("role,onboarding_completed_at").eq("id",user.id).maybeSingle()):{data:null};
+ const {data:profile}=user&&!exempt&&(maintenanceOn||needsOnboarding)?await timed("profile",supabase.from("profiles").select("role,onboarding_completed_at,is_suspended").eq("id",user.id).maybeSingle()):{data:null};
+ if(profile?.is_suspended&&(!["GET","HEAD","OPTIONS"].includes(request.method)||path.startsWith("/api/"))&&!path.startsWith("/api/privacy/")&&path!=="/api/logout")return finish(NextResponse.json({error:"account_suspended"},{status:403}));
  if(maintenanceOn&&!exempt){
   let allowed=false;
   if(user){
@@ -40,4 +49,4 @@ export async function middleware(request:NextRequest){
  }
  return finish(response);
 }
-export const config={matcher:["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"]};
+export const config={matcher:["/((?!_next/static|_next/image|favicon.ico|brand/|assets/|perf/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff|woff2|ttf)$).*)"]};

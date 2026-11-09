@@ -66,5 +66,29 @@ const {PGlite}=require('@electric-sql/pglite');const fs=require('fs');const asse
  await db.exec(migration);assert.deepEqual((await db.query("select onboarding_completed_at from profiles where id='00000000-0000-4000-8000-000000000002'")).rows[0].onboarding_completed_at,after[1].onboarding_completed_at,'Idempotent repair');
  for(const role of ['authenticated','anon']){await db.exec('set role '+role);await assert.rejects(()=>db.exec("select private.complete_verified_legacy_identity('00000000-0000-4000-8000-000000000004')"),/permission denied/);await db.exec('reset role');}
  console.log('PASS: verified legacy completion backfill, future linking trigger, unchanged roles/membership/private data, idempotence, missing birth and generated identity stay onboarding, private helper access denied.');
- console.log('PASS: actual legacy failure reproduction, automatic seals/backfill, stable member numbers, manual identity evidence, privilege denial and member onboarding.');await db.close();
+ console.log('PASS: actual legacy failure reproduction, automatic seals/backfill, stable member numbers, manual identity evidence, privilege denial and member onboarding.');if(process.env.QG_SECURITY_REGRESSION==="1"){
+ await db.exec(`reset role;select set_config('request.jwt.claim.sub','',false);
+ create table role_permissions(role qgang_role,permission text,enabled boolean,updated_by uuid,updated_at timestamptz,primary key(role,permission));
+ alter table community_memberships add column created_at timestamptz;
+ alter table qgang_identity_settings add column updated_at timestamptz,add column updated_by uuid;
+ create table publications(id uuid,author_id uuid,status text);
+ create table notifications(id uuid,read_at timestamptz);
+ create table badges(id uuid);create schema storage;create table storage.objects(id uuid);alter table storage.objects enable row level security;
+ create table storage.buckets(id text,file_size_limit bigint,allowed_mime_types text[]);
+ grant usage on schema auth,private to authenticated;grant select on profiles,qgang_identity_settings,role_permissions to authenticated;grant insert,select,update,delete on community_memberships to authenticated;
+ grant usage,select on all sequences in schema public to authenticated;
+ insert into profiles(id,display_name,handle,role) values('00000000-0000-4000-8000-000000000099','Yeni Üye','yeniuye','member');
+ `);
+ await db.exec("create table privacy_documents(slug text primary key,draft_body text,draft_revision int,published_revision int,updated_at timestamptz);insert into privacy_documents values('cerezler','Existing draft',2,1,now());");
+ await db.exec(fs.readFileSync('supabase/migrations/20261023064726_security_boundaries.sql','utf8'));
+ assert.equal((await db.query("select published_revision from privacy_documents where slug='cerezler'")).rows[0].published_revision,1);
+ assert((await db.query("select draft_body from privacy_documents where slug='cerezler'")).rows[0].draft_body.startsWith('Existing draft')); 
+ await db.exec("select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000001',false);set role authenticated");
+ await db.exec("insert into community_memberships(user_id,status) values('00000000-0000-4000-8000-000000000099','active')");
+ const fresh=(await db.query("select m.*,p.qgang_seal from community_memberships m join profiles p on p.id=m.user_id where m.user_id='00000000-0000-4000-8000-000000000099'")).rows[0];assert(fresh.member_no);assert(fresh.seal);assert.equal(fresh.seal,fresh.qgang_seal);
+ await db.exec("update community_memberships set status='inactive' where user_id='00000000-0000-4000-8000-000000000099';update community_memberships set status='active' where user_id='00000000-0000-4000-8000-000000000099'");
+ const restored=(await db.query("select * from community_memberships where user_id='00000000-0000-4000-8000-000000000099'")).rows[0];assert.equal(restored.member_no,fresh.member_no);assert.equal(restored.seal,fresh.seal);
+ console.log('PASS security + real identity/profile triggers: generated member number, automatic seal/profile sync, deactivate/reactivate preserves identity');
+}
+await db.close();
 })().catch(e=>{console.error(e);process.exit(1)});

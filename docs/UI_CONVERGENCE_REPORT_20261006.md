@@ -164,3 +164,7 @@ Google girişi başarılı iken doğrulanmış üç legacy hesabın `onboarding_
 ## Ek doğrulama — Etkinlik detayı, 2026-10-07
 
 Etkinlik detayında gerçek başlık ve tek meta/durum satırı, hero üstünde bağlamı koruyan dönüş, kompakt katılım arşivi ve üst yönetim menüsü uygulandı. Alt yönetim şeritleri ve çift liste ayırıcı kaldırıldı. 390/1440px gerçek Chromium, uzun başlık, boş/dolu ve yetkili/yetkisiz fixture doğrulaması; bağımsız izin koşulları sunucu sunum testinde kontrol edildi. Ayrıntılar: EVENTS_DETAIL_UI_REPORT_20261007.md. Deploy yapılmadı.
+
+## 25.10.2026 — Hızlandırma paketi
+
+Mevcut görünüm korunarak portre/rütbe türevleri, istek içi ortak viewer sorguları, yalnız kamusal tasarım cache'i ve lazy yüzeyler hazırlandı. Aynı bağımlılıklarla eski/yeni üretim build'i karşılaştırıldı: ana sayfa First Load JS 205→115 KB, Topluluk 210→120 KB, Etkinlikler 209→120 KB. Portre 960px türevleri toplam 9.210.414→1.255.940 bayt. Bunlar dosya/bundle ölçüleridir, gerçek kullanıcı süre kazancı değildir. Portrelerin önce/sonra karşılaştırması görsel olarak incelendi. 390/1440px tarayıcı kontrolü: ortamda Chromium yok; resmi indirme bozuk/arşiv olmayan yanıt döndürdüğü için tamamlanmadı. Tamamlanmış sayılmamalıdır. Ayrıntılar PERFORMANCE_PACKAGE_20261025.md içinde; deploy yapılmadı.

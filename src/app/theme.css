@@ -1,0 +1,41 @@
+/* Shared visual roles; semantic status colors and brand artwork keep their own meaning. */
+:root{
+ --qg-display-font:var(--qg-heading-font,system-ui,sans-serif);
+ --bg:var(--qg-theme-background,#100c0a);
+ --surface:var(--qg-theme-surface,#17110e);
+ --surface2:var(--qg-theme-raised,#211713);
+ --text:var(--qg-theme-text,#f3e6d6);
+ --muted:var(--qg-theme-muted,#d0b9a4);
+ --line:var(--qg-theme-line,#614739);
+}
+body,.emberStage,.appShell{background-color:var(--bg);color:var(--text)}
+.appShell .content :is(h1,h2),.loginPage :is(h1,h2){font-family:var(--qg-display-font)!important;letter-spacing:normal!important}
+.appShell .content h1{line-height:1.15}
+.appShell .content .lobbyHero h1{font-family:var(--qg-brand-font)!important;letter-spacing:.035em!important}
+.appShell .content .publicationArticle>header h1{font-family:var(--qg-display-font)!important}
+.appShell .content .lobbyPage{--lobby-text:var(--text);--lobby-muted:var(--muted);--lobby-line:var(--line)}
+.appShell .lobbyHero{background:linear-gradient(100deg,var(--bg),var(--surface2))}
+.appShell .lobbyEvent,.appShell .lobbyEvent:not(.lobbyEventShort){background:radial-gradient(ellipse at 85% 8%,var(--surface2),var(--surface) 66%)}
+.appShell :is(.lobbyTextLink,.lobbyPage summary,.lobbyEvent .kicker,.lobbyFeedIcon){color:var(--qg-theme-accent,#e3b27e)}
+.appShell .lobbyRail,.appShell .lobbyMobileNav{background:var(--bg)!important;color:var(--text);border-color:var(--line)!important}
+.appShell :is(.lobbyRailMenu>div,.lobbyMobilePanel,.lobbyMemberAvatar){background:var(--surface);border-color:var(--line);color:var(--text)}
+.appShell :is(.lobbyRail,.lobbyMobileNav) :is(a,summary){color:var(--text)}
+.appShell .lobbyRail .lobbyPrimaryNav a.active,.appShell .lobbyMobileNav>a.active{background:var(--surface2)!important;border-color:var(--qg-theme-accent,#e3b27e)!important;color:var(--text)!important}
+.appShell :is(.lobbyRail,.lobbyMobileNav) a.active svg{color:var(--qg-theme-accent,#e3b27e)}
+.appShell .content :is(.qgButton-primary,.lobbyJoin){background:var(--qg-theme-action,#8e2923)!important;color:var(--qg-theme-actionText,#fff4ec)!important;border-color:var(--qg-theme-accent,#e3b27e)!important;box-shadow:none}
+.appShell .content :is(.qgInput,.qgSelect,.qgTextarea,.qgButton-secondary){background:var(--surface);color:var(--text);border-color:var(--line)}
+.appShell .content :is(.normativeNav,.normativeReader,.normativeNotes,.disciplineDesk header,.disciplineDesk section,.disciplineDesk details,.managementPanel){background:var(--surface);color:var(--text);border-color:var(--line)}
+.appShell .content :is(.normativeHeading h1,.lobbyMemberAvatar){color:var(--text)}
+.appShell .content :is(.normativeCodex,.disciplineDesk){--norm-border:var(--line);--norm-accent:var(--qg-theme-accent,#e3b27e)}
+.appShell .content :is(.normativeEmpty,.normativeInfo,.disciplineMeta,.lobbyMemberList small){color:var(--muted)}
+.qgThemeFields,.qgThemeFields>label{display:grid;gap:8px}
+.qgThemeFields{padding-block:0 14px;gap:12px}
+.qgThemeColors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.qgThemeColors label{display:grid;gap:4px;font-size:.875rem}
+.qgThemeColors input{width:100%;min-height:44px;padding:3px}
+.qgThemeActions{display:flex;gap:8px;flex-wrap:wrap}
+.appShell .content :is(.controlModuleCard,.controlDashboardBar,.eventListRow,.eventLedger,.eventFilters,.eventProposal,.decreeLedger,.announcementLedger,.publicationCard,.treasuryEditor,.profileEditSheet,.designControls,.designPreview){background-color:var(--surface);border-color:var(--line);color:var(--text)}
+.appShell .content :is(.qgAction,.qgButton-tertiary):not(.qgActionPrimary):not([aria-current="page"]){border-color:var(--line)}
+.appShell .content .qgActionPrimary{background:var(--qg-theme-action,#8e2923);color:var(--qg-theme-actionText,#fff4ec)}
+.appShell .content :is(.lobbyFeed li>a,.lobbyMemberList a){border-color:var(--line)}
+.appShell :is(.lobbyRailMenu a,.lobbyMobilePanel a):hover{background-color:var(--surface2)}

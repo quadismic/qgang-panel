@@ -4,6 +4,13 @@ import { AppShell } from "@/components/AppShell";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}){
+ const {slug}=await params;
+ const s=await createClient();
+ const {data}=await s.from("campfires").select("name").eq("slug",slug).eq("is_active",true).maybeSingle();
+ return {title:data?.name??"Kamp Ateşi"};
+}
+
 export default async function Campfire({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params; const s = await createClient();
   const { data: fire } = await s.from("campfires").select("id,name,description,cover_url").eq("slug", slug).eq("is_active", true).maybeSingle(); if (!fire) notFound();

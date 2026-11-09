@@ -1,6 +1,8 @@
 import {QGIcon,type QGIconName} from "@/components/QGIcon";
 import {AppShell} from "@/components/AppShell";
 import {getPermissions,allows} from "@/lib/permissions";
+import {canModerate} from "@/lib/roles";
+import {getViewerProfile} from "@/lib/viewer";
 import {redirect} from "next/navigation";
 export const dynamic="force-dynamic";
 export const metadata={title:"Yönetim",description:"Q-GANG sistem ve ortak ayarlar"};
@@ -8,8 +10,10 @@ export default async function Control(){
  const {user,permissions}=await getPermissions();
  if(!user)redirect("/login?next=/yonetim");
  const access=allows(permissions,"access.manage"),design=allows(permissions,"design.manage");
- if(!access&&!design)redirect("/");
+ const discipline=allows(permissions,"discipline.view")&&canModerate((await getViewerProfile(user.id))?.role);
+ if(!access&&!design&&!discipline)redirect("/");
  const modules=[
+  ...(discipline?[{href:"/yonetim/moderasyon",type:"discipline",icon:"discipline",kicker:"TOPLULUK",title:"Disiplin",desc:"Olay kayıtlarını ve kararları yönet."}]:[]),
   ...(access?[{href:"/yonetim/erisim",type:"access",icon:"hierarchy",kicker:"YETKİ MİMARİSİ",title:"Erişim Merkezi",desc:"Rütbelerin sistem yetkilerini güvenli matris üzerinden yönet."},{href:"/yonetim/sistem",type:"system",icon:"control",kicker:"SİSTEM",title:"Sistem Merkezi",desc:"Bakım modunu ve özel bakım erişimlerini yönet."}]:[]),
   ...(design?[{href:"/yonetim/tasarim",type:"design",icon:"image",kicker:"GÖRÜNÜM",title:"Tasarım Merkezi",desc:"Marka, portreler, giriş ve ortak görünüm ayarlarını yönet."}]:[])
  ];

@@ -1,0 +1,16 @@
+const fs=require("node:fs"),vm=require("node:vm"),ts=require("typescript"),assert=require("node:assert/strict");
+const exportsObject={};
+vm.runInNewContext(ts.transpileModule(fs.readFileSync("src/lib/theme.ts","utf8"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{exports:exportsObject});
+const {themePresets,defaultTheme,parseThemeImport,normalizeTheme,accessiblePalette,themeVariables,campaignExpiry}=exportsObject;
+for(const [name,palette] of Object.entries(themePresets))assert(accessiblePalette(palette),name);
+const campaign=parseThemeImport(JSON.stringify({...defaultTheme,campaign:{palette:themePresets.gtaVi,endsOn:"2026-12-31"}}));
+const expiry=Date.parse("2026-12-31T21:00:00Z");
+assert.equal(campaignExpiry("2026-12-31"),expiry);
+assert.equal(themeVariables(campaign,expiry-1)["--qg-theme-background"],themePresets.gtaVi.background);
+assert.equal(themeVariables(campaign,expiry)["--qg-theme-background"],themePresets.classic.background);
+assert.equal(campaignExpiry("2026-02-30"),null);
+assert.throws(()=>parseThemeImport(JSON.stringify({...campaign,palette:{...campaign.palette,text:campaign.palette.background}})));
+assert.throws(()=>parseThemeImport(JSON.stringify({...campaign,headingFont:"</style><script>"})));
+assert.throws(()=>parseThemeImport(JSON.stringify({...campaign,campaign:{...campaign.campaign,endsOn:""}})));
+assert.equal(normalizeTheme(undefined).headingFont,"system");
+console.log("PASS theme: preset contrast, strict import, legacy fallback and Istanbul expiry.");

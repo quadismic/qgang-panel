@@ -1,6 +1,7 @@
+import {defaultTheme,normalizeTheme,type ThemeSettings} from "@/lib/theme";
 export type CouncilSlot={id:string;enabled:boolean;scale:number;x:number;y:number;src:string};
 export type DesignSettings={
- primary:string; bone:string; bronze:string;
+ primary:string; bone:string; bronze:string; theme:ThemeSettings;
  sidebarWidth:number; sidebarEmblem:number;
  heroOverlay:number; quadScale:number; quadY:number;
  commandBackground:string;quadSrc:string;emblemSrc:string;loginBackground:string;
@@ -13,7 +14,7 @@ export const councilIds=["left-1","left-2","right-1","right-2"] as const;
 const councilDefaultSrc:Record<string,string>={"left-1":"/brand/command/council-left-1.webp","left-2":"/brand/command/council-left-2.webp","right-1":"/brand/command/council-right-1.webp","right-2":"/brand/command/council-right-2.webp"};
 const defaultCouncil:CouncilSlot[]=councilIds.map(id=>({id,enabled:false,scale:100,x:0,y:0,src:councilDefaultSrc[id]}));
 export const defaultDesign:DesignSettings={
- primary:"#a71b18",bone:"#e8ddcb",bronze:"#9a7655",sidebarWidth:182,sidebarEmblem:58,
+ theme:defaultTheme,primary:"#a71b18",bone:"#e8ddcb",bronze:"#9a7655",sidebarWidth:182,sidebarEmblem:58,
  heroOverlay:42,quadScale:100,quadY:0,commandBackground:"/brand/command/background.webp",quadSrc:"/brand/command/quad.webp",
  emblemSrc:"/brand/qgang-emblem.webp",loginBackground:"/brand/login/background.webp",
  roomCodex:"/brand/rooms/codex.webp",roomRegistry:"/brand/rooms/registry.webp",roomDecrees:"/brand/rooms/decrees.webp",roomTribunal:"/brand/rooms/tribunal.webp",roomTreasury:"/brand/rooms/treasury.webp",roomEvents:"/brand/rooms/registry.webp",
@@ -23,12 +24,16 @@ export const defaultDesign:DesignSettings={
 export function normalizeDesign(v:any):DesignSettings{
  const n=(x:any,d:number,min:number,max:number)=>Math.min(max,Math.max(min,Number.isFinite(Number(x))?Number(x):d));
  const color=(x:any,d:string)=>/^#[0-9a-f]{6}$/i.test(String(x||""))?String(x):d;
- const path=(x:any,d:string)=>{const s=String(x||"");return (s.startsWith("/")||s.startsWith("https://"))?s.slice(0,1000):d};
+ const path=(x:any,d:string)=>{
+  const s=String(x||"");
+  if(!s||s.length>1000||/[\u0000-\u0020<>"'\\]/.test(s)||/%(?:0[0-9a-f]|1[0-9a-f]|3c|3e|22|27|5c)/i.test(s))return d;
+  try{const u=new URL(s,"https://q-gang.com");return (s.startsWith("/")&&!s.startsWith("//")||s.startsWith("https://")&&u.protocol==="https:"&&!u.username&&!u.password)?s:d}catch{return d}
+ };
  const oldScale=n(v?.quadWidth,560,280,850)/560*100,rawCouncil=Array.isArray(v?.council)?v.council:defaultCouncil;
  const seen=new Set<string>();
  const council:CouncilSlot[]=rawCouncil.filter((x:any)=>x&&typeof x.id==="string"&&/^[a-zA-Z0-9_-]{1,80}$/.test(x.id)&&!seen.has(x.id)&&(seen.add(x.id),true)).map((x:any)=>({id:x.id,enabled:Boolean(x.enabled),scale:n(x.scale,100,50,160),x:n(x.x,0,-30,30),y:n(x.y,0,-30,30),src:path(x.src,councilDefaultSrc[x.id]||councilDefaultSrc["left-1"])}));
  return {
-  primary:color(v?.primary,defaultDesign.primary),bone:color(v?.bone,defaultDesign.bone),bronze:color(v?.bronze,defaultDesign.bronze),
+  theme:normalizeTheme(v?.theme),primary:color(v?.primary,defaultDesign.primary),bone:color(v?.bone,defaultDesign.bone),bronze:color(v?.bronze,defaultDesign.bronze),
   sidebarWidth:n(v?.sidebarWidth,182,160,260),sidebarEmblem:n(v?.sidebarEmblem,58,36,100),
   heroOverlay:n(v?.heroOverlay,42,0,80),quadScale:n(v?.quadScale,oldScale,65,140),quadY:n(v?.quadY,v?.quadTop??0,-30,30),
   commandBackground:path(v?.commandBackground,defaultDesign.commandBackground),quadSrc:path(v?.quadSrc,defaultDesign.quadSrc),emblemSrc:path(v?.emblemSrc,defaultDesign.emblemSrc),loginBackground:path(v?.loginBackground,defaultDesign.loginBackground),

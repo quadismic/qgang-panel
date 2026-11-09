@@ -13,7 +13,7 @@ export async function POST(req:Request) {
  const permission=perms[action];if(!permission||!await hasPermission(user.id,permission))return NextResponse.json({error:"Bu işlem için yetkin yok."},{status:403});
  const s=await createClient();const id=String(f.get("id")||"");
  const respond=(path:string)=>req.headers.get("accept")?.includes("application/json")?NextResponse.json({ok:true,redirect:path}):NextResponse.redirect(new URL(path,req.url),303);
- const back=()=>respond(uuid.test(id)?`/etkinlikler/${id}?saved=1`:"/etkinlikler?saved=1");
+ const back=()=>respond(action==="respond"&&f.get("return_to")==="lobby"?"/":uuid.test(id)?`/etkinlikler/${id}?saved=1`:"/etkinlikler?saved=1");
  const invalid=()=>NextResponse.json({error:"Alanları ve açık onayı kontrol et."},{status:400});
  let error: {message:string}|null=null;
  if(action==="save"||action==="propose") {
@@ -55,5 +55,6 @@ export async function POST(req:Request) {
   if(!id||!name||name.length>80||description.length>1000||!Number.isInteger(sort_order)||sort_order<1||sort_order>99)return invalid();
   ({error}=await s.from("event_types").update({name,description,sort_order}).eq("id",id).select("id").single());
  }
+ if(error?.message==="discipline_event_suspension")return NextResponse.json({error:"Bu etkinlik geçici uzaklaştırma sürene denk geliyor."},{status:403});
  if(error)return NextResponse.json({error:"İşlem kaydedilemedi. Etkinlik durumunu, üyeliğini ve yetkini kontrol et."},{status:400});return back();
 }

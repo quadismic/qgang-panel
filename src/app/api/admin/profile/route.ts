@@ -1,3 +1,4 @@
+import {profileImage} from "@/lib/profile-image";
 import { NextResponse } from "next/server";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { hasPermission } from "@/lib/access";
@@ -43,10 +44,12 @@ export async function POST(req: Request) {
   for (const [key, bucket] of files) {
     const file = form.get(key);
     if (!(file instanceof File) || !file.size) continue;
-    const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
+    let bytes:Buffer;
+    try{bytes=await profileImage(file, key==="avatar"?3145728:6291456)}catch{await cleanup();return fail("image")}
+    const ext="webp";
     // Existing storage RLS requires the uploader's own folder, even when editing another profile.
     const path = `${user.id}/admin-${id}-${key}-${crypto.randomUUID()}.${ext}`;
-    const { error } = await s.storage.from(bucket).upload(path, file, { contentType: file.type });
+    const { error } = await s.storage.from(bucket).upload(path, bytes, { contentType: "image/webp" });
     if (error) { await cleanup(); return fail("image"); }
     uploaded.push({ bucket, path });
     changes[`${key}_url`] = s.storage.from(bucket).getPublicUrl(path).data.publicUrl;
