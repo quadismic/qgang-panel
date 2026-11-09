@@ -1,0 +1,370 @@
+/* Q-GANG shared design system. Page CSS owns layout; this file owns visual rules. */
+:root {
+  color-scheme: dark;
+  --qg-ui-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --qg-brand-font: var(--font-qgang, Georgia, "Times New Roman", serif);
+  --qg-display-font: var(--qg-heading-font, var(--qg-ui-font));
+
+  --qg-bg: var(--qg-theme-background, #100c0a);
+  --qg-surface: var(--qg-theme-surface, #17110e);
+  --qg-surface-raised: var(--qg-theme-raised, #211713);
+  --qg-text: var(--qg-theme-text, #f3e6d6);
+  --qg-muted: var(--qg-theme-muted, #d0b9a4);
+  --qg-line: var(--qg-theme-line, #614739);
+  --qg-accent: var(--qg-theme-accent, #e3b27e);
+  --qg-action: var(--qg-theme-action, #8e2923);
+  --qg-action-text: var(--qg-theme-actionText, #fff4ec);
+
+  /* Bridge older page styles to the same palette instead of leaving parallel colors. */
+  --bg: var(--qg-bg);
+  --surface: var(--qg-surface);
+  --surface2: var(--qg-surface-raised);
+  --surface3: color-mix(in srgb, var(--qg-surface-raised) 78%, var(--qg-text));
+  --line: color-mix(in srgb, var(--qg-line) 74%, transparent);
+  --line-hot: color-mix(in srgb, var(--qg-accent) 42%, transparent);
+  --text: var(--qg-text);
+  --muted: var(--qg-muted);
+  --ember: var(--qg-action);
+  --flame: var(--qg-accent);
+  --glow: color-mix(in srgb, var(--qg-accent) 18%, transparent);
+  --qg-void: var(--qg-bg);
+  --qg-ink: var(--qg-bg);
+  --qg-panel: var(--qg-surface);
+  --qg-panel-hi: var(--qg-surface-raised);
+  --qg-bone: var(--qg-text);
+  --qg-copy: var(--qg-muted);
+  --qg-dim: color-mix(in srgb, var(--qg-muted) 70%, var(--qg-bg));
+  --qg-line-hot: color-mix(in srgb, var(--qg-accent) 42%, transparent);
+  --qg-ember: var(--qg-action);
+  --qg-ember-hot: var(--qg-accent);
+  --qg-flame: var(--qg-accent);
+  --qg-action-radius: var(--qg-radius-control);
+  --qg-action-height: var(--qg-control-height);
+  --qg-action-border: var(--qg-line);
+  --qg-action-surface: var(--qg-surface);
+  --qg-control-text: var(--qg-text);
+  --qg-focus: var(--qg-accent);
+  --qg-surface-base: var(--qg-surface);
+  --qg-divider: var(--qg-line);
+  --qg-r-sm: var(--qg-radius-control);
+  --qg-r-md: var(--qg-radius-card);
+  --qg-r-lg: var(--qg-radius-card);
+  --qg-r-xl: var(--qg-radius-dialog);
+  --qg-ease: var(--qg-ease-standard);
+
+  --qg-radius-control: 9px;
+  --qg-radius-card: 12px;
+  --qg-radius-dialog: 16px;
+  --qg-control-height: 44px;
+  --qg-shadow-card: 0 8px 24px rgb(0 0 0 / 16%);
+  --qg-shadow-float: 0 18px 48px rgb(0 0 0 / 30%);
+  --qg-ease-standard: cubic-bezier(.2, .7, .2, 1);
+  --qg-duration-fast: 140ms;
+  --qg-duration-standard: 200ms;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 20px;
+  background: var(--qg-bg);
+}
+
+body {
+  background: var(--qg-bg);
+  color: var(--qg-text);
+  font-family: var(--qg-ui-font);
+  font-size: 15px;
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  opacity: .055;
+  background-size: 40px 40px;
+}
+
+:where(.appShell, .loginPage, .maintenancePage) {
+  color: var(--qg-text);
+  font-family: var(--qg-ui-font);
+}
+
+:where(.appShell, .loginPage) :where(h1, h2, h3, h4) {
+  color: var(--qg-text);
+  font-family: var(--qg-display-font);
+  font-style: normal;
+  font-weight: 650;
+  letter-spacing: -.025em;
+  text-wrap: pretty;
+}
+
+.appShell .content :where(h1):not(.lobbyHero h1) {
+  font-size: clamp(1.85rem, 3.2vw, 2.55rem);
+  line-height: 1.12;
+}
+
+.appShell .content :where(h2) {
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+  line-height: 1.25;
+}
+
+.appShell .content :where(h3) {
+  font-size: 1.08rem;
+  line-height: 1.35;
+}
+
+.appShell .content .lobbyEvent:not(.lobbyEventShort) h2 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1.1;
+}
+
+.appShell .content .lobbyEventShort h2 {
+  font-size: 1.25rem;
+}
+
+.appShell .content :where(p, li) {
+  text-wrap: pretty;
+}
+
+.appShell .content :where(.kicker, .eyebrow, .sectionEyebrow) {
+  color: var(--qg-muted);
+  font-family: var(--qg-ui-font);
+  font-size: .72rem;
+  font-weight: 650;
+  letter-spacing: .1em;
+  line-height: 1.4;
+}
+
+/* Brand wordmarks retain Q-GANG's editorial serif identity. */
+.appShell .content .lobbyHero h1,
+.appShell .content .brandWordmark,
+.appShell .content .normativeWordmark {
+  font-family: var(--qg-brand-font);
+  font-weight: 500;
+  letter-spacing: .025em;
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--qg-accent);
+  outline-offset: 3px;
+}
+
+:where(a, button, input, select, textarea, summary) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Shared action controls. Existing classes keep their meaning and behavior. */
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(button, input[type="button"], input[type="submit"], input[type="reset"], .button, .qgButton, .qgAction, .qgActionPrimary, .qgActionSecondary, .qgActionTertiary) {
+  box-sizing: border-box;
+  min-height: var(--qg-control-height);
+  border-radius: var(--qg-radius-control);
+  font-family: var(--qg-ui-font);
+  font-size: .875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-transform: none;
+  transition:
+    color var(--qg-duration-fast) ease,
+    background-color var(--qg-duration-fast) ease,
+    border-color var(--qg-duration-fast) ease,
+    box-shadow var(--qg-duration-fast) ease,
+    transform var(--qg-duration-fast) var(--qg-ease-standard);
+}
+
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(button, input[type="button"], input[type="submit"], input[type="reset"], .button, .qgButton, .qgAction, .qgActionSecondary) {
+  border: 1px solid var(--qg-line);
+  background: var(--qg-surface);
+  color: var(--qg-text);
+  box-shadow: none;
+}
+
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(button, input[type="button"], input[type="submit"], input[type="reset"], .button, .qgButton, .qgAction, .qgActionSecondary):disabled,
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(button, input[type="button"], input[type="submit"], input[type="reset"], .button, .qgButton, .qgAction, .qgActionSecondary)[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: .58;
+  transform: none;
+}
+
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(.qgButton-primary, .qgActionPrimary, .primary, .lobbyJoin, .eventPrimaryAction) {
+  border-color: var(--qg-accent);
+  background: var(--qg-action);
+  color: var(--qg-action-text);
+  box-shadow: none;
+}
+
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(.qgButton-tertiary, .qgActionTertiary) {
+  border-color: transparent;
+  background: transparent;
+  color: var(--qg-accent);
+  box-shadow: none;
+}
+
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(.qgButton-destructive, .qgActionDestructive, .destructiveAction) {
+  border-color: #845449;
+  background: #2b1714;
+  color: #f0b7a9;
+  box-shadow: none;
+}
+
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(.qgIconButton, .iconButton, button[aria-label]) {
+  min-width: var(--qg-control-height);
+  min-height: var(--qg-control-height);
+  padding: 8px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(button, input[type="button"], input[type="submit"], input[type="reset"], .button, .qgButton, .qgAction):not(:disabled):not([aria-disabled="true"]):hover {
+    border-color: color-mix(in srgb, var(--qg-accent) 62%, var(--qg-line));
+    box-shadow: 0 3px 12px rgb(0 0 0 / 14%);
+    transform: translateY(-1px);
+  }
+
+  :is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(.qgButton-primary, .qgActionPrimary, .primary, .lobbyJoin, .eventPrimaryAction):not(:disabled):hover {
+    background: color-mix(in srgb, var(--qg-action) 88%, white);
+    border-color: var(--qg-accent);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--qg-action) 22%, transparent);
+  }
+
+  :is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(.qgButton-tertiary, .qgActionTertiary):hover {
+    background: color-mix(in srgb, var(--qg-accent) 9%, transparent);
+    box-shadow: none;
+    transform: none;
+  }
+}
+
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(button, .qgButton, .qgAction, .button)[aria-pressed="true"],
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(button, .qgButton, .qgAction, .button)[aria-current="page"] {
+  border-color: var(--qg-accent);
+  background: color-mix(in srgb, var(--qg-accent) 16%, var(--qg-surface));
+  color: var(--qg-text);
+  box-shadow: none;
+  transform: none;
+}
+
+/* Form fields share one size, surface, and focus language. */
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select, textarea, .qgInput, .qgSelect, .qgTextarea, .qgWritingArea, [contenteditable="true"]) {
+  box-sizing: border-box;
+  min-height: var(--qg-control-height);
+  border: 1px solid var(--qg-line);
+  border-radius: var(--qg-radius-control);
+  background: var(--qg-surface);
+  color: var(--qg-text);
+  font-family: var(--qg-ui-font);
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: border-color var(--qg-duration-fast) ease, box-shadow var(--qg-duration-fast) ease, background-color var(--qg-duration-fast) ease;
+}
+
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select, textarea, .qgInput, .qgSelect, .qgTextarea, .qgWritingArea, [contenteditable="true"]):focus-visible {
+  border-color: var(--qg-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--qg-accent) 18%, transparent);
+}
+
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(input, select, textarea, .qgInput, .qgSelect, .qgTextarea, .qgWritingArea, [contenteditable="true"]):disabled {
+  cursor: not-allowed;
+  opacity: .6;
+}
+
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(input, select, textarea, .qgInput, .qgSelect, .qgTextarea, .qgWritingArea, [contenteditable="true"])[aria-invalid="true"] {
+  border-color: #c77b6c;
+}
+
+/* Panels share borders and quiet elevation without changing their grid/layout. */
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(.panel, .managementPanel, .controlModuleCard, .controlDashboardBar, .eventLedger, .eventFilters, .eventListRow, .eventProposal, .decreeLedger, .announcementLedger, .publicationCard, .publicationArticle, .treasuryEditor, .profileEditSheet, .designControls, .designPreview, .lobbyEvent, .lobbyHero, .normativeReader, .normativeNav, .disciplineDesk section, .disciplineDesk details) {
+  border-color: var(--qg-line);
+  border-radius: var(--qg-radius-card);
+  box-shadow: var(--qg-shadow-card);
+}
+
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(.panel, .managementPanel, .controlModuleCard, .eventLedger, .eventFilters, .eventListRow, .eventProposal, .decreeLedger, .announcementLedger, .publicationCard, .publicationArticle, .treasuryEditor, .profileEditSheet, .designControls, .designPreview, .normativeReader, .normativeNav, .disciplineDesk section, .disciplineDesk details) {
+  background-color: var(--qg-surface);
+  color: var(--qg-text);
+}
+
+:is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(.emptyState, .qgEmptyState, .lobbyEmptyState, .eventEmptyState) {
+  border-color: var(--qg-line);
+  border-radius: var(--qg-radius-card);
+  color: var(--qg-muted);
+}
+
+.qgDialog {
+  border-color: var(--qg-line);
+  border-radius: var(--qg-radius-dialog);
+  background: var(--qg-surface);
+  color: var(--qg-text);
+  box-shadow: var(--qg-shadow-float);
+}
+
+.qgDialog::backdrop {
+  background: rgb(0 0 0 / 58%);
+  backdrop-filter: blur(3px);
+}
+
+:is(.appShell .content, .qgDialog, .surfaceLayer) .qgOverflowContent {
+  border-color: var(--qg-line);
+  border-radius: var(--qg-radius-control);
+  background: var(--qg-surface-raised);
+  color: var(--qg-text);
+  box-shadow: var(--qg-shadow-float);
+}
+
+:where(.appShell .content) :where(hr, .divider, .sectionDivider) {
+  border-color: var(--qg-line);
+}
+
+:where(.appShell .content) :where(a:not(.qgButton):not(.qgAction):not(.button)) {
+  text-underline-offset: .18em;
+  text-decoration-thickness: .07em;
+}
+
+:where(.appShell .content) :where(a:not(.qgButton):not(.qgAction):not(.button)):hover {
+  color: var(--qg-accent);
+}
+
+.appShell :is(.lobbyRail, .lobbyMobileNav, .commandRail, .mobileNav) {
+  border-color: var(--qg-line);
+  color: var(--qg-text);
+}
+
+.appShell :is(.lobbyRail .lobbyPrimaryNav a.active, .lobbyMobileNav > a.active, .commandRail nav a.active, .hubMobile a.active) {
+  border-color: var(--qg-accent);
+  background: color-mix(in srgb, var(--qg-accent) 12%, var(--qg-surface));
+  color: var(--qg-text);
+  box-shadow: none;
+}
+
+.pageMotion {
+  animation: qgPageEnter 180ms var(--qg-ease-standard) both;
+}
+
+@keyframes qgPageEnter {
+  from { opacity: .88; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+::selection {
+  background: color-mix(in srgb, var(--qg-accent) 35%, transparent);
+  color: var(--qg-text);
+}
+
+@media (max-width: 760px) {
+  body { font-size: 14px; }
+  .appShell .content :where(h1) { font-size: clamp(1.7rem, 7vw, 2.2rem); }
+  .appShell .content :where(h2) { font-size: clamp(1.2rem, 5vw, 1.55rem); }
+  :is(.appShell .content, .qgDialog, .surfaceLayer, .loginCard) :is(button, input[type="button"], input[type="submit"], input[type="reset"], .button, .qgButton, .qgAction, .qgActionPrimary, .qgActionSecondary, .qgActionTertiary) {
+    min-height: 44px;
+  }
+  .pageMotion { animation-duration: 140ms; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}

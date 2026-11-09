@@ -14,6 +14,7 @@ import "./ui-consistency.css";
 import "./ui-primitives.css";
 import "./lobby.css";
 import "./theme.css";
+import "./design-system.css";
 import {getActiveDesign} from "@/lib/design-server";
 
 import {EmberStage} from "@/components/EmberStage";

@@ -188,3 +188,11 @@ Mevcut konsey kompozisyonu, portre ölçekleri, rütbe çerçevesi/taç geometri
 - Görsel roller: ana zemin, yüzey, yükseltilmiş yüzey, metin, ikincil metin, ayırıcı, vurgu, ana düğme ve düğme metni. Ortak sayfa kabuğu ve kontroller bu rolleri kullanır. Marka varlıkları ile uyarı, hata ve yaptırımın anlamsal renkleri kampanya paletine bağlanmaz. Eski ekranlara özgü bütün renkler henüz ortak rollere taşınmamıştır.
 - Bir isteği tekrar üretmek için Tasarım Merkezi’nden temayı JSON olarak dışa aktar. Örneğin `npm run -s theme:config -- gtaVi 2026-12-31 mevcut-tema.json` o paleti mevcut kalıcı temayı koruyarak hazırlar. Çıktıyı **Tema ayarını içe veya dışa aktar → Önizlemeye al** ile dene; yetkili **Yayınla** dediğinde etkin olur. Tarih örnektir. Komut canlı sisteme yazmaz.
 - Yeni yönetilebilir seçeneklerde aynı sözleşmeyi kullan: adı ve varsayılanı belli alan, girdi doğrulaması, önizleme, yetkili yayın ve geçmişten geri alma. Görünüm ayarları yetki, disiplin veya başka iş kurallarını değiştirmez.
+
+## Ortak arayüz kuralları — 2026-11-09
+
+- `design-system.css` genel görsel otoritedir ve `layout.tsx` içinde tüm sayfa stillerinden sonra yüklenir. Sayfa CSS'i yerleşimi ve bileşene özgü anlamı korur; ortak yazı, yüzey, eylem ve etkileşim kuralları burada belirlenir.
+- Arayüz yazısı sistem sans ailesini kullanır; yetkilinin seçtiği başlık yazısı yalnız başlık rolünü etkiler. Q-GANG amblemi ve marka sözcüğü kendi serif kimliğini korur. Sayfa başlıkları, alt başlıklar, gövde, açıklama ve metadata ortak ölçü hiyerarşisine bağlıdır.
+- Düğme türleri: birincil eylem, ikincil eylem, metin/üçüncül eylem ve yıkıcı işlem. Renkler tema semantik rollerinden gelir; durum/uyarı/yaptırım renkleri anlamını korur. Düğme, form, odak, hover, disabled ve pressed durumları ortak kurala tabidir; dokunma hedefi en az 44px'tir.
+- Kart, dialog, açılır menü, kenar çizgisi ve gölge ölçüleri ortak token kullanır. Sayfa geçişi kısa ve düşük hareketlidir; `prefers-reduced-motion` tercihi animasyonları devre dışı bırakır.
+- Eski ortak değişkenler yeni temaya köprülenir; yeni bileşenlerde sayfaya özel renk ve ölçü sabitleri eklenmez. Kontrol dışı kalan ekranlar aynı tokenlara taşınırken işlev ve yetki kuralları değiştirilmez.

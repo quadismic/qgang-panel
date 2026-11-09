@@ -80,6 +80,10 @@ async function scenario({guest=false,member=true,event=sample,response=null,wait
     });
     await page.setContent('<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style>'+renderToStaticMarkup(await lobby.default()));
     assert.equal(await page.locator(".lobbyPage").evaluate(el=>el.scrollWidth<=el.clientWidth+1),true);
+    assert.match(await page.locator("body").evaluate(el=>getComputedStyle(el).fontFamily),/system-ui/);
+    assert.equal(await page.locator(".pageMotion").evaluate(el=>getComputedStyle(el).animationName),"qgPageEnter");
+    assert.equal(await page.locator(".lobbyHero h1").evaluate(el=>getComputedStyle(el).fontFamily.includes("Georgia")),true);
+    assert.equal(await page.locator(".lobbyEvent").evaluate(el=>getComputedStyle(el).borderRadius),"12px");
     if(populated&&state==="member"){
      await page.evaluate(vars=>Object.entries(vars).forEach(([key,value])=>document.documentElement.style.setProperty(key,value)),themeVariables({...defaultTheme,palette:themePresets.gtaVi}));
      assert.match(await page.locator(".lobbyEvent h2").evaluate(el=>getComputedStyle(el).fontFamily),/system-ui/);
@@ -91,6 +95,7 @@ async function scenario({guest=false,member=true,event=sample,response=null,wait
      if(canViewEvents&&populated){
       const box=await page.getByRole("button",{name:"Katılacağım"}).boundingBox();
       assert(box&&box.height>=44&&box.y+box.height<viewport.height-65);
+      assert.equal(await page.getByRole("button",{name:"Katılacağım"}).evaluate(el=>getComputedStyle(el).borderRadius),"9px");
      }
     }else assert(await page.locator(".lobbyRail").isVisible());
 
