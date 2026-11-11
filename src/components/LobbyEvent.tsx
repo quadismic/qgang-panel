@@ -8,24 +8,25 @@ import {Button} from "@/components/ui/Primitives";
 
 export async function lobbyEventData(){
  const {user,permissions,role}=await getPermissions();
- if(!user||!allows(permissions,"events.view"))return {kind:"restricted" as const,guest:!user};
- if(role!=="founder"&&role!=="admin"&&!await getViewerMembership(user.id))return {kind:"restricted" as const,guest:false};
+ const member=!!user&&(role==="founder"||role==="admin"||!!await getViewerMembership(user.id));
+ if(!user||!allows(permissions,"events.view"))return {kind:"restricted" as const,guest:!user,member};
+ if(!member)return {kind:"restricted" as const,guest:false,member:false};
  const s=await createClient();
  const {data:event,error}=await s.from("community_events").select("id,title,starts_at,date_only,location").eq("type_id","op-night").eq("status","published").gte("starts_at",new Date().toISOString()).order("starts_at").order("id").limit(1).maybeSingle();
  const canPropose=allows(permissions,"events.propose");
- if(error)return {kind:"error" as const};
- if(!event)return {kind:"empty" as const,canPropose};
+ if(error)return {kind:"error" as const,member:true};
+ if(!event)return {kind:"empty" as const,canPropose,member:true};
  const [{data:own,error:responseError},{data:summary}]=await Promise.all([
   s.from("event_responses").select("response").eq("event_id",event.id).eq("user_id",user.id).maybeSingle(),
   s.rpc("event_response_summary",{p_event:event.id})
  ]);
  const counts=summary?.[0];
- return {kind:"event" as const,event,response:own?.response,going:counts?.going,waiting:counts?.waiting,myWaiting:counts?.my_waiting,responseError,canPropose};
+ return {kind:"event" as const,event,response:own?.response,going:counts?.going,waiting:counts?.waiting,myWaiting:counts?.my_waiting,responseError,canPropose,member:true};
 }
 export function LobbyEvent({data}:{data:Awaited<ReturnType<typeof lobbyEventData>>}){
  if(data.kind==="restricted")return data.guest?<section className="lobbyEvent lobbyEventShort"><h2>Oyun geceleri</h2><p>Oyun gecelerini görmek ve katılım bildirmek için giriş yap.</p><Link href="/login" className="qgAction">Giriş yap</Link></section>:null;
  if(data.kind==="error")return <section className="lobbyEvent lobbyEventShort"><h2>Oyun geceleri</h2><p role="status">Sıradaki oyun gecesi şu anda yüklenemedi.</p><Link href="/etkinlikler" className="qgAction">Etkinlikleri aç</Link></section>;
- if(data.kind==="empty")return <section className="lobbyEvent lobbyEventShort"><h2>Sonraki Oyun Gecesi</h2><p>Henüz planlı bir oyun gecesi yok.</p><Link href={data.canPropose?"/etkinlikler?propose=1":"/etkinlikler"} className="qgAction">{data.canPropose?"Oyun gecesi öner":"Etkinlikleri gör"}</Link></section>;
+ if(data.kind==="empty")return <section className="lobbyEvent lobbyEventShort" aria-label="Sonraki oyun gecesi"><p className="kicker">SONRAKİ OYUN GECESİ</p><p className="lobbyEventInvitation">Bir sonraki oyun gecesinde ne oynayalım?</p><Link href={data.canPropose?"/etkinlikler?propose=1":"/etkinlikler"} className={data.canPropose?"qgAction qgActionPrimary":"qgAction"}>{data.canPropose?"Oyun öner":"Etkinlikleri gör"}</Link></section>;
  const {event,response,going,waiting,myWaiting,responseError}=data;
  const date=new Date(event.starts_at);
  const day=new Intl.DateTimeFormat("tr-TR",{timeZone:"Europe/Istanbul",weekday:"long",day:"numeric",month:"long"}).format(date);

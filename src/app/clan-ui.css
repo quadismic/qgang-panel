@@ -1,15 +1,9 @@
 /* Q-GANG's compact, modern gaming-community shell. Page data and permission rules remain unchanged. */
 .appShell.appShell{display:flex!important;flex-direction:column;min-height:100vh;gap:0;justify-content:flex-start;background:var(--qg-bg)}
 .qgTopbar{position:sticky;top:0;z-index:60;display:grid;grid-template-columns:minmax(190px,1fr) auto minmax(190px,1fr);align-items:center;gap:22px;min-height:82px;padding:10px clamp(18px,4vw,64px);border-bottom:1px solid color-mix(in srgb,var(--qg-line) 74%,transparent);background:color-mix(in srgb,var(--qg-bg) 94%,transparent);backdrop-filter:blur(16px)}
-.qgTopbarBrand{display:flex;align-items:center;gap:12px;width:max-content;max-width:100%;text-decoration:none!important;color:var(--qg-text)}
-.qgTopbarBrand img{display:block;width:46px;height:46px;object-fit:contain}
-.qgTopbarBrand img,.clanHeroMark img,.appShell .content .normativeHeading img{filter:brightness(0) invert(1)}
-.qgTopbarBrand>span{display:grid;gap:1px;line-height:1.2}
-.qgTopbarBrand strong{font-family:var(--qg-brand-font);font-size:27px;font-weight:600;letter-spacing:.015em;line-height:.9}
-.qgTopbarBrand small{font-size:12px;color:var(--qg-muted)}
 .qgTopbarNav{display:flex;align-items:center;justify-content:center;gap:5px}
-.qgTopbarNav a{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 15px;border:1px solid transparent;border-radius:10px;color:var(--qg-text);font-size:14px;font-weight:570;text-decoration:none!important;white-space:nowrap;transition:background-color .14s ease,border-color .14s ease,color .14s ease}
-.qgTopbarNav a svg,.qgTopbarActions svg{width:19px;height:19px;flex:none}
+.qgTopbarNav a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 15px;border:1px solid transparent;border-radius:10px;color:var(--qg-text);font-size:14px;font-weight:570;text-decoration:none!important;white-space:nowrap;transition:background-color .14s ease,border-color .14s ease,color .14s ease}
+.qgTopbarActions svg{width:19px;height:19px;flex:none}
 .qgTopbarNav a:hover{background:var(--qg-surface);border-color:var(--qg-line)}
 .qgTopbarNav a.active{background:color-mix(in srgb,var(--qg-action) 28%,var(--qg-surface));border-color:color-mix(in srgb,var(--qg-action) 60%,var(--qg-line));color:var(--qg-text)}
 .qgTopbarActions{display:flex;justify-content:flex-end;align-items:center;min-width:0}
@@ -20,6 +14,7 @@
 .qgAccountMenu summary::-webkit-details-marker{display:none}
 .qgAccountMenu[open] summary,.qgAccountMenu summary:hover{border-color:var(--qg-line);background:var(--qg-surface)}
 .qgAccountAvatar{display:grid;place-items:center;width:36px;height:36px;overflow:hidden;border-radius:50%;background:var(--qg-surface-raised)}
+.qgAccountAvatar img{display:block;width:100%;height:100%;object-fit:cover}
 .qgAccountCopy{display:grid;min-width:0;line-height:1.25}
 .qgAccountCopy strong,.qgAccountCopy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .qgAccountCopy strong{font-size:13px}.qgAccountCopy small{font-size:10px;color:var(--qg-muted)}
@@ -47,6 +42,10 @@
 .clanHeroArt:after{position:absolute;inset:0;content:"";background:radial-gradient(ellipse at 75% 48%,color-mix(in srgb,var(--qg-action) 30%,transparent),transparent 60%)}
 .clanHeroFlag{position:absolute;top:50%;right:clamp(28px,8vw,120px);display:grid;place-items:center;width:clamp(190px,26vw,350px);aspect-ratio:1;transform:translateY(-50%) rotate(-7deg);opacity:.36;filter:drop-shadow(0 12px 30px color-mix(in srgb,var(--qg-action) 32%,transparent))}
 .clanHeroFlag img{display:block;width:100%;height:100%;object-fit:contain;filter:brightness(0) invert(1)}
+.clanHeroMember{min-height:112px;padding:18px clamp(20px,4vw,48px);border-radius:12px}
+.clanMemberBrand{position:relative;z-index:1;display:flex;align-items:baseline;gap:14px}
+.clanMemberBrand span{color:var(--qg-accent);font-size:11px;font-weight:700;letter-spacing:.19em}
+.clanMemberBrand strong{font-family:var(--qg-brand-font);font-size:clamp(1.8rem,4vw,2.7rem);font-weight:600;letter-spacing:.025em;line-height:1}
 .clanHeroCopy{position:relative;z-index:1;max-width:650px}
 .clanHeroCopy h1{margin:2px 0 -8px;font-family:var(--qg-brand-font)!important;font-size:clamp(5rem,10vw,9.2rem)!important;font-weight:600!important;line-height:.92!important;letter-spacing:.015em!important}
 .clanHeroCopy h2{margin:0 0 14px;font-family:var(--qg-display-font)!important;font-size:clamp(1.35rem,2.6vw,2rem)!important;font-weight:700!important;line-height:1.15!important;letter-spacing:0!important}
@@ -55,15 +54,20 @@
 .clanPrimaryLink{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:48px;margin-top:24px;padding:0 20px;border:1px solid var(--qg-action);border-radius:9px;background:var(--qg-action);color:var(--qg-action-text);font-size:14px;font-weight:700;text-decoration:none!important;transition:filter .14s ease,transform .14s ease}
 .clanPrimaryLink:hover{filter:brightness(1.12);transform:translateY(-1px)}
 .clanFeatureGrid{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.25fr);gap:18px;align-items:stretch}
-.clanAboutCard,.clanEventCard,.clanAnnouncements,.clanQuickLinks{min-width:0;border:1px solid var(--qg-line);border-radius:13px;background:var(--qg-surface)}
+.clanAboutCard,.clanEventCard,.clanAnnouncements{min-width:0;border:1px solid var(--qg-line);border-radius:13px;background:var(--qg-surface)}
 .clanAboutCard{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-height:230px;padding:clamp(20px,3vw,34px)}
 .clanSectionHeading{display:flex;align-items:center;gap:11px;min-width:0}
 .clanSectionHeading>svg{width:24px;height:24px;color:var(--qg-accent)}
-.clanSectionHeading h2,.clanQuickLinks h2{margin:0;font-family:var(--qg-display-font)!important;font-size:clamp(1.2rem,2vw,1.5rem)!important;font-weight:700!important;letter-spacing:0!important}
+.clanSectionHeading h2{margin:0;font-family:var(--qg-display-font)!important;font-size:clamp(1.2rem,2vw,1.5rem)!important;font-weight:700!important;letter-spacing:0!important}
 .clanAboutCard>p{max-width:500px;margin:16px 0 6px;color:var(--qg-muted);font-size:15px;line-height:1.65}
 .clanInlineLink{display:inline-flex;align-items:center;gap:7px;min-height:44px;margin-top:6px;color:var(--qg-accent);font-size:14px;font-weight:650;text-decoration:none!important}
 .clanInlineLink svg{width:16px;height:16px}
 .clanEventCard{display:flex;min-height:230px;overflow:hidden;background:linear-gradient(130deg,color-mix(in srgb,var(--qg-action) 18%,var(--qg-surface)),var(--qg-surface) 70%)}
+.clanEventCardEmpty{min-height:74px;align-items:center;border-radius:10px;background:color-mix(in srgb,var(--qg-surface-raised) 68%,var(--qg-surface))}
+.clanEventCardEmpty .lobbyEvent{display:flex;flex-wrap:wrap;flex-direction:row;align-items:center;justify-content:space-between;gap:8px 18px;padding:12px 20px}
+.clanEventCardEmpty .lobbyEvent .kicker{margin:0 0 0 auto;color:var(--qg-muted);font-size:10px;letter-spacing:.12em}
+.clanEventCardEmpty .lobbyEventInvitation{flex:1 1 auto;margin:0;color:var(--qg-text);font-size:15px;font-weight:620;white-space:nowrap}
+.clanEventCardEmpty .lobbyEvent>.qgAction{flex:0 0 auto;min-height:44px}
 .clanEventCard .lobbyEvent{align-content:center;justify-items:start;width:100%;margin:0;padding:clamp(20px,3vw,34px);border:0;border-radius:0;background:transparent!important;box-shadow:none!important}
 .clanEventCard .lobbyEvent .kicker{margin:0;color:var(--qg-accent);font-size:.76rem;font-weight:720;letter-spacing:.1em}
 .clanEventCard .lobbyEvent h2{margin:2px 0 0;font-family:var(--qg-display-font)!important;font-size:clamp(1.75rem,3.1vw,2.7rem)!important;font-weight:700!important;line-height:1.12!important;letter-spacing:-.02em!important}
@@ -75,8 +79,8 @@
 .clanEventCard .lobbyEventActions .lobbyTextLink{font-size:13px}
 .clanEventCard .lobbyEventShort{gap:8px}
 .clanEventCard .lobbyEventShort h2{font-size:1.28rem!important}
-.clanHomeGrid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(245px,.75fr);gap:18px;align-items:stretch}
-.clanAnnouncements,.clanQuickLinks{padding:clamp(16px,2.2vw,26px)}
+.clanHomeGrid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-items:stretch}
+.clanAnnouncements{padding:clamp(16px,2.2vw,26px)}
 .clanAnnouncements>.clanSectionHeading{padding-bottom:13px;border-bottom:1px solid var(--qg-line)}
 .clanAnnouncements>.clanSectionHeading a{display:inline-flex;align-items:center;gap:6px;min-height:40px;margin-left:auto;color:var(--qg-muted);font-size:13px;font-weight:600;text-decoration:none!important;white-space:nowrap}
 .clanAnnouncements>.clanSectionHeading a:hover{color:var(--qg-accent)}
@@ -91,12 +95,6 @@
 .clanNoticeCopy>span{display:-webkit-box;overflow:hidden;color:var(--qg-muted);font-size:13px;line-height:1.45;-webkit-box-orient:vertical;-webkit-line-clamp:2}
 .clanAnnouncements time{align-self:start;margin-top:4px;color:var(--qg-muted);font-size:12px;white-space:nowrap}
 .clanEmpty{margin:0;padding:20px 0;color:var(--qg-muted);font-size:14px}
-.clanQuickLinks{display:flex;flex-direction:column;gap:9px}
-.clanQuickLinks h2{margin-bottom:5px}
-.clanQuickLinks>a{display:grid;grid-template-columns:28px minmax(0,1fr) 18px;align-items:center;gap:11px;min-height:54px;padding:0 13px;border:1px solid transparent;border-radius:9px;background:color-mix(in srgb,var(--qg-surface-raised) 58%,transparent);color:var(--qg-text);font-size:14px;font-weight:620;text-decoration:none!important}
-.clanQuickLinks>a:hover{border-color:var(--qg-line);background:var(--qg-surface-raised)}
-.clanQuickLinks>a svg:first-child{width:21px;height:21px;color:var(--qg-accent)}
-.clanQuickLinks>a svg:last-child{width:16px;height:16px;color:var(--qg-muted)}
 .clanSubpageHero{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-height:142px;margin:26px 0 20px;padding:24px 28px;border:1px solid var(--qg-line);border-radius:13px;background:linear-gradient(120deg,color-mix(in srgb,var(--qg-action) 15%,var(--qg-surface)),var(--qg-surface) 74%)}
 .clanSubpageHero h1{margin:0;font-family:var(--qg-display-font)!important;font-size:clamp(2rem,4vw,2.8rem)!important;font-weight:700!important;letter-spacing:-.02em!important}
 .clanSubpageHero p{margin:7px 0 0;color:var(--qg-muted);font-size:15px}
@@ -114,24 +112,24 @@
 .clanAdvancedAdmin .controlModules{margin-top:12px}
 
 @media(max-width:900px){
- .qgTopbar{grid-template-columns:minmax(150px,1fr) auto;gap:10px;padding-inline:20px}
- .qgTopbarNav{gap:1px}.qgTopbarNav a{gap:6px;padding-inline:10px;font-size:13px}.qgTopbarNav a svg{width:17px;height:17px}
- .qgTopbarActions{grid-column:2;grid-row:1}.qgTopbarNav{grid-column:1/-1;grid-row:2;justify-content:center}.qgTopbar{padding-block:7px}.qgTopbarBrand{grid-column:1;grid-row:1}
+ .qgTopbar{grid-template-columns:minmax(0,1fr) auto;gap:10px;padding-inline:20px}
+ .qgTopbarNav{grid-column:1;grid-row:1;gap:1px;justify-content:center}.qgTopbarNav a{padding-inline:10px;font-size:13px}
+ .qgTopbarActions{grid-column:2;grid-row:1}.qgTopbar{padding-block:7px}
  .clanFeatureGrid{grid-template-columns:1fr 1.15fr}.clanHomeGrid{grid-template-columns:minmax(0,1.3fr) minmax(220px,.7fr)}
 }
 @media(max-width:760px){
  .appShell.appShell{display:block!important;padding:0;overflow:clip}
- .qgTopbar{position:sticky;top:0;display:flex;flex-wrap:wrap;justify-content:space-between;min-height:112px;padding:7px 12px 8px;background:color-mix(in srgb,var(--qg-bg) 96%,transparent)}
- .qgTopbarBrand{gap:8px}.qgTopbarBrand img{width:38px;height:38px}.qgTopbarBrand strong{font-size:16px}.qgTopbarBrand small{font-size:10px}
- .qgTopbarNav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));order:3;width:100%;gap:3px;justify-content:stretch;margin-top:4px}
- .qgTopbarNav a{display:flex;flex-direction:column;gap:2px;min-width:0;min-height:46px;padding:3px 1px;border-radius:8px;font-size:9px;font-weight:650;line-height:1.1;white-space:normal}
- .qgTopbarNav a svg{width:18px;height:18px}
- .qgTopbarActions{margin-left:auto}.qgAccountMenu summary{max-width:min(170px,48vw);min-height:42px;padding-right:4px}.qgAccountAvatar{width:32px;height:32px}.qgAccountCopy strong{font-size:12px}.qgAccountCopy small{font-size:9px}
- .qgLoginLink{min-height:42px;padding:0 12px;font-size:13px}
- .appShell.appShell>.content{min-height:calc(100vh - 112px);padding:0 14px 30px!important}
+ .qgTopbar{position:sticky;top:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px;min-height:60px;padding:6px 9px;background:color-mix(in srgb,var(--qg-bg) 96%,transparent)}
+ .qgTopbarNav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-column:1;grid-row:1;width:100%;gap:1px;justify-content:stretch}
+ .qgTopbarNav a{display:flex;align-items:center;justify-content:center;min-width:0;min-height:44px;padding:3px 2px;border-radius:7px;font-size:10px;font-weight:650;line-height:1.1;white-space:normal;text-align:center}
+ .qgTopbarActions{grid-column:2;grid-row:1;margin-left:0}.qgAccountMenu summary{justify-content:center;width:42px;height:44px;min-height:44px;max-width:42px;padding:3px;border-radius:50%}.qgAccountAvatar{width:34px;height:34px}
+ .qgLoginLink{min-height:42px;padding:0 10px;font-size:12px}.qgLoginLink svg{width:16px;height:16px}
+ .appShell.appShell>.content{min-height:calc(100vh - 60px);padding:0 14px 30px!important}
  .mobileNav.lobbyMobileNav{display:none!important}
  .clanLobby{gap:14px;padding:14px 0 0}
  .clanHero{min-height:330px;padding:24px 20px;border-radius:13px}
+ .clanHeroMember{min-height:88px;padding:16px 18px;border-radius:11px}
+ .clanMemberBrand{gap:10px}.clanMemberBrand span{font-size:9px;letter-spacing:.15em}.clanMemberBrand strong{font-size:1.8rem}
  .clanHero:after{background:linear-gradient(90deg,color-mix(in srgb,var(--qg-bg) 96%,transparent),color-mix(in srgb,var(--qg-bg) 78%,transparent) 58%,color-mix(in srgb,var(--qg-bg) 52%,transparent))}
  .clanHeroArt{inset:0 0 0 22%;background-position:center,right center}
  .clanHeroFlag{right:-28px;width:235px;opacity:.23}
@@ -141,8 +139,8 @@
  .clanEventCard{order:initial}
  .clanAboutCard{min-height:0;padding:19px}.clanAboutCard>p{margin-top:10px;font-size:14px}
  .clanEventCard{min-height:0}.clanEventCard .lobbyEvent{padding:20px}.clanEventCard .lobbyEvent h2{font-size:1.7rem!important}.clanEventCard .lobbyEventMeta{font-size:14px!important}
- .clanAnnouncements,.clanQuickLinks{padding:16px}.clanAnnouncements li>a{grid-template-columns:38px minmax(0,1fr);gap:10px;min-height:72px}.clanNoticeIcon{width:38px;height:38px}.clanNoticeIcon svg{width:20px;height:20px}.clanAnnouncements time{grid-column:2;grid-row:2;margin:0;font-size:11px}.clanNoticeCopy strong{font-size:14px}
- .clanQuickLinks{display:grid;grid-template-columns:1fr;gap:7px}.clanQuickLinks h2{margin-bottom:2px}
+ .clanAnnouncements{padding:16px}.clanAnnouncements li>a{grid-template-columns:38px minmax(0,1fr);gap:10px;min-height:72px}.clanNoticeIcon{width:38px;height:38px}.clanNoticeIcon svg{width:20px;height:20px}.clanAnnouncements time{grid-column:2;grid-row:2;margin:0;font-size:11px}.clanNoticeCopy strong{font-size:14px}
+ .clanEventCardEmpty{min-height:0}.clanEventCardEmpty .lobbyEvent{padding:12px 14px;gap:6px 10px}.clanEventCardEmpty .lobbyEvent .kicker{margin-left:0}.clanEventCardEmpty .lobbyEventInvitation{font-size:14px;white-space:normal}.clanEventCardEmpty .lobbyEvent>.qgAction{min-height:44px}
  .clanSubpageHero{min-height:114px;margin:14px 0 14px;padding:18px}.clanSubpageHero p{font-size:14px}
  .clanMembersPage .lobbyMemberList{grid-template-columns:minmax(0,1fr)}
  .clanAdminModules{grid-template-columns:minmax(0,1fr)}

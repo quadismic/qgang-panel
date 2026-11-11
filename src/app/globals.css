@@ -583,6 +583,7 @@ repeating-linear-gradient(90deg,transparent 0 13%,rgba(147,94,51,.045) 13.1%,tra
 /* Design Center V2 */
 .designPreview iframe{width:100%;flex:1;min-height:650px;border:1px solid #2d211a;background:#030303}
 .assetGrid{display:grid;gap:8px;padding:5px 0 15px}.assetRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px;border:1px solid #2c211a;background:#090807}.assetRow>div{min-width:0;display:grid;gap:4px}.assetRow b{font-size:9px;color:#c7b6a2}.assetRow small{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#6f655d;font-size:8px}
+.designAssetIntro{margin:0 0 8px;color:#8f8377;font-size:11px;line-height:1.55}
 .assetUpload{display:inline-flex;align-items:center;justify-content:center;min-width:86px;padding:8px 9px;border:1px solid #4b3025;background:#100c0a;color:#a99785;font-size:8px;cursor:pointer}.assetUpload:hover{border-color:#8c382a;color:#dfd1c0}.assetUpload input{display:none}
 .designHistory{display:grid;gap:6px;padding:5px 0 15px}.designHistory button{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px;border:1px solid #2b211a;background:#090807;color:#9d8f81;cursor:pointer;text-align:left}.designHistory button:hover{border-color:#6d2c22}.designHistory b{font-size:9px;font-weight:500}.designHistory span{font-size:8px;color:#a94435}.designHistory p{font-size:10px;color:#756b62}
 @media(max-width:1050px){.designPreview iframe{min-height:560px}}
@@ -1171,7 +1172,8 @@ h1,h2,h3,h4,h5,h6,.commandBrand>strong,.pageHead h1,.fireHero h1,.profileHero h1
 
 /* Q-GANG rank insignia system */
 .rankInsignia{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;line-height:1}
-.rankInsignia img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 2px 5px rgba(0,0,0,.58))}
+.rankInsignia{color:var(--qg-theme-accent,var(--qg-accent,#c9ccd2))}
+.rankInsignia svg{display:block;width:100%;height:100%;overflow:visible;fill:currentColor;filter:drop-shadow(0 1px 3px color-mix(in srgb,var(--qg-theme-background,#100c0a) 65%,transparent))}
 .rankInsignia-xs{width:23px;height:23px}
 .rankInsignia-sm{width:34px;height:34px}
 .rankInsignia-md{width:48px;height:48px}
@@ -1240,7 +1242,6 @@ h1,h2,h3,h4,h5,h6,.commandBrand>strong,.pageHead h1,.fireHero h1,.profileHero h1
 .identityPlate:hover,.identityPlate.active{transform:translateY(-1px);border-color:rgba(211,161,91,.56)!important;box-shadow:inset 3px 0 0 #d1a05f,inset 0 1px rgba(255,244,224,.04),0 0 0 1px rgba(176,119,61,.08),0 13px 32px rgba(0,0,0,.28)}
 .identityPlateInsignia{width:58px;height:58px;display:grid;place-items:center;border-right:1px solid rgba(165,116,70,.18)}
 .identityPlateInsignia .rankInsignia{width:50px;height:58px}
-.identityPlateInsignia .rankInsignia img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 7px 9px rgba(0,0,0,.42))}
 .identityPlateCopy{position:relative;z-index:1;min-width:0;display:grid;gap:6px}
 .identityPlateCopy strong{overflow:hidden;text-overflow:ellipsis;color:#eee4d6;font:600 14px/1 Georgia,"Times New Roman",serif;letter-spacing:.09em;white-space:nowrap}
 .identityPlateCopy small{overflow:hidden;text-overflow:ellipsis;color:#b18a61;font:700 8px/1.25 Inter,Arial,sans-serif;letter-spacing:.16em;white-space:nowrap}
@@ -1270,7 +1271,6 @@ h1,h2,h3,h4,h5,h6,.commandBrand>strong,.pageHead h1,.fireHero h1,.profileHero h1
 .commandRail .identityPlate:not(.identityPlateGuest){grid-template-columns:42px minmax(0,1fr) 12px!important}
 .commandRail .identityPlateInsignia{width:38px!important;height:48px!important;padding-right:5px!important}
 .commandRail .identityPlateInsignia .rankInsignia{width:36px!important;height:44px!important;max-width:36px!important}
-.commandRail .identityPlateInsignia .rankInsignia img{max-width:36px!important;max-height:44px!important}
 .commandRail .identityPlate:not(.identityPlateGuest) .identityPlateCopy small{font-size:6.2px!important;letter-spacing:.065em!important}
 
 /* Q-GANG · Global UI Scale 2.0 */
@@ -1394,7 +1394,6 @@ img,svg{max-width:100%}
 .profileV2{width:100%;max-width:1480px;margin:0 auto;padding:16px 18px 70px}
 .profileV2Hero{min-height:330px;border:1px solid rgba(151,103,67,.38);border-radius:7px;background-color:#090706;background-image:radial-gradient(circle at 80% 5%,rgba(92,29,21,.11),transparent 32%),linear-gradient(120deg,#110b08,#060606 70%);box-shadow:inset 0 0 70px rgba(0,0,0,.48)}
 .profileV2Hero .playerIdentityMain{min-height:250px;align-items:center}.profileV2Hero .playerIdentityAvatar{width:150px;height:150px;border-radius:6px;border:1px solid #7e542e;box-shadow:0 0 0 5px rgba(32,18,12,.9),0 12px 35px rgba(0,0,0,.5)}
-.rankFrame-founder .playerIdentityAvatar{border-color:#a77938;box-shadow:0 0 0 4px #25150d,0 0 0 6px rgba(151,103,45,.45),0 14px 40px rgba(0,0,0,.55)}
 .profileV2Hero .playerIdentityCopy h1{font-size:clamp(42px,5vw,72px);letter-spacing:.015em}.profileV2Hero .playerIdentityCopy>span{font-size:15px}.profileV2Hero .playerConnect{margin-left:auto;align-self:end;padding-bottom:16px}
 .profileV2Grid{grid-template-columns:minmax(0,1.75fr) minmax(330px,.92fr)!important;gap:26px!important;margin-top:26px}.profileV2Main,.profileV2Side{gap:24px!important}.profileV2 .playerPanel{border-radius:6px;border-color:rgba(151,103,67,.32);background:radial-gradient(circle at 100% 0,rgba(90,28,18,.08),transparent 34%),linear-gradient(145deg,rgba(15,11,9,.98),rgba(6,6,6,.99));box-shadow:inset 0 0 28px rgba(0,0,0,.2)}
 .profileV2About{min-height:190px}.profileV2About .playerBio{font-size:15px;line-height:1.75}.profileV2Dossier{min-height:240px}.profileV2 .playerDossierGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.profileV2 .playerDossierGrid>div{min-height:86px}

@@ -23,8 +23,8 @@
 .qgInput[type=file]{width:100%;padding:6px;overflow:hidden;font-size:13px}
 .qgInput[type=file]::file-selector-button{min-height:32px;margin-right:10px;padding:6px 10px;border:1px solid var(--qg-action-border);border-radius:4px;background:#382417;color:#ead0af;font:inherit;cursor:pointer}
 .qgButton-primary:hover{background:#4b3020;border-color:#bd965c}.qgButton-destructive:hover{background:#29140e;border-color:#a15c4b;color:#f0b2a1}
-.qgLoadingState{display:flex;align-items:center;gap:12px;padding:16px;color:var(--qg-muted);font:13px/1.6 var(--qg-ui-font)}
-.qgLoadingState>span{width:16px;height:16px;flex-shrink:0;border:2px solid var(--qg-divider);border-top-color:var(--qg-focus);border-radius:50%;animation:qgRouteSpin .8s linear infinite}
+.qgLoadingState{display:flex;align-items:center;gap:12px;padding:16px;color:var(--qg-theme-muted,var(--qg-muted));font:13px/1.6 var(--qg-ui-font)}
+.qgLoadingState .qgLoadingDiamonds{flex:0 0 58px}
 .qgEditorLoading{min-height:180px;box-sizing:border-box;border:1px solid var(--qg-action-border);border-radius:var(--qg-action-radius);background:var(--qg-surface-base)}
 .qgEditor .qgEditorToolbar summary{box-sizing:border-box;display:flex;align-items:center;min-height:44px;min-width:44px}
 .qgEditor-compact .qgWritingArea{min-height:72px;padding:12px 14px}.qgEditor-standard .qgWritingArea{min-height:calc(var(--editor-lines,5)*1.65em)}.qgEditor-editorial .qgWritingArea{min-height:calc(var(--editor-lines,16)*1.65em)}
@@ -44,7 +44,7 @@
 .studioForm details>summary:focus-visible,.announcementPublish>summary:focus-visible{outline:2px solid var(--qg-focus);outline-offset:3px}
 .qaeConsole .qgInput,.qaeConsole .qgTextarea,.qaeComposer .qgTextarea{width:100%}
 .qgMetadata,.announcementDecisionMeta,.budgetEntryMeta,.studioList small{font:12px/1.5 var(--qg-ui-font);color:var(--qg-muted)}
-@media(prefers-reduced-motion:reduce){.qgLoadingState>span{animation:none}}
+@media(prefers-reduced-motion:reduce){.qgLoadingState .qgLoadingDiamonds path{animation:none;opacity:.8}}
 @media(max-width:760px){.memberProfileEditor .identityFieldGrid{grid-template-columns:minmax(0,1fr)}.memberProfileEditor .identitySettingsForm{padding:16px}.memberProfileEditor .identitySettingsForm>.qgButton{width:100%;margin:0 0 12px}.memberProfileEditor .identitySettingsForm>.qgAction{width:100%}.qgEditor-editorial .qgWritingArea{min-height:240px}.qgInput,.qgSelect,.qgTextarea{font-size:16px}.accessActions .qgButton{flex:1 1 180px}.profileImageField>div{flex-wrap:wrap}}
 
 /* Targeted Q-GANG correction package: preserve heraldry, simplify operational surfaces. */

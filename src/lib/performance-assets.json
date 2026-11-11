@@ -67,57 +67,6 @@
       "bytes": 425056
     }
   ],
-  "/assets/ranks/leader-crown.png": [
-    {
-      "width": 240,
-      "src": "/perf/qg-bbff66cd2211-240.webp",
-      "bytes": 12728
-    },
-    {
-      "width": 480,
-      "src": "/perf/qg-47225665bb5b-480.webp",
-      "bytes": 32474
-    },
-    {
-      "width": 960,
-      "src": "/perf/qg-89401a08ceaa-960.webp",
-      "bytes": 87710
-    }
-  ],
-  "/assets/ranks/captain-frame.png": [
-    {
-      "width": 240,
-      "src": "/perf/qg-c5b4db9d00c6-240.webp",
-      "bytes": 17002
-    },
-    {
-      "width": 480,
-      "src": "/perf/qg-80da62833469-480.webp",
-      "bytes": 45908
-    },
-    {
-      "width": 960,
-      "src": "/perf/qg-7c995f4b06e0-960.webp",
-      "bytes": 141820
-    }
-  ],
-  "/assets/ranks/leader-frame.png": [
-    {
-      "width": 240,
-      "src": "/perf/qg-514e37ed7376-240.webp",
-      "bytes": 20176
-    },
-    {
-      "width": 480,
-      "src": "/perf/qg-ce036699990c-480.webp",
-      "bytes": 53050
-    },
-    {
-      "width": 960,
-      "src": "/perf/qg-cd2ae678b6a0-960.webp",
-      "bytes": 153012
-    }
-  ],
   "/brand/qgang-emblem.webp": [
     {
       "width": 240,

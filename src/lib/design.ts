@@ -4,6 +4,7 @@ export type DesignSettings={
  primary:string; bone:string; bronze:string; theme:ThemeSettings;
  sidebarWidth:number; sidebarEmblem:number;
  heroOverlay:number; quadScale:number; quadY:number;
+ homeHeroImage:string;
  commandBackground:string;quadSrc:string;emblemSrc:string;loginBackground:string;
  roomCodex:string;roomRegistry:string;roomDecrees:string;roomTribunal:string;roomTreasury:string;roomEvents:string;
  council:CouncilSlot[];
@@ -15,7 +16,7 @@ const councilDefaultSrc:Record<string,string>={"left-1":"/brand/command/council-
 const defaultCouncil:CouncilSlot[]=councilIds.map(id=>({id,enabled:false,scale:100,x:0,y:0,src:councilDefaultSrc[id]}));
 export const defaultDesign:DesignSettings={
  theme:defaultTheme,primary:"#a71b18",bone:"#e8ddcb",bronze:"#9a7655",sidebarWidth:182,sidebarEmblem:58,
- heroOverlay:42,quadScale:100,quadY:0,commandBackground:"/brand/command/background.webp",quadSrc:"/brand/command/quad.webp",
+ heroOverlay:42,quadScale:100,quadY:0,homeHeroImage:"/brand/home/lobby-hero.webp",commandBackground:"/brand/command/background.webp",quadSrc:"/brand/command/quad.webp",
  emblemSrc:"/brand/qgang-emblem.webp",loginBackground:"/brand/login/background.webp",
  roomCodex:"/brand/rooms/codex.webp",roomRegistry:"/brand/rooms/registry.webp",roomDecrees:"/brand/rooms/decrees.webp",roomTribunal:"/brand/rooms/tribunal.webp",roomTreasury:"/brand/rooms/treasury.webp",roomEvents:"/brand/rooms/registry.webp",
  council:defaultCouncil,loginPanelWidth:510,loginEmblem:92,loginOverlay:42,
@@ -36,6 +37,7 @@ export function normalizeDesign(v:any):DesignSettings{
   theme:normalizeTheme(v?.theme),primary:color(v?.primary,defaultDesign.primary),bone:color(v?.bone,defaultDesign.bone),bronze:color(v?.bronze,defaultDesign.bronze),
   sidebarWidth:n(v?.sidebarWidth,182,160,260),sidebarEmblem:n(v?.sidebarEmblem,58,36,100),
   heroOverlay:n(v?.heroOverlay,42,0,80),quadScale:n(v?.quadScale,oldScale,65,140),quadY:n(v?.quadY,v?.quadTop??0,-30,30),
+  homeHeroImage:path(v?.homeHeroImage,defaultDesign.homeHeroImage),
   commandBackground:path(v?.commandBackground,defaultDesign.commandBackground),quadSrc:path(v?.quadSrc,defaultDesign.quadSrc),emblemSrc:path(v?.emblemSrc,defaultDesign.emblemSrc),loginBackground:path(v?.loginBackground,defaultDesign.loginBackground),
   roomCodex:path(v?.roomCodex,defaultDesign.roomCodex),roomRegistry:path(v?.roomRegistry,defaultDesign.roomRegistry),roomDecrees:path(v?.roomDecrees,defaultDesign.roomDecrees),roomTribunal:path(v?.roomTribunal,defaultDesign.roomTribunal),roomTreasury:path(v?.roomTreasury,defaultDesign.roomTreasury),roomEvents:path(v?.roomEvents,defaultDesign.roomEvents),
   council,loginPanelWidth:n(v?.loginPanelWidth,510,360,720),loginEmblem:n(v?.loginEmblem,92,48,160),loginOverlay:n(v?.loginOverlay,42,0,80),
