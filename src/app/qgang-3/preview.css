@@ -136,3 +136,12 @@
 .qg3-header .qg3-ranklabel strong,.qg3-header .qg3-rank-leader .qg3-ranklabel strong{font-size:13px;color:#f7f8fa;background:none;border:0;padding:0;font-weight:800;letter-spacing:.025em}
 .qg3-header .qg3-rankchevron{font-size:19px;font-weight:400;color:#cbd1d9;line-height:1;transform:translateY(-3px)}
 @media(max-width:650px){.qg3-header .qg3-rankcard{padding:5px 8px;gap:7px}.qg3-header .qg3-rankportrait .qg3-avatar{width:30px;height:30px}.qg3-header .qg3-ranklabel strong{font-size:11px}.qg3-header .qg3-ranklabel{gap:5px}}
+
+/* Reference-matched red outline icon system */
+.qg3-panelhead h2{display:flex;align-items:center;gap:15px}
+.qg3-panelhead h2:before{display:none!important}
+.qg3-panelhead h2 svg{flex:none;color:#ed2945;filter:drop-shadow(0 0 5px rgba(221,30,56,.12))}
+.qg3-quickicon{display:flex;align-items:center;justify-content:center;color:#ef2c48;font-size:initial}
+.qg3-activitysymbol{display:flex;align-items:center;justify-content:center;color:#f02a46;font-size:initial}
+.qg3-quicklink:hover .qg3-quickicon svg{filter:drop-shadow(0 0 8px rgba(239,44,72,.45))}
+@media(max-width:650px){.qg3-panelhead h2{gap:9px}.qg3-panelhead h2 svg{width:23px;height:23px}.qg3-quickicon svg{width:32px;height:32px}}
