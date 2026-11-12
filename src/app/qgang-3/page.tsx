@@ -1,7 +1,9 @@
 import Link from "next/link";
+import {Inter} from "next/font/google";
 import {createClient,getCurrentUser} from "@/lib/supabase/server";
 import "./preview.css";
 
+const inter=Inter({subsets:["latin"],display:"swap",variable:"--font-qgang-modern"});
 export const dynamic="force-dynamic";
 export const metadata={title:"Q-GANG 3.0 · Önizleme"};
 type EventRow={id:string;title:string;description:string|null;starts_at:string;cover_url:string|null;location:string|null;type_id:string|null;status:string};
@@ -15,7 +17,7 @@ export default async function QGang3Preview(){
   user?supabase.from("community_events").select("id,title,description,starts_at,cover_url,location,type_id,status").eq("status","completed").order("starts_at",{ascending:false}).limit(4):Promise.resolve({data:[]}),
   supabase.from("announcements").select("id,title,published_at").order("published_at",{ascending:false}).limit(3)
  ]);
- return <main className="qg3">
+ return <main className={`qg3 ${inter.variable}`}>
   <header className="qg3-header"><Link href="/qgang-3" className="qg3-brand"><span className="qg3-mark">◆</span><span>Q-GANG<small>KARDEŞLİK, DAİMA.</small></span></Link><nav aria-label="Ana menü"><a href="#etkinlikler">Etkinlikler</a><a href="#duyurular">Duyurular</a><Link href="/topluluk">Topluluk</Link><Link href="/kodeks">Kodeks</Link></nav><Link className="qg3-login" href={user?"/account":"/login"}>{user?"Profilim":"Giriş yap"}</Link></header>
   <section id="etkinlikler" className="qg3-section"><div className="qg3-sectionhead"><div><span className="qg3-eyebrow">BİRLİKTE</span><h2>Etkinlikler ve klan faaliyetleri</h2></div><Link href="/etkinlikler">Etkinlik arşivi ↗</Link></div>
    {!user?<div className="qg3-empty"><strong>Etkinlikleri görmek için giriş yapın.</strong><p>Topluluk etkinlikleri yalnızca yetkili üyeler tarafından görüntülenebilir.</p><Link href="/login">Giriş yap →</Link></div>:error?<p className="qg3-empty" role="alert">Etkinlikler şu anda yüklenemedi.</p>:(events??[]).length===0?<div className="qg3-empty"><strong>Şimdilik planlanmış etkinlik yok.</strong><p>Yeni etkinlikler yayımlandığında burada görünecek.</p></div>:<div className="qg3-grid">{(events as EventRow[]).map(event=><article className="qg3-card" key={event.id}><div className="qg3-cover">{event.cover_url?<img src={event.cover_url} alt="" loading="lazy"/>:<span aria-hidden="true">QG</span>}</div><div className="qg3-cardbody"><span className="qg3-tag">{event.type_id??"ETKİNLİK"}</span><h3>{event.title}</h3><time dateTime={event.starts_at}>{formatDate(event.starts_at)}</time>{event.location&&<p className="qg3-place">{event.location}</p>}<Link href="/etkinlikler">Etkinliklere git <span aria-hidden="true">→</span></Link></div></article>)}</div>}
