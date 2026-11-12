@@ -4,6 +4,7 @@ import {brandTheme} from "@/config/brand-theme";
 import {createClient,getCurrentUser} from "@/lib/supabase/server";
 import "./preview.css";
 import {EventJoinButton} from "./EventJoinButton";
+import {DecisionList} from "./DecisionList";
 
 export const dynamic="force-dynamic";
 export const metadata={title:"Q-GANG · Topluluk merkezi"};
@@ -23,10 +24,11 @@ export default async function QGang3Preview(){
  const rankMap:Record<string,{name:string;tone:string}>={founder:{name:"LİDER",tone:"leader"},admin:{name:"VEKİLHARÇ",tone:"deputy"},moderator:{name:"KAPTAN",tone:"captain"},creator:{name:"TEĞMEN",tone:"lieutenant"},member:{name:"ÜYE",tone:"member"}};
  const rank=rankMap[profile.role??""]??{name:"ÜYE",tone:"member"};
  const now=new Date().toISOString();
- const [{data:events},{data:history},{data:types}]=await Promise.all([
+ const [{data:events},{data:history},{data:types},{data:decisions}]=await Promise.all([
   user?supabase.from("community_events").select("id,title,starts_at,cover_url,type_id,legacy_type,status").eq("status","published").gte("starts_at",now).order("starts_at",{ascending:true}).limit(3):Promise.resolve({data:[]}),
   user?supabase.from("community_events").select("id,title,starts_at,cover_url,type_id,legacy_type,status").eq("status","completed").order("starts_at",{ascending:false}).limit(4):Promise.resolve({data:[]}),
-  supabase.from("event_types").select("id,name")
+  supabase.from("event_types").select("id,name"),
+  supabase.from("qgang_decisions").select("id,title,body,category,visibility,status,decision_year,decision_number,published_at,repeal_reason").in("status",["published","repealed"]).order("published_at",{ascending:false}).limit(3)
  ]);
  const typeNames=Object.fromEntries((types??[]).map(t=>[t.id,t.name]));
  const ids=(events??[]).map(e=>e.id);
@@ -48,7 +50,7 @@ export default async function QGang3Preview(){
    </section>
    <section className="qg3-activity qg3-panel"><div className="qg3-panelhead"><h2>Son Faaliyetler</h2><Link href="/etkinlikler">Tüm faaliyetler →</Link></div><div className="qg3-activityitems">{!user?<p>Faaliyetleri görmek için giriş yapın.</p>:(history??[]).length===0?<p>Henüz tamamlanan faaliyet bulunmuyor.</p>:(history as EventRow[]).map(e=><div className="qg3-activityitem" key={e.id}><span className="qg3-activitysymbol">◇</span><span><strong>{eventName(e,typeNames)}</strong><small>{shortDate(e.starts_at)}</small></span></div>)}</div></section>
    <div className="qg3-bottomgrid">
-    <section className="qg3-panel"><div className="qg3-panelhead"><h2>Kararlar</h2></div><p className="qg3-muted">Numaralandırılmış icra kararları burada yayımlanacak.</p><p className="qg3-subtle">Karar kayıtları için veri kaynağı hazırlanıyor.</p></section>
+    <section className="qg3-panel"><div className="qg3-panelhead"><h2>Kararlar</h2><Link href="/qgang-3/kararlar">Tüm kararlar →</Link></div><DecisionList items={decisions??[]}/></section>
     <section className="qg3-panel qg3-actionpanel"><div className="qg3-panelhead"><h2>Arşiv</h2></div><p>Kararları, geçmiş etkinlikleri ve yayınları tek aramayla bulun.</p><form className="qg3-archiveform" action="/qgang-3/arsiv" method="get"><input name="q" type="search" placeholder="Arşivde ara..." aria-label="Arşivde ara"/><button type="submit">Ara →</button></form><Link className="qg3-archivelink" href="/qgang-3/arsiv">Tüm arşivi görüntüle →</Link></section>
     <section className="qg3-panel qg3-actionpanel"><div className="qg3-panelhead"><h2>Kurallar</h2></div><p>Topluluğun ilke, kural ve işleyiş esasları.</p><Link className="qg3-action" href="/kodeks">Kuralları incele →</Link></section>
     <section className="qg3-panel qg3-actionpanel"><div className="qg3-panelhead"><h2>Hiyerarşi</h2></div><p>Organizasyon yapısı ve görevler.</p><Link className="qg3-action" href="/topluluk">Hiyerarşiyi incele →</Link></section>
