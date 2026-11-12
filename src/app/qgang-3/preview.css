@@ -61,3 +61,38 @@
 .qg3-footer{margin-top:26px;padding-top:20px}
 @media(max-width:900px){.qg3-bottomgrid{grid-template-columns:1fr 1fr}.qg3-decisionspanel,.qg3-archivepanel,.qg3-rulespanel,.qg3-hierarchypanel{grid-column:auto;grid-row:auto}.qg3-eventempty{flex-wrap:wrap}.qg3-emptycta{margin-left:99px}}
 @media(max-width:650px){.qg3-header{min-height:76px;padding:14px 16px 8px}.qg3-brandlogo{height:45px}.qg3-heading{padding:22px 16px 26px}.qg3-heading h1{font-size:29px}.qg3-heading p{font-size:12px}.qg3-content{padding:16px 16px 28px}.qg3-panel{padding:17px}.qg3-eventempty{gap:13px;padding:19px;min-height:0}.qg3-emptyemblem{flex-basis:48px;height:48px;font-size:27px}.qg3-emptycopy{flex-basis:calc(100% - 65px)}.qg3-emptycopy strong{font-size:16px}.qg3-emptycopy p{font-size:12px}.qg3-emptycta{margin-left:0;width:100%}.qg3-bottomgrid{grid-template-columns:1fr}.qg3-activityitems{grid-template-columns:repeat(2,minmax(0,1fr))}.qg3-activityitem{padding:10px 8px}.qg3-rulespanel,.qg3-hierarchypanel{min-height:0!important}.qg3-action{align-self:stretch}.qg3-footer{margin-top:20px}}
+
+/* Q-GANG home: approved editorial layout */
+.qg3-scene{min-height:365px;background:radial-gradient(ellipse at 80% 42%,rgba(140,43,53,.35),transparent 40%),linear-gradient(110deg,#090f16 10%,#131d28 68%,#0b1119);border-bottom:1px solid #273541}
+.qg3-scene:before{inset:0 0 0 45%;background-image:linear-gradient(90deg,#0b121b 0%,rgba(11,18,27,.3) 65%,rgba(11,18,27,.4)),var(--qg3-hero-image,none);opacity:.8}
+.qg3-header{max-width:1320px;padding:22px 30px 8px}
+.qg3-heading{max-width:1320px;padding:44px 30px 45px}
+.qg3-heading h1{font-size:clamp(38px,4.6vw,62px);letter-spacing:-.055em}
+.qg3-aboutbox{max-width:665px;margin-top:25px;border:1px solid #a52e40;border-left:3px solid #e52e46;border-radius:9px;padding:22px 25px;background:linear-gradient(120deg,rgba(16,25,35,.96),rgba(18,27,38,.87));box-shadow:0 14px 35px #0004}
+.qg3-aboutbox p{font-size:15px;line-height:1.8;color:#d5dce5;margin:0}
+.qg3-content{max-width:1320px;padding:24px 30px 35px}
+.qg3-maincolumns{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.9fr);gap:16px;align-items:stretch}
+.qg3-maincolumns>.qg3-panel{margin:0;min-width:0;padding:21px 23px}
+.qg3-eventssection .qg3-eventgrid{display:flex;flex-direction:column;gap:10px}
+.qg3-eventssection .qg3-event{min-height:180px}
+.qg3-eventssection .qg3-eventempty{min-height:185px;padding:22px;gap:15px}
+.qg3-eventssection .qg3-emptyemblem{flex-basis:55px;height:55px;font-size:30px}
+.qg3-eventssection .qg3-emptycopy strong{font-size:17px}
+.qg3-eventssection .qg3-emptycta{margin:0;font-size:11px;padding:10px 12px}
+.qg3-activityitems{display:flex;flex-direction:column}
+.qg3-activityitem{border-right:0;border-bottom:1px solid #2b3947;padding:14px 5px;min-height:58px}
+.qg3-activityitem:last-child{border-bottom:0}
+.qg3-activityitem strong{font-size:14px}
+.qg3-activityitem small{font-size:12px}
+.qg3-activitysymbol{color:#e43148;font-size:24px}
+.qg3-bottomgrid{display:block;margin-top:16px}
+.qg3-bottomgrid>.qg3-panel{min-height:135px;padding:22px 25px}
+.qg3-decisionspanel{width:100%}
+.qg3-quicklinks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:17px}
+.qg3-quicklink{display:flex;align-items:center;gap:17px;min-height:110px;padding:22px 25px;border:1px solid #3b4653;border-top-color:#ac3648;border-radius:11px;background:radial-gradient(ellipse at 0 100%,rgba(112,31,46,.18),transparent 60%),linear-gradient(120deg,#18222e,#101923);transition:border-color .2s,transform .2s,background .2s}
+.qg3-quicklink:hover{transform:translateY(-2px);border-color:#e23b50;background:linear-gradient(120deg,#2b1d2a,#141f2a)}
+.qg3-quickicon{font-size:32px;line-height:1;color:#f03b52;min-width:37px;text-align:center}
+.qg3-quicklink strong{font-size:21px;font-weight:750}
+.qg3-quickarrow{margin-left:auto;color:#e4edf5;font-size:24px}
+@media(max-width:950px){.qg3-maincolumns{grid-template-columns:1fr}.qg3-eventssection .qg3-eventgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.qg3-eventssection .qg3-eventempty{grid-column:1/-1}.qg3-activityitems{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.qg3-activityitem:nth-child(odd){border-right:1px solid #2b3947}}
+@media(max-width:650px){.qg3-scene{min-height:0}.qg3-heading{padding:25px 16px 30px}.qg3-heading h1{font-size:37px}.qg3-aboutbox{margin-top:19px;padding:17px}.qg3-aboutbox p{font-size:13px;line-height:1.7}.qg3-content{padding:16px}.qg3-maincolumns{gap:12px}.qg3-maincolumns>.qg3-panel{padding:16px}.qg3-eventssection .qg3-eventgrid{display:flex}.qg3-eventssection .qg3-eventempty{flex-wrap:wrap}.qg3-eventssection .qg3-emptycta{width:100%}.qg3-activityitems{grid-template-columns:1fr}.qg3-activityitem:nth-child(odd){border-right:0}.qg3-bottomgrid{margin-top:12px}.qg3-bottomgrid>.qg3-panel{padding:17px}.qg3-quicklinks{grid-template-columns:1fr;gap:10px;margin-top:12px}.qg3-quicklink{min-height:75px;padding:16px 20px}.qg3-quicklink strong{font-size:18px}.qg3-quickicon{font-size:25px}.qg3-footer{margin-top:18px}}
