@@ -145,3 +145,20 @@
 .qg3-activitysymbol{display:flex;align-items:center;justify-content:center;color:#f02a46;font-size:initial}
 .qg3-quicklink:hover .qg3-quickicon svg{filter:drop-shadow(0 0 8px rgba(239,44,72,.45))}
 @media(max-width:650px){.qg3-panelhead h2{gap:9px}.qg3-panelhead h2 svg{width:23px;height:23px}.qg3-quickicon svg{width:32px;height:32px}}
+
+/* 3.0 approved compact layout and operator entry */
+.qg3-scene{position:relative;isolation:isolate;background:#080d14;overflow:hidden;min-height:310px}
+.qg3-scene:after{content:"";position:absolute;inset:-4%;z-index:-1;pointer-events:none;background-image:linear-gradient(90deg,rgba(8,13,20,.94),rgba(8,13,20,.66) 48%,rgba(8,13,20,.12)),url("/brand/qgang-soldiers.png");background-size:cover;background-position:center 35%;animation:qg3-breath 80s ease-in-out infinite alternate}
+@keyframes qg3-breath{from{transform:scale(1)}to{transform:scale(1.05)}}
+.qg3-header{min-height:65px;padding:12px 26px 6px}
+.qg3-brand{gap:12px}.qg3-brandlogo{height:43px;max-width:85px}.qg3-brandword{font-size:23px;font-weight:900;letter-spacing:.04em;color:white}
+.qg3-header-profile{font-size:12px;color:#d5dce5!important;padding:8px 12px;border:1px solid #45505c;border-radius:5px;background:#111b26}
+.qg3-heading{padding:30px 26px 30px}.qg3-heading h1{font-size:clamp(31px,3.2vw,47px)}
+.qg3-aboutbox{margin-top:14px;padding:15px 19px;max-width:630px}.qg3-aboutbox p{font-size:13px;line-height:1.65}
+.qg3-content{padding:15px 26px 28px}.qg3-panel{padding:16px 18px}.qg3-maincolumns>.qg3-panel{padding:16px 18px}.qg3-panelhead{padding-bottom:10px;margin-bottom:10px}.qg3-panelhead h2{font-size:19px}.qg3-eventempty{min-height:125px}.qg3-eventssection .qg3-eventempty{min-height:125px}.qg3-eventssection .qg3-event{min-height:130px}.qg3-quicklink{min-height:75px;padding:14px 18px}.qg3-quicklink strong{font-family:var(--qg-ui),Arial,sans-serif;font-size:17px;font-weight:850;letter-spacing:.01em}.qg3-quickicon svg{width:30px;height:30px}.qg3-bottomgrid>.qg3-panel{padding:16px 18px}
+.qg3-operatorcard{display:flex;align-items:center;gap:15px;min-height:90px;padding:12px 17px;margin-bottom:14px;border:1px solid #813044;border-left:3px solid #e33b52;background:linear-gradient(110deg,#221923,#101923 55%,#0b111a);border-radius:7px;transition:border-color .2s,background .2s}
+.qg3-operatorcard:hover{border-color:#e83d55;background:linear-gradient(110deg,#351a28,#14202d)}.qg3-opavatar{width:57px;height:57px;flex:none;display:grid;place-items:center;border:1px solid #bc3c50;background:#26313e;font-size:25px;font-weight:900;color:#f25c72;overflow:hidden}.qg3-opavatar img{width:100%;height:100%;object-fit:cover}
+.qg3-opidentity{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0}.qg3-opidentity small{font-size:9px;color:#d14c61;letter-spacing:.16em;font-weight:800}.qg3-opidentity>strong{font-size:19px;letter-spacing:.025em;overflow-wrap:anywhere}.qg3-oprank{font-size:10px;font-weight:800;padding:2px 10px;border:1px solid #ac3449;color:#ff8fa0;background:#371a25;border-radius:3px}.qg3-opright{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:8px;color:#aeb7c4;font-size:10px;letter-spacing:.09em}.qg3-opright b{color:#ff8495;font-size:11px}
+.qg3-emptyemblem{background:radial-gradient(circle,#3a2533,#121b26);border-color:#874052;color:#e64159}.qg3-emptycopy strong{font-family:var(--qg-ui),Arial,sans-serif;font-size:16px}
+@media(prefers-reduced-motion:reduce){.qg3-scene:after{animation:none}}
+@media(max-width:700px){.qg3-scene{min-height:0}.qg3-scene:after{background-position:center,62% center}.qg3-header{padding:10px 14px}.qg3-brandlogo{height:35px;max-width:65px}.qg3-brandword{font-size:18px}.qg3-heading{padding:22px 14px}.qg3-heading h1{font-size:34px}.qg3-content{padding:12px 14px}.qg3-operatorcard{padding:10px;gap:10px}.qg3-opavatar{width:48px;height:48px}.qg3-opright>span{display:none}.qg3-opright b{font-size:9px}.qg3-quicklink strong{font-size:17px}}
