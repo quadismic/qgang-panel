@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {redirect} from "next/navigation";
 import {Inter} from "next/font/google";
 import {createClient,getCurrentUser} from "@/lib/supabase/server";
 import "./preview.css";
@@ -15,6 +16,11 @@ const eventName=(event:EventRow,types:Record<string,string>)=>types[event.type_i
 export default async function QGang3Preview(){
  const supabase=await createClient();
  const user=await getCurrentUser();
+ if(!user)redirect("/login?next=/qgang-3");
+ const {data:profile}=await supabase.from("profiles").select("onboarding_completed_at,avatar_url,handle,is_suspended").eq("id",user.id).maybeSingle();
+ if(!profile?.onboarding_completed_at)redirect("/onboarding?next=/qgang-3");
+ const {data:membership}=await supabase.from("community_memberships").select("status").eq("user_id",user.id).eq("status","active").maybeSingle();
+ if(!membership||profile.is_suspended)redirect("/qgang-3/basvuru");
  const now=new Date().toISOString();
  const [{data:events},{data:history},{data:announcements},{data:types}]=await Promise.all([
   user?supabase.from("community_events").select("id,title,starts_at,cover_url,type_id,legacy_type,status").eq("status","published").gte("starts_at",now).order("starts_at",{ascending:true}).limit(3):Promise.resolve({data:[]}),
@@ -28,7 +34,7 @@ export default async function QGang3Preview(){
  const counts=(responses??[]).reduce((a,r)=>({...a,[r.event_id]:(a[r.event_id]??0)+1}),{} as Record<string,number>);
  return <main className={`qg3 ${inter.variable}`}>
   <div className="qg3-scene">
-   <header className="qg3-header"><Link href="/qgang-3" className="qg3-brand"><span className="qg3-mark">◆</span><span>Q-GANG<small>KARDEŞLİK, DAİMA.</small></span></Link><Link className="qg3-login" href={user?"/account":"/login"}>{user?"Profilim":"Giriş yap"}</Link></header>
+   <header className="qg3-header"><Link href="/qgang-3" className="qg3-brand"><span className="qg3-mark">◆</span><span>Q-GANG<small>KARDEŞLİK, DAİMA.</small></span></Link><Link className="qg3-login" href="/profil" aria-label="Profilim">{profile.avatar_url?<img src={profile.avatar_url} alt="" className="qg3-avatar" referrerPolicy="no-referrer"/>:<span className="qg3-avatar qg3-avatarblank">{(profile.handle??"Q").slice(0,1).toUpperCase()}</span>}</Link></header>
    <div className="qg3-heading"><h1>Yaklaşan Etkinlikler</h1><p>Katıl, oyna, buluş, üret.</p></div>
   </div>
   <div className="qg3-content">
