@@ -121,3 +121,8 @@
 .qg3-decisiontitle{font-size:14px}
 .qg3-rankcard{font-family:var(--qg-ui)}
 @media(max-width:650px){.qg3-heading h1{font-size:38px}.qg3-panelhead h2{font-size:21px}.qg3-quicklink strong{font-size:20px}.qg3-eventinfo h2{font-size:18px}.qg3-aboutbox p{font-size:13px}}
+
+/* Original uploaded brand assets */
+.qg3-scene{background-image:linear-gradient(90deg,rgba(8,13,20,.94) 0%,rgba(8,13,20,.67) 46%,rgba(8,13,20,.14) 100%),url("/brand/qgang-soldiers.png");background-position:center,center 35%;background-size:cover;background-repeat:no-repeat}
+.qg3-brandlogo{width:auto;height:60px;max-width:180px;object-fit:contain;object-position:left center}
+@media(max-width:700px){.qg3-scene{background-image:linear-gradient(180deg,rgba(8,13,20,.55),rgba(8,13,20,.93) 46%,#080d14 100%),url("/brand/qgang-soldiers.png");background-position:center,62% top;background-size:cover,auto 410px;background-repeat:no-repeat}.qg3-brandlogo{height:46px;max-width:135px}}
