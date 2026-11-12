@@ -103,3 +103,21 @@
 .qg3-brandlogo{height:62px;max-width:115px;filter:drop-shadow(0 2px 12px rgba(0,0,0,.65))}
 .qg3-aboutbox{backdrop-filter:blur(6px)}
 @media(max-width:650px){.qg3-scene{background-position:64% center}.qg3-brandlogo{height:47px;max-width:95px}}
+
+/* Approved cinematic reference: editorial display type, functional UI in Inter */
+.qg3{--qg-display:Georgia,"Times New Roman",serif;--qg-ui:var(--font-qgang),Inter,Arial,sans-serif;font-family:var(--qg-ui);background:#080d14}
+.qg3-heading h1,.qg3-panelhead h2,.qg3-quicklink strong,.qg3-emptycopy strong{font-family:var(--qg-display);font-weight:700;letter-spacing:.015em}
+.qg3-heading h1{font-size:clamp(40px,4.5vw,68px);letter-spacing:.035em;line-height:1.07;border-left:0;padding-left:0;text-shadow:0 3px 16px #0009}
+.qg3-heading .qg3-eyebrow{font-family:var(--qg-ui);font-size:11px;letter-spacing:.2em;color:#d6b8bd}
+.qg3-aboutbox{border:1px solid rgba(191,65,82,.6);border-left:3px solid #d52c43;background:linear-gradient(100deg,rgba(8,13,20,.95),rgba(17,24,33,.81));box-shadow:0 14px 35px #0007}
+.qg3-aboutbox p{font-family:var(--qg-ui);font-size:14px;line-height:1.85;letter-spacing:.008em}
+.qg3-panel{background:linear-gradient(145deg,rgba(23,31,41,.96),rgba(12,19,27,.98));border-color:#37414b}
+.qg3-panelhead h2{font-size:23px;letter-spacing:.005em}
+.qg3-panelhead h2:before{background:#c9273d}
+.qg3-quicklink{border:1px solid #4c4148;background:linear-gradient(120deg,#1b2029,#111821)}
+.qg3-quicklink strong{font-size:23px}
+.qg3-quickicon{color:#c9273d}
+.qg3-eventinfo h2{font-family:var(--qg-display);font-size:22px;letter-spacing:0}
+.qg3-decisiontitle{font-size:14px}
+.qg3-rankcard{font-family:var(--qg-ui)}
+@media(max-width:650px){.qg3-heading h1{font-size:38px}.qg3-panelhead h2{font-size:21px}.qg3-quicklink strong{font-size:20px}.qg3-eventinfo h2{font-size:18px}.qg3-aboutbox p{font-size:13px}}
