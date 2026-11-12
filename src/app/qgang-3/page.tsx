@@ -3,6 +3,7 @@ import {redirect} from "next/navigation";
 import {brandTheme} from "@/config/brand-theme";
 import {createClient,getCurrentUser} from "@/lib/supabase/server";
 import "./preview.css";
+import {EventJoinButton} from "./EventJoinButton";
 
 export const dynamic="force-dynamic";
 export const metadata={title:"Q-GANG · Topluluk merkezi"};
@@ -31,8 +32,13 @@ export default async function QGang3Preview(){
  ]);
  const typeNames=Object.fromEntries((types??[]).map(t=>[t.id,t.name]));
  const ids=(events??[]).map(e=>e.id);
- const {data:responses}=user&&ids.length?await supabase.from("event_responses").select("event_id,response").in("event_id",ids).eq("response","going"): {data:[] as ResponseRow[]};
- const counts=(responses??[]).reduce((a,r)=>({...a,[r.event_id]:(a[r.event_id]??0)+1}),{} as Record<string,number>);
+ const {data:responses}=ids.length?await supabase.from("event_responses").select("event_id,response").eq("user_id",user.id).in("event_id",ids):{data:[] as ResponseRow[]};
+ const ownJoined=new Set((responses??[]).filter(r=>r.response==="going").map(r=>r.event_id));
+ const countEntries=await Promise.all(ids.map(async id=>{
+  const {data,error}=await supabase.rpc("qgang_event_attendee_count",{p_event_id:id});
+  return [id,error?null:Number(data??0)] as const;
+ }));
+ const counts=Object.fromEntries(countEntries);
  return <main className="qg3">
   <div className="qg3-scene">
    <header className="qg3-header"><Link href="/qgang-3" className="qg3-brand"><img className="qg3-brandlogo" src={brandTheme.emblem} alt="Q-GANG"/></Link><Link className={`qg3-rankcard qg3-rank-${rank.tone}`} href="/profil" aria-label={`Profilim, yetki seviyesi ${rank.name}`}><span className="qg3-rankportrait">{profile.avatar_url?<img src={profile.avatar_url} alt="" className="qg3-avatar" referrerPolicy="no-referrer"/>:<span className="qg3-avatar qg3-avatarblank">{(profile.handle??"Q").slice(0,1).toUpperCase()}</span>}</span><span className="qg3-ranklabel">Yetki seviyesi: <strong>{rank.name}</strong></span></Link></header>
@@ -40,7 +46,7 @@ export default async function QGang3Preview(){
   </div>
   <div className="qg3-content">
    <section className="qg3-eventgrid" aria-label="Yaklaşan etkinlikler">
-    {!user?<div className="qg3-empty qg3-wide">Etkinlikleri ve katılımcı sayılarını görmek için <Link href="/login">giriş yapın →</Link></div>:(events??[]).length===0?<div className="qg3-empty qg3-wide">Şu anda yaklaşan etkinlik bulunmuyor. Yeni etkinlikler burada görünecek.</div>:(events as EventRow[]).map(event=><article className="qg3-event" key={event.id}><div className="qg3-eventimage">{event.cover_url?<img src={event.cover_url} alt="" loading="lazy"/>:<span>◆</span>}</div><div className="qg3-eventinfo"><h2>{eventName(event,typeNames)}</h2><time dateTime={event.starts_at}>{date(event.starts_at)}</time><p>Katılıyor: {counts[event.id]??0}</p><Link href="/etkinlikler">Katıl →</Link></div></article>)}
+    {!user?<div className="qg3-empty qg3-wide">Etkinlikleri ve katılımcı sayılarını görmek için <Link href="/login">giriş yapın →</Link></div>:(events??[]).length===0?<div className="qg3-empty qg3-wide">Şu anda yaklaşan etkinlik bulunmuyor. Yeni etkinlikler burada görünecek.</div>:(events as EventRow[]).map(event=><article className="qg3-event" key={event.id}><div className="qg3-eventimage">{event.cover_url?<img src={event.cover_url} alt="" loading="lazy"/>:<span>◆</span>}</div><div className="qg3-eventinfo"><h2>{eventName(event,typeNames)}</h2><time dateTime={event.starts_at}>{date(event.starts_at)}</time><EventJoinButton eventId={event.id} initialJoined={ownJoined.has(event.id)} initialCount={counts[event.id]??(ownJoined.has(event.id)?1:0)}/></div></article>)}
    </section>
    <section className="qg3-activity qg3-panel"><div className="qg3-panelhead"><h2>Son Faaliyetler</h2><Link href="/etkinlikler">Tüm faaliyetler →</Link></div><div className="qg3-activityitems">{!user?<p>Faaliyetleri görmek için giriş yapın.</p>:(history??[]).length===0?<p>Henüz tamamlanan faaliyet bulunmuyor.</p>:(history as EventRow[]).map(e=><div className="qg3-activityitem" key={e.id}><span className="qg3-activitysymbol">◇</span><span><strong>{eventName(e,typeNames)}</strong><small>{shortDate(e.starts_at)}</small></span></div>)}</div></section>
    <div className="qg3-bottomgrid">
