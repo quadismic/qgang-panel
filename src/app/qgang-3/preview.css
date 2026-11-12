@@ -96,3 +96,10 @@
 .qg3-quickarrow{margin-left:auto;color:#e4edf5;font-size:24px}
 @media(max-width:950px){.qg3-maincolumns{grid-template-columns:1fr}.qg3-eventssection .qg3-eventgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.qg3-eventssection .qg3-eventempty{grid-column:1/-1}.qg3-activityitems{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.qg3-activityitem:nth-child(odd){border-right:1px solid #2b3947}}
 @media(max-width:650px){.qg3-scene{min-height:0}.qg3-heading{padding:25px 16px 30px}.qg3-heading h1{font-size:37px}.qg3-aboutbox{margin-top:19px;padding:17px}.qg3-aboutbox p{font-size:13px;line-height:1.7}.qg3-content{padding:16px}.qg3-maincolumns{gap:12px}.qg3-maincolumns>.qg3-panel{padding:16px}.qg3-eventssection .qg3-eventgrid{display:flex}.qg3-eventssection .qg3-eventempty{flex-wrap:wrap}.qg3-eventssection .qg3-emptycta{width:100%}.qg3-activityitems{grid-template-columns:1fr}.qg3-activityitem:nth-child(odd){border-right:0}.qg3-bottomgrid{margin-top:12px}.qg3-bottomgrid>.qg3-panel{padding:17px}.qg3-quicklinks{grid-template-columns:1fr;gap:10px;margin-top:12px}.qg3-quicklink{min-height:75px;padding:16px 20px}.qg3-quicklink strong{font-size:18px}.qg3-quickicon{font-size:25px}.qg3-footer{margin-top:18px}}
+
+/* QG emblem atmospheric branding */
+.qg3-scene{background:#080d14 url("/brand/qgang-hero-atmosphere.svg") center 42%/cover no-repeat}
+.qg3-scene:before{display:none}
+.qg3-brandlogo{height:62px;max-width:115px;filter:drop-shadow(0 2px 12px rgba(0,0,0,.65))}
+.qg3-aboutbox{backdrop-filter:blur(6px)}
+@media(max-width:650px){.qg3-scene{background-position:64% center}.qg3-brandlogo{height:47px;max-width:95px}}
