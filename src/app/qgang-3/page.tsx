@@ -57,7 +57,7 @@ export default async function QGang3Preview(){
  const counts=Object.fromEntries(countEntries);
  return <main className="qg3">
   <div className="qg3-scene">
-   <header className="qg3-header"><Link href="/qgang-3" className="qg3-brand"><img className="qg3-brandlogo" src="/brand/qgang-logo.png" alt="Q-GANG logosu"/><span className="qg3-brandword">Q-GANG</span></Link><Link className="qg3-header-profile" href="/qgang-3/profil" aria-label="Operatör dosyam">Profilim →</Link></span></header>
+   <header className="qg3-header"><Link href="/qgang-3" className="qg3-brand"><img className="qg3-brandlogo" src="/brand/qgang-logo.png" alt="Q-GANG logosu"/><span className="qg3-brandword">Q-GANG</span></Link><Link className="qg3-header-profile" href="/qgang-3/profil" aria-label="Operatör dosyam">Profilim →</Link></header>
    <div className="qg3-heading"><h1>BİZ KİMİZ?</h1><div className="qg3-aboutbox"><p>Q-GANG, dijital oyunları temel ortak faaliyet olarak benimseyen; üyeleri arasında sosyal, kültürel ve düşünsel etkileşimi, dayanışmayı ve ortak üretimi geliştirmeyi amaçlayan bağımsız ve gönüllü bir topluluktur.</p></div></div>
   </div>
   <div className="qg3-content"><Link href="/qgang-3/profil" className="qg3-operatorcard"><span className="qg3-opavatar">{profile.avatar_url?<img src={profile.avatar_url} alt="" referrerPolicy="no-referrer"/>:(profile.handle??"Q").slice(0,1).toUpperCase()}</span><span className="qg3-opidentity"><small>OPERATÖR DOSYASI</small><strong>{profile.handle??"Operatör"}</strong><span className="qg3-oprank">{rank.name}</span></span><span className="qg3-opright"><span>PERSONEL KAYDI</span><b>DOSYAYI AÇ ↗</b></span></Link>
