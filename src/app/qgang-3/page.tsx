@@ -1,10 +1,9 @@
 import Link from "next/link";
 import {redirect} from "next/navigation";
-import {Inter} from "next/font/google";
+import {brandTheme} from "@/config/brand-theme";
 import {createClient,getCurrentUser} from "@/lib/supabase/server";
 import "./preview.css";
 
-const inter=Inter({subsets:["latin"],display:"swap",variable:"--font-qgang-modern"});
 export const dynamic="force-dynamic";
 export const metadata={title:"Q-GANG · Topluluk merkezi"};
 type EventRow={id:string;title:string;starts_at:string;cover_url:string|null;type_id:string|null;legacy_type:string|null;status:string};
@@ -32,9 +31,9 @@ export default async function QGang3Preview(){
  const ids=(events??[]).map(e=>e.id);
  const {data:responses}=user&&ids.length?await supabase.from("event_responses").select("event_id,response").in("event_id",ids).eq("response","going"): {data:[] as ResponseRow[]};
  const counts=(responses??[]).reduce((a,r)=>({...a,[r.event_id]:(a[r.event_id]??0)+1}),{} as Record<string,number>);
- return <main className={`qg3 ${inter.variable}`}>
+ return <main className="qg3">
   <div className="qg3-scene">
-   <header className="qg3-header"><Link href="/qgang-3" className="qg3-brand"><span className="qg3-mark">◆</span><span>Q-GANG<small>KARDEŞLİK, DAİMA.</small></span></Link><Link className="qg3-login" href="/profil" aria-label="Profilim">{profile.avatar_url?<img src={profile.avatar_url} alt="" className="qg3-avatar" referrerPolicy="no-referrer"/>:<span className="qg3-avatar qg3-avatarblank">{(profile.handle??"Q").slice(0,1).toUpperCase()}</span>}</Link></header>
+   <header className="qg3-header"><Link href="/qgang-3" className="qg3-brand"><img className="qg3-brandlogo" src={brandTheme.emblem} alt="Q-GANG"/></Link><Link className="qg3-login" href="/profil" aria-label="Profilim">{profile.avatar_url?<img src={profile.avatar_url} alt="" className="qg3-avatar" referrerPolicy="no-referrer"/>:<span className="qg3-avatar qg3-avatarblank">{(profile.handle??"Q").slice(0,1).toUpperCase()}</span>}</Link></header>
    <div className="qg3-heading"><h1>Yaklaşan Etkinlikler</h1><p>Katıl, oyna, buluş, üret.</p></div>
   </div>
   <div className="qg3-content">
