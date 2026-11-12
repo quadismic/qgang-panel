@@ -13,7 +13,8 @@ export async function middleware(request:NextRequest){
  if(!url||!key)return response;
  const supabase=createServerClient(url,key,{cookies:{getAll(){return request.cookies.getAll()},setAll(items){items.forEach(({name,value})=>request.cookies.set(name,value));response=makeResponse();items.forEach(({name,value,options})=>response.cookies.set(name,value,options))}}});
  const {data:{user}}=await supabase.auth.getUser();
- const exempt=path==="/login"||path.startsWith("/auth/")||path==="/bakim";
+ const previewShowcase=process.env.VERCEL_ENV==="preview"&&path==="/qgang-3";
+ const exempt=path==="/login"||path.startsWith("/auth/")||path==="/bakim"||previewShowcase;
  const {data:maintenance}=await supabase.from("system_settings").select("value").eq("key","maintenance").maybeSingle();
  const maintenanceOn=Boolean((maintenance?.value as any)?.enabled);
  if(maintenanceOn&&!exempt){
