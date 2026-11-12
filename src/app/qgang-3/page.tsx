@@ -21,7 +21,8 @@ function QIcon({name,size=26}:{name:QIconName;size?:number}){
  };
  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" {...common}>{paths[name]}</svg>;
 }
-\nexport const dynamic="force-dynamic";
+
+export const dynamic="force-dynamic";
 export const metadata={title:"Q-GANG · Topluluk merkezi"};
 type EventRow={id:string;title:string;starts_at:string;cover_url:string|null;type_id:string|null;legacy_type:string|null;status:string};
 type ResponseRow={event_id:string;response:string};
