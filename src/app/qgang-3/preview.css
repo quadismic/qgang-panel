@@ -126,3 +126,13 @@
 .qg3-scene{background-image:linear-gradient(90deg,rgba(8,13,20,.94) 0%,rgba(8,13,20,.67) 46%,rgba(8,13,20,.14) 100%),url("/brand/qgang-soldiers.png");background-position:center,center 35%;background-size:cover;background-repeat:no-repeat}
 .qg3-brandlogo{width:auto;height:60px;max-width:180px;object-fit:contain;object-position:left center}
 @media(max-width:700px){.qg3-scene{background-image:linear-gradient(180deg,rgba(8,13,20,.55),rgba(8,13,20,.93) 46%,#080d14 100%),url("/brand/qgang-soldiers.png");background-position:center,62% top;background-size:cover,auto 410px;background-repeat:no-repeat}.qg3-brandlogo{height:46px;max-width:135px}}
+
+/* Compact reference-style profile control */
+.qg3-header .qg3-rankcard{display:inline-flex;flex-direction:row;align-items:center;gap:10px;min-width:0;padding:7px 13px;border:1px solid rgba(126,140,156,.38);border-radius:9px;background:rgba(10,17,25,.88);box-shadow:0 6px 22px rgba(0,0,0,.25);text-decoration:none}
+.qg3-header .qg3-rankcard:before,.qg3-header .qg3-rankcard:after{display:none}
+.qg3-header .qg3-rankportrait{padding:0;border:0;background:none}
+.qg3-header .qg3-rankportrait .qg3-avatar{display:block;width:36px;height:36px;object-fit:cover;border-radius:6px}
+.qg3-header .qg3-ranklabel{display:flex;align-items:center;gap:11px;font-size:13px;color:#fff}
+.qg3-header .qg3-ranklabel strong,.qg3-header .qg3-rank-leader .qg3-ranklabel strong{font-size:13px;color:#f7f8fa;background:none;border:0;padding:0;font-weight:800;letter-spacing:.025em}
+.qg3-header .qg3-rankchevron{font-size:19px;font-weight:400;color:#cbd1d9;line-height:1;transform:translateY(-3px)}
+@media(max-width:650px){.qg3-header .qg3-rankcard{padding:5px 8px;gap:7px}.qg3-header .qg3-rankportrait .qg3-avatar{width:30px;height:30px}.qg3-header .qg3-ranklabel strong{font-size:11px}.qg3-header .qg3-ranklabel{gap:5px}}
