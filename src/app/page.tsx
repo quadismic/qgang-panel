@@ -1,3 +1,1 @@
-import {redirect} from "next/navigation";
-export const dynamic="force-dynamic";
-export default function Home(){redirect("/qgang-3");}
+export {default,metadata,dynamic} from "./qgang-3/page";
