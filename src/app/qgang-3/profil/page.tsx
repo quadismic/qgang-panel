@@ -32,8 +32,8 @@ export default async function OperatorProfile(){
  const joined=(responses??[]).length;
  const equipped=new Map((equipment??[]).map(item=>[item.kind,item.cosmetic_id]));
  const selected=(kind:string)=>(cosmetics??[]).find(item=>item.id===equipped.get(kind));
- const nextReward=(cosmetics??[]).find(item=>item.unlock_level>level);
  const totalExp=Number(progress?.total_exp??0),level=Number(progress?.level??1),startExp=Number(progress?.level_start_exp??0),nextExp=Number(progress?.next_level_exp??100);
+ const nextReward=(cosmetics??[]).find(item=>item.unlock_level>level);
  const percent=Math.min(100,Math.max(0,Math.round((totalExp-startExp)/(nextExp-startExp)*100)));
  return <main className="qg3 qgop">
   <div className="qgop-shell">
