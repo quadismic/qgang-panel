@@ -32,9 +32,9 @@ const eventName=(event:EventRow,types:Record<string,string>)=>types[event.type_i
 export default async function QGang3Preview(){
  const supabase=await createClient();
  const user=await getCurrentUser();
- if(!user)redirect("/login?next=/qgang-3");
+ if(!user)redirect("/login?next=/");
  const {data:profile}=await supabase.from("profiles").select("onboarding_completed_at,avatar_url,handle,is_suspended,role").eq("id",user.id).maybeSingle();
- if(!profile?.onboarding_completed_at)redirect("/onboarding?next=/qgang-3");
+ if(!profile?.onboarding_completed_at)redirect("/onboarding?next=/");
  const {data:membership}=await supabase.from("community_memberships").select("status").eq("user_id",user.id).eq("status","active").maybeSingle();
  if(!membership||profile.is_suspended)redirect("/qgang-3/basvuru");
  const rankMap:Record<string,{name:string;tone:string}>={founder:{name:"LİDER",tone:"leader"},admin:{name:"VEKİLHARÇ",tone:"deputy"},moderator:{name:"KAPTAN",tone:"captain"},creator:{name:"TEĞMEN",tone:"lieutenant"},member:{name:"ÜYE",tone:"member"}};
@@ -72,7 +72,7 @@ export default async function QGang3Preview(){
  const counts=Object.fromEntries(countEntries);
  return <main className="qg3">
   <div className="qg3-scene">
-   <header className="qg3-header"><Link href="/qgang-3" className="qg3-brand"><img className="qg3-brandlogo" src="/brand/qgang-logo.png" alt="Q-GANG logosu"/><span className="qg3-brandword">Q-GANG</span></Link><Link className="qg3-header-profile" href="/qgang-3/profil" aria-label="Operatör dosyam">Profilim →</Link></header>
+   
    <div className="qg3-heading"><h1>BİZ KİMİZ?</h1><div className="qg3-aboutbox"><p>Q-GANG, dijital oyunları temel ortak faaliyet olarak benimseyen; üyeleri arasında sosyal, kültürel ve düşünsel etkileşimi, dayanışmayı ve ortak üretimi geliştirmeyi amaçlayan bağımsız ve gönüllü bir topluluktur.</p></div></div>
   </div>
   <div className="qg3-content"><Link href="/qgang-3/profil" className="qg3-operatorcard"><span className="qg3-opavatar">{profile.avatar_url?<img src={profile.avatar_url} alt="" referrerPolicy="no-referrer"/>:(profile.handle??"Q").slice(0,1).toUpperCase()}</span><span className="qg3-opidentity"><small>OPERATÖR DOSYASI</small><strong>{profile.handle??"Operatör"}</strong><span className="qg3-oprank">{rank.name}</span></span><span className="qg3-opright"><span>PERSONEL KAYDI</span><b>DOSYAYI AÇ ↗</b></span></Link>
