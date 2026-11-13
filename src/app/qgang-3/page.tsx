@@ -46,6 +46,21 @@ export default async function QGang3Preview(){
   supabase.from("event_types").select("id,name"),
   supabase.from("qgang_decisions").select("id,title,body,category,visibility,status,decision_year,decision_number,published_at,repeal_reason").in("status",["published","repealed"]).order("published_at",{ascending:false}).limit(3)
  ]);
+ const {data:birthdayProfiles}=await supabase.from("profiles").select("id,handle,birthday_month,birthday_day").eq("birthday_visibility","community").not("birthday_month","is",null).not("birthday_day","is",null).eq("is_suspended",false);
+ const {data:activeBirthdayMembers}=await supabase.from("community_memberships").select("user_id").eq("status","active");
+ const activeBirthdayIds=new Set((activeBirthdayMembers??[]).map(m=>m.user_id));
+ const istanbulToday=new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Istanbul",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+ const [currentYear,currentMonth,currentDay]=istanbulToday.split("-").map(Number);
+ const todayUtc=Date.UTC(currentYear,currentMonth-1,currentDay);
+ const birthdays=(birthdayProfiles??[]).filter(p=>activeBirthdayIds.has(p.id)).flatMap(p=>{
+  const month=Number(p.birthday_month),day=Number(p.birthday_day);
+  if(month<1||month>12||day<1||day>31)return [];
+  let next:Date|null=null;
+  for(let y=currentYear;y<=currentYear+1;y++){const d=new Date(Date.UTC(y,month-1,day));if(d.getUTCMonth()===month-1&&d.getUTCDate()===day&&d.getTime()>=todayUtc){next=d;break;}}
+  if(!next)return [];
+  const days=Math.round((next.getTime()-todayUtc)/86400000);
+  return days<30?[{id:p.id,handle:p.handle??"Üye",days,day,month}]:[];
+ }).sort((a,b)=>a.days-b.days||a.handle.localeCompare(b.handle,"tr"));
  const typeNames=Object.fromEntries((types??[]).map(t=>[t.id,t.name]));
  const ids=(events??[]).map(e=>e.id);
  const {data:responses}=ids.length?await supabase.from("event_responses").select("event_id,response").eq("user_id",user.id).in("event_id",ids):{data:[] as ResponseRow[]};
@@ -61,6 +76,10 @@ export default async function QGang3Preview(){
    <div className="qg3-heading"><h1>BİZ KİMİZ?</h1><div className="qg3-aboutbox"><p>Q-GANG, dijital oyunları temel ortak faaliyet olarak benimseyen; üyeleri arasında sosyal, kültürel ve düşünsel etkileşimi, dayanışmayı ve ortak üretimi geliştirmeyi amaçlayan bağımsız ve gönüllü bir topluluktur.</p></div></div>
   </div>
   <div className="qg3-content"><Link href="/qgang-3/profil" className="qg3-operatorcard"><span className="qg3-opavatar">{profile.avatar_url?<img src={profile.avatar_url} alt="" referrerPolicy="no-referrer"/>:(profile.handle??"Q").slice(0,1).toUpperCase()}</span><span className="qg3-opidentity"><small>OPERATÖR DOSYASI</small><strong>{profile.handle??"Operatör"}</strong><span className="qg3-oprank">{rank.name}</span></span><span className="qg3-opright"><span>PERSONEL KAYDI</span><b>DOSYAYI AÇ ↗</b></span></Link>
+   <section className="qg3-panel" style={{marginBottom:18}}><div className="qg3-panelhead"><h2><QIcon name="calendar"/>Doğum Günü Takibi</h2><span style={{fontSize:12,color:"#b5bfcd"}}>ÖNÜMÜZDEKİ 30 GÜN</span></div>
+    {birthdays.length?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(210px,1fr))",gap:12,padding:"10px 0"}}>{birthdays.map(b=><div key={b.id} style={{background:"#141c27",border:"1px solid #3c4551",padding:16,display:"flex",justifyContent:"space-between",gap:12,alignItems:"center"}}><div><strong>{b.handle}</strong><div style={{color:"#aebac8",fontSize:12,marginTop:5}}>{String(b.day).padStart(2,"0")}.{String(b.month).padStart(2,"0")}</div></div><strong style={{color:b.days===0?"#f27b90":"#dce6ef",fontSize:12}}>{b.days===0?"BUGÜN 🎂":b.days===1?"YARIN":b.days+" GÜN"}</strong></div>)}</div>:<p style={{color:"#aab6c5",padding:"10px 0"}}>Önümüzdeki 30 gün içinde paylaşımı açık bir doğum günü bulunmuyor.</p>}
+    <p style={{color:"#8794a4",fontSize:11}}>Yalnızca doğum gününü toplulukla paylaşmayı seçen aktif üyeler gösterilir.</p>
+   </section>
    <div className="qg3-maincolumns"><section className="qg3-panel qg3-eventssection"><div className="qg3-panelhead"><h2><QIcon name="calendar"/>Yaklaşan Etkinlikler</h2><Link href="/etkinlikler">Tüm etkinlikler →</Link></div><div className="qg3-eventgrid" aria-label="Yaklaşan etkinlikler">
     {!user?<div className="qg3-empty qg3-wide">Etkinlikleri ve katılımcı sayılarını görmek için <Link href="/login">giriş yapın →</Link></div>:(events??[]).length===0?<div className="qg3-empty qg3-wide qg3-eventempty"><div className="qg3-emptyemblem" aria-hidden="true"><QIcon name="target" size={38}/></div><div className="qg3-emptycopy"><strong>Buralar soğuk...</strong><p>Yeni etkinlik gözükmüyor. Karargâh sessiz; yeni bir buluşma için etkinlikleri keşfet.</p></div><Link className="qg3-emptycta" href="/etkinlikler">Etkinliklere göz at <span aria-hidden="true">↗</span></Link></div>:(events as EventRow[]).map(event=><article className="qg3-event" key={event.id}><div className="qg3-eventimage">{event.cover_url?<img src={event.cover_url} alt="" loading="lazy"/>:<span>◆</span>}</div><div className="qg3-eventinfo"><h2>{eventName(event,typeNames)}</h2><time dateTime={event.starts_at}>{date(event.starts_at)}</time><EventJoinButton eventId={event.id} initialJoined={ownJoined.has(event.id)} initialCount={counts[event.id]??(ownJoined.has(event.id)?1:0)}/></div></article>)}
    </div></section>
