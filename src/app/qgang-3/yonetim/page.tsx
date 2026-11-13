@@ -1,0 +1,16 @@
+import Link from "next/link";
+import {redirect} from "next/navigation";
+import {createClient,getCurrentUser} from "@/lib/supabase/server";
+import "./karargah.css";
+export const dynamic="force-dynamic";
+export const metadata={title:"Karargâh · Q-GANG"};
+export default async function Headquarters(){
+ const user=await getCurrentUser();if(!user)redirect("/login?next=/qgang-3/yonetim");
+ const db=await createClient();
+ const {data:p}=await db.from("profiles").select("role,is_suspended").eq("id",user.id).maybeSingle();
+ const {data:m}=await db.from("community_memberships").select("status").eq("user_id",user.id).eq("status","active").maybeSingle();
+ if(!m||p?.is_suspended||!["founder","admin","moderator","creator"].includes(p?.role??""))redirect("/qgang-3");
+ const founder=p?.role==="founder";
+ const links=[{name:"Üyeler",href:"/topluluk",desc:"Üye listesi"},{name:"Etkinlikler",href:"/etkinlikler",desc:"Faaliyetler"},{name:"Yayınlar",href:"/yayinlar",desc:"İçerikler"},{name:"Kararlar",href:"/qgang-3/kararlar",desc:"İcra kararları"},{name:"Arşiv",href:"/qgang-3/arsiv",desc:"Kayıtlar"},...(founder?[{name:"Yaptırımlar",href:"/qgang-3/yonetim/yaptirimlar",desc:"Ceza işlemleri"},{name:"EXP Ödülleri",href:"/qgang-3/yonetim/ozel-gorev",desc:"Özel görevler"}]:[])];
+ return <main className="qg-hq"><div className="qg-hq-shell"><header><Link href="/qgang-3">← ANA SAYFA</Link><span>KOMUTA MERKEZİ</span></header><h1>KARARGÂH</h1><p>Topluluk yönetimi. Tek merkez, hızlı erişim.</p><div className="qg-hq-links">{links.map(x=><Link key={x.name} href={x.href}><strong>{x.name}</strong><small>{x.desc}</small><span>↗</span></Link>)}</div></div></main>;
+}
