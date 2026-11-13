@@ -10,9 +10,9 @@ export default async function Notices(){
  const {data:p}=await db.from("profiles").select("role,is_suspended").eq("id",user.id).maybeSingle();
  const {data:m}=await db.from("community_memberships").select("status").eq("user_id",user.id).eq("status","active").maybeSingle();
  if(!m||p?.is_suspended||!["founder","admin","moderator","creator"].includes(p?.role??""))redirect("/qgang-3");
- const canEvents=["founder","admin","moderator"].includes(p.role);
+ const canEvents=["founder","admin","moderator"].includes(p?.role);
  const canDecisions=canEvents;
- const canPublications=["founder","admin","creator"].includes(p.role);
+ const canPublications=["founder","admin","creator"].includes(p?.role);
  const [{count:drafts},{count:unpublished},{count:upcoming}]=await Promise.all([
  canDecisions?db.from("qgang_decisions").select("id",{count:"exact",head:true}).eq("status","draft"):Promise.resolve({count:0}),
  canPublications?db.from("publications").select("id",{count:"exact",head:true}).eq("status","draft"):Promise.resolve({count:0}),
