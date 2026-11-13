@@ -52,6 +52,46 @@
       "source": "/qgang-3/yonetim/yayinlar",
       "destination": "/qgang-3/yonetim",
       "permanent": false
+    },
+    {
+      "source": "/profil",
+      "destination": "/qgang-3/profil",
+      "permanent": true
+    },
+    {
+      "source": "/kararlar",
+      "destination": "/qgang-3/kararlar",
+      "permanent": true
+    },
+    {
+      "source": "/arsiv",
+      "destination": "/qgang-3/arsiv",
+      "permanent": true
+    },
+    {
+      "source": "/yonetim",
+      "destination": "/qgang-3/yonetim",
+      "permanent": true
+    },
+    {
+      "source": "/duyurular",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/yayin",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/yayimlar",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/tasarim-merkezi",
+      "destination": "/qgang-3/yonetim",
+      "permanent": true
     }
   ]
 }
