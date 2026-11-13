@@ -30,7 +30,7 @@ export default async function ExpArchive({searchParams}:Props){
  const {data:entries,error}=await db.rpc("operator_exp_archive",{p_user_id:target,p_source_type:category==="all"?null:category,p_limit:51,p_offset:(page-1)*50});
  const rows=(entries??[]).slice(0,50);const hasNext=(entries??[]).length>50;
  const targetName=target===user.id?profile.handle:members.find(m=>m.id===target)?.handle;
- const total=rows.reduce((sum,item)=>sum+item.exp_delta,0);
+ const total=rows.reduce((sum:number,item:{exp_delta:number})=>sum+item.exp_delta,0);
  const qs=(newPage:number)=>"/qgang-3/arsiv/exp?"+new URLSearchParams({member:target,category,page:String(newPage)}).toString();
  return <main className="qg-exp-archive"><div className="qg-exp-shell"><header><Link href="/qgang-3/arsiv">← ARŞİV</Link><span>Q-GANG / OPERATÖR KAYITLARI</span><Link href="/qgang-3/profil">DOSYAM</Link></header><h1>EXP <em>GEÇMİŞİ</em></h1><p className="qg-exp-intro">Doğrulanmış kazanımların değiştirilemez kayıt geçmişi. Bu ekran bir üye sıralaması değildir.</p>
  <form action="/qgang-3/arsiv/exp" method="get" className="qg-exp-filters">
