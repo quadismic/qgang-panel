@@ -87,6 +87,7 @@ export default async function QGang3Preview(){
    <div className="qg3-bottomgrid">
     <section className="qg3-panel qg3-decisionspanel"><div className="qg3-panelhead"><h2><QIcon name="gavel"/>Kararlar</h2><Link href="/qgang-3/kararlar">Tüm kararlar →</Link></div><DecisionList items={decisions??[]}/></section>
    </div>
+   {["founder","admin","moderator","creator"].includes(profile.role??"")&&<p style={{margin:"18px 0"}}><Link href="/qgang-3/yonetim" style={{display:"inline-block",background:"#762b41",color:"#fff",padding:"12px 20px",fontWeight:700,textDecoration:"none"}}>⚔ KARARGÂH / YÖNETİM →</Link></p>}
    <nav className="qg3-quicklinks" aria-label="Topluluk bağlantıları">
     <Link className="qg3-quicklink" href="/kodeks"><span className="qg3-quickicon" aria-hidden="true"><QIcon name="book" size={40}/></span><strong>Kurallar</strong><span className="qg3-quickarrow" aria-hidden="true">→</span></Link>
     <Link className="qg3-quicklink" href="/topluluk"><span className="qg3-quickicon" aria-hidden="true"><QIcon name="hierarchy" size={40}/></span><strong>Hiyerarşi</strong><span className="qg3-quickarrow" aria-hidden="true">→</span></Link>
