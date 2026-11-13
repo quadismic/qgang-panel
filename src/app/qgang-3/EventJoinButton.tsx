@@ -15,7 +15,7 @@ export function EventJoinButton({eventId,initialJoined,initialCount}:Props){
    const s=createClient();
    const {data:{user},error:authError}=await s.auth.getUser();
    if(authError||!user)throw new Error("Katılmak için yeniden giriş yapın.");
-   const {error:writeError}=await s.from("event_responses").upsert({event_id:eventId,user_id:user.id,response:next?"going":"not_going"},{onConflict:"event_id,user_id"});
+   const {error:writeError}=await s.rpc("qgang_set_event_response",{p_event:eventId,p_response:next?"going":"not_going"});
    if(writeError)throw new Error("Katılım kaydedilemedi. Lütfen tekrar deneyin.");
    setJoined(next);
    setCount(n=>Math.max(0,n+(next?1:-1)));
