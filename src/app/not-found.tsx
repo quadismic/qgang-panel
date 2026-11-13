@@ -1,14 +1,3 @@
-"use client";
 import Link from "next/link";
-import {useEffect} from "react";
-
-export default function NotFound(){
- useEffect(()=>{const id=window.setTimeout(()=>location.assign("/"),2400);return()=>window.clearTimeout(id)},[]);
- return <main className="qgangReturnPage">
-  <Link href="/" className="qgangReturnMessage" aria-label="Karargâha dön">
-   <h1>Geri dön.</h1>
-   <p>Burada bir şey yok.</p>
-   <span>Karargâha dönülüyor…</span>
-  </Link>
- </main>
-}
+export const metadata={title:"Sayfa Bulunamadı | Q-GANG"};
+export default function NotFound(){return <main style={{minHeight:"100vh",display:"grid",placeItems:"center",background:"#0b111a",color:"#f2f5f9",fontFamily:"Arial,sans-serif",padding:24}}><section style={{width:"min(100%,500px)",border:"1px solid #374455",background:"#17212e",borderRadius:12,padding:36,textAlign:"center"}}><span style={{fontSize:12,letterSpacing:4,color:"#e17c91"}}>Q-GANG / 404</span><h1 style={{fontSize:36,margin:"18px 0 10px"}}>BU KONUM BOŞ</h1><p style={{color:"#b3bfcc",lineHeight:1.6}}>Aradığın sayfa mevcut değil veya yeni sisteme taşındı.</p><Link href="/" style={{display:"inline-block",marginTop:22,padding:"12px 20px",background:"#83364e",border:"1px solid #b75a74",color:"#fff",textDecoration:"none",borderRadius:5,fontWeight:700}}>ANA SAYFAYA DÖN →</Link></section></main>}
