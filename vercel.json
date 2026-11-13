@@ -1,5 +1,57 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "buildCommand": "next build"
+  "buildCommand": "next build",
+  "redirects": [
+    {
+      "source": "/qgang-3",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/kodeks",
+      "destination": "/qgang-3/kodeks",
+      "permanent": true
+    },
+    {
+      "source": "/topluluk",
+      "destination": "/qgang-3/uyeler",
+      "permanent": true
+    },
+    {
+      "source": "/etkinlikler",
+      "destination": "/qgang-3/etkinlikler",
+      "permanent": true
+    },
+    {
+      "source": "/yayinlar",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/yayinlar/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/studio/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/studio",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/qgang-3/yonetim/yayinlar/:path*",
+      "destination": "/qgang-3/yonetim",
+      "permanent": false
+    },
+    {
+      "source": "/qgang-3/yonetim/yayinlar",
+      "destination": "/qgang-3/yonetim",
+      "permanent": false
+    }
+  ]
 }
