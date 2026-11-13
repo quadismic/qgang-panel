@@ -1,19 +1,27 @@
 import Link from "next/link";
 import {redirect} from "next/navigation";
 import {createClient,getCurrentUser} from "@/lib/supabase/server";
+import {saveEvent,confirmAttendance} from "./actions";
 import "../karargah.css";
 export const dynamic="force-dynamic";
 export const metadata={title:"Etkinlik Yönetimi · Q-GANG"};
-export default async function EventManagement(){
+type Props={searchParams:Promise<{edit?:string;attendance?:string}>};
+const local=(v:string)=>new Intl.DateTimeFormat("sv-SE",{timeZone:"Europe/Istanbul",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).format(new Date(v)).replace(" ","T");
+export default async function EventManagement({searchParams}:Props){
+ const params=await searchParams;
  const user=await getCurrentUser();if(!user)redirect("/login?next=/qgang-3/yonetim/etkinlikler");
  const db=await createClient();
  const {data:profile}=await db.from("profiles").select("role,is_suspended").eq("id",user.id).maybeSingle();
  const {data:membership}=await db.from("community_memberships").select("status").eq("user_id",user.id).eq("status","active").maybeSingle();
  if(!membership||profile?.is_suspended||!["founder","admin","moderator"].includes(profile?.role??""))redirect("/qgang-3");
- const {data:events}=await db.from("community_events").select("id,title,status,starts_at,location,organizer_id").order("starts_at",{ascending:false}).limit(60);
- const ids=(events??[]).map(e=>e.id);
- const {data:responses}=ids.length?await db.from("event_responses").select("event_id,response").in("event_id",ids):{data:[]};
- const count=new Map<string,number>();for(const response of responses??[]){if(response.response==="going")count.set(response.event_id,(count.get(response.event_id)??0)+1);}
- const upcoming=(events??[]).filter(e=>e.status==="published"&&new Date(e.starts_at).getTime()>=Date.now()).length;
- return <main className="qg-hq"><div className="qg-hq-shell"><header><Link href="/qgang-3/yonetim">← KARARGÂH</Link><span>ETKİNLİKLER</span></header><h1>ETKİNLİK YÖNETİMİ</h1><p>{upcoming} yaklaşan · {(events??[]).length} kayıt gösteriliyor</p><div className="qg-hq-links" style={{marginBottom:20}}><Link href="/etkinlikler"><strong>ETKİNLİK MERKEZİ</strong><small>Oluşturma ve mevcut işlem araçları</small><span>↗</span></Link></div><section className="qg-hq-panel"><h2>FAALİYETLER</h2>{events?.length?events.map(e=><article key={e.id} className="qg-hq-entry"><div><strong>{e.title}</strong><span>{e.status}</span></div><p>{new Date(e.starts_at).toLocaleString("tr-TR",{timeZone:"Europe/Istanbul",dateStyle:"medium",timeStyle:"short"})}{e.location?" · "+e.location:""}</p><small>Katılım bildirimi: {count.get(e.id)??0} · <Link href="/etkinlikler">Yönetim araçlarına git ↗</Link></small></article>):<p>Etkinlik kaydı bulunamadı.</p>}</section></div></main>;
+ const {data:events}=await db.from("community_events").select("id,title,type_id,description,status,starts_at,ends_at,location").order("starts_at",{ascending:false}).limit(60);
+ const selected=(events??[]).find(e=>e.id===params.edit);
+ const attendanceEvent=(events??[]).find(e=>e.id===params.attendance);
+ const {data:responses}=attendanceEvent?await db.from("event_responses").select("user_id,response").eq("event_id",attendanceEvent.id).eq("response","going"):{data:[]};
+ const ids=(responses??[]).map(r=>r.user_id);
+ const {data:people}=ids.length?await db.from("profiles").select("id,handle").in("id",ids):{data:[]};
+ const {data:verified}=attendanceEvent?await db.from("event_attendance").select("user_id,attended").eq("event_id",attendanceEvent.id):{data:[]};
+ const verifiedMap=new Map((verified??[]).map(v=>[v.user_id,v.attended]));
+ const canVerify=attendanceEvent&&new Date(attendanceEvent.starts_at).getTime()<=Date.now()&&["published","completed"].includes(attendanceEvent.status);
+ return <main className="qg-hq"><div className="qg-hq-shell"><header><Link href="/qgang-3/yonetim">← KARARGÂH</Link><span>ETKİNLİKLER</span></header><h1>ETKİNLİK YÖNETİMİ</h1><p>{(events??[]).length} faaliyet · Oluşturma, düzenleme, katılım doğrulama</p><section className="qg-hq-panel"><h2>{selected?"ETKİNLİĞİ DÜZENLE":"YENİ ETKİNLİK"}</h2><form action={saveEvent} className="qg-sanction-form"><input type="hidden" name="id" value={selected?.id??""}/><label>BAŞLIK<input name="title" required maxLength={180} defaultValue={selected?.title??""}/></label><label>TÜR<select name="type" defaultValue={selected?.type_id??"op-night"}>{[["op-night","OP-NIGHT"],["gang-up","GANG-UP"],["bbq-gang","BBQ-GANG"],["q-nity","Q-NITY"]].map(([id,name])=><option value={id} key={id}>{name}</option>)}</select></label><label>AÇIKLAMA<textarea name="description" maxLength={10000} defaultValue={selected?.description??""}/></label><label>BAŞLANGIÇ (İSTANBUL)<input name="start" type="datetime-local" required defaultValue={selected?local(selected.starts_at):""}/></label><label>BİTİŞ (İSTANBUL)<input name="end" type="datetime-local" required defaultValue={selected?local(selected.ends_at):""}/></label><label>KONUM<input name="location" maxLength={500} defaultValue={selected?.location??""}/></label><label>DURUM<select name="status" defaultValue={selected?.status??"draft"}>{["draft","published","completed","cancelled"].map(v=><option value={v} key={v}>{v}</option>)}</select></label><button type="submit">KAYDET</button>{selected&&<Link href="/qgang-3/yonetim/etkinlikler">Yeni etkinliğe dön</Link>}</form></section><section className="qg-hq-panel" style={{marginTop:18}}><h2>FAALİYETLER</h2>{events?.length?events.map(e=><article key={e.id} className="qg-hq-entry"><div><strong>{e.title}</strong><span>{e.status}</span></div><p>{new Date(e.starts_at).toLocaleString("tr-TR",{timeZone:"Europe/Istanbul",dateStyle:"medium",timeStyle:"short"})}{e.location?" · "+e.location:""}</p><small><Link href={"?edit="+e.id}>Düzenle</Link> · <Link href={"?attendance="+e.id}>Katılımı doğrula</Link></small></article>):<p>Etkinlik kaydı bulunamadı.</p>}</section>{attendanceEvent&&<section className="qg-hq-panel" style={{marginTop:18}}><h2>KATILIM DOĞRULAMA · {attendanceEvent.title}</h2>{!canVerify?<p>Katılım doğrulama yalnızca başlamış ve yayımlanmış/tamamlanmış etkinliklerde yapılır.</p>:(people??[]).length?people!.map(person=><article className="qg-hq-entry" key={person.id}><strong>{person.handle}</strong><p>Durum: {verifiedMap.has(person.id)?verifiedMap.get(person.id)?"Katıldı":"Katılmadı":"Doğrulanmadı"}</p><form action={confirmAttendance} className="qg-attendance-form"><input type="hidden" name="event" value={attendanceEvent.id}/><input type="hidden" name="user" value={person.id}/><button name="attended" value="yes">KATILDI</button><button name="attended" value="no">KATILMADI</button></form></article>):<p>Katılım bildiren üye bulunamadı.</p>}</section>}</div></main>;
 }
