@@ -185,3 +185,39 @@
 .qg3-footer{justify-content:flex-end}.qg3-footer>div{margin-left:auto}
 @media(max-width:750px){.qg3-scene{height:270px;min-height:270px}.qg3-scene:after{background-size:auto 100%;background-position:61% center}.qg3-content{padding:0 15px 25px}.qg3-commandnav{gap:8px;margin-top:14px}.qg3-commandlink{min-height:98px;padding:13px 9px;gap:7px;flex-direction:column;align-items:flex-start;justify-content:flex-end}.qg3-commandicon svg{width:24px;height:24px}.qg3-commandlink strong{font-size:clamp(11px,2.7vw,16px);letter-spacing:.015em}.qg3-commandarrow{position:absolute;right:8px;top:8px;font-size:15px}.qg3-commandadmin a{width:100%;justify-content:center;font-size:11px}.qg3-aboutsection{padding:29px 0 25px}.qg3-aboutsection p{font-size:14px}}
 @media(prefers-reduced-motion:reduce){.qg3-commandlink{transition:none}}
+
+
+/* Q-GANG cinematic dashboard — approved visual direction */
+.qg3{background:radial-gradient(ellipse at 50% 80%,#171a20 0%,#080c12 65%);color:#f6f4f2}
+.qg3-topbar{background:linear-gradient(120deg,#0a0d13,#17141a 55%,#080c11);border-bottom:1px solid #5c303b;position:relative;z-index:2}
+.qg3-topbar-inner{max-width:1510px;margin:auto;padding:8px 32px}
+.qg3-topbar .qg3-commandnav{margin:0 auto;max-width:1100px;gap:20px}
+.qg3-topbar .qg3-commandlink{min-height:72px;padding:12px 26px;align-items:center;justify-content:center;gap:17px;background:linear-gradient(105deg,rgba(10,12,17,.82),rgba(17,17,21,.76)),url("/brand/qgang-soldiers.png") center/cover;border:1px solid #51343b;border-left:4px solid #d6344e;clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);box-shadow:inset 0 -14px 22px #0008}
+.qg3-topbar .qg3-commandlink:nth-child(2){background-position:55% 45%}.qg3-topbar .qg3-commandlink:nth-child(3){background-position:90% 50%}
+.qg3-topbar .qg3-commandlink strong{font-size:clamp(15px,1.6vw,21px);letter-spacing:.025em}
+.qg3-topbar .qg3-commandicon{color:#dec8bb}.qg3-topbar .qg3-commandarrow{display:none}
+.qg3-scene{height:clamp(250px,23vw,390px);min-height:250px;border-bottom:1px solid #58363d}
+.qg3-scene:after{background-image:linear-gradient(180deg,rgba(5,6,10,.05) 0%,rgba(5,6,10,.02) 70%,rgba(6,9,13,.38) 100%),url("/brand/qgang-soldiers.png");background-position:center 42%}
+.qg3-content{max-width:1510px;padding:0 32px 34px}
+.qg3-introgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:36px;padding:28px 0}
+.qg3-introgrid .qg3-aboutsection{padding:0;margin:0;border:0}
+.qg3-introgrid .qg3-aboutsection h1{font-size:clamp(34px,3.4vw,55px);margin:4px 0 10px}
+.qg3-introgrid .qg3-aboutsection p{font-size:clamp(13px,1.05vw,16px);line-height:1.65}
+.qg3-introgrid .qg3-operatorcard{margin:0;min-height:108px;background:linear-gradient(110deg,rgba(34,17,24,.95),rgba(13,17,23,.96));box-shadow:0 9px 30px #0009;border-radius:5px}
+.qg3-dashboardgrid{display:grid;grid-template-columns:minmax(0,2fr) minmax(260px,1fr);gap:18px;align-items:stretch;margin-top:18px}
+.qg3-dashboardgrid .qg3-maincolumns{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:18px;min-width:0}
+.qg3-dashboardgrid .qg3-bottomgrid{margin:0;min-width:0}
+.qg3-dashboardgrid .qg3-panel{height:100%;border:1px solid #51414a;border-radius:9px;background:linear-gradient(140deg,rgba(23,23,27,.95),rgba(9,13,18,.98));box-shadow:0 15px 35px #0005}
+.qg3-dashboardgrid .qg3-eventssection{background:linear-gradient(90deg,rgba(10,13,18,.85),rgba(10,13,18,.94)),url("/brand/qgang-soldiers.png") center/cover}
+.qg3-dashboardgrid .qg3-decisionspanel{background:radial-gradient(ellipse at 85% 95%,rgba(110,40,32,.34),transparent 65%),linear-gradient(140deg,#1c1a1d,#0a0d13)}
+.qg3-dashboardgrid .qg3-panelhead h2{font-size:clamp(15px,1.25vw,20px);font-family:var(--qg-ui),Arial,sans-serif;font-weight:850}
+.qg3-dashboardgrid .qg3-eventempty{background:transparent;border:0}
+.qg3-commandadmin{margin:28px auto 18px}
+.qg3-commandadmin:before,.qg3-commandadmin:after{content:"";height:1px;background:linear-gradient(90deg,transparent,#6b4551);flex:1;max-width:420px}
+.qg3-commandadmin{align-items:center;gap:24px}
+.qg3-commandadmin:after{transform:rotate(180deg)}
+.qg3-commandadmin a{min-height:54px;padding:13px 34px;font-size:14px;border-color:#a04053;background:linear-gradient(120deg,#301821,#100f15)}
+.qg3-footer{border-top:1px solid #3c3038;opacity:.7}
+@media(max-width:1150px){.qg3-dashboardgrid{grid-template-columns:1fr}.qg3-dashboardgrid .qg3-maincolumns{grid-template-columns:1.2fr .8fr}.qg3-dashboardgrid .qg3-bottomgrid>.qg3-panel{min-height:160px}}
+@media(max-width:760px){.qg3-topbar-inner{padding:8px}.qg3-topbar .qg3-commandnav{gap:6px}.qg3-topbar .qg3-commandlink{min-height:64px;padding:8px 5px;flex-direction:column;gap:4px;justify-content:center;align-items:center}.qg3-topbar .qg3-commandicon svg{width:21px;height:21px}.qg3-topbar .qg3-commandlink strong{font-size:clamp(10px,2.7vw,14px)}.qg3-scene{height:clamp(200px,48vw,300px);min-height:200px}.qg3-content{padding:0 15px 25px}.qg3-introgrid{grid-template-columns:1fr;gap:18px;padding:24px 0}.qg3-introgrid .qg3-operatorcard{min-height:84px}.qg3-dashboardgrid .qg3-maincolumns{grid-template-columns:1fr}.qg3-dashboardgrid{gap:12px}.qg3-commandadmin{gap:9px}.qg3-commandadmin a{padding:12px 18px;font-size:11px}}
+@media(max-width:420px){.qg3-topbar .qg3-commandlink strong{font-size:10px}.qg3-introgrid .qg3-aboutsection h1{font-size:36px}.qg3-dashboardgrid .qg3-panel{padding:13px}.qg3-introgrid .qg3-operatorcard{padding:10px}}
