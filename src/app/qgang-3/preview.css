@@ -162,3 +162,26 @@
 .qg3-emptyemblem{background:radial-gradient(circle,#3a2533,#121b26);border-color:#874052;color:#e64159}.qg3-emptycopy strong{font-family:var(--qg-ui),Arial,sans-serif;font-size:16px}
 @media(prefers-reduced-motion:reduce){.qg3-scene:after{animation:none}}
 @media(max-width:700px){.qg3-scene{min-height:0}.qg3-scene:after{background-position:center,62% center}.qg3-header{padding:10px 14px}.qg3-brandlogo{height:35px;max-width:65px}.qg3-brandword{font-size:18px}.qg3-heading{padding:22px 14px}.qg3-heading h1{font-size:34px}.qg3-content{padding:12px 14px}.qg3-operatorcard{padding:10px;gap:10px}.qg3-opavatar{width:48px;height:48px}.qg3-opright>span{display:none}.qg3-opright b{font-size:9px}.qg3-quicklink strong{font-size:17px}}
+
+
+/* Q-GANG cinematic home: open hero, sharp navigation, editorial sections */
+.qg3-scene{height:clamp(285px,34vw,490px);min-height:285px;border-bottom:1px solid #35414b;background:#0b111a!important}
+.qg3-scene:after{inset:0;background-image:linear-gradient(180deg,rgba(5,9,15,.04) 0%,rgba(5,9,15,.06) 58%,rgba(5,9,15,.45) 100%),url("/brand/qgang-soldiers.png");background-size:cover;background-position:center 43%;animation:qg3-breath 80s ease-in-out infinite alternate}
+.qg3-content{max-width:1420px;padding:0 32px 32px}
+.qg3-commandnav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px auto 0}
+.qg3-commandlink{position:relative;min-height:126px;display:flex;align-items:flex-end;gap:14px;overflow:hidden;isolation:isolate;padding:22px 23px;border:1px solid #435263;border-left:3px solid #e52d47;clip-path:polygon(0 0,calc(100% - 19px) 0,100% 19px,100% 100%,0 100%);background:linear-gradient(110deg,rgba(13,20,30,.96),rgba(24,34,47,.83)),url("/brand/qgang-soldiers.png") center/cover;color:#f8fafc!important;transition:transform .2s,border-color .2s,filter .2s}
+.qg3-commandlink:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(125deg,rgba(233,42,68,.13),transparent 53%);pointer-events:none}
+.qg3-commandlink:nth-child(2){background-position:center,42% 55%}.qg3-commandlink:nth-child(3){background-position:center,78% 62%}
+.qg3-commandlink:hover{transform:translateY(-4px);filter:brightness(1.2);border-color:#f04a61}
+.qg3-commandicon{display:flex;color:#f0445c}.qg3-commandlink strong{font-size:clamp(17px,1.8vw,24px);font-weight:900;letter-spacing:.08em;line-height:1.2}.qg3-commandarrow{margin-left:auto;align-self:flex-start;color:#e8a4b0;font-size:22px}
+.qg3-commandadmin{display:flex;justify-content:center;margin:14px auto 0}
+.qg3-commandadmin a{display:flex;align-items:center;gap:12px;min-height:45px;padding:10px 30px;border:1px solid #824254;background:linear-gradient(100deg,#291923,#151d29);font-size:12px;font-weight:900;letter-spacing:.13em;clip-path:polygon(0 0,calc(100% - 11px) 0,100% 11px,100% 100%,11px 100%,0 calc(100% - 11px))}
+.qg3-commandadmin a svg{color:#ed4d64}.qg3-commandadmin a:hover{background:#3a2030}.qg3-commandadmin a span{color:#f28a9b}
+.qg3-aboutsection{padding:38px 2px 33px;border-bottom:1px solid #2c3743;margin-bottom:22px;max-width:100%}
+.qg3-eyebrow{font-size:11px;letter-spacing:.22em;font-weight:800;color:#e34b61}
+.qg3-aboutsection h1{font-size:clamp(31px,3.4vw,48px);line-height:1.1;letter-spacing:-.035em;margin:10px 0 15px;font-weight:900}
+.qg3-aboutsection p{max-width:920px;color:#c6d0da;font-size:clamp(14px,1.2vw,17px);line-height:1.8}
+.qg3-operatorcard{margin-bottom:22px}
+.qg3-footer{justify-content:flex-end}.qg3-footer>div{margin-left:auto}
+@media(max-width:750px){.qg3-scene{height:270px;min-height:270px}.qg3-scene:after{background-size:auto 100%;background-position:61% center}.qg3-content{padding:0 15px 25px}.qg3-commandnav{gap:8px;margin-top:14px}.qg3-commandlink{min-height:98px;padding:13px 9px;gap:7px;flex-direction:column;align-items:flex-start;justify-content:flex-end}.qg3-commandicon svg{width:24px;height:24px}.qg3-commandlink strong{font-size:clamp(11px,2.7vw,16px);letter-spacing:.015em}.qg3-commandarrow{position:absolute;right:8px;top:8px;font-size:15px}.qg3-commandadmin a{width:100%;justify-content:center;font-size:11px}.qg3-aboutsection{padding:29px 0 25px}.qg3-aboutsection p{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.qg3-commandlink{transition:none}}
