@@ -71,11 +71,15 @@ export default async function QGang3Preview(){
  }));
  const counts=Object.fromEntries(countEntries);
  return <main className="qg3">
-  <div className="qg3-scene">
-   
-   <div className="qg3-heading"><h1>BİZ KİMİZ?</h1><div className="qg3-aboutbox"><p>Q-GANG, dijital oyunları temel ortak faaliyet olarak benimseyen; üyeleri arasında sosyal, kültürel ve düşünsel etkileşimi, dayanışmayı ve ortak üretimi geliştirmeyi amaçlayan bağımsız ve gönüllü bir topluluktur.</p></div></div>
-  </div>
-  <div className="qg3-content"><Link href="/qgang-3/profil" className="qg3-operatorcard"><span className="qg3-opavatar">{profile.avatar_url?<img src={profile.avatar_url} alt="" referrerPolicy="no-referrer"/>:(profile.handle??"Q").slice(0,1).toUpperCase()}</span><span className="qg3-opidentity"><small>OPERATÖR DOSYASI</small><strong>{profile.handle??"Operatör"}</strong><span className="qg3-oprank">{rank.name}</span></span><span className="qg3-opright"><span>PERSONEL KAYDI</span><b>DOSYAYI AÇ ↗</b></span></Link>
+  <div className="qg3-scene" role="img" aria-label="Q-GANG askerî topluluk bannerı"></div>
+  <div className="qg3-content">
+   <nav className="qg3-commandnav" aria-label="Topluluk bölümleri">
+    <Link className="qg3-commandlink" href="/qgang-3/kodeks"><span className="qg3-commandicon"><QIcon name="book" size={31}/></span><strong>KURALLAR</strong><span className="qg3-commandarrow">↗</span></Link>
+    <Link className="qg3-commandlink" href="/qgang-3/uyeler"><span className="qg3-commandicon"><QIcon name="hierarchy" size={31}/></span><strong>HİYERARŞİ</strong><span className="qg3-commandarrow">↗</span></Link>
+    <Link className="qg3-commandlink" href="/qgang-3/arsiv"><span className="qg3-commandicon"><QIcon name="archive" size={31}/></span><strong>ARŞİV</strong><span className="qg3-commandarrow">↗</span></Link>
+   </nav>
+   {["founder","admin","moderator","creator"].includes(profile.role??"")&&<div className="qg3-commandadmin"><Link href="/qgang-3/yonetim"><QIcon name="gavel" size={20}/> KARARGÂH / YÖNETİM <span>↗</span></Link></div>}
+   <section className="qg3-aboutsection"><span className="qg3-eyebrow">Q-GANG / TOPLULUK</span><h1>BİZ KİMİZ?</h1><p>Q-GANG, dijital oyunları temel ortak faaliyet olarak benimseyen; üyeleri arasında sosyal, kültürel ve düşünsel etkileşimi, dayanışmayı ve ortak üretimi geliştirmeyi amaçlayan bağımsız ve gönüllü bir topluluktur.</p></section><Link href="/qgang-3/profil" className="qg3-operatorcard"><span className="qg3-opavatar">{profile.avatar_url?<img src={profile.avatar_url} alt="" referrerPolicy="no-referrer"/>:(profile.handle??"Q").slice(0,1).toUpperCase()}</span><span className="qg3-opidentity"><small>OPERATÖR DOSYASI</small><strong>{profile.handle??"Operatör"}</strong><span className="qg3-oprank">{rank.name}</span></span><span className="qg3-opright"><span>PERSONEL KAYDI</span><b>DOSYAYI AÇ ↗</b></span></Link>
    <section className="qg3-panel" style={{marginBottom:18}}><div className="qg3-panelhead"><h2><QIcon name="calendar"/>Doğum Günü Takibi</h2><span style={{fontSize:12,color:"#b5bfcd"}}>ÖNÜMÜZDEKİ 30 GÜN</span></div>
     {birthdays.length?<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(210px,1fr))",gap:12,padding:"10px 0"}}>{birthdays.map(b=><div key={b.id} style={{background:"#141c27",border:"1px solid #3c4551",padding:16,display:"flex",justifyContent:"space-between",gap:12,alignItems:"center"}}><div><strong>{b.handle}</strong><div style={{color:"#aebac8",fontSize:12,marginTop:5}}>{String(b.day).padStart(2,"0")}.{String(b.month).padStart(2,"0")}</div></div><strong style={{color:b.days===0?"#f27b90":"#dce6ef",fontSize:12}}>{b.days===0?"BUGÜN 🎂":b.days===1?"YARIN":b.days+" GÜN"}</strong></div>)}</div>:<p style={{color:"#aab6c5",padding:"10px 0"}}>Önümüzdeki 30 gün içinde paylaşımı açık bir doğum günü bulunmuyor.</p>}
     <p style={{color:"#8794a4",fontSize:11}}>Yalnızca doğum gününü toplulukla paylaşmayı seçen aktif üyeler gösterilir.</p>
@@ -87,13 +91,7 @@ export default async function QGang3Preview(){
    <div className="qg3-bottomgrid">
     <section className="qg3-panel qg3-decisionspanel"><div className="qg3-panelhead"><h2><QIcon name="gavel"/>Kararlar</h2><Link href="/qgang-3/kararlar">Tüm kararlar →</Link></div><DecisionList items={decisions??[]}/></section>
    </div>
-   {["founder","admin","moderator","creator"].includes(profile.role??"")&&<p style={{margin:"18px 0"}}><Link href="/qgang-3/yonetim" style={{display:"inline-block",background:"#762b41",color:"#fff",padding:"12px 20px",fontWeight:700,textDecoration:"none"}}>⚔ KARARGÂH / YÖNETİM →</Link></p>}
-   <nav className="qg3-quicklinks" aria-label="Topluluk bağlantıları">
-    <Link className="qg3-quicklink" href="/qgang-3/kodeks"><span className="qg3-quickicon" aria-hidden="true"><QIcon name="book" size={40}/></span><strong>Kurallar</strong><span className="qg3-quickarrow" aria-hidden="true">→</span></Link>
-    <Link className="qg3-quicklink" href="/qgang-3/uyeler"><span className="qg3-quickicon" aria-hidden="true"><QIcon name="hierarchy" size={40}/></span><strong>Hiyerarşi</strong><span className="qg3-quickarrow" aria-hidden="true">→</span></Link>
-    <Link className="qg3-quicklink" href="/qgang-3/arsiv"><span className="qg3-quickicon" aria-hidden="true"><QIcon name="archive" size={40}/></span><strong>Arşiv</strong><span className="qg3-quickarrow" aria-hidden="true">→</span></Link>
-   </nav>
-   <footer className="qg3-footer"><span>Q-GANG · Kardeşlik, daima.</span><div><span>Steam grubu · Bağlantı bekleniyor</span><span>WhatsApp · Üyelere özel</span></div></footer>
+   <footer className="qg3-footer"><div><span>Steam grubu · Bağlantı bekleniyor</span><span>WhatsApp · Üyelere özel</span></div></footer>
   </div>
  </main>;
 }
