@@ -20,7 +20,7 @@ export default async function Home(){
  const [{data:members},{data:permissions},{data:fund},{data:expRows}]=await Promise.all([
   db.from("community_memberships").select("user_id,joined_at").eq("status","active").order("joined_at"),
   db.from("role_permissions").select("role,permission,enabled").eq("enabled",true),
-  db.from("fund_transactions").select("id,kind,amount,title,created_at,reversed_at").is("reversed_at",null).order("created_at",{ascending:false}).limit(200),
+  db.from("fund_transactions").select("id,kind,amount,title,created_at,reversed_at").is("reversed_at",null).order("created_at",{ascending:false}).limit(1000),
   db.rpc("qgang_member_exp_history",{p_limit:500})
  ]);
  const ids=(members??[]).map(m=>m.user_id);
@@ -43,7 +43,7 @@ export default async function Home(){
   return [];
  }).sort((a,b)=>a.days-b.days);
  const fundVisible=Array.isArray(fund);
- const income=(fund??[]).filter(f=>f.kind==="income").reduce((sum,f)=>sum+Number(f.amount??0),0);
+ const income=(fund??[]).filter(f=>f.kind==="support").reduce((sum,f)=>sum+Number(f.amount??0),0);
  const expense=(fund??[]).filter(f=>f.kind==="expense").reduce((sum,f)=>sum+Number(f.amount??0),0);
  const totalExp=people.reduce((sum,p)=>sum+(expById.get(p.id)??0),0);
  const canManage=["founder","admin"].includes(self.role??"");
