@@ -6,6 +6,7 @@ const internal:Record<string,string>={"/yonetim/uyelik":"/control/community","/y
 function remap(path:string,map:Record<string,string>){for(const [from,to] of Object.entries(map))if(path===from||path.startsWith(from+"/"))return to+path.slice(from.length);return null}
 export async function middleware(request:NextRequest){
  const path=request.nextUrl.pathname;
+ if((path.startsWith("/qgang-3/")&&!path.startsWith("/qgang-3/basvuru"))||["/yonetim","/profil","/topluluk","/etkinlikler","/kodeks","/arsiv","/kararlar","/butce","/tasarim-merkezi","/studio","/yayinlar","/duyurular","/control","/budget","/members","/profile","/publications","/rules"].some(prefix=>path===prefix||path.startsWith(prefix+"/"))){const target=request.nextUrl.clone();target.pathname="/";target.search="";return NextResponse.redirect(target,307)}
  const publicPath=remap(path,canonical);if(publicPath){const target=request.nextUrl.clone();target.pathname=publicPath;return NextResponse.redirect(target,308)}
  const sourcePath=remap(path,internal);const makeResponse=()=>sourcePath?NextResponse.rewrite(new URL(sourcePath+request.nextUrl.search,request.url),{request}):NextResponse.next({request});let response=makeResponse();
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
