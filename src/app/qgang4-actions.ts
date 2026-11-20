@@ -54,10 +54,11 @@ export async function recordEvent(data:FormData){
  const {data:perm}=await db.from("role_permissions").select("permission").eq("role",profile?.role??"guest").eq("enabled",true).in("permission",["events.manage","events.attendance"]);
  const granted=new Set((perm??[]).map(x=>x.permission));
  if(profile?.role!=="founder"&&(!granted.has("events.manage")||!granted.has("events.attendance")))throw new Error("Etkinlik kaydı ve katılım yetkisi gerekli");
- const type=String(data.get("type")??""),date=String(data.get("date")??""),title=String(data.get("title")??"").trim();
- if(!["op-night","gang-up","bbq-gang","q-nity"].includes(type)||!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)||title.length<3||title.length>180)throw new Error("Etkinlik bilgileri geçersiz");
+ const type=String(data.get("type")??""),date=String(data.get("date")??"");
+ if(!["op-night","gang-up","bbq-gang","q-nity"].includes(type)||!/^\d{4}-\d{2}-\d{2}$/.test(date))throw new Error("Etkinlik bilgileri geçersiz");
  const start=new Date(date+"T12:00:00+03:00");
- if(Number.isNaN(start.getTime())||start.getTime()>Date.now())throw new Error("Yalnız geçmiş etkinlik kaydedilebilir");
+ if(Number.isNaN(start.getTime())||start.toLocaleDateString("en-CA",{timeZone:"Europe/Istanbul"})!==date||start.getTime()>Date.now())throw new Error("Yalnız geçmiş etkinlik kaydedilebilir");
+ const title=type.toUpperCase()+" · "+date;
  const participants=[...new Set(data.getAll("attendees").map(String))];
  if(!participants.length||participants.length>100||participants.some(id=>!/^[0-9a-f-]{36}$/i.test(id)))throw new Error("Katılımcıları seçin");
  const {data:existing}=await db.from("community_events").select("id").eq("type_id",type).gte("starts_at",date+"T00:00:00+03:00").lt("starts_at",new Date(new Date(date+"T00:00:00+03:00").getTime()+86400000).toISOString()).limit(1);
