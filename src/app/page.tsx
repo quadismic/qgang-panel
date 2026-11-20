@@ -1,3 +1,4 @@
+import {SignOutButton} from "@/components/SignOutButton";
 import {setRank,admit,award,addFund} from "./qgang4-actions";
 import {redirect} from "next/navigation";
 import {createClient,getCurrentUser} from "@/lib/supabase/server";
@@ -51,7 +52,7 @@ export default async function Home(){
  const isFounder=self.role==="founder";
  const {data:candidates}=isFounder?await db.rpc("qgang_pending_membership_candidates"):{data:[]};
  return <main className="q4"><div className="q4-wrap">
-  <header className="q4-head"><div><h1>Q-GANG<span className="q4-dot">.</span></h1><p>KLÂN SİCİLİ <span>/</span> 4.0</p></div><span className="q4-online"><i/> AKTİF SİSTEM</span></header>
+  <header className="q4-head"><div><h1>Q-GANG<span className="q4-dot">.</span></h1><p>KLÂN SİCİLİ <span>/</span> 4.0</p></div><div className="q4-headtools"><span className="q4-online"><i/> AKTİF SİSTEM</span><SignOutButton/></div></header>
   <section className="q4-stats" aria-label="Topluluk özeti">
    <div><strong>{fmt(people.length)}</strong><span>AKTİF ÜYE</span></div>
    <div><strong>{fmt(totalExp)}</strong><span>TOPLAM EXP</span></div>
