@@ -1,5 +1,5 @@
 import {SignOutButton} from "@/components/SignOutButton";
-import {setRank,admit,award,addFund} from "./qgang4-actions";
+import {setRank,admit,award,addFund,changeAccess,recordEvent} from "./qgang4-actions";
 import {redirect} from "next/navigation";
 import {createClient,getCurrentUser} from "@/lib/supabase/server";
 import "./qgang-4.css";
@@ -28,7 +28,7 @@ export default async function Home(){
  const ids=(members??[]).map(m=>m.user_id);
  const [{data:profiles},{data:progress}]=await Promise.all([
   ids.length?db.from("profiles").select("id,handle,role,birthday_month,birthday_day,birthday_visibility").in("id",ids):Promise.resolve({data:[]}),
-  ids.length?db.from("operator_progress").select("user_id,total_exp").in("user_id",ids):Promise.resolve({data:[]})
+  ids.length?db.rpc("qgang_member_exp_totals"):Promise.resolve({data:[]})
  ]);
  const people=(profiles??[]) as Person[];
  const personById=new Map(people.map(p=>[p.id,p]));
@@ -48,8 +48,12 @@ export default async function Home(){
  const income=(fund??[]).filter(f=>f.kind==="support").reduce((sum,f)=>sum+Number(f.amount??0),0);
  const expense=(fund??[]).filter(f=>f.kind==="expense").reduce((sum,f)=>sum+Number(f.amount??0),0);
  const totalExp=people.reduce((sum,p)=>sum+(expById.get(p.id)??0),0);
- const canManage=["founder","admin"].includes(self.role??"");
  const isFounder=self.role==="founder";
+ const can=(permission:string)=>isFounder||(permissionsByRole.get(self.role??"")??[]).includes(permission);
+ const canManage=can("budget.manage");
+ const canEvent=can("events.manage")&&can("events.attendance");
+ const panelPermissions=[["events.manage","ETKİNLİK KAYDI"],["events.attendance","KATILIM ONAYI"],["budget.view","BÜTÇE GÖRÜNTÜLEME"],["budget.manage","BÜTÇE YÖNETİMİ"],["members.manage","ÜYE YÖNETİMİ"]] as const;
+ const {data:recentEvents}=await db.from("community_events").select("id,title,type_id,starts_at,status").order("starts_at",{ascending:false}).limit(8);
  const {data:candidates}=isFounder?await db.rpc("qgang_pending_membership_candidates"):{data:[]};
  return <main className="q4"><div className="q4-wrap">
   <header className="q4-head"><div><h1>Q-GANG<span className="q4-dot">.</span></h1><p>KLÂN SİCİLİ <span>/</span> 4.0</p></div><div className="q4-headtools"><span className="q4-online"><i/> AKTİF SİSTEM</span><SignOutButton/></div></header>
