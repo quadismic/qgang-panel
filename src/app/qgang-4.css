@@ -22,3 +22,18 @@
 .q4-rankbody>.q4-person{padding-left:12px;margin-bottom:7px}
 .q4-person>summary{padding-left:10px}
 @media(max-width:650px){.q4-entrycard{margin:42px auto 0;padding:26px 18px}.q4-entry .q4-wrap{padding:28px 18px}.q4-welcome{padding:25px 0}}
+
+/* EXP titles: compact member identity and five-tier guide */
+.q4-memberid{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}
+.q4-memberid>b{font-size:13px;color:#e8e9ec;overflow-wrap:anywhere}
+.q4-memberid>small{font-size:10px;font-weight:700;letter-spacing:.045em}
+.q4-memberid>small i{font-style:normal;color:#6c7480;margin:0 3px}
+.q4-memberexp{flex:none;font-size:12px;color:#c7cdd5;font-variant-numeric:tabular-nums;white-space:nowrap}
+.q4-tierlist{margin-top:9px;border-top:1px solid #303740}
+.q4-tier{display:flex;align-items:center;gap:13px;padding:12px 5px;border-bottom:1px solid #272e36}
+.q4-tiermark{width:4px;height:29px;border-radius:2px;flex:none}
+.q4-tierdesc{display:flex;flex:1;flex-direction:column;gap:4px}
+.q4-tierdesc b{font-size:12px;letter-spacing:.04em}
+.q4-tierdesc small{font-size:11px;color:#99a3b0}
+.q4-tierindex{font-size:10px;color:#838c98;letter-spacing:.09em}
+@media(max-width:650px){.q4-memberid>small{font-size:9px}.q4-memberexp{font-size:11px}.q4-person>summary{gap:9px}}
