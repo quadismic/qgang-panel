@@ -33,7 +33,7 @@ export default async function Home(){
  const people=(profiles??[]) as Person[];
  const personById=new Map(people.map(p=>[p.id,p]));
  const joinById=new Map((members??[]).map(m=>[m.user_id,m.joined_at]));
- const expById=new Map((progress??[]).map(p=>[p.user_id,Number(p.total_exp??0)]));
+ const expById=new Map(((progress??[]) as {user_id:string;total_exp:number}[]).map(p=>[p.user_id,Number(p.total_exp??0)]));
  const permissionsByRole=new Map<string,string[]>();
  for(const p of permissions??[]){const current=permissionsByRole.get(p.role)??[];current.push(p.permission);permissionsByRole.set(p.role,current)}
  const ledger=(expRows??[]) as Ledger[];
