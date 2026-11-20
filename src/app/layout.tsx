@@ -1,19 +1,4 @@
 import type {Metadata} from "next";
-import {Inter} from "next/font/google";
 import "./globals.css";
-import "./brand-sidebar.css";
-import "./living-seal.css";
-import "./checkpoint-b.css";
-import "./checkpoint-c.css";
-import "./checkpoint-c2.css";
-import "./one-surface.css";
-import "./editor-portrait.css";
-import "./aster.css";
-
-const inter=Inter({subsets:["latin"],variable:"--font-qgang",display:"swap"});
-
-export const metadata:Metadata={title:{default:"Q-GANG",template:"%s | Q-GANG"},description:"Q-GANG · Oyun, topluluk ve kardeşlik.",icons:{icon:"/brand/qgang-logo.png",shortcut:"/brand/qgang-logo.png",apple:"/brand/qgang-logo.png"}};
-
-export default function RootLayout({children}:Readonly<{children:React.ReactNode}>){
-  return <html lang="tr" className={inter.variable}><body>{children}</body></html>
-}
+export const metadata:Metadata={title:"Q-GANG 4.0",description:"Q-GANG klan sicili",icons:{icon:"/brand/qgang-logo.png"}};
+export default function RootLayout({children}:Readonly<{children:React.ReactNode}>){return <html lang="tr"><body>{children}</body></html>}
