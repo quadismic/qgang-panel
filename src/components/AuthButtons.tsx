@@ -57,7 +57,7 @@ export function AuthButtons(){
      }
     }
    }
-   const next=new URLSearchParams(location.search).get("next")||"/profile";
+   const next=new URLSearchParams(location.search).get("next")||"/";
    const safeNext=next.startsWith("/")&&!next.startsWith("//")?next:"/profile";
    const {data:profile}=await s.from("profiles").select("onboarding_completed_at").eq("id",data.user.id).maybeSingle();
    location.assign(profile?.onboarding_completed_at?safeNext:`/onboarding?next=${encodeURIComponent(safeNext)}`);
